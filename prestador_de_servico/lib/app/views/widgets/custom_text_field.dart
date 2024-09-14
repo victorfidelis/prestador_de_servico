@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class CustomTextField extends StatelessWidget {
   final String label;
   final bool isPassword;
+  final bool isEmail;
 
   CustomTextField({
     super.key,
     required this.label,
     this.isPassword = false,
+    this.isEmail = false,
   });
 
   final FocusNode _node = FocusNode();
@@ -20,7 +22,7 @@ class CustomTextField extends StatelessWidget {
         _node.requestFocus();
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -53,7 +55,7 @@ class CustomTextField extends StatelessWidget {
                     child: const Icon(
                       Icons.visibility_off_outlined,
                       color: Colors.grey,
-                      size: 32,
+                      size: 28,
                     ),
                   );
                 } else if (isPassword) {
@@ -62,7 +64,7 @@ class CustomTextField extends StatelessWidget {
                     child: const Icon(
                       Icons.visibility_outlined,
                       color: Colors.grey,
-                      size: 32,
+                      size: 28,
                     ),
                   );
                 }
@@ -77,9 +79,10 @@ class CustomTextField extends StatelessWidget {
                           border: InputBorder.none,
                         ),
                         style: const TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                         ),
                         obscureText: isPassword && obscureText.value,
+                        keyboardType: TextInputType.emailAddress,
                       ),
                     ),
                     suffixIcon,
