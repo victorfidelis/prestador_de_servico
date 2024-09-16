@@ -10,12 +10,12 @@ class LoginHeader extends StatelessWidget {
       children: [
         Image.asset(
           'assets/images/logo_var_1.png',
-          width: 90,
+          width: 40,
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 32),
         const Text('Login',
             style: TextStyle(
-              fontSize: 40,
+              fontSize: 32,
               color: Colors.white,
               fontWeight: FontWeight.w700,
             ))

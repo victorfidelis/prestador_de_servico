@@ -2,24 +2,26 @@ import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
+  final FocusNode focusNode;
   final bool isPassword;
   final bool isEmail;
 
   CustomTextField({
     super.key,
     required this.label,
+    required this.focusNode,
     this.isPassword = false,
     this.isEmail = false,
   });
 
-  final FocusNode _node = FocusNode();
   ValueNotifier<bool> obscureText = ValueNotifier(true);
 
   @override
   Widget build(BuildContext context) {
+
     return GestureDetector(
-      onTap: () {
-        _node.requestFocus();
+      onTap: () { 
+        focusNode.requestFocus();
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -28,7 +30,7 @@ class CustomTextField extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(12)),
             boxShadow: [
               BoxShadow(
-                color: Color(0x80000000),
+                color: Color(0x50000000),
                 offset: Offset(0, 4),
                 blurStyle: BlurStyle.normal,
                 blurRadius: 4,
@@ -42,7 +44,7 @@ class CustomTextField extends StatelessWidget {
               label,
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
-                fontSize: 18,
+                fontSize: 14,
               ),
             ),
             ListenableBuilder(
@@ -55,7 +57,7 @@ class CustomTextField extends StatelessWidget {
                     child: const Icon(
                       Icons.visibility_off_outlined,
                       color: Colors.grey,
-                      size: 28,
+                      size: 22,
                     ),
                   );
                 } else if (isPassword) {
@@ -64,7 +66,7 @@ class CustomTextField extends StatelessWidget {
                     child: const Icon(
                       Icons.visibility_outlined,
                       color: Colors.grey,
-                      size: 28,
+                      size: 22,
                     ),
                   );
                 }
@@ -74,18 +76,23 @@ class CustomTextField extends StatelessWidget {
                   children: [
                     Expanded(
                       child: TextField(
-                        focusNode: _node,
+                        focusNode: focusNode,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
+                          isDense: true,
+                          contentPadding: EdgeInsets.symmetric(vertical: 6)
                         ),
                         style: const TextStyle(
-                          fontSize: 18,
+                          fontSize: 16,
                         ),
                         obscureText: isPassword && obscureText.value,
                         keyboardType: TextInputType.emailAddress,
                       ),
                     ),
-                    suffixIcon,
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: suffixIcon,
+                    ),
                   ],
                 );
               },

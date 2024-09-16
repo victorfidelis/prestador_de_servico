@@ -11,7 +11,7 @@ class RegisterLink extends StatelessWidget {
         const Text(
           'Não possui conta? ',
           style: TextStyle(
-            fontSize: 18,
+            fontSize: 16,
           ),
         ),
         GestureDetector(
@@ -19,7 +19,7 @@ class RegisterLink extends StatelessWidget {
             'Cadastre-se',
             style: TextStyle(
               fontWeight: FontWeight.w700,
-              fontSize: 18,
+              fontSize: 16,
               color: Color(0xff0E293C),
             ),
           ),

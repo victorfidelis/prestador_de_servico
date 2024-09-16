@@ -6,8 +6,8 @@ class LoginGoogleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 44,
-      padding: const EdgeInsets.all(6),
+      height: 42,
+      padding: const EdgeInsets.all(4),
       decoration: const BoxDecoration(
           color: Color(0xffE4E4E4),
           borderRadius: BorderRadius.all(Radius.circular(30))),

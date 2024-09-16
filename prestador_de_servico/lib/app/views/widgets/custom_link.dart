@@ -4,7 +4,7 @@ class CustomLink extends StatelessWidget {
   final String label;
   final bool undeline;
 
-  CustomLink({
+  const CustomLink({
     super.key,
     required this.label,
     this.undeline = false,
@@ -21,7 +21,7 @@ class CustomLink extends StatelessWidget {
       label,
       style: TextStyle(
         color: const Color(0xff1976D2),
-        fontSize: 16,
+        fontSize: 14,
         decoration: textDecoration,
         decorationColor: const Color(0xff1976D2),
       ),

@@ -7,10 +7,14 @@ import 'package:prestador_de_servico/app/views/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/views/widgets/custom_text_field.dart';
 
 class LoginView extends StatelessWidget {
-  const LoginView({super.key});
+  LoginView({super.key});
+
+  FocusNode focusNodeEmail = FocusNode();
+  FocusNode focusNodePassword = FocusNode();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) { 
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Stack(
@@ -23,28 +27,31 @@ class LoginView extends StatelessWidget {
             Column(
               children: [
                 SizedBox(
-                  height: MediaQuery.of(context).size.height / 2.8,
+                  height: MediaQuery.of(context).size.height / 2.6,
                   child: const LoginHeader()
                 ),
                 const SizedBox(height: 20),
                 Container(
+                  height: 450,
                   padding: const EdgeInsets.symmetric(horizontal: 38),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CustomTextField(
                         label: 'Email',
+                        focusNode: focusNodeEmail,
                       ),
                       const SizedBox(height: 18),
                       CustomTextField(
                         label: 'Senha',
+                        focusNode: focusNodePassword,
                         isPassword: true,
                       ),
                       const SizedBox(height: 18),
                       Row(
                         children: [
                           Expanded(child: Container()),
-                          CustomLink(
+                          const CustomLink(
                             label: 'Esqueci a senha',
                             undeline: true,
                           ),
@@ -56,7 +63,7 @@ class LoginView extends StatelessWidget {
                       const Text(
                         'Ou entre com',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 14,
                         ),
                       ),
                       const SizedBox(height: 20),
