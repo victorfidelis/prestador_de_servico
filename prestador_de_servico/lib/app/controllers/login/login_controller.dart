@@ -1,21 +1,41 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/login/login_state.dart';
-import 'package:prestador_de_servico/firebase_options.dart';
+import 'package:prestador_de_servico/app/services/login/login_service.dart';
+import 'package:prestador_de_servico/app/states/login/login_state.dart';
 
-class LoginProvider extends ChangeNotifier {
+class LoginController extends ChangeNotifier {
   
-  LoginState loginState = LoadingAplication();
+  LoginState _state = PendingLogin();
+  LoginState get state => _state;
 
-  LoginProvider() {
-    init();
+  LoginService _loginService = LoginService();
+
+  void _changeState({required LoginState currentLoginState}) {
+    _state = currentLoginState;
+    notifyListeners();
   }
 
-  Future<void> init() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
+  Future<void> loginSent() async {
+    // use case
+
+    _changeState(currentLoginState: LoginSent());
+    await Future.delayed(const Duration(seconds: 5));
+    _changeState(
+        currentLoginState: LoginError(
+            emailMessage: 'Email não encontrado',
+            passwordMessage: 'Senha incorreta'));
+  }
+
+  Future<void> loginWithEmailPasswordSent({
+    required String email,
+    required String password,
+  }) async {
+    _changeState(currentLoginState: LoginSent());
+
+    LoginState loginState = await _loginService.doLoginWithEmailPassword(
+      email: email,
+      password: password,
     );
-    loginState = PendingLogin();
-    notifyListeners();
+
+    _changeState(currentLoginState: loginState);
   }
 }

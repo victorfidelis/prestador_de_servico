@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
+  final TextEditingController controller;
   final FocusNode focusNode;
   final bool isPassword;
   final bool isEmail;
+  final String? errorMessage;
 
   CustomTextField({
     super.key,
     required this.label,
+    required this.controller,
     required this.focusNode,
     this.isPassword = false,
     this.isEmail = false,
+    this.errorMessage,
   });
 
   ValueNotifier<bool> obscureText = ValueNotifier(true);
@@ -76,11 +80,13 @@ class CustomTextField extends StatelessWidget {
                   children: [
                     Expanded(
                       child: TextField(
+                        controller: controller,
                         focusNode: focusNode,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           border: InputBorder.none,
                           isDense: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 6)
+                          contentPadding: EdgeInsets.symmetric(vertical: 6),
+                          errorText: errorMessage,
                         ),
                         style: const TextStyle(
                           fontSize: 16,
