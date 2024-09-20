@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/views/dialog/dialog_functions.dart';
+import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 
-class CustomDialogFunctions implements DialogFunctions {
+class CustomNotificationsImplement implements CustomNotifications {
 
   @override
   void showSnackBar({

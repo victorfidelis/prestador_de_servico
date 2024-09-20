@@ -3,15 +3,15 @@ import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
 import 'package:prestador_de_servico/app/controllers/login/login_controller.dart';
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
-import 'package:prestador_de_servico/app/views/dialog/dialog_functions.dart';
-import 'package:prestador_de_servico/app/views/login/components/login_google_button.dart';
-import 'package:prestador_de_servico/app/views/login/components/login_header.dart';
-import 'package:prestador_de_servico/app/views/login/components/login_text_error.dart';
-import 'package:prestador_de_servico/app/views/login/components/register_link.dart';
-import 'package:prestador_de_servico/app/views/components/custom_button.dart';
-import 'package:prestador_de_servico/app/views/components/custom_link.dart';
-import 'package:prestador_de_servico/app/views/components/custom_loading.dart';
-import 'package:prestador_de_servico/app/views/components/custom_text_field.dart';
+import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
+import 'package:prestador_de_servico/app/views/login/widgets/login_google_button.dart';
+import 'package:prestador_de_servico/app/views/login/widgets/login_header.dart';
+import 'package:prestador_de_servico/app/views/login/widgets/login_text_error.dart';
+import 'package:prestador_de_servico/app/views/login/widgets/register_link.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
@@ -29,7 +29,7 @@ class _LoginViewState extends State<LoginView> {
   final FocusNode _focusNodeEmail = FocusNode();
   final FocusNode _focusNodePassword = FocusNode();
 
-  final DialogFunctions _dialogFunctions = DialogFunctions();
+  final CustomNotifications _notifications = CustomNotifications();
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +70,7 @@ class _LoginViewState extends State<LoginView> {
                       if (loginController.state is LoginSuccess) {
                         WidgetsBinding.instance.addPostFrameCallback(
                           (_) {
-                            _dialogFunctions.showSnackBar(
+                            _notifications.showSnackBar(
                               context: context,
                               message: 'Usuário autenticado!',
                             );

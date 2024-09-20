@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/views/dialog/custom_dialog_functions.dart';
+import 'package:prestador_de_servico/app/shared/notifications/custom_notications_implement.dart';
 
-abstract class DialogFunctions {
-  factory DialogFunctions() {
-    return CustomDialogFunctions();
+abstract class CustomNotifications {
+  factory CustomNotifications() {
+    return CustomNotificationsImplement();
   }
 
   void showSnackBar({
