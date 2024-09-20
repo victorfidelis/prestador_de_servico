@@ -3,28 +3,33 @@ import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
 import 'package:prestador_de_servico/app/controllers/login/login_controller.dart';
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
-import 'package:prestador_de_servico/app/views/login/widgets/login_google_button.dart';
-import 'package:prestador_de_servico/app/views/login/widgets/login_header.dart';
-import 'package:prestador_de_servico/app/views/login/widgets/register_link.dart';
-import 'package:prestador_de_servico/app/views/widgets/custom_button.dart';
-import 'package:prestador_de_servico/app/views/widgets/custom_link.dart';
-import 'package:prestador_de_servico/app/views/widgets/custom_loading.dart';
-import 'package:prestador_de_servico/app/views/widgets/custom_text_field.dart';
+import 'package:prestador_de_servico/app/views/dialog/dialog_functions.dart';
+import 'package:prestador_de_servico/app/views/login/components/login_google_button.dart';
+import 'package:prestador_de_servico/app/views/login/components/login_header.dart';
+import 'package:prestador_de_servico/app/views/login/components/login_text_error.dart';
+import 'package:prestador_de_servico/app/views/login/components/register_link.dart';
+import 'package:prestador_de_servico/app/views/components/custom_button.dart';
+import 'package:prestador_de_servico/app/views/components/custom_link.dart';
+import 'package:prestador_de_servico/app/views/components/custom_loading.dart';
+import 'package:prestador_de_servico/app/views/components/custom_text_field.dart';
 import 'package:provider/provider.dart';
 
 class LoginView extends StatefulWidget {
-  LoginView({super.key});
+  const LoginView({super.key});
 
   @override
   State<LoginView> createState() => _LoginViewState();
 }
 
 class _LoginViewState extends State<LoginView> {
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
 
-  FocusNode focusNodeEmail = FocusNode();
-  FocusNode focusNodePassword = FocusNode();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  final FocusNode _focusNodeEmail = FocusNode();
+  final FocusNode _focusNodePassword = FocusNode();
+
+  final DialogFunctions _dialogFunctions = DialogFunctions();
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +61,6 @@ class _LoginViewState extends State<LoginView> {
                     padding: const EdgeInsets.symmetric(horizontal: 38),
                     child: Consumer<LoginController>(
                         builder: (context, loginController, _) {
-
                       if (loginController.state is LoginSent) {
                         return const Center(
                           child: CustomLoading(),
@@ -64,19 +68,32 @@ class _LoginViewState extends State<LoginView> {
                       }
 
                       if (loginController.state is LoginSuccess) {
-                        return const Center(
-                          child: Text('Usuário logado'),
+                        WidgetsBinding.instance.addPostFrameCallback(
+                          (_) {
+                            _dialogFunctions.showSnackBar(
+                              context: context,
+                              message: 'Usuário autenticado!',
+                            );
+                          }
                         );
                       }
 
+                      Widget genericErrorWidget = const SizedBox(height: 18);
                       String? emailMessage;
                       String? passwordMessage;
+                      String? genericMessage;
 
                       if (loginController.state is LoginError) {
                         emailMessage =
                             (loginController.state as LoginError).emailMessage;
                         passwordMessage = (loginController.state as LoginError)
                             .passwordMessage;
+                        genericMessage = (loginController.state as LoginError)
+                            .genericMessage;
+                        if (genericMessage != null) {
+                          genericErrorWidget =
+                              LoginTextError(message: genericMessage);
+                        }
                       }
 
                       return Column(
@@ -84,24 +101,25 @@ class _LoginViewState extends State<LoginView> {
                         children: [
                           CustomTextField(
                             label: 'Email',
-                            controller: emailController,
-                            focusNode: focusNodeEmail,
+                            controller: _emailController,
+                            focusNode: _focusNodeEmail,
                             errorMessage: emailMessage,
                           ),
                           const SizedBox(height: 18),
                           CustomTextField(
                             label: 'Senha',
-                            controller: passwordController,
-                            focusNode: focusNodePassword,
+                            controller: _passwordController,
+                            focusNode: _focusNodePassword,
                             isPassword: true,
                             errorMessage: passwordMessage,
                           ),
-                          const SizedBox(height: 18),
+                          genericErrorWidget,
                           Row(
                             children: [
                               Expanded(child: Container()),
-                              const CustomLink(
+                              CustomLink(
                                 label: 'Esqueci a senha',
+                                onTap: () {},
                                 undeline: true,
                               ),
                             ],
@@ -119,9 +137,9 @@ class _LoginViewState extends State<LoginView> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          const LoginGoogleButton(),
+                          LoginGoogleButton(onTap: () {}),
                           const SizedBox(height: 40),
-                          const RegisterLink(),
+                          RegisterLink(onTap: () {}),
                         ],
                       );
                     }),
@@ -137,8 +155,8 @@ class _LoginViewState extends State<LoginView> {
 
   void loginWithEmailPassword() {
     context.read<LoginController>().loginWithEmailPasswordSent(
-          email: emailController.text.trim(),
-          password: passwordController.text.trim(),
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
         );
   }
 }

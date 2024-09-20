@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 class CustomLink extends StatelessWidget {
   final String label;
+  final Function() onTap;
   final bool undeline;
 
   const CustomLink({
     super.key,
     required this.label,
+    required this.onTap,
     this.undeline = false,
   });
 
@@ -17,13 +19,16 @@ class CustomLink extends StatelessWidget {
       textDecoration = TextDecoration.underline;
     }
 
-    return Text(
-      label,
-      style: TextStyle(
-        color: const Color(0xff1976D2),
-        fontSize: 14,
-        decoration: textDecoration,
-        decorationColor: const Color(0xff1976D2),
+    return GestureDetector(
+      onTap: onTap,
+      child: Text(
+        label,
+        style: TextStyle(
+          color: const Color(0xff1976D2),
+          fontSize: 14,
+          decoration: textDecoration,
+          decorationColor: const Color(0xff1976D2),
+        ),
       ),
     );
   }

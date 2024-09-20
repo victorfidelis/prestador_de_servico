@@ -24,10 +24,8 @@ class LoginService {
       );
       loginState = LoginSuccess(userCredential: userCredential);
     } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        loginState = LoginError(emailMessage: 'Email não encontrado');
-      } else if (e.code == 'wrong-password') {
-        loginState = LoginError(passwordMessage: 'Senha incorreta');
+      if (e.code == 'invalid-credential') {
+        loginState = LoginError(genericMessage: 'Credenciais de usuário inválidas');
       } else {
         loginState = LoginError(genericMessage: 'Erro desconhecido');
       }
@@ -35,7 +33,6 @@ class LoginService {
 
     return loginState;
   }
-
 }
 
 

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 
 class RegisterLink extends StatelessWidget {
-  const RegisterLink({super.key});
+  final Function() onTap;
+
+  const RegisterLink({
+    super.key,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +20,7 @@ class RegisterLink extends StatelessWidget {
           ),
         ),
         GestureDetector(
+          onTap: onTap,
           child: const Text(
             'Cadastre-se',
             style: TextStyle(

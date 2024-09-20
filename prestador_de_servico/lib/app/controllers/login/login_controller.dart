@@ -7,22 +7,11 @@ class LoginController extends ChangeNotifier {
   LoginState _state = PendingLogin();
   LoginState get state => _state;
 
-  LoginService _loginService = LoginService();
+  final LoginService _loginService = LoginService();
 
   void _changeState({required LoginState currentLoginState}) {
     _state = currentLoginState;
     notifyListeners();
-  }
-
-  Future<void> loginSent() async {
-    // use case
-
-    _changeState(currentLoginState: LoginSent());
-    await Future.delayed(const Duration(seconds: 5));
-    _changeState(
-        currentLoginState: LoginError(
-            emailMessage: 'Email não encontrado',
-            passwordMessage: 'Senha incorreta'));
   }
 
   Future<void> loginWithEmailPasswordSent({

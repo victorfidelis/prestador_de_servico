@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "Flutter (lib\\app\\views\\dialog\\custom_dialog.dart)",
+            "type": "dart",
+            "request": "launch",
+            "program": "lib\\app\\views\\dialog\\custom_dialog.dart"
+        }
+    ]
+}
