@@ -1,11 +1,11 @@
-
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/services/app/app_service.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
-import 'package:prestador_de_servico/firebase_options.dart';
 
 class AppController extends ChangeNotifier {
-  AppController() {
+  final AppService _appService;
+  
+  AppController({required AppService appService}) : _appService = appService {
     init();
   }
 
@@ -18,9 +18,7 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> init() async {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    await _appService.initializeApp();
     _changeState(currentLoginState: AppLoaded());
   }
 }

@@ -18,7 +18,7 @@ class CustomTextField extends StatelessWidget {
     this.errorMessage,
   });
 
-  ValueNotifier<bool> obscureText = ValueNotifier(true);
+  final ValueNotifier<bool> obscureText = ValueNotifier(true);
 
   @override
   Widget build(BuildContext context) {

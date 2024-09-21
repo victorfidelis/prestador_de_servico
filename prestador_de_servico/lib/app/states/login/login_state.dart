@@ -1,38 +1,36 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:prestador_de_servico/app/models/user/user_model.dart';
 
-sealed class LoginState {}
+abstract class LoginState {}
+abstract class LoginSent extends LoginState {}
 
 class PendingLogin extends LoginState {}
 
-class LoginSent extends LoginState {} 
-
 class LoginWithEmailPasswordSent extends LoginSent {
+  final String email;
+  final String password;
+
   LoginWithEmailPasswordSent({
     required this.email,
     required this.password,
   });
-
-  final String email;
-  final String password;
 } 
 
 class LoginSuccess extends LoginState {
-  LoginSuccess({required this.userCredential});
-
-  final UserCredential userCredential;
+  final UserModel user;
+  LoginSuccess({required this.user});
 
 }
 
 class LoginError extends LoginState {
+  final String? emailMessage;
+  final String? passwordMessage;
+  final String? genericMessage;
+
   LoginError({
     this.emailMessage,
     this.passwordMessage,
     this.genericMessage,
   });
-
-  final String? emailMessage;
-  final String? passwordMessage;
-  final String? genericMessage;
 } 
 
 
