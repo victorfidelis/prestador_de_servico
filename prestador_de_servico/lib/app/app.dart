@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
-import 'package:prestador_de_servico/app/controllers/create_account/create_account_controller.dart';
+import 'package:prestador_de_servico/app/controllers/create_user/create_user_controller.dart';
 import 'package:prestador_de_servico/app/controllers/login/login_controller.dart';
 import 'package:prestador_de_servico/app/services/app/app_service.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/views/create_account/create_account_view.dart';
+import 'package:prestador_de_servico/app/views/create_user/create_account_view.dart';
 import 'package:prestador_de_servico/app/views/login/login_view.dart';
 import 'package:provider/provider.dart';
 
@@ -19,14 +19,14 @@ class App extends StatelessWidget {
           create: (context) => AppController(appService: AppService.create())),
         ChangeNotifierProvider<LoginController>(
           create: (context) => LoginController(authService: AuthService.create())),
-        ChangeNotifierProvider<CreateAccountController>(
-          create: (context) => CreateAccountController(authService: AuthService.create())),
+        ChangeNotifierProvider<CreateUserController>(
+          create: (context) => CreateUserController(authService: AuthService.create())),
       ],
       child: MaterialApp(
         initialRoute: '/login',
         routes: {
           '/login': (context) => const LoginView(),
-          '/createAccount': (context) => const CreateAccountView(),
+          '/createAccount': (context) => const CreateUserView(),
         },
       ),
     );

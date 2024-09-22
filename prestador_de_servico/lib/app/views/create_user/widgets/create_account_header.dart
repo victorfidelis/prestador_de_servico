@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
 class CreateAccountHeader extends StatelessWidget {
-  const CreateAccountHeader({super.key});
+  final String title;
+  const CreateAccountHeader({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
-    return const Text(
-      'Criar\nConta',
+    return Text(
+      title,
       textAlign: TextAlign.center,
-      style: TextStyle(
+      style: const TextStyle(
         fontSize: 32,
         color: Colors.white,
         fontWeight: FontWeight.w700,

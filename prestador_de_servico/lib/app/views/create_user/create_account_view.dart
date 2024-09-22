@@ -1,23 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/create_account/create_account_controller.dart';
+import 'package:prestador_de_servico/app/controllers/create_user/create_user_controller.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/states/create_account/create_accout_state.dart';
-import 'package:prestador_de_servico/app/views/create_account/widgets/create_account_header.dart';
+import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
+import 'package:prestador_de_servico/app/views/create_user/widgets/create_account_header.dart';
 import 'package:provider/provider.dart';
 
-class CreateAccountView extends StatefulWidget {
-  const CreateAccountView({super.key});
+class CreateUserView extends StatefulWidget {
+  const CreateUserView({super.key});
 
   @override
-  State<CreateAccountView> createState() => _CreateAccountViewState();
+  State<CreateUserView> createState() => _CreateUserViewState();
 }
 
-class _CreateAccountViewState extends State<CreateAccountView> {
+class _CreateUserViewState extends State<CreateUserView> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _surnameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -34,6 +34,12 @@ class _CreateAccountViewState extends State<CreateAccountView> {
   final FocusNode _focusNodeConfirmPassword = FocusNode();
 
   final CustomNotifications _notifications = CustomNotifications();
+
+  @override
+  void initState() {
+    context.read<CreateUserController>().init();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +59,7 @@ class _CreateAccountViewState extends State<CreateAccountView> {
                   child: Stack(
                     children: [
                       const Center(
-                        child: CreateAccountHeader(),
+                        child: CreateAccountHeader(title: 'Criar\nCnta'),
                       ),
                       BackNavigation(onTap: backNavigation),
                     ],
@@ -62,18 +68,20 @@ class _CreateAccountViewState extends State<CreateAccountView> {
                 const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 38),
-                  child: Consumer<CreateAccountController>(
+                  child: Consumer<CreateUserController>(
                       builder: (context, createAccountController, _) {
                     bool createAccountSent =
-                        createAccountController.state is CreateAccountSent;
+                        createAccountController.state is CreateUserSent;
 
-                    if (createAccountController.state is AccountCreated) {
+                    if (createAccountController.state is UserCreated) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         _notifications.showSnackBar(
                           context: context,
-                          message: 'Usuário autenticado!',
+                          message: 'Usuário criado',
                         );
-                      });
+                      }); 
+
+                      Navigator.pop(context);
                     }
 
                     Widget genericErrorWidget = const SizedBox(height: 18);
@@ -85,15 +93,24 @@ class _CreateAccountViewState extends State<CreateAccountView> {
                     String? confirmPasswordMessage;
                     String? genericMessage;
 
-                    if (createAccountController.state is ErrorInCreation) {
+                    if (createAccountController.state is ErrorCreatingUser) {
+                      nameMessage =
+                          (createAccountController.state as ErrorCreatingUser)
+                              .nameMessage;
+                      surnameMessage =
+                          (createAccountController.state as ErrorCreatingUser)
+                              .surnameMessage;
+                      phoneMessage =
+                          (createAccountController.state as ErrorCreatingUser)
+                              .phoneMessage;
                       emailMessage =
-                          (createAccountController.state as ErrorInCreation)
+                          (createAccountController.state as ErrorCreatingUser)
                               .emailMessage;
                       passwordMessage =
-                          (createAccountController.state as ErrorInCreation)
+                          (createAccountController.state as ErrorCreatingUser)
                               .passwordMessage;
                       genericMessage =
-                          (createAccountController.state as ErrorInCreation)
+                          (createAccountController.state as ErrorCreatingUser)
                               .genericMessage;
                       if (genericMessage != null) {
                         genericErrorWidget =
@@ -175,7 +192,7 @@ class _CreateAccountViewState extends State<CreateAccountView> {
   }
 
   void createAccountWithEmailAndPassword() {
-    context.read<CreateAccountController>().createAccountWithEmailAndPassword(
+    context.read<CreateUserController>().createAccountWithEmailAndPassword(
           name: _nameController.text.trim(),
           surname: _surnameController.text.trim(),
           phone: _phoneController.text.trim(),
@@ -183,5 +200,9 @@ class _CreateAccountViewState extends State<CreateAccountView> {
           password: _passwordController.text.trim(),
           confirmPassword: _confirmPasswordController.text.trim(),
         );
+  } 
+
+  void finishRegister() { 
+    
   }
 }

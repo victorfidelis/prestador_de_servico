@@ -1,12 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:prestador_de_servico/app/models/user/user_adapter.dart';
+import 'package:prestador_de_servico/app/models/user/user_model.dart';
+import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/states/create_account/create_accout_state.dart';
+import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
 
-class FirebaseAuthService implements AuthService {
+class FirebaseCreateUserState {
+  final String? genericMessage;
+  final String? emailMessage;
 
+  FirebaseCreateUserState({
+    this.genericMessage,
+    this.emailMessage,
+  });
+}
+
+class FirebaseAuthService implements AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final UserRepository _userRepository = UserRepository.create();
 
   @override
   Future<LoginState> loginWithEmailAndPassword({
@@ -29,14 +40,24 @@ class FirebaseAuthService implements AuthService {
         password: password,
       );
 
-      loginState = LoginSuccess(
-          user: UserAdapter.fromUserCredendial(userCredential: userCredential));
+      UserModel? user =
+          await _userRepository.getByUid(uid: userCredential.user!.uid);
+
+      if (user == null) {
+        loginState = LoginError(genericMessage: 'Usuário não encontrado');
+      } else if (!userCredential.user!.emailVerified) {
+        await userCredential.user!.sendEmailVerification();
+        loginState = LoginError(
+            genericMessage:
+                'Email ainda não verificado. Faça a verificação através do link enviado ao seu email.');
+      } else {
+        loginState = LoginSuccess(user: user);
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'invalid-credential') {
         loginState =
             LoginError(genericMessage: 'Credenciais de usuário inválidas');
-      }
-      if (e.code == 'too-many-requests') {
+      } else if (e.code == 'too-many-requests') {
         loginState = LoginError(
             genericMessage:
                 'Bloqueio temporário. Muitas tentativas incorretas');
@@ -49,7 +70,7 @@ class FirebaseAuthService implements AuthService {
   }
 
   @override
-  Future<CreateAccountState> createAccountWithEmailAndPassword({
+  Future<CreateUserState> createUserWithEmailAndPassword({
     required String name,
     required String surname,
     required String phone,
@@ -57,48 +78,64 @@ class FirebaseAuthService implements AuthService {
     required String password,
     required String confirmPassword,
   }) async {
-
     if (name.isEmpty) {
-      return ErrorInCreation(nameMessage: 'Necessário informar o nome');
+      return ErrorCreatingUser(nameMessage: 'Necessário informar o nome');
     }
     if (surname.isEmpty) {
-      return ErrorInCreation(surnameMessage: 'Necessário informar o sobrenome');
+      return ErrorCreatingUser(
+          surnameMessage: 'Necessário informar o sobrenome');
     }
     if (email.isEmpty) {
-      return ErrorInCreation(emailMessage: 'Necessário informar o email');
+      return ErrorCreatingUser(emailMessage: 'Necessário informar o email');
     }
     if (password.isEmpty) {
-      return ErrorInCreation(passwordMessage: 'Necessário informar a senha');
+      return ErrorCreatingUser(passwordMessage: 'Necessário informar a senha');
     }
     if (confirmPassword.isEmpty) {
-      return ErrorInCreation(
+      return ErrorCreatingUser(
           confirmPasswordMessage: 'Necessário informar a confirmação da senha');
     }
     if (password != confirmPassword) {
-      return ErrorInCreation(
-        passwordMessage: 'Senhas incompatíveis',
-        confirmPasswordMessage: 'Senhas incompatíveis',
+      return ErrorCreatingUser(
+        passwordMessage: 'Senha incompatível',
+        confirmPasswordMessage: 'Senha incompatível',
       );
     }
 
-    CreateAccountState createAccountState;
+    CreateUserState createAccountState;
 
     try {
-
-      final UserCredential userCredential =
+      UserCredential userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      createAccountState = AccountCreated(
-          user: UserAdapter.fromUserCredendial(userCredential: userCredential));
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'invalid-credential') {
-        createAccountState =
-            ErrorInCreation(genericMessage: 'Credenciais de usuário inválidas');
+      UserModel user = UserModel(
+        id: '',
+        uid: userCredential.user!.uid,
+        email: email,
+        name: name,
+        surname: surname,
+        phone: phone,
+      );
+
+      String? id = await _userRepository.add(user: user);
+      if (id == null) {
+        createAccountState = ErrorCreatingUser(
+          genericMessage:
+              'Ocorreu uma falha ao iserir os dados do usuário. Tente novamente.',
+        );
       } else {
-        createAccountState = ErrorInCreation(genericMessage: e.code);
+        createAccountState = UserCreated(user: user.copyWith(id: id));
+        await userCredential.user!.sendEmailVerification();
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'email-already-in-use') {
+        createAccountState =
+            ErrorCreatingUser(emailMessage: 'Email já cadastrado');
+      } else {
+        createAccountState = ErrorCreatingUser(genericMessage: e.code);
       }
     }
 

@@ -3,7 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/models/user/user_model.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/states/create_account/create_accout_state.dart';
+import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
 
 @GenerateNiceMocks([MockSpec<AuthService>()])
@@ -13,6 +13,7 @@ void main() {
   final mockAuthService = MockAuthService();
 
   final UserModel user = UserModel(
+    id: '1',
     uid: '1',
     email: 'test@test.com',
     name: 'Test',
@@ -93,7 +94,7 @@ void main() {
       test(
         '''Definição de comportamentos (stubbing)''',
         () {
-          when(mockAuthService.createAccountWithEmailAndPassword(
+          when(mockAuthService.createUserWithEmailAndPassword(
             name: argThat(isEmpty, named: 'name'),
             surname: anyNamed('surname'),
             phone: anyNamed('phone'),
@@ -101,9 +102,9 @@ void main() {
             password: anyNamed('password'),
             confirmPassword: anyNamed('confirmPassword'),
           )).thenAnswer((_) async =>
-              ErrorInCreation(nameMessage: 'Necessário informar o nome'));
+              ErrorCreatingUser(nameMessage: 'Necessário informar o nome'));
 
-          when(mockAuthService.createAccountWithEmailAndPassword(
+          when(mockAuthService.createUserWithEmailAndPassword(
             name: argThat(isNotEmpty, named: 'name'),
             surname: argThat(isEmpty, named: 'surname'),
             phone: anyNamed('phone'),
@@ -111,9 +112,9 @@ void main() {
             password: anyNamed('password'),
             confirmPassword: anyNamed('confirmPassword'),
           )).thenAnswer((_) async =>
-              ErrorInCreation(surnameMessage: 'Necessário informar o sobrenome'));
+              ErrorCreatingUser(surnameMessage: 'Necessário informar o sobrenome'));
 
-          when(mockAuthService.createAccountWithEmailAndPassword(
+          when(mockAuthService.createUserWithEmailAndPassword(
             name: argThat(isNotEmpty, named: 'name'),
             surname: argThat(isNotEmpty, named: 'surname'),
             phone: anyNamed('phone'),
@@ -121,9 +122,9 @@ void main() {
             password: anyNamed('password'),
             confirmPassword: anyNamed('confirmPassword'),
           )).thenAnswer((_) async =>
-              ErrorInCreation(emailMessage: 'Necessário informar o email'));
+              ErrorCreatingUser(emailMessage: 'Necessário informar o email'));
 
-          when(mockAuthService.createAccountWithEmailAndPassword(
+          when(mockAuthService.createUserWithEmailAndPassword(
             name: argThat(isNotEmpty, named: 'name'),
             surname: argThat(isNotEmpty, named: 'surname'),
             phone: anyNamed('phone'),
@@ -131,19 +132,19 @@ void main() {
             password: argThat(isEmpty, named: 'password'),
             confirmPassword: anyNamed('confirmPassword'),
           )).thenAnswer((_) async =>
-              ErrorInCreation(passwordMessage: 'Necessário informar a senha'));
+              ErrorCreatingUser(passwordMessage: 'Necessário informar a senha'));
 
-          when(mockAuthService.createAccountWithEmailAndPassword(
+          when(mockAuthService.createUserWithEmailAndPassword(
             name: argThat(isNotEmpty, named: 'name'),
             surname: argThat(isNotEmpty, named: 'surname'),
             phone: anyNamed('phone'),
             email: argThat(isNotEmpty, named: 'email'),
             password: argThat(isNotEmpty, named: 'password'),
             confirmPassword: argThat(isEmpty, named: 'confirmPassword'),
-          )).thenAnswer((_) async => ErrorInCreation(
+          )).thenAnswer((_) async => ErrorCreatingUser(
               confirmPasswordMessage: 'Necessário informar a confirmação da senha'));
 
-          when(mockAuthService.createAccountWithEmailAndPassword(
+          when(mockAuthService.createUserWithEmailAndPassword(
             name: argThat(isNotEmpty, named: 'name'),
             surname: argThat(isNotEmpty, named: 'surname'),
             phone: anyNamed('phone'),
@@ -151,16 +152,16 @@ void main() {
             password: argThat(isNotEmpty, named: 'password'),
             confirmPassword: argThat(isNotEmpty, named: 'confirmPassword'),
           )).thenAnswer(
-              (_) async => ErrorInCreation(emailMessage: 'Email já cadastrado'));
+              (_) async => ErrorCreatingUser(emailMessage: 'Email já cadastrado'));
 
-          when(mockAuthService.createAccountWithEmailAndPassword(
+          when(mockAuthService.createUserWithEmailAndPassword(
             name: argThat(isNotEmpty, named: 'name'),
             surname: argThat(isNotEmpty, named: 'surname'),
             phone: anyNamed('phone'),
             email: argThat(isNot('test@test.com'), named: 'email'),
             password: argThat(isNotEmpty, named: 'password'),
             confirmPassword: argThat(isNotEmpty, named: 'confirmPassword'),
-          )).thenAnswer((_) async => AccountCreated(user: user));
+          )).thenAnswer((_) async => UserCreated(user: user));
         },
       );
 
@@ -168,8 +169,8 @@ void main() {
         '''Ao tentar criar uma conta através de um email que já existe um estado de erro 
           será retornando junto a uma mensagem específca''',
         () async {
-          CreateAccountState createAccountState =
-              await mockAuthService.createAccountWithEmailAndPassword(
+          CreateUserState createAccountState =
+              await mockAuthService.createUserWithEmailAndPassword(
             name: 'test',
             surname: 'test',
             phone: '11923456789',
@@ -178,8 +179,8 @@ void main() {
             confirmPassword: '123465',
           );
 
-          expect(createAccountState.runtimeType, equals(ErrorInCreation));
-          if (createAccountState is ErrorInCreation) {
+          expect(createAccountState.runtimeType, equals(ErrorCreatingUser));
+          if (createAccountState is ErrorCreatingUser) {
             expect(createAccountState.emailMessage, 'Email já cadastrado');
           }
         },
@@ -189,8 +190,8 @@ void main() {
         '''Ao tentar criar uma conta através de um email que não existe um estado de 
         sucesso será retornado''',
         () async {
-          CreateAccountState createAccountState =
-              await mockAuthService.createAccountWithEmailAndPassword(
+          CreateUserState createAccountState =
+              await mockAuthService.createUserWithEmailAndPassword(
             name: 'test',
             surname: 'test',
             phone: '11923456789',
@@ -199,7 +200,7 @@ void main() {
             confirmPassword: '123465',
           );
           
-          expect(createAccountState.runtimeType, AccountCreated);
+          expect(createAccountState.runtimeType, UserCreated);
         },
       );
     },

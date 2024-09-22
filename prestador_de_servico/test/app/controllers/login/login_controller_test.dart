@@ -11,6 +11,7 @@ void main() {
   final LoginController loginController = LoginController(authService: mockAuthService);
 
   final UserModel validUser = UserModel(
+    id: '',
     uid: '1',
     email: 'test@test.com',
     name: 'Test',

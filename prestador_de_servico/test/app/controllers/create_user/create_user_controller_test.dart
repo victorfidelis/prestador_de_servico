@@ -1,13 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/create_account/create_account_controller.dart';
+import 'package:prestador_de_servico/app/controllers/create_user/create_user_controller.dart';
 import 'package:prestador_de_servico/app/models/user/user_model.dart';
-import 'package:prestador_de_servico/app/states/create_account/create_accout_state.dart';
+import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
 import '../../services/auth/auth_service_test.mocks.dart';
 
 void main() {
 
   final UserModel user = UserModel(
+    id: '',
     uid: '1',
     email: 'test@test.com',
     name: 'Test',
@@ -16,10 +17,10 @@ void main() {
   );
 
   late MockAuthService mockAuthService;
-  late CreateAccountController createAccountController;
+  late CreateUserController createAccountController;
   setUpAll(() {
     mockAuthService = MockAuthService();
-    createAccountController = CreateAccountController(
+    createAccountController = CreateUserController(
       authService: mockAuthService,
     );
   });
@@ -27,7 +28,7 @@ void main() {
   test(
     '''Definição de comportamentos (stubbing)''',
     () {
-      when(mockAuthService.createAccountWithEmailAndPassword(
+      when(mockAuthService.createUserWithEmailAndPassword(
         name: argThat(isEmpty, named: 'name'),
         surname: anyNamed('surname'),
         phone: anyNamed('phone'),
@@ -35,9 +36,9 @@ void main() {
         password: anyNamed('password'),
         confirmPassword: anyNamed('confirmPassword'),
       )).thenAnswer((_) async =>
-          ErrorInCreation(nameMessage: 'Necessário informar o nome'));
+          ErrorCreatingUser(nameMessage: 'Necessário informar o nome'));
 
-      when(mockAuthService.createAccountWithEmailAndPassword(
+      when(mockAuthService.createUserWithEmailAndPassword(
         name: argThat(isNotEmpty, named: 'name'),
         surname: argThat(isEmpty, named: 'surname'),
         phone: anyNamed('phone'),
@@ -45,9 +46,9 @@ void main() {
         password: anyNamed('password'),
         confirmPassword: anyNamed('confirmPassword'),
       )).thenAnswer((_) async =>
-          ErrorInCreation(surnameMessage: 'Necessário informar o sobrenome'));
+          ErrorCreatingUser(surnameMessage: 'Necessário informar o sobrenome'));
 
-      when(mockAuthService.createAccountWithEmailAndPassword(
+      when(mockAuthService.createUserWithEmailAndPassword(
         name: argThat(isNotEmpty, named: 'name'),
         surname: argThat(isNotEmpty, named: 'surname'),
         phone: anyNamed('phone'),
@@ -55,9 +56,9 @@ void main() {
         password: anyNamed('password'),
         confirmPassword: anyNamed('confirmPassword'),
       )).thenAnswer((_) async =>
-          ErrorInCreation(emailMessage: 'Necessário informar o email'));
+          ErrorCreatingUser(emailMessage: 'Necessário informar o email'));
 
-      when(mockAuthService.createAccountWithEmailAndPassword(
+      when(mockAuthService.createUserWithEmailAndPassword(
         name: argThat(isNotEmpty, named: 'name'),
         surname: argThat(isNotEmpty, named: 'surname'),
         phone: anyNamed('phone'),
@@ -65,19 +66,19 @@ void main() {
         password: argThat(isEmpty, named: 'password'),
         confirmPassword: anyNamed('confirmPassword'),
       )).thenAnswer((_) async =>
-          ErrorInCreation(passwordMessage: 'Necessário informar a senha'));
+          ErrorCreatingUser(passwordMessage: 'Necessário informar a senha'));
 
-      when(mockAuthService.createAccountWithEmailAndPassword(
+      when(mockAuthService.createUserWithEmailAndPassword(
         name: argThat(isNotEmpty, named: 'name'),
         surname: argThat(isNotEmpty, named: 'surname'),
         phone: anyNamed('phone'),
         email: argThat(isNotEmpty, named: 'email'),
         password: argThat(isNotEmpty, named: 'password'),
         confirmPassword: argThat(isEmpty, named: 'confirmPassword'),
-      )).thenAnswer((_) async => ErrorInCreation(
+      )).thenAnswer((_) async => ErrorCreatingUser(
           confirmPasswordMessage: 'Necessário informar a confirmação da senha'));
 
-      when(mockAuthService.createAccountWithEmailAndPassword(
+      when(mockAuthService.createUserWithEmailAndPassword(
         name: argThat(isNotEmpty, named: 'name'),
         surname: argThat(isNotEmpty, named: 'surname'),
         phone: anyNamed('phone'),
@@ -85,16 +86,16 @@ void main() {
         password: argThat(isNotEmpty, named: 'password'),
         confirmPassword: argThat(isNotEmpty, named: 'confirmPassword'),
       )).thenAnswer(
-          (_) async => ErrorInCreation(emailMessage: 'Email já cadastrado'));
+          (_) async => ErrorCreatingUser(emailMessage: 'Email já cadastrado'));
 
-      when(mockAuthService.createAccountWithEmailAndPassword(
+      when(mockAuthService.createUserWithEmailAndPassword(
         name: argThat(isNotEmpty, named: 'name'),
         surname: argThat(isNotEmpty, named: 'surname'),
         phone: anyNamed('phone'),
         email: argThat(isNot('test@test.com'), named: 'email'),
         password: argThat(isNotEmpty, named: 'password'),
         confirmPassword: argThat(isNotEmpty, named: 'confirmPassword'),
-      )).thenAnswer((_) async => AccountCreated(user: user));
+      )).thenAnswer((_) async => UserCreated(user: user));
     },
   );
 
@@ -111,10 +112,10 @@ void main() {
         confirmPassword: '',
       );
 
-      expect(createAccountController.state.runtimeType, ErrorInCreation);
-      if (createAccountController.state is ErrorInCreation) {
+      expect(createAccountController.state.runtimeType, ErrorCreatingUser);
+      if (createAccountController.state is ErrorCreatingUser) {
         expect(
-          (createAccountController.state as ErrorInCreation).nameMessage,
+          (createAccountController.state as ErrorCreatingUser).nameMessage,
           equals('Necessário informar o nome'),
         );
       }
@@ -134,10 +135,10 @@ void main() {
         confirmPassword: '',
       );
 
-      expect(createAccountController.state.runtimeType, ErrorInCreation);
-      if (createAccountController.state is ErrorInCreation) {
+      expect(createAccountController.state.runtimeType, ErrorCreatingUser);
+      if (createAccountController.state is ErrorCreatingUser) {
         expect(
-          (createAccountController.state as ErrorInCreation).surnameMessage,
+          (createAccountController.state as ErrorCreatingUser).surnameMessage,
           equals('Necessário informar o sobrenome'),
         );
       }
@@ -157,10 +158,10 @@ void main() {
         confirmPassword: '',
       );
 
-      expect(createAccountController.state.runtimeType, ErrorInCreation);
-      if (createAccountController.state is ErrorInCreation) {
+      expect(createAccountController.state.runtimeType, ErrorCreatingUser);
+      if (createAccountController.state is ErrorCreatingUser) {
         expect(
-          (createAccountController.state as ErrorInCreation).emailMessage,
+          (createAccountController.state as ErrorCreatingUser).emailMessage,
           equals('Necessário informar o email'),
         );
       }
@@ -180,10 +181,10 @@ void main() {
         confirmPassword: '',
       );
 
-      expect(createAccountController.state.runtimeType, ErrorInCreation);
-      if (createAccountController.state is ErrorInCreation) {
+      expect(createAccountController.state.runtimeType, ErrorCreatingUser);
+      if (createAccountController.state is ErrorCreatingUser) {
         expect(
-          (createAccountController.state as ErrorInCreation).passwordMessage,
+          (createAccountController.state as ErrorCreatingUser).passwordMessage,
           equals('Necessário informar a senha'),
         );
       }
@@ -203,10 +204,10 @@ void main() {
         confirmPassword: '',
       );
 
-      expect(createAccountController.state.runtimeType, ErrorInCreation);
-      if (createAccountController.state is ErrorInCreation) {
+      expect(createAccountController.state.runtimeType, ErrorCreatingUser);
+      if (createAccountController.state is ErrorCreatingUser) {
         expect(
-          (createAccountController.state as ErrorInCreation).confirmPasswordMessage,
+          (createAccountController.state as ErrorCreatingUser).confirmPasswordMessage,
           equals('Necessário informar a confirmação da senha'),
         );
       }
@@ -226,10 +227,10 @@ void main() {
         confirmPassword: '123465',
       );
 
-      expect(createAccountController.state.runtimeType, ErrorInCreation);
-      if (createAccountController.state is ErrorInCreation) {
+      expect(createAccountController.state.runtimeType, ErrorCreatingUser);
+      if (createAccountController.state is ErrorCreatingUser) {
         expect(
-          (createAccountController.state as ErrorInCreation).emailMessage,
+          (createAccountController.state as ErrorCreatingUser).emailMessage,
           equals('Email já cadastrado'),
         );
       }
@@ -249,7 +250,7 @@ void main() {
         confirmPassword: '123465',
       );
 
-      expect(createAccountController.state.runtimeType, AccountCreated);
+      expect(createAccountController.state.runtimeType, UserCreated);
     },
   );
 }

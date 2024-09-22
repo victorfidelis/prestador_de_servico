@@ -8,7 +8,7 @@ import 'dart:async' as _i5;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart'
     as _i4;
-import 'package:prestador_de_servico/app/states/create_account/create_accout_state.dart'
+import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart'
     as _i3;
 import 'package:prestador_de_servico/app/states/login/login_state.dart' as _i2;
 
@@ -35,9 +35,9 @@ class _FakeLoginState_0 extends _i1.SmartFake implements _i2.LoginState {
         );
 }
 
-class _FakeCreateAccountState_1 extends _i1.SmartFake
-    implements _i3.CreateAccountState {
-  _FakeCreateAccountState_1(
+class _FakeCreateUserState_1 extends _i1.SmartFake
+    implements _i3.CreateUserState {
+  _FakeCreateUserState_1(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -90,7 +90,7 @@ class MockAuthService extends _i1.Mock implements _i4.AuthService {
       ) as _i5.Future<_i2.LoginState>);
 
   @override
-  _i5.Future<_i3.CreateAccountState> createAccountWithEmailAndPassword({
+  _i5.Future<_i3.CreateUserState> createUserWithEmailAndPassword({
     required String? name,
     required String? surname,
     required String? phone,
@@ -100,7 +100,7 @@ class MockAuthService extends _i1.Mock implements _i4.AuthService {
   }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #createAccountWithEmailAndPassword,
+          #createUserWithEmailAndPassword,
           [],
           {
             #name: name,
@@ -112,10 +112,10 @@ class MockAuthService extends _i1.Mock implements _i4.AuthService {
           },
         ),
         returnValue:
-            _i5.Future<_i3.CreateAccountState>.value(_FakeCreateAccountState_1(
+            _i5.Future<_i3.CreateUserState>.value(_FakeCreateUserState_1(
           this,
           Invocation.method(
-            #createAccountWithEmailAndPassword,
+            #createUserWithEmailAndPassword,
             [],
             {
               #name: name,
@@ -128,10 +128,10 @@ class MockAuthService extends _i1.Mock implements _i4.AuthService {
           ),
         )),
         returnValueForMissingStub:
-            _i5.Future<_i3.CreateAccountState>.value(_FakeCreateAccountState_1(
+            _i5.Future<_i3.CreateUserState>.value(_FakeCreateUserState_1(
           this,
           Invocation.method(
-            #createAccountWithEmailAndPassword,
+            #createUserWithEmailAndPassword,
             [],
             {
               #name: name,
@@ -143,5 +143,5 @@ class MockAuthService extends _i1.Mock implements _i4.AuthService {
             },
           ),
         )),
-      ) as _i5.Future<_i3.CreateAccountState>);
+      ) as _i5.Future<_i3.CreateUserState>);
 }

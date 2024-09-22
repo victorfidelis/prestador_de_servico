@@ -1,5 +1,5 @@
 import 'package:prestador_de_servico/app/services/auth/firebase_auth_service.dart';
-import 'package:prestador_de_servico/app/states/create_account/create_accout_state.dart';
+import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
 
 abstract class AuthService {
@@ -13,7 +13,7 @@ abstract class AuthService {
     required String password,
   });
 
-  Future<CreateAccountState> createAccountWithEmailAndPassword({
+  Future<CreateUserState> createUserWithEmailAndPassword({
     required String name,
     required String surname,
     required String phone,

@@ -1,12 +1,12 @@
 import 'package:prestador_de_servico/app/models/user/user_model.dart';
 
-abstract class CreateAccountState {}
-abstract class CreateAccountSent extends CreateAccountState {}
+abstract class CreateUserState {}
+abstract class CreateUserSent extends CreateUserState {}
 
 
-class PendingCreation extends CreateAccountState {}
+class PendingCreation extends CreateUserState {}
 
-class CreateAccountWithEmailAndPasswordSent extends CreateAccountSent {
+class CreateUserWithEmailAndPasswordSent extends CreateUserSent {
   final String name;
   final String surname;
   final String phone;
@@ -14,7 +14,7 @@ class CreateAccountWithEmailAndPasswordSent extends CreateAccountSent {
   final String password;
   final String confirmPassword;
 
-  CreateAccountWithEmailAndPasswordSent({
+  CreateUserWithEmailAndPasswordSent({
     required this.name,
     required this.surname,
     required this.phone,
@@ -24,7 +24,7 @@ class CreateAccountWithEmailAndPasswordSent extends CreateAccountSent {
   });
 } 
 
-class ErrorInCreation extends CreateAccountState {
+class ErrorCreatingUser extends CreateUserState {
   final String? nameMessage;
   final String? surnameMessage;
   final String? phoneMessage;
@@ -33,7 +33,7 @@ class ErrorInCreation extends CreateAccountState {
   final String? confirmPasswordMessage;
   final String? genericMessage;
 
-  ErrorInCreation({
+  ErrorCreatingUser({
     this.nameMessage, 
     this.surnameMessage, 
     this.phoneMessage, 
@@ -44,8 +44,8 @@ class ErrorInCreation extends CreateAccountState {
   });
 }
 
-class AccountCreated extends CreateAccountState {
+class UserCreated extends CreateUserState {
   final UserModel user;
 
-  AccountCreated({required this.user});
+  UserCreated({required this.user});
 }

@@ -1,18 +1,22 @@
 import 'package:flutter/foundation.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/states/create_account/create_accout_state.dart';
+import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
 
-class CreateAccountController extends ChangeNotifier {
+class CreateUserController extends ChangeNotifier {
   final AuthService authService;
 
-  CreateAccountState _state = PendingCreation();
-  CreateAccountState get state => _state;
-  void _changeState({required CreateAccountState currentState}) {
+  CreateUserState _state = PendingCreation();
+  CreateUserState get state => _state;
+  void _changeState({required CreateUserState currentState}) {
     _state = currentState;
     notifyListeners();
   }
 
-  CreateAccountController({required this.authService});
+  CreateUserController({required this.authService});
+
+  void init() {
+    _changeState(currentState: PendingCreation());
+  }
 
   Future<void> createAccountWithEmailAndPassword({
     required String name,
@@ -23,7 +27,7 @@ class CreateAccountController extends ChangeNotifier {
     required String confirmPassword,
   }) async {
     _changeState(
-        currentState: CreateAccountWithEmailAndPasswordSent(
+        currentState: CreateUserWithEmailAndPasswordSent(
       name: name,
       surname: surname,
       phone: phone,
@@ -32,8 +36,8 @@ class CreateAccountController extends ChangeNotifier {
       confirmPassword: confirmPassword,
     ));
 
-    CreateAccountState createAccountState =
-        await authService.createAccountWithEmailAndPassword(
+    CreateUserState createAccountState =
+        await authService.createUserWithEmailAndPassword(
       name: name,
       surname: surname,
       phone: phone,
