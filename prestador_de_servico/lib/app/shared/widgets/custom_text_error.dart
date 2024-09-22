@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class LoginTextError extends StatelessWidget {
+class CustomTextError extends StatelessWidget {
   final String message;
 
-  const LoginTextError({
+  const CustomTextError({
     super.key,
     required this.message,
   });

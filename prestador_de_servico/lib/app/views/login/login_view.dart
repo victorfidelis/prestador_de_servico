@@ -6,7 +6,7 @@ import 'package:prestador_de_servico/app/states/login/login_state.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/views/login/widgets/login_google_button.dart';
 import 'package:prestador_de_servico/app/views/login/widgets/login_header.dart';
-import 'package:prestador_de_servico/app/views/login/widgets/login_text_error.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/views/login/widgets/register_link.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
@@ -92,7 +92,7 @@ class _LoginViewState extends State<LoginView> {
                             .genericMessage;
                         if (genericMessage != null) {
                           genericErrorWidget =
-                              LoginTextError(message: genericMessage);
+                              CustomTextError(message: genericMessage);
                         }
                       }
 
@@ -139,7 +139,7 @@ class _LoginViewState extends State<LoginView> {
                           const SizedBox(height: 20),
                           LoginGoogleButton(onTap: () {}),
                           const SizedBox(height: 40),
-                          RegisterLink(onTap: () {}),
+                          RegisterLink(onTap: doCreateAccount),
                         ],
                       );
                     }),
@@ -158,5 +158,9 @@ class _LoginViewState extends State<LoginView> {
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
+  }
+
+  void doCreateAccount() {
+    Navigator.pushNamed(context, '/createAccount');
   }
 }

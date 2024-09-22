@@ -5,11 +5,11 @@ abstract class LoginSent extends LoginState {}
 
 class PendingLogin extends LoginState {}
 
-class LoginWithEmailPasswordSent extends LoginSent {
+class LoginWithEmailAndPasswordSent extends LoginSent {
   final String email;
   final String password;
 
-  LoginWithEmailPasswordSent({
+  LoginWithEmailAndPasswordSent({
     required this.email,
     required this.password,
   });
@@ -18,7 +18,6 @@ class LoginWithEmailPasswordSent extends LoginSent {
 class LoginSuccess extends LoginState {
   final UserModel user;
   LoginSuccess({required this.user});
-
 }
 
 class LoginError extends LoginState {

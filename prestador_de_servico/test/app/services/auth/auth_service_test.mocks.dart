@@ -3,11 +3,12 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i4;
+import 'dart:async' as _i5;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i5;
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart'
+    as _i4;
+import 'package:prestador_de_servico/app/states/create_account/create_accout_state.dart'
     as _i3;
 import 'package:prestador_de_servico/app/states/login/login_state.dart' as _i2;
 
@@ -34,28 +35,39 @@ class _FakeLoginState_0 extends _i1.SmartFake implements _i2.LoginState {
         );
 }
 
+class _FakeCreateAccountState_1 extends _i1.SmartFake
+    implements _i3.CreateAccountState {
+  _FakeCreateAccountState_1(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [AuthService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthService extends _i1.Mock implements _i3.AuthService {
+class MockAuthService extends _i1.Mock implements _i4.AuthService {
   @override
-  _i4.Future<_i2.LoginState> doLoginWithEmailPassword({
+  _i5.Future<_i2.LoginState> loginWithEmailAndPassword({
     required String? email,
     required String? password,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #doLoginWithEmailPassword,
+          #loginWithEmailAndPassword,
           [],
           {
             #email: email,
             #password: password,
           },
         ),
-        returnValue: _i4.Future<_i2.LoginState>.value(_FakeLoginState_0(
+        returnValue: _i5.Future<_i2.LoginState>.value(_FakeLoginState_0(
           this,
           Invocation.method(
-            #doLoginWithEmailPassword,
+            #loginWithEmailAndPassword,
             [],
             {
               #email: email,
@@ -64,10 +76,10 @@ class MockAuthService extends _i1.Mock implements _i3.AuthService {
           ),
         )),
         returnValueForMissingStub:
-            _i4.Future<_i2.LoginState>.value(_FakeLoginState_0(
+            _i5.Future<_i2.LoginState>.value(_FakeLoginState_0(
           this,
           Invocation.method(
-            #doLoginWithEmailPassword,
+            #loginWithEmailAndPassword,
             [],
             {
               #email: email,
@@ -75,27 +87,61 @@ class MockAuthService extends _i1.Mock implements _i3.AuthService {
             },
           ),
         )),
-      ) as _i4.Future<_i2.LoginState>);
+      ) as _i5.Future<_i2.LoginState>);
 
   @override
-  String teste() => (super.noSuchMethod(
+  _i5.Future<_i3.CreateAccountState> createAccountWithEmailAndPassword({
+    required String? name,
+    required String? surname,
+    required String? phone,
+    required String? email,
+    required String? password,
+    required String? confirmPassword,
+  }) =>
+      (super.noSuchMethod(
         Invocation.method(
-          #teste,
+          #createAccountWithEmailAndPassword,
           [],
+          {
+            #name: name,
+            #surname: surname,
+            #phone: phone,
+            #email: email,
+            #password: password,
+            #confirmPassword: confirmPassword,
+          },
         ),
-        returnValue: _i5.dummyValue<String>(
+        returnValue:
+            _i5.Future<_i3.CreateAccountState>.value(_FakeCreateAccountState_1(
           this,
           Invocation.method(
-            #teste,
+            #createAccountWithEmailAndPassword,
             [],
+            {
+              #name: name,
+              #surname: surname,
+              #phone: phone,
+              #email: email,
+              #password: password,
+              #confirmPassword: confirmPassword,
+            },
           ),
-        ),
-        returnValueForMissingStub: _i5.dummyValue<String>(
+        )),
+        returnValueForMissingStub:
+            _i5.Future<_i3.CreateAccountState>.value(_FakeCreateAccountState_1(
           this,
           Invocation.method(
-            #teste,
+            #createAccountWithEmailAndPassword,
             [],
+            {
+              #name: name,
+              #surname: surname,
+              #phone: phone,
+              #email: email,
+              #password: password,
+              #confirmPassword: confirmPassword,
+            },
           ),
-        ),
-      ) as String);
+        )),
+      ) as _i5.Future<_i3.CreateAccountState>);
 }

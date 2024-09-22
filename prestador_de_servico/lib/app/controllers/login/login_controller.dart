@@ -11,8 +11,8 @@ class LoginController extends ChangeNotifier {
   LoginState _state = PendingLogin();
   LoginState get state => _state;
 
-  void _changeState({required LoginState currentLoginState}) {
-    _state = currentLoginState;
+  void _changeState({required LoginState currentState}) {
+    _state = currentState;
     notifyListeners();
   }
 
@@ -21,16 +21,16 @@ class LoginController extends ChangeNotifier {
     required String password,
   }) async {
     
-    _changeState(currentLoginState: LoginWithEmailPasswordSent(
+    _changeState(currentState: LoginWithEmailAndPasswordSent(
       email: email,
       password: password,
     ));
     
-    LoginState loginState = await _authService.doLoginWithEmailPassword(
+    LoginState loginState = await _authService.loginWithEmailAndPassword(
       email: email,
       password: password,
     );
 
-    _changeState(currentLoginState: loginState);
+    _changeState(currentState: loginState);
   }
 }
