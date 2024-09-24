@@ -1,6 +1,7 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 class UserModel {
   final String id;
+  final bool isAdmin;
   final String email;
   final String name;
   final String surname;
@@ -8,6 +9,7 @@ class UserModel {
 
   UserModel({
     required this.id,
+    required this.isAdmin,
     required this.email,
     required this.name,
     required this.surname,
@@ -24,6 +26,7 @@ class UserModel {
 
   UserModel copyWith({
     String? id,
+    bool? isAdmin,
     String? email,
     String? name,
     String? surname,
@@ -31,6 +34,7 @@ class UserModel {
   }) {
     return UserModel(
       id: id ?? this.id,
+      isAdmin: isAdmin ?? this.isAdmin,
       email: email ?? this.email,
       name: name ?? this.name,
       surname: surname ?? this.surname,

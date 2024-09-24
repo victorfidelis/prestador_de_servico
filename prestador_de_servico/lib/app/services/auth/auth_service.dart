@@ -1,6 +1,7 @@
 import 'package:prestador_de_servico/app/services/auth/firebase_auth_service.dart';
 import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
+import 'package:prestador_de_servico/app/states/password_reset/password_reset_state.dart';
 
 abstract class AuthService {
 
@@ -20,6 +21,10 @@ abstract class AuthService {
     required String email,
     required String password,
     required String confirmPassword,
+  });
+
+  Future<PasswordResetState> sendPasswordResetEmail({
+    required String email,
   });
 }
 

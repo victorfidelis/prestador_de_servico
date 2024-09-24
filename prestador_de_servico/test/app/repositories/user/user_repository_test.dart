@@ -11,7 +11,8 @@ void main() {
   final MockUserRepository mockUserRepository = MockUserRepository();
 
   UserModel user1 = UserModel(
-    id: '1',
+      id: '1',
+      isAdmin: false,
       email: 'test@test.com',
       name: 'test',
       surname: 'teste',

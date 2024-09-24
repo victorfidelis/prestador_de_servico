@@ -4,6 +4,7 @@ import 'package:prestador_de_servico/app/repositories/user/user_repository.dart'
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
+import 'package:prestador_de_servico/app/states/password_reset/password_reset_state.dart';
 
 class FirebaseCreateUserState {
   final String? genericMessage;
@@ -104,6 +105,7 @@ class FirebaseAuthService implements AuthService {
     
     UserModel user = UserModel(
       id: '',
+      isAdmin: false,
       email: email,
       name: name,
       surname: surname,
@@ -126,14 +128,13 @@ class FirebaseAuthService implements AuthService {
     }
 
     CreateUserState createAccountState;
+    UserCredential? userCredential;
 
     try {
-      UserCredential? userCredential =
-          await _firebaseAuth.createUserWithEmailAndPassword(
+      userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      await _firebaseAuth.sendPasswordResetEmail(email: email);
       createAccountState = UserCreated(user: user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
@@ -148,9 +149,21 @@ class FirebaseAuthService implements AuthService {
       if (userGet != null)  {
         await _userRepository.update(user: user);
       } 
-      await _firebaseAuth.sendPasswordResetEmail(email: email);
+      await userCredential!.user!.sendEmailVerification();
     }
 
     return createAccountState;
+  }
+  
+  @override
+  Future<PasswordResetState> sendPasswordResetEmail({required String email}) async {
+
+    if (email.isEmpty) {
+      return ErrorSentEmail(emailMessage: 'Necessário informar o email');
+    }
+
+    await _firebaseAuth.sendPasswordResetEmail(email: email);
+
+    return ResetEmailSent();
   } 
 }

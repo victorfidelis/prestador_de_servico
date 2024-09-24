@@ -7,7 +7,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
-import 'package:prestador_de_servico/app/views/create_user/widgets/create_account_header.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
 import 'package:provider/provider.dart';
 
 class CreateUserView extends StatefulWidget {
@@ -53,7 +53,7 @@ class _CreateUserViewState extends State<CreateUserView> {
                   child: Stack(
                     children: [
                       const Center(
-                        child: CreateAccountHeader(title: 'Criar\nConta'),
+                        child: CustomHeader(title: 'Criar\nConta'),
                       ),
                       BackNavigation(onTap: backNavigation),
                     ],

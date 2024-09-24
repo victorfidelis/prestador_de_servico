@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
 import 'package:prestador_de_servico/app/controllers/create_user/create_user_controller.dart';
+import 'package:prestador_de_servico/app/controllers/password_reset/password_reset_controller.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
 import 'package:prestador_de_servico/app/controllers/login/login_controller.dart';
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
@@ -120,7 +121,7 @@ class _LoginViewState extends State<LoginView> {
                               Expanded(child: Container()),
                               CustomLink(
                                 label: 'Esqueci a senha',
-                                onTap: () {},
+                                onTap: doPasswordReset,
                                 undeline: true,
                               ),
                             ],
@@ -164,5 +165,10 @@ class _LoginViewState extends State<LoginView> {
   void doCreateAccount() {
     context.read<CreateUserController>().init();
     Navigator.pushNamed(context, '/createAccount');
+  } 
+
+  void doPasswordReset() {
+    context.read<PasswordResetController>().init();
+    Navigator.pushNamed(context, '/passwordReset');
   }
 }
