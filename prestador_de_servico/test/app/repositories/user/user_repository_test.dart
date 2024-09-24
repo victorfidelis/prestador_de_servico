@@ -12,7 +12,6 @@ void main() {
 
   UserModel user1 = UserModel(
     id: '1',
-      uid: '1',
       email: 'test@test.com',
       name: 'test',
       surname: 'teste',
@@ -63,7 +62,7 @@ void main() {
     '''Ao tentar capturar um usuário válido pelo seu uid retorno deve uma instância 
     de UserModel do usuário consultado''',
     () async {
-      UserModel? user = await mockUserRepository.getByUid(uid: user1.uid);
+      UserModel? user = await mockUserRepository.getByEmail(email: user1.email);
 
       expect(user, equals(user1));
     },

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
+import 'package:prestador_de_servico/app/controllers/create_user/create_user_controller.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
 import 'package:prestador_de_servico/app/controllers/login/login_controller.dart';
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
@@ -161,6 +162,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void doCreateAccount() {
+    context.read<CreateUserController>().init();
     Navigator.pushNamed(context, '/createAccount');
   }
 }

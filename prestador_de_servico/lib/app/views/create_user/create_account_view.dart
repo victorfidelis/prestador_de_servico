@@ -36,12 +36,6 @@ class _CreateUserViewState extends State<CreateUserView> {
   final CustomNotifications _notifications = CustomNotifications();
 
   @override
-  void initState() {
-    context.read<CreateUserController>().init();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SingleChildScrollView(
@@ -59,7 +53,7 @@ class _CreateUserViewState extends State<CreateUserView> {
                   child: Stack(
                     children: [
                       const Center(
-                        child: CreateAccountHeader(title: 'Criar\nCnta'),
+                        child: CreateAccountHeader(title: 'Criar\nConta'),
                       ),
                       BackNavigation(onTap: backNavigation),
                     ],
@@ -75,13 +69,13 @@ class _CreateUserViewState extends State<CreateUserView> {
 
                     if (createAccountController.state is UserCreated) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _notifications.showSnackBar(
+                        Navigator.pop(context);
+                        _notifications.showSuccessAlert(
                           context: context,
-                          message: 'Usuário criado',
+                          title: 'Usuário Cadastrado',
+                          content: 'Faça a confirmação de sua conta através do link enviado para o seu email.', 
                         );
-                      }); 
-
-                      Navigator.pop(context);
+                      });
                     }
 
                     Widget genericErrorWidget = const SizedBox(height: 18);
@@ -196,13 +190,9 @@ class _CreateUserViewState extends State<CreateUserView> {
           name: _nameController.text.trim(),
           surname: _surnameController.text.trim(),
           phone: _phoneController.text.trim(),
-          email: _emailController.text.trim(),
+          email: _emailController.text.trim().toLowerCase(),
           password: _passwordController.text.trim(),
           confirmPassword: _confirmPasswordController.text.trim(),
         );
-  } 
-
-  void finishRegister() { 
-    
   }
 }

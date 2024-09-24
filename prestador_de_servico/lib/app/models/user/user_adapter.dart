@@ -6,7 +6,6 @@ class UserAdapter {
   static Map<String, dynamic> toMap({required UserModel user}) {
     return {
       'id': user.id,
-      'uid': user.uid,
       'name': user.name,
       'surname': user.surname,
       'phone': user.phone,
@@ -17,7 +16,6 @@ class UserAdapter {
   static UserModel fromMap({required Map<String, dynamic> map}) {
     return UserModel(
       id: map['id'],
-      uid: map['uid'],
       name: map['name'],
       surname: map['surname'],
       phone: map['phone'],
@@ -27,7 +25,6 @@ class UserAdapter {
 
   static Map<String, dynamic> toFirebaseMap({required UserModel user}) {
     return {
-      'uid': user.uid,
       'name': user.name,
       'surname': user.surname,
       'phone': user.phone,
@@ -40,7 +37,7 @@ class UserAdapter {
     map['id'] = doc.id;
 
     UserModel? user;
-    if (map.containsKey('uid')) {
+    if (map.containsKey('email')) {
       user = UserAdapter.fromMap(map: map);
     }
     return user;

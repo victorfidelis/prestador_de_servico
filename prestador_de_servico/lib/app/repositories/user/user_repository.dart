@@ -8,7 +8,6 @@ abstract class UserRepository {
 
   Future<String?> add({required UserModel user});
   Future<UserModel?> getById({required String id});
-  Future<UserModel?> getByUid({required String uid});
   Future<UserModel?> getByEmail({required String email});
   Future<bool> deleteById({required String id});
   Future<bool> update({required UserModel user});

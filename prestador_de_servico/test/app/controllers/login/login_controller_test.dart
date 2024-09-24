@@ -12,7 +12,6 @@ void main() {
 
   final UserModel validUser = UserModel(
     id: '',
-    uid: '1',
     email: 'test@test.com',
     name: 'Test',
     surname: 'valid',

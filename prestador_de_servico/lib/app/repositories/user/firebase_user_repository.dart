@@ -33,17 +33,6 @@ class FirebaseUserRepository implements UserRepository {
   }
 
   @override
-  Future<UserModel?> getByUid({required String uid}) async {
-    QuerySnapshot querySnap =
-        await userCollection.where('uid', isEqualTo: uid).get();
-    UserModel? user;
-    if (querySnap.docs.isNotEmpty) {
-      user = UserAdapter.fromDocumentSnapshot(doc: querySnap.docs[0]);
-    }
-    return user;
-  }
-
-  @override
   Future<bool> deleteById({required String id}) async {
     await userCollection.doc(id).delete();
     return true;

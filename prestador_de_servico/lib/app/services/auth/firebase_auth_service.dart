@@ -41,7 +41,7 @@ class FirebaseAuthService implements AuthService {
       );
 
       UserModel? user =
-          await _userRepository.getByUid(uid: userCredential.user!.uid);
+          await _userRepository.getByEmail(email: email);
 
       if (user == null) {
         loginState = LoginError(genericMessage: 'Usuário não encontrado');
@@ -101,44 +101,56 @@ class FirebaseAuthService implements AuthService {
         confirmPasswordMessage: 'Senha incompatível',
       );
     }
+    
+    UserModel user = UserModel(
+      id: '',
+      email: email,
+      name: name,
+      surname: surname,
+      phone: phone,
+    );
+
+    UserModel? userGet = await _userRepository.getByEmail(email: email); 
+
+    if (userGet == null) {
+      String? id = await _userRepository.add(user: user);
+      if (id == null) {
+        return ErrorCreatingUser(
+          genericMessage:
+              'Ocorreu uma falha ao iserir os dados do usuário. Tente novamente.',
+        );
+      } 
+      user = user.copyWith(id: id);
+    } else  {
+      user = user.copyWith(id: userGet.id);
+    }
 
     CreateUserState createAccountState;
 
     try {
-      UserCredential userCredential =
+      UserCredential? userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-
-      UserModel user = UserModel(
-        id: '',
-        uid: userCredential.user!.uid,
-        email: email,
-        name: name,
-        surname: surname,
-        phone: phone,
-      );
-
-      String? id = await _userRepository.add(user: user);
-      if (id == null) {
-        createAccountState = ErrorCreatingUser(
-          genericMessage:
-              'Ocorreu uma falha ao iserir os dados do usuário. Tente novamente.',
-        );
-      } else {
-        createAccountState = UserCreated(user: user.copyWith(id: id));
-        await userCredential.user!.sendEmailVerification();
-      }
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
+      createAccountState = UserCreated(user: user);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         createAccountState =
             ErrorCreatingUser(emailMessage: 'Email já cadastrado');
       } else {
         createAccountState = ErrorCreatingUser(genericMessage: e.code);
-      }
+      } 
+    } 
+
+    if (createAccountState is UserCreated) {
+      if (userGet != null)  {
+        await _userRepository.update(user: user);
+      } 
+      await _firebaseAuth.sendPasswordResetEmail(email: email);
     }
 
     return createAccountState;
-  }
+  } 
 }
