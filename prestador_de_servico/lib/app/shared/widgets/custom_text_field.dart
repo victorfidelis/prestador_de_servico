@@ -29,13 +29,13 @@ class CustomTextField extends StatelessWidget {
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(12)),
+        decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.surface,
+            borderRadius: const BorderRadius.all(Radius.circular(12)),
             boxShadow: [
               BoxShadow(
-                color: Color(0x50000000),
-                offset: Offset(0, 4),
+                color: Theme.of(context).colorScheme.shadow,
+                offset: const Offset(0, 4),
                 blurStyle: BlurStyle.normal,
                 blurRadius: 4,
               )

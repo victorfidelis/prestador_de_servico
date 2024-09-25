@@ -76,6 +76,8 @@ class _LoginViewState extends State<LoginView> {
                               context: context,
                               message: 'Usuário autenticado!',
                             );
+
+                            doStart();
                           }
                         );
                       }
@@ -170,5 +172,9 @@ class _LoginViewState extends State<LoginView> {
   void doPasswordReset() {
     context.read<PasswordResetController>().init();
     Navigator.pushNamed(context, '/passwordReset');
+  }
+
+  void doStart() {
+    Navigator.pushNamedAndRemoveUntil(context, '/start', (Route<dynamic> route) => false);
   }
 }

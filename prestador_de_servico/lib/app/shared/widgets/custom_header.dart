@@ -9,9 +9,9 @@ class CustomHeader extends StatelessWidget {
     return Text(
       title,
       textAlign: TextAlign.center,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 32,
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.onPrimary,
         fontWeight: FontWeight.w700,
       ),
     );

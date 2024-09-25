@@ -13,11 +13,11 @@ class LoginHeader extends StatelessWidget {
           width: 40,
         ),
         const SizedBox(height: 32),
-        const Text(
+        Text(
           'Bem vindo',
           style: TextStyle(
             fontSize: 32,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
             fontWeight: FontWeight.w700,
           ),
         )

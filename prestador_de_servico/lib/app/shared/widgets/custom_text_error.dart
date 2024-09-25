@@ -15,8 +15,8 @@ class CustomTextError extends StatelessWidget {
       child: Text(
         message,
         textAlign: TextAlign.left,
-        style: const TextStyle(
-          color: Colors.red,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.error,
         ),
       ),
     );

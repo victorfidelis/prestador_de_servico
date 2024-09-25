@@ -16,17 +16,17 @@ class CustomButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
-        decoration: const BoxDecoration(
-          color: Color(0xff0E293C),
-          borderRadius: BorderRadius.all(Radius.circular(6)),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+          borderRadius: const BorderRadius.all(Radius.circular(6)),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
               label,
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
               ),

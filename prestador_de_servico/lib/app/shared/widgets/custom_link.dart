@@ -24,10 +24,10 @@ class CustomLink extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          color: const Color(0xff1976D2),
+          color: Theme.of(context).colorScheme.secondary,
           fontSize: 14,
           decoration: textDecoration,
-          decorationColor: const Color(0xff1976D2),
+          decorationColor: Theme.of(context).colorScheme.secondary,
         ),
       ),
     );

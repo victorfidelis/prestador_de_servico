@@ -21,12 +21,12 @@ class RegisterLink extends StatelessWidget {
         ),
         GestureDetector(
           onTap: onTap,
-          child: const Text(
+          child: Text(
             'Cadastre-se',
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 16,
-              color: Color(0xff0E293C),
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
         )
