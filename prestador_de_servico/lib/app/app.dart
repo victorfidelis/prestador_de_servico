@@ -7,7 +7,7 @@ import 'package:prestador_de_servico/app/controllers/start/start_controller.dart
 import 'package:prestador_de_servico/app/services/app/app_service.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
-import 'package:prestador_de_servico/app/views/create_user/create_account_view.dart';
+import 'package:prestador_de_servico/app/views/create_user/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_view.dart';
 import 'package:prestador_de_servico/app/views/start/start_view.dart';
 import 'package:prestador_de_servico/app/views/login/login_view.dart';

@@ -11,7 +11,7 @@ class BackNavigation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 12, top: 26),
+      margin: const EdgeInsets.only(left: 12, top: 30),
       child: GestureDetector(
         onTap: onTap,
         child: const Padding(
