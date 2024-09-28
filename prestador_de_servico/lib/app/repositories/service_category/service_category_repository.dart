@@ -1,9 +1,15 @@
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart';
+import 'package:prestador_de_servico/app/repositories/service_category/firebase_service_category_repository.dart';
 
 abstract class ServiceCategoryRepository {
-  Future<ServiceCartegoryModel?> getById({required int id});
+
+  factory ServiceCategoryRepository.create() {
+    return FirebaseServiceCategoryRepository();
+  }
+
+  Future<ServiceCartegoryModel> getById({required String id});
   Future<List<ServiceCartegoryModel>> getNameContained({required String name});
-  Future<ServiceCartegoryModel?> add({required ServiceCartegoryModel serviceCategory});
+  Future<String?> add({required ServiceCartegoryModel serviceCategory});
   Future<bool> update({required ServiceCartegoryModel serviceCategory});
-  Future<bool> deleteById({required ServiceCartegoryModel serviceCategory});
+  Future<bool> deleteById({required String id});
 }

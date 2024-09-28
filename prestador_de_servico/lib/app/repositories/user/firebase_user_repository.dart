@@ -4,27 +4,27 @@ import 'package:prestador_de_servico/app/models/user/user_model.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 
 class FirebaseUserRepository implements UserRepository {
-  final userCollection = FirebaseFirestore.instance.collection('users');
+  final usersCollection = FirebaseFirestore.instance.collection('users');
 
   @override
   Future<String?> add({required UserModel user}) async {
     DocumentReference docRef =
-        await userCollection.add(UserAdapter.toFirebaseMap(user: user));
+        await usersCollection.add(UserAdapter.toFirebaseMap(user: user));
     DocumentSnapshot docSnap = await docRef.get();
     return docSnap.id;
   }
 
   @override
-  Future<UserModel?> getById({required String id}) async {
-    DocumentSnapshot docSnap = await userCollection.doc(id).get();
-    UserModel? user = UserAdapter.fromDocumentSnapshot(doc: docSnap);
+  Future<UserModel> getById({required String id}) async {
+    DocumentSnapshot docSnap = await usersCollection.doc(id).get();
+    UserModel user = UserAdapter.fromDocumentSnapshot(doc: docSnap);
     return user;
   }
 
   @override
   Future<UserModel?> getByEmail({required String email}) async {
     QuerySnapshot querySnap =
-        await userCollection.where('email', isEqualTo: email).get();
+        await usersCollection.where('email', isEqualTo: email).get();
     UserModel? user;
     if (querySnap.docs.isNotEmpty) {
       user = UserAdapter.fromDocumentSnapshot(doc: querySnap.docs[0]);
@@ -34,13 +34,13 @@ class FirebaseUserRepository implements UserRepository {
 
   @override
   Future<bool> deleteById({required String id}) async {
-    await userCollection.doc(id).delete();
+    await usersCollection.doc(id).delete();
     return true;
   }
 
   @override
   Future<bool> update({required UserModel user}) async {
-    await userCollection.doc(user.id).update(UserAdapter.toFirebaseMap(user: user));
+    await usersCollection.doc(user.id).update(UserAdapter.toFirebaseMap(user: user));
     return true;
   }
 }

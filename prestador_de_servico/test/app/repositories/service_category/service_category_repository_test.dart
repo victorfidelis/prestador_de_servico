@@ -112,14 +112,14 @@ void main() {
   uma lista instâncias de ServiceCartegoryModel das categorias que contém o texto 
   consultado em seu nome (texte com valor 'a')''',
     () async {
-      List<ServiceCartegoryModel> servicesCartegory =
+      List<ServiceCartegoryModel> serviceCartegories =
           await mockServiceCategoryRepository.getNameContained(name: 'a');
 
-      expect(servicesCartegory.length, equals(3));
-      if (servicesCartegory.length == 3) {
-        expect(servicesCartegory[0], equals(serviceCartegory1));
-        expect(servicesCartegory[1], equals(serviceCartegory2));
-        expect(servicesCartegory[2], equals(serviceCartegory3));
+      expect(serviceCartegories.length, equals(3));
+      if (serviceCartegories.length == 3) {
+        expect(serviceCartegories[0], equals(serviceCartegory1));
+        expect(serviceCartegories[1], equals(serviceCartegory2));
+        expect(serviceCartegories[2], equals(serviceCartegory3));
       }
     },
   );
@@ -129,12 +129,12 @@ void main() {
   uma lista instâncias de ServiceCartegoryModel das categorias que contém o texto 
   consultado em seu nome (texte com valor 'cab')''',
     () async {
-      List<ServiceCartegoryModel> servicesCartegory =
+      List<ServiceCartegoryModel> serviceCartegories =
           await mockServiceCategoryRepository.getNameContained(name: 'cab');
 
-      expect(servicesCartegory.length, equals(1));
-      if (servicesCartegory.length == 1) {
-        expect(servicesCartegory[0], equals(serviceCartegory1));
+      expect(serviceCartegories.length, equals(1));
+      if (serviceCartegories.length == 1) {
+        expect(serviceCartegories[0], equals(serviceCartegory1));
       }
     },
   );
@@ -144,10 +144,10 @@ void main() {
   uma lista instâncias de ServiceCartegoryModel das categorias que contém o texto 
   consultado em seu nome (texte com valor 'unha')''',
     () async {
-      List<ServiceCartegoryModel> servicesCartegory =
+      List<ServiceCartegoryModel> serviceCartegories =
           await mockServiceCategoryRepository.getNameContained(name: 'unha');
 
-      expect(servicesCartegory.length, equals(0));
+      expect(serviceCartegories.length, equals(0));
     },
   );
 

@@ -1,5 +1,5 @@
 class ServiceCartegoryModel {
-  final int id;
+  final String id;
   final String name;
 
   ServiceCartegoryModel({
@@ -8,7 +8,7 @@ class ServiceCartegoryModel {
   });
 
   ServiceCartegoryModel copyWith({
-    int? id,
+    String? id,
     String? name,
   }) {
     return ServiceCartegoryModel(

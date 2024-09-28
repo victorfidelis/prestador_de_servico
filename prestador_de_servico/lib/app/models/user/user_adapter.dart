@@ -35,14 +35,11 @@ class UserAdapter {
     };
   }
 
-  static UserModel? fromDocumentSnapshot({required DocumentSnapshot doc}) {
+  static UserModel fromDocumentSnapshot({required DocumentSnapshot doc}) {
     Map<String, dynamic> map = (doc.data() as Map<String, dynamic>);
     map['id'] = doc.id;
 
-    UserModel? user;
-    if (map.containsKey('email')) {
-      user = UserAdapter.fromMap(map: map);
-    }
+    UserModel user = UserAdapter.fromMap(map: map);
     return user;
   }
 }
