@@ -23,4 +23,8 @@ class ServiceCartegoryAdapter {
     ServiceCartegoryModel serviceCartegory = fromMap(map: map);
     return serviceCartegory;
   }
+
+  static ServiceCartegoryModel fromSqflite({required Map map}) {
+    return ServiceCartegoryModel(id: map['id'], name: map['name']);
+  }
 }

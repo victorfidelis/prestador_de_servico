@@ -7,6 +7,7 @@ abstract class ServiceCategoryRepository {
     return FirebaseServiceCategoryRepository();
   }
 
+  Future<List<ServiceCartegoryModel>> getAll();
   Future<ServiceCartegoryModel> getById({required String id});
   Future<List<ServiceCartegoryModel>> getNameContained({required String name});
   Future<String?> add({required ServiceCartegoryModel serviceCategory});

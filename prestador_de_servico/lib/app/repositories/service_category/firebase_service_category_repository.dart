@@ -8,6 +8,18 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
       FirebaseFirestore.instance.collection('serviceCategories');
 
   @override
+  Future<List<ServiceCartegoryModel>> getAll() async {
+    QuerySnapshot snapServiceCategories = await serviceCategoriesCollection.get();
+    List<ServiceCartegoryModel> serviceCategories = snapServiceCategories.docs
+        .map(
+          (doc) => ServiceCartegoryAdapter.fromDocumentSnapshot(doc: doc),
+        )
+        .toList();
+
+    return serviceCategories;
+  }
+
+  @override
   Future<String?> add({required ServiceCartegoryModel serviceCategory}) async {
     DocumentReference docRef = await serviceCategoriesCollection.add(
       ServiceCartegoryAdapter.toFirebaseMap(
@@ -35,13 +47,7 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
   @override
   Future<List<ServiceCartegoryModel>> getNameContained(
       {required String name}) async {
-    QuerySnapshot snapServiceCategories =
-        await serviceCategoriesCollection.get();
-    List<ServiceCartegoryModel> serviceCategories = snapServiceCategories.docs
-        .map(
-          (doc) => ServiceCartegoryAdapter.fromDocumentSnapshot(doc: doc),
-        )
-        .toList();
+    List<ServiceCartegoryModel> serviceCategories = await getAll();
 
     serviceCategories = serviceCategories.where((serviceCategory) {
       String upperName = serviceCategory.name.trim().toUpperCase();

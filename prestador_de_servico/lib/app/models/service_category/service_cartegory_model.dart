@@ -1,6 +1,9 @@
+import 'package:replace_diacritic/replace_diacritic.dart';
+
 class ServiceCartegoryModel {
   final String id;
   final String name;
+  String get nameWithoutDiacritics => replaceDiacritic(name);
 
   ServiceCartegoryModel({
     required this.id,
@@ -16,6 +19,7 @@ class ServiceCartegoryModel {
       name: name ?? this.name,
     );
   }
+
 
   @override
   bool operator ==(Object other) {

@@ -34,6 +34,11 @@ dependencies:
   firebase_auth: ^5.3.0
   cloud_firestore: ^5.4.2
   provider: ^6.1.2
+  sqflite: ^2.3.3+2
+  replace_diacritic:
+    git:
+      url: https://github.com/victorfidelis/replace_diacritic.git
+      ref: main # branch name
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -44,7 +49,8 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.4.4
   build_runner: ^2.4.12
-
+  sqflite_common_ffi: ^2.3.3+1
+  
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your

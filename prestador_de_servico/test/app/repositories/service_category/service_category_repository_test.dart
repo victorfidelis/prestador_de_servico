@@ -12,13 +12,13 @@ void main() {
       MockServiceCategoryRepository();
 
   ServiceCartegoryModel serviceCartegory1 =
-      ServiceCartegoryModel(id: 1, name: 'Cabelo');
+      ServiceCartegoryModel(id: '1', name: 'Cabelo');
 
   ServiceCartegoryModel serviceCartegory2 =
-      ServiceCartegoryModel(id: 2, name: 'Face');
+      ServiceCartegoryModel(id: '2', name: 'Face');
 
   ServiceCartegoryModel serviceCartegory3 =
-      ServiceCartegoryModel(id: 3, name: 'Depilação');
+      ServiceCartegoryModel(id: '3', name: 'Depilação');
 
   setUpAll(() {
     when(mockServiceCategoryRepository.getById(id: serviceCartegory1.id))
@@ -58,7 +58,7 @@ void main() {
 
     when(mockServiceCategoryRepository.add(serviceCategory: serviceCartegory2))
         .thenAnswer(
-      (_) async => serviceCartegory2,
+      (_) async => serviceCartegory2.id,
     );
 
     when(mockServiceCategoryRepository.update(
@@ -68,7 +68,7 @@ void main() {
     );
 
     when(mockServiceCategoryRepository.deleteById(
-            serviceCategory: serviceCartegory1))
+            id: serviceCartegory1.id))
         .thenAnswer(
       (_) async => true,
     );
@@ -155,10 +155,10 @@ void main() {
     '''Ao tentar adicionar uma categoria de serviço o retorno deve ser 
   uma instância de ServiceCartegoryModel da categoria inserida''',
     () async {
-      ServiceCartegoryModel? serviceCartegory = await mockServiceCategoryRepository.add(
+      String? serviceCartegoryId = await mockServiceCategoryRepository.add(
         serviceCategory: serviceCartegory2,);
 
-      expect(serviceCartegory, equals(serviceCartegory2));
+      expect(serviceCartegoryId, equals(serviceCartegory2.id));
     },
   );
 
@@ -178,7 +178,7 @@ void main() {
   um valor booleano verdadeiro''',
     () async {
       bool isDeleted = await mockServiceCategoryRepository.deleteById(
-        serviceCategory: serviceCartegory1,);
+        id: serviceCartegory1.id,);
 
       expect(isDeleted, isTrue);
     },
