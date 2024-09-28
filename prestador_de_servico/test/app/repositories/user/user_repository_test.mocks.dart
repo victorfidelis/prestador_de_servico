@@ -52,18 +52,6 @@ class MockUserRepository extends _i1.Mock implements _i2.UserRepository {
       ) as _i3.Future<_i4.UserModel?>);
 
   @override
-  _i3.Future<_i4.UserModel?> getByUid({required String? uid}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getByUid,
-          [],
-          {#uid: uid},
-        ),
-        returnValue: _i3.Future<_i4.UserModel?>.value(),
-        returnValueForMissingStub: _i3.Future<_i4.UserModel?>.value(),
-      ) as _i3.Future<_i4.UserModel?>);
-
-  @override
   _i3.Future<_i4.UserModel?> getByEmail({required String? email}) =>
       (super.noSuchMethod(
         Invocation.method(

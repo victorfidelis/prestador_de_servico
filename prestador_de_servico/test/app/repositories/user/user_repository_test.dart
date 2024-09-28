@@ -26,12 +26,6 @@ void main() {
     ).thenAnswer((_) async => '1');
 
     when(
-      mockUserRepository.getByUid(
-        uid: '1',
-      ),
-    ).thenAnswer((_) async => user1);
-
-    when(
       mockUserRepository.getByEmail(
         email: 'test@test.com',
       ),
@@ -60,7 +54,7 @@ void main() {
   );
 
   test(
-    '''Ao tentar capturar um usuário válido pelo seu uid retorno deve uma instância 
+    '''Ao tentar capturar um usuário válido pelo seu email o retorno deve ser uma instância 
     de UserModel do usuário consultado''',
     () async {
       UserModel? user = await mockUserRepository.getByEmail(email: user1.email);

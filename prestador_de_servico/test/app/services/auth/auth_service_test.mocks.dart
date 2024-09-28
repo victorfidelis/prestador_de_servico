@@ -3,14 +3,16 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i5;
+import 'dart:async' as _i6;
 
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart'
-    as _i4;
+    as _i5;
 import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart'
     as _i3;
 import 'package:prestador_de_servico/app/states/login/login_state.dart' as _i2;
+import 'package:prestador_de_servico/app/states/password_reset/password_reset_state.dart'
+    as _i4;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -46,12 +48,23 @@ class _FakeCreateUserState_1 extends _i1.SmartFake
         );
 }
 
+class _FakePasswordResetState_2 extends _i1.SmartFake
+    implements _i4.PasswordResetState {
+  _FakePasswordResetState_2(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [AuthService].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthService extends _i1.Mock implements _i4.AuthService {
+class MockAuthService extends _i1.Mock implements _i5.AuthService {
   @override
-  _i5.Future<_i2.LoginState> loginWithEmailAndPassword({
+  _i6.Future<_i2.LoginState> loginWithEmailAndPassword({
     required String? email,
     required String? password,
   }) =>
@@ -64,7 +77,7 @@ class MockAuthService extends _i1.Mock implements _i4.AuthService {
             #password: password,
           },
         ),
-        returnValue: _i5.Future<_i2.LoginState>.value(_FakeLoginState_0(
+        returnValue: _i6.Future<_i2.LoginState>.value(_FakeLoginState_0(
           this,
           Invocation.method(
             #loginWithEmailAndPassword,
@@ -76,7 +89,7 @@ class MockAuthService extends _i1.Mock implements _i4.AuthService {
           ),
         )),
         returnValueForMissingStub:
-            _i5.Future<_i2.LoginState>.value(_FakeLoginState_0(
+            _i6.Future<_i2.LoginState>.value(_FakeLoginState_0(
           this,
           Invocation.method(
             #loginWithEmailAndPassword,
@@ -87,10 +100,10 @@ class MockAuthService extends _i1.Mock implements _i4.AuthService {
             },
           ),
         )),
-      ) as _i5.Future<_i2.LoginState>);
+      ) as _i6.Future<_i2.LoginState>);
 
   @override
-  _i5.Future<_i3.CreateUserState> createUserWithEmailAndPassword({
+  _i6.Future<_i3.CreateUserState> createUserWithEmailAndPassword({
     required String? name,
     required String? surname,
     required String? phone,
@@ -112,7 +125,7 @@ class MockAuthService extends _i1.Mock implements _i4.AuthService {
           },
         ),
         returnValue:
-            _i5.Future<_i3.CreateUserState>.value(_FakeCreateUserState_1(
+            _i6.Future<_i3.CreateUserState>.value(_FakeCreateUserState_1(
           this,
           Invocation.method(
             #createUserWithEmailAndPassword,
@@ -128,7 +141,7 @@ class MockAuthService extends _i1.Mock implements _i4.AuthService {
           ),
         )),
         returnValueForMissingStub:
-            _i5.Future<_i3.CreateUserState>.value(_FakeCreateUserState_1(
+            _i6.Future<_i3.CreateUserState>.value(_FakeCreateUserState_1(
           this,
           Invocation.method(
             #createUserWithEmailAndPassword,
@@ -143,5 +156,34 @@ class MockAuthService extends _i1.Mock implements _i4.AuthService {
             },
           ),
         )),
-      ) as _i5.Future<_i3.CreateUserState>);
+      ) as _i6.Future<_i3.CreateUserState>);
+
+  @override
+  _i6.Future<_i4.PasswordResetState> sendPasswordResetEmail(
+          {required String? email}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #sendPasswordResetEmail,
+          [],
+          {#email: email},
+        ),
+        returnValue:
+            _i6.Future<_i4.PasswordResetState>.value(_FakePasswordResetState_2(
+          this,
+          Invocation.method(
+            #sendPasswordResetEmail,
+            [],
+            {#email: email},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i6.Future<_i4.PasswordResetState>.value(_FakePasswordResetState_2(
+          this,
+          Invocation.method(
+            #sendPasswordResetEmail,
+            [],
+            {#email: email},
+          ),
+        )),
+      ) as _i6.Future<_i4.PasswordResetState>);
 }
