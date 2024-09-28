@@ -1,20 +1,20 @@
 import 'package:replace_diacritic/replace_diacritic.dart';
 
-class ServiceCartegoryModel {
+class ServiceCategoryModel {
   final String id;
   final String name;
   String get nameWithoutDiacritics => replaceDiacritic(name);
 
-  ServiceCartegoryModel({
+  ServiceCategoryModel({
     required this.id,
     required this.name,
   });
 
-  ServiceCartegoryModel copyWith({
+  ServiceCategoryModel copyWith({
     String? id,
     String? name,
   }) {
-    return ServiceCartegoryModel(
+    return ServiceCategoryModel(
       id: id ?? this.id,
       name: name ?? this.name,
     );
@@ -23,7 +23,7 @@ class ServiceCartegoryModel {
 
   @override
   bool operator ==(Object other) {
-    return (other is ServiceCartegoryModel) &&
+    return (other is ServiceCategoryModel) &&
         other.id == id &&
         other.name == name;
   }

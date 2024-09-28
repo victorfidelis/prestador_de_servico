@@ -11,14 +11,14 @@ void main() {
   MockServiceCategoryRepository mockServiceCategoryRepository =
       MockServiceCategoryRepository();
 
-  ServiceCartegoryModel serviceCartegory1 =
-      ServiceCartegoryModel(id: '1', name: 'Cabelo');
+  ServiceCategoryModel serviceCartegory1 =
+      ServiceCategoryModel(id: '1', name: 'Cabelo');
 
-  ServiceCartegoryModel serviceCartegory2 =
-      ServiceCartegoryModel(id: '2', name: 'Face');
+  ServiceCategoryModel serviceCartegory2 =
+      ServiceCategoryModel(id: '2', name: 'Face');
 
-  ServiceCartegoryModel serviceCartegory3 =
-      ServiceCartegoryModel(id: '3', name: 'Depilação');
+  ServiceCategoryModel serviceCartegory3 =
+      ServiceCategoryModel(id: '3', name: 'Depilação');
 
   setUpAll(() {
     when(mockServiceCategoryRepository.getById(id: serviceCartegory1.id))
@@ -78,7 +78,7 @@ void main() {
     '''Ao tentar capturar um categoria de serviço pelo seu id o retorno deve ser 
   uma instância de ServiceCartegoryModel da categoria consultada (teste da categoria 1)''',
     () async {
-      ServiceCartegoryModel? serviceCartegory =
+      ServiceCategoryModel? serviceCartegory =
           await mockServiceCategoryRepository.getById(id: serviceCartegory1.id);
 
       expect(serviceCartegory, equals(serviceCartegory1));
@@ -89,7 +89,7 @@ void main() {
     '''Ao tentar capturar um categoria de serviço pelo seu id o retorno deve ser 
   uma instância de ServiceCartegoryModel da categoria consultada (teste da categoria 2)''',
     () async {
-      ServiceCartegoryModel? serviceCartegory =
+      ServiceCategoryModel? serviceCartegory =
           await mockServiceCategoryRepository.getById(id: serviceCartegory2.id);
 
       expect(serviceCartegory, equals(serviceCartegory2));
@@ -100,7 +100,7 @@ void main() {
     '''Ao tentar capturar um categoria de serviço pelo seu id o retorno deve ser 
   uma instância de ServiceCartegoryModel da categoria consultada (teste da categoria 3)''',
     () async {
-      ServiceCartegoryModel? serviceCartegory =
+      ServiceCategoryModel? serviceCartegory =
           await mockServiceCategoryRepository.getById(id: serviceCartegory3.id);
 
       expect(serviceCartegory, equals(serviceCartegory3));
@@ -112,7 +112,7 @@ void main() {
   uma lista instâncias de ServiceCartegoryModel das categorias que contém o texto 
   consultado em seu nome (texte com valor 'a')''',
     () async {
-      List<ServiceCartegoryModel> serviceCartegories =
+      List<ServiceCategoryModel> serviceCartegories =
           await mockServiceCategoryRepository.getNameContained(name: 'a');
 
       expect(serviceCartegories.length, equals(3));
@@ -129,7 +129,7 @@ void main() {
   uma lista instâncias de ServiceCartegoryModel das categorias que contém o texto 
   consultado em seu nome (texte com valor 'cab')''',
     () async {
-      List<ServiceCartegoryModel> serviceCartegories =
+      List<ServiceCategoryModel> serviceCartegories =
           await mockServiceCategoryRepository.getNameContained(name: 'cab');
 
       expect(serviceCartegories.length, equals(1));
@@ -144,7 +144,7 @@ void main() {
   uma lista instâncias de ServiceCartegoryModel das categorias que contém o texto 
   consultado em seu nome (texte com valor 'unha')''',
     () async {
-      List<ServiceCartegoryModel> serviceCartegories =
+      List<ServiceCategoryModel> serviceCartegories =
           await mockServiceCategoryRepository.getNameContained(name: 'unha');
 
       expect(serviceCartegories.length, equals(0));

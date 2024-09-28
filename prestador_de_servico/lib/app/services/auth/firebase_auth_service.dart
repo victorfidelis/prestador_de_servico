@@ -6,15 +6,6 @@ import 'package:prestador_de_servico/app/states/create_user/create_user_state.da
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
 import 'package:prestador_de_servico/app/states/password_reset/password_reset_state.dart';
 
-class FirebaseCreateUserState {
-  final String? genericMessage;
-  final String? emailMessage;
-
-  FirebaseCreateUserState({
-    this.genericMessage,
-    this.emailMessage,
-  });
-}
 
 class FirebaseAuthService implements AuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;

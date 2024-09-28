@@ -20,7 +20,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   }
   
   @override
-  Future<List<ServiceCartegoryModel>> getAll() async {
+  Future<List<ServiceCategoryModel>> getAll() async {
     await _initDatabase();
 
     String selectCommand = ""
@@ -33,7 +33,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
 
     List<Map> serviceCategoryMap = await database!.rawQuery(selectCommand);
 
-    List<ServiceCartegoryModel> serviceCartegories = serviceCategoryMap
+    List<ServiceCategoryModel> serviceCartegories = serviceCategoryMap
         .map(
           (serviceCategory) =>
               ServiceCartegoryAdapter.fromSqflite(map: serviceCategory),
@@ -44,7 +44,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<String?> add({required ServiceCartegoryModel serviceCategory}) async {
+  Future<String?> add({required ServiceCategoryModel serviceCategory}) async {
     await _initDatabase();
 
     String insert = ''
@@ -79,7 +79,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<ServiceCartegoryModel> getById({required String id}) async {
+  Future<ServiceCategoryModel> getById({required String id}) async {
     await _initDatabase();
 
     String selectCommand = ""
@@ -96,14 +96,14 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
     List<Map> serviceCategoryMap =
         await database!.rawQuery(selectCommand, params);
 
-    ServiceCartegoryModel serviceCartegory =
+    ServiceCategoryModel serviceCartegory =
         ServiceCartegoryAdapter.fromSqflite(map: serviceCategoryMap[0]);
 
     return serviceCartegory;
   }
 
   @override
-  Future<List<ServiceCartegoryModel>> getNameContained(
+  Future<List<ServiceCategoryModel>> getNameContained(
       {required String name}) async {
     await _initDatabase();
     String nameWithoutDiacritic = replaceDiacritic(name).trim().toUpperCase();
@@ -120,7 +120,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
 
     List<Map> serviceCategoryMap = await database!.rawQuery(selectCommand);
 
-    List<ServiceCartegoryModel> serviceCartegories = serviceCategoryMap
+    List<ServiceCategoryModel> serviceCartegories = serviceCategoryMap
         .map(
           (serviceCategory) =>
               ServiceCartegoryAdapter.fromSqflite(map: serviceCategory),
@@ -131,7 +131,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<bool> update({required ServiceCartegoryModel serviceCategory}) async {
+  Future<bool> update({required ServiceCategoryModel serviceCategory}) async {
     await _initDatabase();
 
     String updateText = ''

@@ -8,9 +8,9 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
       FirebaseFirestore.instance.collection('serviceCategories');
 
   @override
-  Future<List<ServiceCartegoryModel>> getAll() async {
+  Future<List<ServiceCategoryModel>> getAll() async {
     QuerySnapshot snapServiceCategories = await serviceCategoriesCollection.get();
-    List<ServiceCartegoryModel> serviceCategories = snapServiceCategories.docs
+    List<ServiceCategoryModel> serviceCategories = snapServiceCategories.docs
         .map(
           (doc) => ServiceCartegoryAdapter.fromDocumentSnapshot(doc: doc),
         )
@@ -20,7 +20,7 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<String?> add({required ServiceCartegoryModel serviceCategory}) async {
+  Future<String?> add({required ServiceCategoryModel serviceCategory}) async {
     DocumentReference docRef = await serviceCategoriesCollection.add(
       ServiceCartegoryAdapter.toFirebaseMap(
         serviceCategory: serviceCategory,
@@ -37,17 +37,17 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<ServiceCartegoryModel> getById({required String id}) async {
+  Future<ServiceCategoryModel> getById({required String id}) async {
     DocumentSnapshot docSnap = await serviceCategoriesCollection.doc(id).get();
-    ServiceCartegoryModel serviceCartegory =
+    ServiceCategoryModel serviceCartegory =
         ServiceCartegoryAdapter.fromDocumentSnapshot(doc: docSnap);
     return serviceCartegory;
   }
 
   @override
-  Future<List<ServiceCartegoryModel>> getNameContained(
+  Future<List<ServiceCategoryModel>> getNameContained(
       {required String name}) async {
-    List<ServiceCartegoryModel> serviceCategories = await getAll();
+    List<ServiceCategoryModel> serviceCategories = await getAll();
 
     serviceCategories = serviceCategories.where((serviceCategory) {
       String upperName = serviceCategory.name.trim().toUpperCase();
@@ -59,7 +59,7 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<bool> update({required ServiceCartegoryModel serviceCategory}) async {
+  Future<bool> update({required ServiceCategoryModel serviceCategory}) async {
     await serviceCategoriesCollection.doc(serviceCategory.id).update(
           ServiceCartegoryAdapter.toFirebaseMap(
               serviceCategory: serviceCategory),

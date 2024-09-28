@@ -25,7 +25,7 @@ import 'package:prestador_de_servico/app/repositories/service_category/service_c
 // ignore_for_file: subtype_of_sealed_class
 
 class _FakeServiceCartegoryModel_0 extends _i1.SmartFake
-    implements _i2.ServiceCartegoryModel {
+    implements _i2.ServiceCategoryModel {
   _FakeServiceCartegoryModel_0(
     Object parent,
     Invocation parentInvocation,
@@ -41,14 +41,14 @@ class _FakeServiceCartegoryModel_0 extends _i1.SmartFake
 class MockServiceCategoryRepository extends _i1.Mock
     implements _i3.ServiceCategoryRepository {
   @override
-  _i4.Future<_i2.ServiceCartegoryModel> getById({required String? id}) =>
+  _i4.Future<_i2.ServiceCategoryModel> getById({required String? id}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getById,
           [],
           {#id: id},
         ),
-        returnValue: _i4.Future<_i2.ServiceCartegoryModel>.value(
+        returnValue: _i4.Future<_i2.ServiceCategoryModel>.value(
             _FakeServiceCartegoryModel_0(
           this,
           Invocation.method(
@@ -57,7 +57,7 @@ class MockServiceCategoryRepository extends _i1.Mock
             {#id: id},
           ),
         )),
-        returnValueForMissingStub: _i4.Future<_i2.ServiceCartegoryModel>.value(
+        returnValueForMissingStub: _i4.Future<_i2.ServiceCategoryModel>.value(
             _FakeServiceCartegoryModel_0(
           this,
           Invocation.method(
@@ -66,10 +66,10 @@ class MockServiceCategoryRepository extends _i1.Mock
             {#id: id},
           ),
         )),
-      ) as _i4.Future<_i2.ServiceCartegoryModel>);
+      ) as _i4.Future<_i2.ServiceCategoryModel>);
 
   @override
-  _i4.Future<List<_i2.ServiceCartegoryModel>> getNameContained(
+  _i4.Future<List<_i2.ServiceCategoryModel>> getNameContained(
           {required String? name}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -77,16 +77,16 @@ class MockServiceCategoryRepository extends _i1.Mock
           [],
           {#name: name},
         ),
-        returnValue: _i4.Future<List<_i2.ServiceCartegoryModel>>.value(
-            <_i2.ServiceCartegoryModel>[]),
+        returnValue: _i4.Future<List<_i2.ServiceCategoryModel>>.value(
+            <_i2.ServiceCategoryModel>[]),
         returnValueForMissingStub:
-            _i4.Future<List<_i2.ServiceCartegoryModel>>.value(
-                <_i2.ServiceCartegoryModel>[]),
-      ) as _i4.Future<List<_i2.ServiceCartegoryModel>>);
+            _i4.Future<List<_i2.ServiceCategoryModel>>.value(
+                <_i2.ServiceCategoryModel>[]),
+      ) as _i4.Future<List<_i2.ServiceCategoryModel>>);
 
   @override
   _i4.Future<String?> add(
-          {required _i2.ServiceCartegoryModel? serviceCategory}) =>
+          {required _i2.ServiceCategoryModel? serviceCategory}) =>
       (super.noSuchMethod(
         Invocation.method(
           #add,
@@ -99,7 +99,7 @@ class MockServiceCategoryRepository extends _i1.Mock
 
   @override
   _i4.Future<bool> update(
-          {required _i2.ServiceCartegoryModel? serviceCategory}) =>
+          {required _i2.ServiceCategoryModel? serviceCategory}) =>
       (super.noSuchMethod(
         Invocation.method(
           #update,

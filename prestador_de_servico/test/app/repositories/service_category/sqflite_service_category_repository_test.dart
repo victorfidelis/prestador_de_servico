@@ -11,11 +11,11 @@ void main() {
     'testes deste grupo de forma isolada, sempre executar o grupo inteiro.',
     () {
       late SqfliteServiceCategoryRepository serviceCategoryRepository;
-      late ServiceCartegoryModel serviceCartegory1 = ServiceCartegoryModel(
+      late ServiceCategoryModel serviceCartegory1 = ServiceCategoryModel(
         id: '1',
         name: 'Cabelo',
       );
-      late ServiceCartegoryModel serviceCartegory2 = ServiceCartegoryModel(
+      late ServiceCategoryModel serviceCartegory2 = ServiceCategoryModel(
         id: '2',
         name: 'Depilação',
       );
@@ -38,7 +38,7 @@ void main() {
       test(
           '''A primeira consulta de categorias de serviços deve retornar uma lista vazia''',
           () async {
-        List<ServiceCartegoryModel> serviceCategories =
+        List<ServiceCategoryModel> serviceCategories =
             await serviceCategoryRepository.getAll();
         expect(serviceCategories.isEmpty, isTrue);
       });
@@ -56,7 +56,7 @@ void main() {
         '''Após a adição, a consulta de categorias de serviço
          deve retornar uma lista com 1 categoria de serviço''',
         () async {
-          List<ServiceCartegoryModel> serviceCategories =
+          List<ServiceCategoryModel> serviceCategories =
               await serviceCategoryRepository.getAll();
           expect(serviceCategories.length, equals(1));
           if (serviceCategories.length == 1) {
@@ -75,7 +75,7 @@ void main() {
           );
 
           expect(isUpdated, isTrue);
-          List<ServiceCartegoryModel> serviceCategories =
+          List<ServiceCategoryModel> serviceCategories =
               await serviceCategoryRepository.getAll();
           expect(serviceCategories.length, equals(1));
           expect(serviceCategories[0], equals(serviceCartegory1));
@@ -90,7 +90,7 @@ void main() {
             serviceCategory: serviceCartegory2,
           );
           expect(serviceCategoryId, equals(serviceCartegory2.id));
-          List<ServiceCartegoryModel> serviceCartegories =
+          List<ServiceCategoryModel> serviceCartegories =
               await serviceCategoryRepository.getAll();
           expect(serviceCartegories.length, equals(2));
           expect(serviceCartegories[0], equals(serviceCartegory1));
@@ -102,7 +102,7 @@ void main() {
         '''Ao consultar uma categoria se serviço pelo seu id a respectiva categorita 
         de serviço deve ser retornada''',
         () async {
-          ServiceCartegoryModel serviceCategory = await serviceCategoryRepository.getById(
+          ServiceCategoryModel serviceCategory = await serviceCategoryRepository.getById(
             id: serviceCartegory1.id,
           );
           expect(serviceCategory, equals(serviceCartegory1));
@@ -113,7 +113,7 @@ void main() {
         '''Ao efetuar uma busca de por nome passando "fac", deve retornar apenas 
           1 categoria de serviço, sendo a serviceCategory1''',
         () async {
-          List<ServiceCartegoryModel> serviceCartegories =
+          List<ServiceCategoryModel> serviceCartegories =
               await serviceCategoryRepository.getNameContained(name: 'fac');
           expect(serviceCartegories.length, equals(1));
           expect(serviceCartegories[0], equals(serviceCartegory1));
@@ -124,7 +124,7 @@ void main() {
         '''Ao efetuar uma busca de por nome passando "depilaç", deve retornar apenas 
           1 categoria de serviço, sendo a serviceCategory2''',
         () async {
-          List<ServiceCartegoryModel> serviceCartegories =
+          List<ServiceCategoryModel> serviceCartegories =
               await serviceCategoryRepository.getNameContained(name: 'depilaç');
           expect(serviceCartegories.length, equals(1));
           expect(serviceCartegories[0], equals(serviceCartegory2));
@@ -135,7 +135,7 @@ void main() {
         '''Ao efetuar uma busca de por nome passando "a", deve retornar 2 categorias de 
         serviço, a primeira sendo a serviceCategory1 e a segunda a serviceCategory2''',
         () async {
-          List<ServiceCartegoryModel> serviceCartegories =
+          List<ServiceCategoryModel> serviceCartegories =
               await serviceCategoryRepository.getNameContained(name: 'a');
           expect(serviceCartegories.length, equals(2));
           expect(serviceCartegories[0], equals(serviceCartegory1));
@@ -147,7 +147,7 @@ void main() {
         '''Ao efetuar uma busca de por nome passando "cabelo", não deve retornar
         nenhuma categoria de serviço''',
         () async {
-          List<ServiceCartegoryModel> serviceCartegories =
+          List<ServiceCategoryModel> serviceCartegories =
               await serviceCategoryRepository.getNameContained(
             name: 'cabelo',
           );
@@ -161,7 +161,7 @@ void main() {
         () async {
           bool isDeleted = await serviceCategoryRepository.deleteById(id: serviceCartegory1.id);
           expect(isDeleted, isTrue);
-          List<ServiceCartegoryModel> serviceCategories = await serviceCategoryRepository.getAll();
+          List<ServiceCategoryModel> serviceCategories = await serviceCategoryRepository.getAll();
           expect(serviceCategories.length, equals(1));
           expect(serviceCategories[0], equals(serviceCartegory2));
         },
