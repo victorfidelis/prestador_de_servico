@@ -2,6 +2,8 @@ import 'package:prestador_de_servico/app/models/service_category/service_cartego
 
 abstract class ServiceCategoryState {}
 
+class ServiceCategoryInitial extends ServiceCategoryState {}
+
 class ServiceCategoryLoading extends ServiceCategoryState {}
 
 class ServiceCategoryError extends ServiceCategoryState {

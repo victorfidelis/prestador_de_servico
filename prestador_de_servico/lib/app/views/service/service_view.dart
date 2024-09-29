@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
-import 'package:prestador_de_servico/app/shared/widgets/search_text_field.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_sliver_search_header.dart';
+import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 
 class ServiceView extends StatelessWidget {
   const ServiceView({super.key});
@@ -10,25 +10,46 @@ class ServiceView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          CustomHeaderContainer(
-            height: 110,
-            child: Stack(
-              children: [
-                Container(
-                  padding: const EdgeInsets.fromLTRB(50, 14, 50, 10),
-                  child: const CustomAppBarTitle(title: 'Serviços'),
+      body: CustomScrollView(
+        slivers: [
+          SliverPersistentHeader(
+            floating: true,
+            delegate: SliverAppBarDelegate(
+              maxHeight: 64,
+              minHeight: 64,
+              child: Container(
+                color: Theme.of(context).colorScheme.surface,
+                padding: const EdgeInsets.only(top: 28),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                        width: 60,
+                        child: BackNavigation(
+                            onTap: () => Navigator.pop(context))),
+                    const Expanded(
+                      child: CustomAppBarTitle(title: 'Serviços'),
+                    ),
+                    const SizedBox(width: 60),
+                  ],
                 ),
-                BackNavigation(onTap: () => Navigator.pop(context)),
-              ],
+              ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.only(top: 88),
-            child: SearchTextField(
-              hintText: 'Pesquise por um serviço ou categoria',
-              onChanged: (String value) {},
+          CustomSliverSearchHeader(
+            hintText: 'Pesquise por um serviço ou categoria',
+            onChanged: (String value) {},
+          ),
+          SliverList(
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return Container(
+                  margin: const EdgeInsets.all(10),
+                  height: 100,
+                  color: Colors.red,
+                );
+              },
+              childCount: 50,
             ),
           ),
         ],

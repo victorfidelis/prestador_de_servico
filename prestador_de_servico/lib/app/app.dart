@@ -3,9 +3,11 @@ import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
 import 'package:prestador_de_servico/app/controllers/create_user/create_user_controller.dart';
 import 'package:prestador_de_servico/app/controllers/login/login_controller.dart';
 import 'package:prestador_de_servico/app/controllers/password_reset/password_reset_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_category_controller.dart';
 import 'package:prestador_de_servico/app/controllers/start/start_controller.dart';
 import 'package:prestador_de_servico/app/services/app/app_service.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
+import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
 import 'package:prestador_de_servico/app/views/create_user/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_view.dart';
@@ -35,6 +37,10 @@ class App extends StatelessWidget {
                 PasswordResetController(authService: AuthService.create())),
         ChangeNotifierProvider<StartController>(
             create: (context) => StartController()),
+        ChangeNotifierProvider<ServiceCategoryController>(
+            create: (context) => ServiceCategoryController(
+                  serviceCategoryService: ServiceCategoryService.create(),
+                )),
       ],
       child: MaterialApp(
         theme: mainTheme,
