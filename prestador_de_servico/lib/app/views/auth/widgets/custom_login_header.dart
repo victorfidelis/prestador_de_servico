@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LoginHeader extends StatelessWidget {
-  const LoginHeader({super.key});
+class CustomLoginHeader extends StatelessWidget {
+  const CustomLoginHeader({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/login/login_controller.dart';
+import 'package:prestador_de_servico/app/controllers/auth/login_controller.dart';
 import 'package:prestador_de_servico/app/models/user/user_model.dart';
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
 import '../../services/auth/auth_service_test.mocks.dart';

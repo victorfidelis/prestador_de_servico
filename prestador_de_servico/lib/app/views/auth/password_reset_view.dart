@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:prestador_de_servico/app/controllers/password_reset/password_reset_controller.dart';
+import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
+import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_login_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/states/password_reset/password_reset_state.dart';
 import 'package:provider/provider.dart';
@@ -38,7 +38,7 @@ class _PasswordResetViewState extends State<PasswordResetView> {
                   child: Stack(
                     children: [
                       const Center(
-                        child: CustomHeader(title: 'Recuperação\nde senha'),
+                        child: CustomSecondLoginHeader(title: 'Recuperação\nde senha'),
                       ),
                       BackNavigation(onTap: backNavigation),
                     ],

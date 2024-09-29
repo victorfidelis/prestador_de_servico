@@ -15,12 +15,12 @@ class CustomHeaderContainer extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        // boxShadow: [
-        //   BoxShadow(
-        //       color: Theme.of(context).colorScheme.shadow,
-        //       offset: const Offset(0, 4),
-        //       blurRadius: 4)
-        // ],
+        boxShadow: [
+          BoxShadow(
+              color: Theme.of(context).colorScheme.shadow,
+              offset: const Offset(0, 4),
+              blurRadius: 4)
+        ],
       ),
       child: child,
     );

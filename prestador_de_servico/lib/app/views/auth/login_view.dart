@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
-import 'package:prestador_de_servico/app/controllers/create_user/create_user_controller.dart';
-import 'package:prestador_de_servico/app/controllers/password_reset/password_reset_controller.dart';
+import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
+import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
-import 'package:prestador_de_servico/app/controllers/login/login_controller.dart';
+import 'package:prestador_de_servico/app/controllers/auth/login_controller.dart';
 import 'package:prestador_de_servico/app/states/login/login_state.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/views/login/widgets/login_google_button.dart';
-import 'package:prestador_de_servico/app/views/login/widgets/login_header.dart';
+import 'package:prestador_de_servico/app/views/auth/widgets/login_google_button.dart';
+import 'package:prestador_de_servico/app/views/auth/widgets/custom_login_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
-import 'package:prestador_de_servico/app/views/login/widgets/register_link.dart';
+import 'package:prestador_de_servico/app/views/auth/widgets/register_link.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
@@ -55,7 +55,7 @@ class _LoginViewState extends State<LoginView> {
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height / 2.8,
-                    child: const LoginHeader(),
+                    child: const CustomLoginHeader(),
                   ),
                   const SizedBox(height: 20),
                   Container(

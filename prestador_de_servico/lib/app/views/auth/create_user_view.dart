@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/create_user/create_user_controller.dart';
+import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
@@ -7,7 +7,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
+import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_login_header.dart';
 import 'package:provider/provider.dart';
 
 class CreateUserView extends StatefulWidget {
@@ -53,7 +53,7 @@ class _CreateUserViewState extends State<CreateUserView> {
                   child: Stack(
                     children: [
                       const Center(
-                        child: CustomHeader(title: 'Criar\nConta'),
+                        child: CustomSecondLoginHeader(title: 'Criar\nConta'),
                       ),
                       BackNavigation(onTap: backNavigation),
                     ],

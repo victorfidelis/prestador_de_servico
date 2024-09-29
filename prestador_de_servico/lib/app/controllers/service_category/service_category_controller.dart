@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart';
 import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
 import 'package:prestador_de_servico/app/states/service_category/service_category_state.dart';
 
