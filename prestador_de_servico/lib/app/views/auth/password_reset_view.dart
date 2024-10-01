@@ -5,7 +5,7 @@ import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_login_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/states/password_reset/password_reset_state.dart';
+import 'package:prestador_de_servico/app/states/auth/password_reset_state.dart';
 import 'package:provider/provider.dart';
 
 class PasswordResetView extends StatefulWidget {

@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
+import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
 
 class CreateUserController extends ChangeNotifier {
   final AuthService authService;

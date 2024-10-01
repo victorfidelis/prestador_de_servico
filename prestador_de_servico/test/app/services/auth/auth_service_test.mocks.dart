@@ -8,10 +8,10 @@ import 'dart:async' as _i6;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart'
     as _i5;
-import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart'
+import 'package:prestador_de_servico/app/states/auth/create_user_state.dart'
     as _i3;
-import 'package:prestador_de_servico/app/states/login/login_state.dart' as _i2;
-import 'package:prestador_de_servico/app/states/password_reset/password_reset_state.dart'
+import 'package:prestador_de_servico/app/states/auth/login_state.dart' as _i2;
+import 'package:prestador_de_servico/app/states/auth/password_reset_state.dart'
     as _i4;
 
 // ignore_for_file: type=lint

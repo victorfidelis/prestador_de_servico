@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/models/user/user_model.dart';
-import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
+import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
 import '../../services/auth/auth_service_test.mocks.dart';
 
 void main() {

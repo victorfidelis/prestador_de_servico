@@ -3,8 +3,8 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/models/user/user_model.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
-import 'package:prestador_de_servico/app/states/login/login_state.dart';
+import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
+import 'package:prestador_de_servico/app/states/auth/login_state.dart';
 
 @GenerateNiceMocks([MockSpec<AuthService>()])
 import 'auth_service_test.mocks.dart';

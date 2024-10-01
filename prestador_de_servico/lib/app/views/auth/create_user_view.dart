@@ -6,7 +6,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/states/create_user/create_user_state.dart';
+import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_login_header.dart';
 import 'package:provider/provider.dart';
 

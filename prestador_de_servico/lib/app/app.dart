@@ -3,14 +3,16 @@ import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/login_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service_category/service_category_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_category_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/controllers/start/start_controller.dart';
 import 'package:prestador_de_servico/app/services/app/app_service.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
+import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
-import 'package:prestador_de_servico/app/views/service_category/service_category_view.dart';
+import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
+import 'package:prestador_de_servico/app/views/service/service_category_view.dart';
 import 'package:prestador_de_servico/app/views/start/start_view.dart';
 import 'package:prestador_de_servico/app/views/auth/login_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
@@ -41,6 +43,10 @@ class App extends StatelessWidget {
             create: (context) => ServiceCategoryController(
                   serviceCategoryService: ServiceCategoryService.create(),
                 )),
+        ChangeNotifierProvider<ServiceCategoryEditController>(
+            create: (context) => ServiceCategoryEditController(
+                  serviceCategoryService: ServiceCategoryService.create(),
+                )),
       ],
       child: MaterialApp(
         theme: mainTheme,
@@ -50,7 +56,8 @@ class App extends StatelessWidget {
           '/createAccount': (context) => const CreateUserView(),
           '/passwordReset': (context) => const PasswordResetView(),
           '/start': (context) => StartView(),
-          '/service': (context) => const ServiceCategoryView(),
+          '/serviceCategory': (context) => const ServiceCategoryView(),
+          '/serviceCategoryEdit': (context) => ServiceCategoryEditView(),
         },
       ),
     );

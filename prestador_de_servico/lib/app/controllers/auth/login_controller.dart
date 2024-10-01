@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/states/login/login_state.dart';
+import 'package:prestador_de_servico/app/states/auth/login_state.dart';
 
 class LoginController extends ChangeNotifier {
   

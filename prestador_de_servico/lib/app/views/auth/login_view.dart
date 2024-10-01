@@ -4,7 +4,7 @@ import 'package:prestador_de_servico/app/controllers/auth/create_user_controller
 import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
 import 'package:prestador_de_servico/app/controllers/auth/login_controller.dart';
-import 'package:prestador_de_servico/app/states/login/login_state.dart';
+import 'package:prestador_de_servico/app/states/auth/login_state.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/login_google_button.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/custom_login_header.dart';
