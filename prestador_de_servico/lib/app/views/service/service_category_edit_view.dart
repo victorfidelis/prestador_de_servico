@@ -24,12 +24,11 @@ class ServiceCategoryEditView extends StatefulWidget {
 class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
   final TextEditingController nameController = TextEditingController();
   final FocusNode nameFocus = FocusNode();
-
+  late bool isNew;
+  
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ServiceCategoryEditController>().init();
-    });
+    isNew = (context.read<ServiceCategoryEditController>().state is ServiceCategoryEditAdd);
     super.initState();
   }
 
@@ -97,6 +96,8 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
                     CustomTextError(message: genericErrorMessage);
               }
             }
+
+            
 
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
