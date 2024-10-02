@@ -4,9 +4,13 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 
 class ServiceCategoryCard extends StatelessWidget {
   final ServiceCategoryModel serviceCategory;
+  final Function({required ServiceCategoryModel serviceCategory}) onEdit;
+  final Function({required ServiceCategoryModel serviceCategory}) onDelete;
   const ServiceCategoryCard({
     super.key,
     required this.serviceCategory,
+    required this.onEdit,
+    required this.onDelete,
   });
 
   @override
@@ -28,7 +32,18 @@ class ServiceCategoryCard extends StatelessWidget {
                 ),
               ),
               IconButton(
-                onPressed: () {},
+                onPressed: () {
+                  onDelete(serviceCategory: serviceCategory);
+                },
+                icon: Icon(
+                  Icons.delete,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+              IconButton(
+                onPressed: () {
+                  onEdit(serviceCategory: serviceCategory);
+                },
                 icon: Icon(
                   Icons.edit,
                   color: Theme.of(context).colorScheme.secondary,

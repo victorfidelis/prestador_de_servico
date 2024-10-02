@@ -20,13 +20,28 @@ class ServiceCategoryEditController extends ChangeNotifier {
   }
 
   void initUpdate({required ServiceCategoryModel serviceCategory}) {
-    _changeState(currentState: ServiceCategoryEditUpdate(serviceCategory: serviceCategory));
+    _changeState(
+        currentState:
+            ServiceCategoryEditUpdate(serviceCategory: serviceCategory));
   }
 
   Future<void> add({required String name}) async {
     _changeState(currentState: ServiceCategoryEditLoading());
     ServiceCategoryEditState serviceCategoryEditState =
-        await serviceCategoryService.add(name: name);
+        await serviceCategoryService.addOnDatabase(name: name);
+    _changeState(currentState: serviceCategoryEditState);
+  }
+
+  Future<void> update({
+    required String id,
+    required String name,
+  }) async {
+    _changeState(currentState: ServiceCategoryEditLoading());
+    ServiceCategoryEditState serviceCategoryEditState =
+        await serviceCategoryService.updateOnDatabase(
+      id: id,
+      name: name,
+    );
     _changeState(currentState: serviceCategoryEditState);
   }
 }

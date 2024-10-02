@@ -10,7 +10,7 @@ class CustomText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      'Nova categoria',
+      text,
       style: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.w700, 

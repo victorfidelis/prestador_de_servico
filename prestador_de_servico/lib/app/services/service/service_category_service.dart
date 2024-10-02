@@ -10,12 +10,22 @@ abstract class ServiceCategoryService {
 
   Future<ServiceCategoryState> getAll();
   Future<ServiceCategoryState> getNameContained({required String value});
-  Future<ServiceCategoryEditState> add({required String name});
-  Future<ServiceCategoryEditState> update(
-      {required ServiceCategoryModel serviceCategory});
+  Future<ServiceCategoryEditState> addOnDatabase({required String name});
+  Future<ServiceCategoryEditState> updateOnDatabase({
+    required String id,
+    required String name,
+  });
   Future<ServiceCategoryState> delete(
       {required ServiceCategoryModel serviceCategory});
-  ServiceCategoryState insert({
+  ServiceCategoryState addOnList({
+    required ServiceCategoryState serviceCategoryState,
+    required ServiceCategoryModel serviceCategory,
+  });
+  ServiceCategoryState updateOnList({
+    required ServiceCategoryState serviceCategoryState,
+    required ServiceCategoryModel serviceCategory,
+  });
+  ServiceCategoryState deleteOnList({
     required ServiceCategoryState serviceCategoryState,
     required ServiceCategoryModel serviceCategory,
   });

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart';
+import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
@@ -21,6 +22,8 @@ class ServiceCategoryView extends StatefulWidget {
 }
 
 class _ServiceCategoryViewState extends State<ServiceCategoryView> {
+  final CustomNotifications _notifications = CustomNotifications();
+
   @override
   void initState() {
     super.initState();
@@ -110,6 +113,8 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
                       children: [
                         ServiceCategoryCard(
                           serviceCategory: serviceCategories[index],
+                          onEdit: onEditServiceCategory,
+                          onDelete: onDeleteServiceCategory,
                         ),
                         Divider(color: Theme.of(context).colorScheme.shadow),
                       ],
@@ -130,21 +135,37 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
         ),
         child: CustomButton(
           label: 'Nova categoria',
-          onTap: () {
-            Navigator.of(context).pushNamed('/serviceCategoryEdit');
-          },
+          onTap: onAddServiceCategory,
         ),
       ),
     );
   }
 
-  void goAddServiceCategory() {
+  void onAddServiceCategory() {
     context.read<ServiceCategoryEditController>().initAdd();
     Navigator.of(context).pushNamed('/serviceCategoryEdit');
   }
 
-  void goUpdateServiceCategory({required ServiceCategoryModel serviceCategory}) {
-    context.read<ServiceCategoryEditController>().initUpdate(serviceCategory: serviceCategory,);
+  void onEditServiceCategory({required ServiceCategoryModel serviceCategory}) {
+    context.read<ServiceCategoryEditController>().initUpdate(
+          serviceCategory: serviceCategory,
+        );
     Navigator.of(context).pushNamed('/serviceCategoryEdit');
+  }
+
+  void onDeleteServiceCategory({required ServiceCategoryModel serviceCategory}) {
+    _notifications.showQuestionAlert(
+      context: context,
+      title: 'Excluir categoria de serviço',
+      content: 'Tem certeza que deseja excluir a categoria de serviço?',
+      confirmCallback: () {
+        deleteServiceCategory(serviceCategory: serviceCategory);
+      },
+      cancelCallback: () {},
+    );
+  }
+
+  void deleteServiceCategory({required ServiceCategoryModel serviceCategory}) {
+    context.read<ServiceCategoryController>().deleteServiceCategory(serviceCategory: serviceCategory);
   }
 }

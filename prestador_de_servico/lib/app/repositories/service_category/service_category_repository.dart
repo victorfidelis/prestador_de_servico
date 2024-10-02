@@ -1,5 +1,6 @@
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart';
 import 'package:prestador_de_servico/app/repositories/service_category/firebase_service_category_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service_category/sqflite_service_category_repository.dart';
 
 abstract class ServiceCategoryRepository {
 
@@ -7,7 +8,7 @@ abstract class ServiceCategoryRepository {
     return FirebaseServiceCategoryRepository();
   }
   factory ServiceCategoryRepository.create_offline() {
-    return FirebaseServiceCategoryRepository();
+    return SqfliteServiceCategoryRepository();
   }
 
   Future<List<ServiceCategoryModel>> getAll();

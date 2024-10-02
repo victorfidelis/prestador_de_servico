@@ -11,7 +11,7 @@ class HybridServiceCategoryService implements ServiceCategoryService {
       ServiceCategoryRepository.create_offline();
 
   @override
-  Future<ServiceCategoryEditState> add({required String name}) async {
+  Future<ServiceCategoryEditState> addOnDatabase({required String name}) async {
     name = name.trim();
     if (name.isEmpty) {
       return ServiceCategoryEditError(
@@ -69,23 +69,41 @@ class HybridServiceCategoryService implements ServiceCategoryService {
   }
 
   @override
-  Future<ServiceCategoryEditState> update(
-      {required ServiceCategoryModel serviceCategory}) async {
+  Future<ServiceCategoryEditState> updateOnDatabase({
+    required String id,
+    required String name,
+  }) async {
+    id = id.trim();
+    name = name.trim();
+
+    if (name.isEmpty) {
+      return ServiceCategoryEditError(
+          nameMessage: 'Necessário informar o nome');
+    }
+
+    if (id.isEmpty) {
+      return ServiceCategoryEditError(
+          genericMessage: 'Id da categoria não foi identificado');
+    }
+
+    ServiceCategoryModel serviceCategory =
+        ServiceCategoryModel(id: id, name: name);
+
     if (!await _onlineServiceCategoryRepository.update(
         serviceCategory: serviceCategory)) {
       return ServiceCategoryEditError(
-          genericMessage: 'Falha ao salvar os dados');
+          genericMessage: 'Falha ao alterar os dados');
     }
     if (!await _offlineServiceCategoryRepository.update(
         serviceCategory: serviceCategory)) {
       return ServiceCategoryEditError(
-          genericMessage: 'Um erro ocorreu ao salvar os dados locais');
+          genericMessage: 'Um erro ocorreu ao alterar os dados locais');
     }
     return ServiceCategoryEditSuccess(serviceCategory: serviceCategory);
   }
 
   @override
-  ServiceCategoryState insert({
+  ServiceCategoryState addOnList({
     required ServiceCategoryState serviceCategoryState,
     required ServiceCategoryModel serviceCategory,
   }) {
@@ -93,6 +111,39 @@ class HybridServiceCategoryService implements ServiceCategoryService {
       return serviceCategoryState;
     }
     serviceCategoryState.serviceCategories.insert(0, serviceCategory);
+    return serviceCategoryState;
+  }
+
+  @override
+  ServiceCategoryState updateOnList({
+    required ServiceCategoryState serviceCategoryState,
+    required ServiceCategoryModel serviceCategory,
+  }) {
+    if (serviceCategoryState is! ServiceCategoryLoaded) {
+      return serviceCategoryState;
+    }
+
+    int index = serviceCategoryState.serviceCategories.indexWhere(
+      (serviceCategoryIndex) => serviceCategory.id == serviceCategory.id,
+    );
+    serviceCategoryState.serviceCategories[index] = serviceCategory;
+
+    return serviceCategoryState;
+  }
+
+  @override
+  ServiceCategoryState deleteOnList({
+    required ServiceCategoryState serviceCategoryState,
+    required ServiceCategoryModel serviceCategory,
+  }) {
+    if (serviceCategoryState is! ServiceCategoryLoaded) {
+      return serviceCategoryState;
+    }
+
+    serviceCategoryState.serviceCategories.removeWhere(
+      (serviceCategoryIndex) => serviceCategory.id == serviceCategory.id,
+    );
+
     return serviceCategoryState;
   }
 }

@@ -31,9 +31,24 @@ class ServiceCategoryController extends ChangeNotifier {
     _changeState(currentState: serviceCategoryState);
   }
 
-  void insert({required ServiceCategoryModel serviceCategory}) {
+  void deleteServiceCategory({required ServiceCategoryModel serviceCategory}) async {
+    _changeState(currentState: ServiceCategoryLoading());
+    ServiceCategoryState serviceCategoryState = await serviceCategoryService.delete(serviceCategory: serviceCategory);
+    _changeState(currentState: serviceCategoryState);
+  }
+
+  void addOnList({required ServiceCategoryModel serviceCategory}) {
     _changeState(
-      currentState: serviceCategoryService.insert(
+      currentState: serviceCategoryService.addOnList(
+        serviceCategoryState: state,
+        serviceCategory: serviceCategory,
+      ),
+    );
+  }
+
+  void updateOnList({required ServiceCategoryModel serviceCategory}) {
+    _changeState(
+      currentState: serviceCategoryService.updateOnList(
         serviceCategoryState: state,
         serviceCategory: serviceCategory,
       ),

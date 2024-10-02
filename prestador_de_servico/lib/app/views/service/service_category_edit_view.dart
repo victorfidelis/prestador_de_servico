@@ -11,6 +11,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_text.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/states/service/service_category_edit_state.dart';
+import 'package:prestador_de_servico/app/views/service/widgets/custom_text_name.dart';
 import 'package:provider/provider.dart';
 
 class ServiceCategoryEditView extends StatefulWidget {
@@ -24,11 +25,19 @@ class ServiceCategoryEditView extends StatefulWidget {
 class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
   final TextEditingController nameController = TextEditingController();
   final FocusNode nameFocus = FocusNode();
-  late bool isNew;
-  
+  late bool isUpdate;
+  ServiceCategoryModel? serviceCategory;
+
   @override
   void initState() {
-    isNew = (context.read<ServiceCategoryEditController>().state is ServiceCategoryEditAdd);
+    isUpdate = (context.read<ServiceCategoryEditController>().state
+        is ServiceCategoryEditUpdate);
+    if (isUpdate) {
+      serviceCategory = (context.read<ServiceCategoryEditController>().state
+              as ServiceCategoryEditUpdate)
+          .serviceCategory;
+      nameController.text = serviceCategory!.name;
+    }
     super.initState();
   }
 
@@ -62,9 +71,7 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
                     (serviceCategoryEditController.state
                             as ServiceCategoryEditSuccess)
                         .serviceCategory;
-                context
-                    .read<ServiceCategoryController>()
-                    .insert(serviceCategory: serviceCategory);
+                afterSave(serviceCategory: serviceCategory);
                 Navigator.pop(context);
               });
               return Container();
@@ -97,15 +104,16 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
               }
             }
 
-            
-
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
               child: Column(
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      CustomText(text: 'Nova categoria'),
+                      CustomText(
+                          text: (isUpdate
+                              ? 'Alterando categoria'
+                              : 'Nova categoria')),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -113,6 +121,10 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Column(
                       children: [
+                        isUpdate
+                            ? CustomTextName(text: serviceCategory!.name)
+                            : Container(),
+                        isUpdate ? const SizedBox(height: 12) : Container(),
                         CustomTextField(
                           label: 'Nome',
                           controller: nameController,
@@ -137,15 +149,34 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
         ),
         child: CustomButton(
           label: 'Salvar',
-          onTap: saveServiceCategory,
+          onTap: save,
         ),
       ),
     );
   }
 
-  void saveServiceCategory() {
-    context
-        .read<ServiceCategoryEditController>()
-        .add(name: nameController.text);
+  void save() {
+    if (isUpdate) {
+      context.read<ServiceCategoryEditController>().update(
+            id: serviceCategory!.id,
+            name: nameController.text,
+          );
+    } else {
+      context
+          .read<ServiceCategoryEditController>()
+          .add(name: nameController.text);
+    }
+  }
+
+  void afterSave({required ServiceCategoryModel serviceCategory}) {
+    if (isUpdate) {
+      context.read<ServiceCategoryController>().updateOnList(
+            serviceCategory: serviceCategory,
+          );
+    } else {
+      context
+          .read<ServiceCategoryController>()
+          .addOnList(serviceCategory: serviceCategory);
+    }
   }
 }

@@ -20,4 +20,12 @@ abstract class CustomNotifications {
     required String content,
     Function()? confirmCallback,
   });
+
+  Future<void> showQuestionAlert({
+    required BuildContext context,
+    required String title,
+    required String content,
+    Function() confirmCallback,
+    Function() cancelCallback,
+  });
 }
