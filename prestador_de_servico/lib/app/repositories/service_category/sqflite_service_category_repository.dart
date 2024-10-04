@@ -1,6 +1,6 @@
 import 'package:prestador_de_servico/app/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory_adapter.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart';
 import 'package:replace_diacritic/replace_diacritic.dart';
 import 'package:sqflite/sqflite.dart';
@@ -20,7 +20,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   }
   
   @override
-  Future<List<ServiceCategoryModel>> getAll() async {
+  Future<List<ServiceCategory>> getAll() async {
     await _initDatabase();
 
     String selectCommand = ""
@@ -33,7 +33,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
 
     List<Map> serviceCategoryMap = await database!.rawQuery(selectCommand);
 
-    List<ServiceCategoryModel> serviceCartegories = serviceCategoryMap
+    List<ServiceCategory> serviceCartegories = serviceCategoryMap
         .map(
           (serviceCategory) =>
               ServiceCartegoryAdapter.fromSqflite(map: serviceCategory),
@@ -44,7 +44,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<String?> add({required ServiceCategoryModel serviceCategory}) async {
+  Future<String> add({required ServiceCategory serviceCategory}) async {
     await _initDatabase();
 
     String insert = ''
@@ -62,7 +62,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<bool> deleteById({required String id}) async {
+  Future<void> deleteById({required String id}) async {
     await _initDatabase();
 
     String deleteTextMold = ''
@@ -74,12 +74,10 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
     List params = [id];
 
     await database!.rawDelete(deleteTextMold, params);
-
-    return true;
   }
 
   @override
-  Future<ServiceCategoryModel> getById({required String id}) async {
+  Future<ServiceCategory> getById({required String id}) async {
     await _initDatabase();
 
     String selectCommand = ""
@@ -96,14 +94,14 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
     List<Map> serviceCategoryMap =
         await database!.rawQuery(selectCommand, params);
 
-    ServiceCategoryModel serviceCartegory =
+    ServiceCategory serviceCartegory =
         ServiceCartegoryAdapter.fromSqflite(map: serviceCategoryMap[0]);
 
     return serviceCartegory;
   }
 
   @override
-  Future<List<ServiceCategoryModel>> getNameContained(
+  Future<List<ServiceCategory>> getNameContained(
       {required String name}) async {
     await _initDatabase();
     String nameWithoutDiacritic = replaceDiacritic(name).trim().toUpperCase();
@@ -120,7 +118,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
 
     List<Map> serviceCategoryMap = await database!.rawQuery(selectCommand);
 
-    List<ServiceCategoryModel> serviceCartegories = serviceCategoryMap
+    List<ServiceCategory> serviceCartegories = serviceCategoryMap
         .map(
           (serviceCategory) =>
               ServiceCartegoryAdapter.fromSqflite(map: serviceCategory),
@@ -131,7 +129,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<bool> update({required ServiceCategoryModel serviceCategory}) async {
+  Future<void> update({required ServiceCategory serviceCategory}) async {
     await _initDatabase();
 
     String updateText = ''
@@ -149,7 +147,5 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
     ];
 
     await database!.rawUpdate(updateText, params);
-
-    return true;
   }
 }

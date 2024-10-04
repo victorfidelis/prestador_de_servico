@@ -6,7 +6,7 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart'
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart'
     as _i2;
 import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart'
     as _i3;
@@ -25,7 +25,7 @@ import 'package:prestador_de_servico/app/repositories/service_category/service_c
 // ignore_for_file: subtype_of_sealed_class
 
 class _FakeServiceCartegoryModel_0 extends _i1.SmartFake
-    implements _i2.ServiceCategoryModel {
+    implements _i2.ServiceCategory {
   _FakeServiceCartegoryModel_0(
     Object parent,
     Invocation parentInvocation,
@@ -41,14 +41,14 @@ class _FakeServiceCartegoryModel_0 extends _i1.SmartFake
 class MockServiceCategoryRepository extends _i1.Mock
     implements _i3.ServiceCategoryRepository {
   @override
-  _i4.Future<_i2.ServiceCategoryModel> getById({required String? id}) =>
+  _i4.Future<_i2.ServiceCategory> getById({required String? id}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getById,
           [],
           {#id: id},
         ),
-        returnValue: _i4.Future<_i2.ServiceCategoryModel>.value(
+        returnValue: _i4.Future<_i2.ServiceCategory>.value(
             _FakeServiceCartegoryModel_0(
           this,
           Invocation.method(
@@ -57,7 +57,7 @@ class MockServiceCategoryRepository extends _i1.Mock
             {#id: id},
           ),
         )),
-        returnValueForMissingStub: _i4.Future<_i2.ServiceCategoryModel>.value(
+        returnValueForMissingStub: _i4.Future<_i2.ServiceCategory>.value(
             _FakeServiceCartegoryModel_0(
           this,
           Invocation.method(
@@ -66,10 +66,10 @@ class MockServiceCategoryRepository extends _i1.Mock
             {#id: id},
           ),
         )),
-      ) as _i4.Future<_i2.ServiceCategoryModel>);
+      ) as _i4.Future<_i2.ServiceCategory>);
 
   @override
-  _i4.Future<List<_i2.ServiceCategoryModel>> getNameContained(
+  _i4.Future<List<_i2.ServiceCategory>> getNameContained(
           {required String? name}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -77,16 +77,16 @@ class MockServiceCategoryRepository extends _i1.Mock
           [],
           {#name: name},
         ),
-        returnValue: _i4.Future<List<_i2.ServiceCategoryModel>>.value(
-            <_i2.ServiceCategoryModel>[]),
+        returnValue: _i4.Future<List<_i2.ServiceCategory>>.value(
+            <_i2.ServiceCategory>[]),
         returnValueForMissingStub:
-            _i4.Future<List<_i2.ServiceCategoryModel>>.value(
-                <_i2.ServiceCategoryModel>[]),
-      ) as _i4.Future<List<_i2.ServiceCategoryModel>>);
+            _i4.Future<List<_i2.ServiceCategory>>.value(
+                <_i2.ServiceCategory>[]),
+      ) as _i4.Future<List<_i2.ServiceCategory>>);
 
   @override
   _i4.Future<String?> add(
-          {required _i2.ServiceCategoryModel? serviceCategory}) =>
+          {required _i2.ServiceCategory? serviceCategory}) =>
       (super.noSuchMethod(
         Invocation.method(
           #add,
@@ -99,7 +99,7 @@ class MockServiceCategoryRepository extends _i1.Mock
 
   @override
   _i4.Future<bool> update(
-          {required _i2.ServiceCategoryModel? serviceCategory}) =>
+          {required _i2.ServiceCategory? serviceCategory}) =>
       (super.noSuchMethod(
         Invocation.method(
           #update,

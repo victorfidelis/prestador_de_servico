@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
@@ -97,7 +97,7 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
               );
             }
 
-            List<ServiceCategoryModel> serviceCategories =
+            List<ServiceCategory> serviceCategories =
                 (serviceCategoryController.state as ServiceCategoryLoaded)
                     .serviceCategories;
 
@@ -146,14 +146,14 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
     Navigator.of(context).pushNamed('/serviceCategoryEdit');
   }
 
-  void onEditServiceCategory({required ServiceCategoryModel serviceCategory}) {
+  void onEditServiceCategory({required ServiceCategory serviceCategory}) {
     context.read<ServiceCategoryEditController>().initUpdate(
           serviceCategory: serviceCategory,
         );
     Navigator.of(context).pushNamed('/serviceCategoryEdit');
   }
 
-  void onDeleteServiceCategory({required ServiceCategoryModel serviceCategory}) {
+  void onDeleteServiceCategory({required ServiceCategory serviceCategory}) {
     _notifications.showQuestionAlert(
       context: context,
       title: 'Excluir categoria de serviço',
@@ -165,7 +165,7 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
     );
   }
 
-  void deleteServiceCategory({required ServiceCategoryModel serviceCategory}) {
+  void deleteServiceCategory({required ServiceCategory serviceCategory}) {
     context.read<ServiceCategoryController>().deleteServiceCategory(serviceCategory: serviceCategory);
   }
 }

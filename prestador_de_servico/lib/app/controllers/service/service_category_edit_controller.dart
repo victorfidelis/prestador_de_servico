@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/states/service/service_category_edit_state.dart';
 
@@ -19,29 +19,22 @@ class ServiceCategoryEditController extends ChangeNotifier {
     _changeState(currentState: ServiceCategoryEditAdd());
   }
 
-  void initUpdate({required ServiceCategoryModel serviceCategory}) {
+  void initUpdate({required ServiceCategory serviceCategory}) {
     _changeState(
         currentState:
             ServiceCategoryEditUpdate(serviceCategory: serviceCategory));
   }
 
-  Future<void> add({required String name}) async {
+  Future<void> add({required ServiceCategory serviceCategory}) async {
     _changeState(currentState: ServiceCategoryEditLoading());
-    ServiceCategoryEditState serviceCategoryEditState =
-        await serviceCategoryService.addOnDatabase(name: name);
-    _changeState(currentState: serviceCategoryEditState);
+    await serviceCategoryService.addOnDatabase(
+        serviceCategory: serviceCategory);
+    _changeState(currentState: ServiceCategoryEditSuccess(serviceCategory: serviceCategory));
   }
 
-  Future<void> update({
-    required String id,
-    required String name,
-  }) async {
+  Future<void> update({required ServiceCategory serviceCategory}) async {
     _changeState(currentState: ServiceCategoryEditLoading());
-    ServiceCategoryEditState serviceCategoryEditState =
-        await serviceCategoryService.updateOnDatabase(
-      id: id,
-      name: name,
-    );
-    _changeState(currentState: serviceCategoryEditState);
+    await serviceCategoryService.updateOnDatabase(serviceCategory: serviceCategory);
+    _changeState(currentState: ServiceCategoryEditSuccess(serviceCategory: serviceCategory));
   }
 }

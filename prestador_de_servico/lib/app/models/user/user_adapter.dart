@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:prestador_de_servico/app/models/user/user_model.dart';
+import 'package:prestador_de_servico/app/models/user/user.dart';
 
 class UserAdapter {
 
-  static Map<String, dynamic> toMap({required UserModel user}) {
+  static Map<String, dynamic> toMap({required User user}) {
     return {
       'id': user.id,
       'isAdmin': user.isAdmin,
@@ -14,8 +14,8 @@ class UserAdapter {
     };
   }
 
-  static UserModel fromMap({required Map<String, dynamic> map}) {
-    return UserModel(
+  static User fromMap({required Map<String, dynamic> map}) {
+    return User(
       id: map['id'],
       isAdmin: map['isAdmin'],
       name: map['name'],
@@ -25,7 +25,7 @@ class UserAdapter {
     );
   } 
 
-  static Map<String, dynamic> toFirebaseMap({required UserModel user}) {
+  static Map<String, dynamic> toFirebaseMap({required User user}) {
     return {
       'name': user.name,
       'isAdmin': user.isAdmin,
@@ -35,11 +35,11 @@ class UserAdapter {
     };
   }
 
-  static UserModel fromDocumentSnapshot({required DocumentSnapshot doc}) {
+  static User fromDocumentSnapshot({required DocumentSnapshot doc}) {
     Map<String, dynamic> map = (doc.data() as Map<String, dynamic>);
     map['id'] = doc.id;
 
-    UserModel user = UserAdapter.fromMap(map: map);
+    User user = UserAdapter.fromMap(map: map);
     return user;
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
@@ -26,7 +26,7 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
   final TextEditingController nameController = TextEditingController();
   final FocusNode nameFocus = FocusNode();
   late bool isUpdate;
-  ServiceCategoryModel? serviceCategory;
+  ServiceCategory? serviceCategory;
 
   @override
   void initState() {
@@ -67,7 +67,7 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
             if (serviceCategoryEditController.state
                 is ServiceCategoryEditSuccess) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                ServiceCategoryModel serviceCategory =
+                ServiceCategory serviceCategory =
                     (serviceCategoryEditController.state
                             as ServiceCategoryEditSuccess)
                         .serviceCategory;
@@ -168,7 +168,7 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
     }
   }
 
-  void afterSave({required ServiceCategoryModel serviceCategory}) {
+  void afterSave({required ServiceCategory serviceCategory}) {
     if (isUpdate) {
       context.read<ServiceCategoryController>().updateOnList(
             serviceCategory: serviceCategory,

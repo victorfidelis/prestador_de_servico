@@ -1,4 +1,4 @@
-import 'package:prestador_de_servico/app/models/user/user_model.dart';
+import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/repositories/user/firebase_user_repository.dart';
 
 abstract class UserRepository {
@@ -6,9 +6,9 @@ abstract class UserRepository {
     return FirebaseUserRepository();
   }
 
-  Future<String?> add({required UserModel user});
-  Future<UserModel?> getById({required String id});
-  Future<UserModel?> getByEmail({required String email});
-  Future<bool> deleteById({required String id});
-  Future<bool> update({required UserModel user});
+  Future<String?> add({required User user});
+  Future<User?> getById({required String id});
+  Future<User?> getByEmail({required String email});
+  Future<void> deleteById({required String id});
+  Future<void> update({required User user});
 }

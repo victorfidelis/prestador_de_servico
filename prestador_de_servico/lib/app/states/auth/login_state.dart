@@ -1,4 +1,4 @@
-import 'package:prestador_de_servico/app/models/user/user_model.dart';
+import 'package:prestador_de_servico/app/models/user/user.dart';
 
 abstract class LoginState {}
 abstract class LoginSent extends LoginState {}
@@ -16,7 +16,7 @@ class LoginWithEmailAndPasswordSent extends LoginSent {
 } 
 
 class LoginSuccess extends LoginState {
-  final UserModel user;
+  final User user;
   LoginSuccess({required this.user});
 }
 

@@ -1,5 +1,5 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-class UserModel {
+class User {
   final String id;
   final bool isAdmin;
   final String email;
@@ -7,7 +7,7 @@ class UserModel {
   final String surname;
   final String phone;
 
-  UserModel({
+  User({
     required this.id,
     required this.isAdmin,
     required this.email,
@@ -18,13 +18,13 @@ class UserModel {
 
   @override
   bool operator ==(Object other) {
-    return other is UserModel &&
+    return other is User &&
         id == other.id &&
         email == other.email &&
         name == other.name;
   }    
 
-  UserModel copyWith({
+  User copyWith({
     String? id,
     bool? isAdmin,
     String? email,
@@ -32,7 +32,7 @@ class UserModel {
     String? surname,
     String? phone,
   }) {
-    return UserModel(
+    return User(
       id: id ?? this.id,
       isAdmin: isAdmin ?? this.isAdmin,
       email: email ?? this.email,

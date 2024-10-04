@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 
 class ServiceCategoryCard extends StatelessWidget {
-  final ServiceCategoryModel serviceCategory;
-  final Function({required ServiceCategoryModel serviceCategory}) onEdit;
-  final Function({required ServiceCategoryModel serviceCategory}) onDelete;
+  final ServiceCategory serviceCategory;
+  final Function({required ServiceCategory serviceCategory}) onEdit;
+  final Function({required ServiceCategory serviceCategory}) onDelete;
   const ServiceCategoryCard({
     super.key,
     required this.serviceCategory,

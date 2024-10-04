@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/states/service/service_category_state.dart';
 
@@ -17,41 +17,50 @@ class ServiceCategoryController extends ChangeNotifier {
 
   Future<void> load() async {
     _changeState(currentState: ServiceCategoryLoading());
-    ServiceCategoryState serviceCategoryState =
-        await serviceCategoryService.getAll();
-    _changeState(currentState: serviceCategoryState);
+    List<ServiceCategory> serviceCategories;
+    serviceCategories = await serviceCategoryService.getAll();
+    _changeState(
+        currentState:
+            ServiceCategoryLoaded(serviceCategories: serviceCategories));
   }
 
   Future<void> filter({required String value}) async {
     _changeState(currentState: ServiceCategoryLoading());
-    ServiceCategoryState serviceCategoryState =
-        await serviceCategoryService.getNameContained(
-      value: value,
-    );
-    _changeState(currentState: serviceCategoryState);
+    List<ServiceCategory> serviceCategories;
+    serviceCategories =
+        await serviceCategoryService.getNameContained(value: value);
+    _changeState(
+        currentState:
+            ServiceCategoryLoaded(serviceCategories: serviceCategories));
   }
 
-  void deleteServiceCategory({required ServiceCategoryModel serviceCategory}) async {
+  void deleteServiceCategory({required ServiceCategory serviceCategory}) async {
     _changeState(currentState: ServiceCategoryLoading());
-    ServiceCategoryState serviceCategoryState = await serviceCategoryService.delete(serviceCategory: serviceCategory);
-    _changeState(currentState: serviceCategoryState);
+    await serviceCategoryService.delete(serviceCategory: serviceCategory);
+    await load();
   }
 
-  void addOnList({required ServiceCategoryModel serviceCategory}) {
-    _changeState(
-      currentState: serviceCategoryService.addOnList(
-        serviceCategoryState: state,
-        serviceCategory: serviceCategory,
-      ),
-    );
+  void addOnList({required ServiceCategory serviceCategory}) {
+    if (state is! ServiceCategoryLoaded) {
+      return;
+    }
+
+    ServiceCategoryLoaded currentState = state as ServiceCategoryLoaded;
+    currentState.serviceCategories.insert(0, serviceCategory);
+
+    _changeState(currentState: currentState);
   }
 
-  void updateOnList({required ServiceCategoryModel serviceCategory}) {
-    _changeState(
-      currentState: serviceCategoryService.updateOnList(
-        serviceCategoryState: state,
-        serviceCategory: serviceCategory,
-      ),
-    );
+  void updateOnList({required ServiceCategory serviceCategory}) {
+    if (state is! ServiceCategoryLoaded) {
+      return;
+    }
+
+    ServiceCategoryLoaded currentState = state as ServiceCategoryLoaded;
+    int index = currentState.serviceCategories
+        .indexWhere((element) => element.id == serviceCategory.id);
+    currentState.serviceCategories[index] = serviceCategory;
+
+    _changeState(currentState: currentState);
   }
 }

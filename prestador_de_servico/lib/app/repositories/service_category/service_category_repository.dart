@@ -1,4 +1,4 @@
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory_model.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/repositories/service_category/firebase_service_category_repository.dart';
 import 'package:prestador_de_servico/app/repositories/service_category/sqflite_service_category_repository.dart';
 
@@ -11,10 +11,10 @@ abstract class ServiceCategoryRepository {
     return SqfliteServiceCategoryRepository();
   }
 
-  Future<List<ServiceCategoryModel>> getAll();
-  Future<ServiceCategoryModel> getById({required String id});
-  Future<List<ServiceCategoryModel>> getNameContained({required String name});
-  Future<String?> add({required ServiceCategoryModel serviceCategory});
-  Future<bool> update({required ServiceCategoryModel serviceCategory});
-  Future<bool> deleteById({required String id});
+  Future<List<ServiceCategory>> getAll();
+  Future<ServiceCategory> getById({required String id});
+  Future<List<ServiceCategory>> getNameContained({required String name});
+  Future<String> add({required ServiceCategory serviceCategory});
+  Future<void> update({required ServiceCategory serviceCategory});
+  Future<void> deleteById({required String id});
 }

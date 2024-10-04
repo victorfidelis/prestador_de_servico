@@ -1,4 +1,4 @@
-import 'package:prestador_de_servico/app/models/user/user_model.dart';
+import 'package:prestador_de_servico/app/models/user/user.dart';
 
 abstract class CreateUserState {}
 abstract class CreateUserSent extends CreateUserState {}
@@ -45,7 +45,7 @@ class ErrorCreatingUser extends CreateUserState {
 }
 
 class UserCreated extends CreateUserState {
-  final UserModel user;
+  final User user;
 
   UserCreated({required this.user});
 }

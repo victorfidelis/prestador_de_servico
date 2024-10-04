@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/controllers/auth/login_controller.dart';
-import 'package:prestador_de_servico/app/models/user/user_model.dart';
+import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/states/auth/login_state.dart';
 import '../../services/auth/auth_service_test.mocks.dart';
 
@@ -10,7 +10,7 @@ void main() {
   final mockAuthService = MockAuthService();
   final LoginController loginController = LoginController(authService: mockAuthService);
 
-  final UserModel validUser = UserModel(
+  final User validUser = User(
     id: '',
     isAdmin: false,
     email: 'test@test.com',

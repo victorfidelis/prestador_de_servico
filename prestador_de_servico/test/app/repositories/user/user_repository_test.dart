@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/models/user/user_model.dart';
+import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 
 @GenerateNiceMocks([MockSpec<UserRepository>()])
@@ -10,7 +10,7 @@ import 'user_repository_test.mocks.dart';
 void main() {
   final MockUserRepository mockUserRepository = MockUserRepository();
 
-  UserModel user1 = UserModel(
+  User user1 = User(
       id: '1',
       isAdmin: false,
       email: 'test@test.com',
@@ -57,7 +57,7 @@ void main() {
     '''Ao tentar capturar um usuário válido pelo seu email o retorno deve ser uma instância 
     de UserModel do usuário consultado''',
     () async {
-      UserModel? user = await mockUserRepository.getByEmail(email: user1.email);
+      User? user = await mockUserRepository.getByEmail(email: user1.email);
 
       expect(user, equals(user1));
     },
@@ -67,7 +67,7 @@ void main() {
     '''Ao tentar capturar um usuário válido pelo seu email retorno deve uma instância 
     de UserModel do usuário consultado''',
     () async {
-      UserModel? user = await mockUserRepository.getByEmail(email: user1.email);
+      User? user = await mockUserRepository.getByEmail(email: user1.email);
 
       expect(user, equals(user1));
     },

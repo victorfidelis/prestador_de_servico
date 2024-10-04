@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:prestador_de_servico/app/models/user/user_model.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
@@ -8,7 +8,7 @@ import 'package:prestador_de_servico/app/states/auth/password_reset_state.dart';
 
 
 class FirebaseAuthService implements AuthService {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final firebase_auth.FirebaseAuth _firebaseAuth = firebase_auth.FirebaseAuth.instance;
   final UserRepository _userRepository = UserRepository.create();
 
   @override
@@ -26,13 +26,13 @@ class FirebaseAuthService implements AuthService {
     LoginState loginState;
 
     try {
-      final UserCredential userCredential =
+      final firebase_auth.UserCredential userCredential =
           await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      UserModel? user =
+      User? user =
           await _userRepository.getByEmail(email: email);
 
       if (user == null) {
@@ -45,7 +45,7 @@ class FirebaseAuthService implements AuthService {
       } else {
         loginState = LoginSuccess(user: user);
       }
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       if (e.code == 'invalid-credential') {
         loginState =
             LoginError(genericMessage: 'Credenciais de usuário inválidas');
@@ -94,7 +94,7 @@ class FirebaseAuthService implements AuthService {
       );
     }
     
-    UserModel user = UserModel(
+    User user = User(
       id: '',
       isAdmin: false,
       email: email,
@@ -103,7 +103,7 @@ class FirebaseAuthService implements AuthService {
       phone: phone,
     );
 
-    UserModel? userGet = await _userRepository.getByEmail(email: email); 
+    User? userGet = await _userRepository.getByEmail(email: email); 
 
     if (userGet == null) {
       String? id = await _userRepository.add(user: user);
@@ -119,7 +119,7 @@ class FirebaseAuthService implements AuthService {
     }
 
     CreateUserState createAccountState;
-    UserCredential? userCredential;
+    firebase_auth.UserCredential? userCredential;
 
     try {
       userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
@@ -127,7 +127,7 @@ class FirebaseAuthService implements AuthService {
         password: password,
       );
       createAccountState = UserCreated(user: user);
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       if (e.code == 'email-already-in-use') {
         createAccountState =
             ErrorCreatingUser(emailMessage: 'Email já cadastrado');

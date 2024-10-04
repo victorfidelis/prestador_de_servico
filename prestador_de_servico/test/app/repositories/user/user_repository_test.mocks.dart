@@ -6,7 +6,7 @@
 import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:prestador_de_servico/app/models/user/user_model.dart' as _i4;
+import 'package:prestador_de_servico/app/models/user/user.dart' as _i4;
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart'
     as _i2;
 
@@ -28,7 +28,7 @@ import 'package:prestador_de_servico/app/repositories/user/user_repository.dart'
 /// See the documentation for Mockito's code generation for more information.
 class MockUserRepository extends _i1.Mock implements _i2.UserRepository {
   @override
-  _i3.Future<String?> add({required _i4.UserModel? user}) =>
+  _i3.Future<String?> add({required _i4.User? user}) =>
       (super.noSuchMethod(
         Invocation.method(
           #add,
@@ -40,28 +40,28 @@ class MockUserRepository extends _i1.Mock implements _i2.UserRepository {
       ) as _i3.Future<String?>);
 
   @override
-  _i3.Future<_i4.UserModel?> getById({required String? id}) =>
+  _i3.Future<_i4.User?> getById({required String? id}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getById,
           [],
           {#id: id},
         ),
-        returnValue: _i3.Future<_i4.UserModel?>.value(),
-        returnValueForMissingStub: _i3.Future<_i4.UserModel?>.value(),
-      ) as _i3.Future<_i4.UserModel?>);
+        returnValue: _i3.Future<_i4.User?>.value(),
+        returnValueForMissingStub: _i3.Future<_i4.User?>.value(),
+      ) as _i3.Future<_i4.User?>);
 
   @override
-  _i3.Future<_i4.UserModel?> getByEmail({required String? email}) =>
+  _i3.Future<_i4.User?> getByEmail({required String? email}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getByEmail,
           [],
           {#email: email},
         ),
-        returnValue: _i3.Future<_i4.UserModel?>.value(),
-        returnValueForMissingStub: _i3.Future<_i4.UserModel?>.value(),
-      ) as _i3.Future<_i4.UserModel?>);
+        returnValue: _i3.Future<_i4.User?>.value(),
+        returnValueForMissingStub: _i3.Future<_i4.User?>.value(),
+      ) as _i3.Future<_i4.User?>);
 
   @override
   _i3.Future<bool> deleteById({required String? id}) => (super.noSuchMethod(
@@ -75,7 +75,7 @@ class MockUserRepository extends _i1.Mock implements _i2.UserRepository {
       ) as _i3.Future<bool>);
 
   @override
-  _i3.Future<bool> update({required _i4.UserModel? user}) =>
+  _i3.Future<bool> update({required _i4.User? user}) =>
       (super.noSuchMethod(
         Invocation.method(
           #update,
