@@ -67,10 +67,9 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
             if (serviceCategoryEditController.state
                 is ServiceCategoryEditSuccess) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                ServiceCategory serviceCategory =
-                    (serviceCategoryEditController.state
-                            as ServiceCategoryEditSuccess)
-                        .serviceCategory;
+                ServiceCategory serviceCategory = (serviceCategoryEditController
+                        .state as ServiceCategoryEditSuccess)
+                    .serviceCategory;
                 afterSave(serviceCategory: serviceCategory);
                 Navigator.pop(context);
               });
@@ -91,12 +90,12 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
             Widget genericErrorWidget = const SizedBox(height: 18);
 
             if (serviceCategoryEditController.state
-                is ServiceCategoryEditError) {
+                is ServiceCategoryEditValidationError) {
               nameErrorMessage = (serviceCategoryEditController.state
-                      as ServiceCategoryEditError)
+                      as ServiceCategoryEditValidationError)
                   .nameMessage;
               genericErrorMessage = (serviceCategoryEditController.state
-                      as ServiceCategoryEditError)
+                      as ServiceCategoryEditValidationError)
                   .genericMessage;
               if (genericErrorMessage != null) {
                 genericErrorWidget =
@@ -156,15 +155,19 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
   }
 
   void save() {
+    ServiceCategory serviceCategoryEdit = ServiceCategory(
+      id: serviceCategory?.id ?? '',
+      name: nameController.text,
+    );
+
     if (isUpdate) {
-      context.read<ServiceCategoryEditController>().update(
-            id: serviceCategory!.id,
-            name: nameController.text,
-          );
+      context
+          .read<ServiceCategoryEditController>()
+          .validateAndUpdate(serviceCategory: serviceCategoryEdit);
     } else {
       context
           .read<ServiceCategoryEditController>()
-          .add(name: nameController.text);
+          .validateAndInsert(serviceCategory: serviceCategoryEdit);
     }
   }
 

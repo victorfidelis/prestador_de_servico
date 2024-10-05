@@ -20,7 +20,7 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<String> add({required ServiceCategory serviceCategory}) async {
+  Future<String> insert({required ServiceCategory serviceCategory}) async {
     DocumentReference docRef = await serviceCategoriesCollection.add(
       ServiceCartegoryAdapter.toFirebaseMap(
         serviceCategory: serviceCategory,

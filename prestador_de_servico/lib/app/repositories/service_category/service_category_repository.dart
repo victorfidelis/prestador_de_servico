@@ -14,7 +14,7 @@ abstract class ServiceCategoryRepository {
   Future<List<ServiceCategory>> getAll();
   Future<ServiceCategory> getById({required String id});
   Future<List<ServiceCategory>> getNameContained({required String name});
-  Future<String> add({required ServiceCategory serviceCategory});
+  Future<String> insert({required ServiceCategory serviceCategory});
   Future<void> update({required ServiceCategory serviceCategory});
   Future<void> deleteById({required String id});
 }

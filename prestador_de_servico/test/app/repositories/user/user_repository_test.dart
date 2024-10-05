@@ -20,7 +20,7 @@ void main() {
 
   setUpAll(() {
     when(
-      mockUserRepository.add(
+      mockUserRepository.insert(
         user: user1,
       ),
     ).thenAnswer((_) async => '1');
@@ -35,7 +35,7 @@ void main() {
       mockUserRepository.deleteById(
         id: '1',
       ),
-    ).thenAnswer((_) async => true);
+    ).thenAnswer((_) async {});
 
     when(
       mockUserRepository.update(
@@ -47,7 +47,7 @@ void main() {
   test(
     '''Ao tentar adicionar um usuário o retorno deve ser true''',
     () async {
-      String? id = await mockUserRepository.add(user: user1);
+      String? id = await mockUserRepository.insert(user: user1);
 
       expect(id, equals('1'));
     },
@@ -74,12 +74,9 @@ void main() {
   );
 
   test(
-    '''Ao tentar deletar um usuário válido pelo seu uid a função deve retornar 
-    deve retornar true''',
+    '''Ao tentar deletar um usuário válido pelo seu uid a operação deve ser feita sem erros''',
     () async {
-      bool isUserDelete = await mockUserRepository.deleteById(id: user1.id);
-
-      expect(isUserDelete, equals(true));
+      await mockUserRepository.deleteById(id: user1.id);
     },
   );
 }

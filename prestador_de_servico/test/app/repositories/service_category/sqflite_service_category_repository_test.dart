@@ -6,7 +6,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
   group(
-    'Testes referente a classe ProductRepositorySqflite. '
+    'Testes referente a classe SqfliteServiceCategoryRepository. '
     'Para efetuar o teste corretamente é importante não executar os '
     'testes deste grupo de forma isolada, sempre executar o grupo inteiro.',
     () {
@@ -46,9 +46,9 @@ void main() {
       test(
           '''Ao adicionar uma categoria de serviço deve-se retornar o id da categoria 
       adicionada''', () async {
-        String? serviceCategoryId = await serviceCategoryRepository.add(
+        String serviceCategoryId = await serviceCategoryRepository.insert(
             serviceCategory: serviceCartegory1);
-        expect(serviceCategoryId != null, equals(true));
+
         expect(serviceCategoryId, equals(serviceCartegory1.id));
       });
 
@@ -70,11 +70,10 @@ void main() {
       em questão no banco de dados''',
         () async {
           serviceCartegory1 = serviceCartegory1.copyWith(name: 'Face');
-          bool isUpdated = await serviceCategoryRepository.update(
+          await serviceCategoryRepository.update(
             serviceCategory: serviceCartegory1,
           );
 
-          expect(isUpdated, isTrue);
           List<ServiceCategory> serviceCategories =
               await serviceCategoryRepository.getAll();
           expect(serviceCategories.length, equals(1));
@@ -86,10 +85,12 @@ void main() {
         '''Após mais uma adição, a consulta de categprias de serviço
          deve retornar uma lista com 2 categorias de serviços''',
         () async {
-          String? serviceCategoryId = await serviceCategoryRepository.add(
+          String serviceCategoryId = await serviceCategoryRepository.insert(
             serviceCategory: serviceCartegory2,
           );
+
           expect(serviceCategoryId, equals(serviceCartegory2.id));
+          
           List<ServiceCategory> serviceCartegories =
               await serviceCategoryRepository.getAll();
           expect(serviceCartegories.length, equals(2));
@@ -159,8 +160,8 @@ void main() {
         '''Após deletar uma categoria de serviço, a consulta de categorias de serviço
         não deve retornar a mesma''',
         () async {
-          bool isDeleted = await serviceCategoryRepository.deleteById(id: serviceCartegory1.id);
-          expect(isDeleted, isTrue);
+          await serviceCategoryRepository.deleteById(id: serviceCartegory1.id);
+
           List<ServiceCategory> serviceCategories = await serviceCategoryRepository.getAll();
           expect(serviceCategories.length, equals(1));
           expect(serviceCategories[0], equals(serviceCartegory2));

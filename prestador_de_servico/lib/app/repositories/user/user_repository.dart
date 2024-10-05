@@ -6,7 +6,7 @@ abstract class UserRepository {
     return FirebaseUserRepository();
   }
 
-  Future<String?> add({required User user});
+  Future<String> insert({required User user});
   Future<User?> getById({required String id});
   Future<User?> getByEmail({required String email});
   Future<void> deleteById({required String id});

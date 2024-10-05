@@ -14,11 +14,11 @@ class ServiceCategoryEditUpdate extends ServiceCategoryEditState {
 
 class ServiceCategoryEditLoading extends ServiceCategoryEditState {}
 
-class ServiceCategoryEditError extends ServiceCategoryEditState {
+class ServiceCategoryEditValidationError extends ServiceCategoryEditState {
   final String? nameMessage;
   final String? genericMessage;
   
-  ServiceCategoryEditError({this.nameMessage, this.genericMessage});
+  ServiceCategoryEditValidationError({this.nameMessage, this.genericMessage});
 }
 
 class ServiceCategoryEditSuccess extends ServiceCategoryEditState {

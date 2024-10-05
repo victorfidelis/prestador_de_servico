@@ -6,6 +6,7 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:mockito/src/dummies.dart' as _i5;
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart'
     as _i2;
 import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart'
@@ -24,9 +25,9 @@ import 'package:prestador_de_servico/app/repositories/service_category/service_c
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeServiceCartegoryModel_0 extends _i1.SmartFake
+class _FakeServiceCategory_0 extends _i1.SmartFake
     implements _i2.ServiceCategory {
-  _FakeServiceCartegoryModel_0(
+  _FakeServiceCategory_0(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -41,6 +42,18 @@ class _FakeServiceCartegoryModel_0 extends _i1.SmartFake
 class MockServiceCategoryRepository extends _i1.Mock
     implements _i3.ServiceCategoryRepository {
   @override
+  _i4.Future<List<_i2.ServiceCategory>> getAll() => (super.noSuchMethod(
+        Invocation.method(
+          #getAll,
+          [],
+        ),
+        returnValue: _i4.Future<List<_i2.ServiceCategory>>.value(
+            <_i2.ServiceCategory>[]),
+        returnValueForMissingStub: _i4.Future<List<_i2.ServiceCategory>>.value(
+            <_i2.ServiceCategory>[]),
+      ) as _i4.Future<List<_i2.ServiceCategory>>);
+
+  @override
   _i4.Future<_i2.ServiceCategory> getById({required String? id}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -48,8 +61,8 @@ class MockServiceCategoryRepository extends _i1.Mock
           [],
           {#id: id},
         ),
-        returnValue: _i4.Future<_i2.ServiceCategory>.value(
-            _FakeServiceCartegoryModel_0(
+        returnValue:
+            _i4.Future<_i2.ServiceCategory>.value(_FakeServiceCategory_0(
           this,
           Invocation.method(
             #getById,
@@ -57,8 +70,8 @@ class MockServiceCategoryRepository extends _i1.Mock
             {#id: id},
           ),
         )),
-        returnValueForMissingStub: _i4.Future<_i2.ServiceCategory>.value(
-            _FakeServiceCartegoryModel_0(
+        returnValueForMissingStub:
+            _i4.Future<_i2.ServiceCategory>.value(_FakeServiceCategory_0(
           this,
           Invocation.method(
             #getById,
@@ -79,45 +92,57 @@ class MockServiceCategoryRepository extends _i1.Mock
         ),
         returnValue: _i4.Future<List<_i2.ServiceCategory>>.value(
             <_i2.ServiceCategory>[]),
-        returnValueForMissingStub:
-            _i4.Future<List<_i2.ServiceCategory>>.value(
-                <_i2.ServiceCategory>[]),
+        returnValueForMissingStub: _i4.Future<List<_i2.ServiceCategory>>.value(
+            <_i2.ServiceCategory>[]),
       ) as _i4.Future<List<_i2.ServiceCategory>>);
 
   @override
-  _i4.Future<String?> add(
-          {required _i2.ServiceCategory? serviceCategory}) =>
+  _i4.Future<String> insert({required _i2.ServiceCategory? serviceCategory}) =>
       (super.noSuchMethod(
         Invocation.method(
-          #add,
+          #insert,
           [],
           {#serviceCategory: serviceCategory},
         ),
-        returnValue: _i4.Future<String?>.value(),
-        returnValueForMissingStub: _i4.Future<String?>.value(),
-      ) as _i4.Future<String?>);
+        returnValue: _i4.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #insert,
+            [],
+            {#serviceCategory: serviceCategory},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #insert,
+            [],
+            {#serviceCategory: serviceCategory},
+          ),
+        )),
+      ) as _i4.Future<String>);
 
   @override
-  _i4.Future<bool> update(
-          {required _i2.ServiceCategory? serviceCategory}) =>
+  _i4.Future<void> update({required _i2.ServiceCategory? serviceCategory}) =>
       (super.noSuchMethod(
         Invocation.method(
           #update,
           [],
           {#serviceCategory: serviceCategory},
         ),
-        returnValue: _i4.Future<bool>.value(false),
-        returnValueForMissingStub: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 
   @override
-  _i4.Future<bool> deleteById({required String? id}) => (super.noSuchMethod(
+  _i4.Future<void> deleteById({required String? id}) => (super.noSuchMethod(
         Invocation.method(
           #deleteById,
           [],
           {#id: id},
         ),
-        returnValue: _i4.Future<bool>.value(false),
-        returnValueForMissingStub: _i4.Future<bool>.value(false),
-      ) as _i4.Future<bool>);
+        returnValue: _i4.Future<void>.value(),
+        returnValueForMissingStub: _i4.Future<void>.value(),
+      ) as _i4.Future<void>);
 }

@@ -15,7 +15,7 @@ class ServiceCategoryEditController extends ChangeNotifier {
 
   ServiceCategoryEditController({required this.serviceCategoryService});
 
-  void initAdd() {
+  void initInsert() {
     _changeState(currentState: ServiceCategoryEditAdd());
   }
 
@@ -25,16 +25,52 @@ class ServiceCategoryEditController extends ChangeNotifier {
             ServiceCategoryEditUpdate(serviceCategory: serviceCategory));
   }
 
-  Future<void> add({required ServiceCategory serviceCategory}) async {
+  Future<void> validateAndInsert(
+      {required ServiceCategory serviceCategory}) async {
     _changeState(currentState: ServiceCategoryEditLoading());
-    await serviceCategoryService.addOnDatabase(
+
+    ServiceCategoryEditValidationError? validationError = _validade(
+      serviceCategory: serviceCategory,
+    );
+    if (validationError != null) {
+      _changeState(currentState: validationError);
+      return;
+    }
+
+    await serviceCategoryService.insert(
         serviceCategory: serviceCategory);
-    _changeState(currentState: ServiceCategoryEditSuccess(serviceCategory: serviceCategory));
+
+    _changeState(
+        currentState:
+            ServiceCategoryEditSuccess(serviceCategory: serviceCategory));
   }
 
-  Future<void> update({required ServiceCategory serviceCategory}) async {
+  Future<void> validateAndUpdate(
+      {required ServiceCategory serviceCategory}) async {
     _changeState(currentState: ServiceCategoryEditLoading());
-    await serviceCategoryService.updateOnDatabase(serviceCategory: serviceCategory);
-    _changeState(currentState: ServiceCategoryEditSuccess(serviceCategory: serviceCategory));
+
+    ServiceCategoryEditValidationError? validationError = _validade(
+      serviceCategory: serviceCategory,
+    );
+    if (validationError != null) {
+      _changeState(currentState: validationError);
+      return;
+    }
+
+    await serviceCategoryService.update(
+        serviceCategory: serviceCategory);
+
+    _changeState(
+        currentState:
+            ServiceCategoryEditSuccess(serviceCategory: serviceCategory));
+  }
+
+  ServiceCategoryEditValidationError? _validade(
+      {required ServiceCategory serviceCategory}) {
+    if (serviceCategory.name.trim().isEmpty) {
+      return ServiceCategoryEditValidationError(
+          nameMessage: 'Necessário informar o nome');
+    }
+    return null;
   }
 }

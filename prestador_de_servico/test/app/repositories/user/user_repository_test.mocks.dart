@@ -6,6 +6,7 @@
 import 'dart:async' as _i3;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:mockito/src/dummies.dart' as _i5;
 import 'package:prestador_de_servico/app/models/user/user.dart' as _i4;
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart'
     as _i2;
@@ -28,20 +29,33 @@ import 'package:prestador_de_servico/app/repositories/user/user_repository.dart'
 /// See the documentation for Mockito's code generation for more information.
 class MockUserRepository extends _i1.Mock implements _i2.UserRepository {
   @override
-  _i3.Future<String?> add({required _i4.User? user}) =>
-      (super.noSuchMethod(
+  _i3.Future<String> insert({required _i4.User? user}) => (super.noSuchMethod(
         Invocation.method(
-          #add,
+          #insert,
           [],
           {#user: user},
         ),
-        returnValue: _i3.Future<String?>.value(),
-        returnValueForMissingStub: _i3.Future<String?>.value(),
-      ) as _i3.Future<String?>);
+        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #insert,
+            [],
+            {#user: user},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i3.Future<String>.value(_i5.dummyValue<String>(
+          this,
+          Invocation.method(
+            #insert,
+            [],
+            {#user: user},
+          ),
+        )),
+      ) as _i3.Future<String>);
 
   @override
-  _i3.Future<_i4.User?> getById({required String? id}) =>
-      (super.noSuchMethod(
+  _i3.Future<_i4.User?> getById({required String? id}) => (super.noSuchMethod(
         Invocation.method(
           #getById,
           [],
@@ -64,25 +78,24 @@ class MockUserRepository extends _i1.Mock implements _i2.UserRepository {
       ) as _i3.Future<_i4.User?>);
 
   @override
-  _i3.Future<bool> deleteById({required String? id}) => (super.noSuchMethod(
+  _i3.Future<void> deleteById({required String? id}) => (super.noSuchMethod(
         Invocation.method(
           #deleteById,
           [],
           {#id: id},
         ),
-        returnValue: _i3.Future<bool>.value(false),
-        returnValueForMissingStub: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
 
   @override
-  _i3.Future<bool> update({required _i4.User? user}) =>
-      (super.noSuchMethod(
+  _i3.Future<void> update({required _i4.User? user}) => (super.noSuchMethod(
         Invocation.method(
           #update,
           [],
           {#user: user},
         ),
-        returnValue: _i3.Future<bool>.value(false),
-        returnValueForMissingStub: _i3.Future<bool>.value(false),
-      ) as _i3.Future<bool>);
+        returnValue: _i3.Future<void>.value(),
+        returnValueForMissingStub: _i3.Future<void>.value(),
+      ) as _i3.Future<void>);
 }

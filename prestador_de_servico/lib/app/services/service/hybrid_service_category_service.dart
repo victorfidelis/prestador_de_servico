@@ -21,18 +21,18 @@ class HybridServiceCategoryService implements ServiceCategoryService {
   }
 
   @override
-  Future<void> addOnDatabase({required ServiceCategory serviceCategory}) async {
-    String serviceCategoryId = await _onlineServiceCategoryRepository.add(
+  Future<void> insert({required ServiceCategory serviceCategory}) async {
+    String serviceCategoryId = await _onlineServiceCategoryRepository.insert(
         serviceCategory: serviceCategory);
 
     serviceCategory = serviceCategory.copyWith(id: serviceCategoryId);
     
-    await _offlineServiceCategoryRepository.add(
+    await _offlineServiceCategoryRepository.insert(
         serviceCategory: serviceCategory);
   }
 
   @override
-  Future<void> updateOnDatabase({required ServiceCategory serviceCategory}) async {
+  Future<void> update({required ServiceCategory serviceCategory}) async {
     await _onlineServiceCategoryRepository.update(
         serviceCategory: serviceCategory);
     await _offlineServiceCategoryRepository.update(

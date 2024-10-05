@@ -7,7 +7,7 @@ class FirebaseUserRepository implements UserRepository {
   final usersCollection = FirebaseFirestore.instance.collection('users');
 
   @override
-  Future<String?> add({required User user}) async {
+  Future<String> insert({required User user}) async {
     DocumentReference docRef =
         await usersCollection.add(UserAdapter.toFirebaseMap(user: user));
     DocumentSnapshot docSnap = await docRef.get();

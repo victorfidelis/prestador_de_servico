@@ -142,7 +142,7 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
   }
 
   void onAddServiceCategory() {
-    context.read<ServiceCategoryEditController>().initAdd();
+    context.read<ServiceCategoryEditController>().initInsert();
     Navigator.of(context).pushNamed('/serviceCategoryEdit');
   }
 

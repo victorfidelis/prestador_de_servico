@@ -44,7 +44,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<String> add({required ServiceCategory serviceCategory}) async {
+  Future<String> insert({required ServiceCategory serviceCategory}) async {
     await _initDatabase();
 
     String insert = ''
