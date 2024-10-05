@@ -2,7 +2,7 @@ import 'package:sqflite/sqflite.dart';
 
 class SqfliteConfig {
   final String nameDb = 'serviceProvider.db';
-  final String integrationControl = 'integrationControl';
+  final String syncControl = 'syncControl';
   final String serviceCategories = 'serviceCategories';
   Database? mainDatabase;
 
@@ -35,22 +35,22 @@ class SqfliteConfig {
   }
 
   Future<void> setupDatabase(Database database) async {
-    await _createIntegrationControl(database: database);
+    await _createSyncControl(database: database);
     await _createServiceCategories(database: database);
   }
 
-  Future<void> _createIntegrationControl({required Database database}) async {
+  Future<void> _createSyncControl({required Database database}) async {
     int? integrationControlQuantity = Sqflite.firstIntValue(
       await database.rawQuery(
         'SELECT COUNT(*) FROM sqlite_master WHERE name = ?',
-        [integrationControl],
+        [syncControl],
       ),
     );
     if (integrationControlQuantity == 0) {
       await database.execute(
-        'CREATE TABLE $integrationControl ('
-        'dateIntegrationServiceCategories int, '
-        'dateIntegrationService int'
+        'CREATE TABLE $syncControl ('
+        'dateSyncServiceCategories int, '
+        'dateSyncService int'
         ')',
       );
     }

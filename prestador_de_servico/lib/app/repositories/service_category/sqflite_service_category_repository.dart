@@ -44,39 +44,6 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<String> insert({required ServiceCategory serviceCategory}) async {
-    await _initDatabase();
-
-    String insert = ''
-        'INSERT INTO $serviceCategoriesTable '
-        '(id, name, nameWithoutDiacritic) '
-        'VALUES (?, ?, ?)';
-    List params = [
-      serviceCategory.id,
-      serviceCategory.name.trim(),
-      serviceCategory.nameWithoutDiacritics.trim(),
-    ];
-    await database!.rawInsert(insert, params);
-
-    return serviceCategory.id;
-  }
-
-  @override
-  Future<void> deleteById({required String id}) async {
-    await _initDatabase();
-
-    String deleteTextMold = ''
-        'DELETE FROM '
-        '$serviceCategoriesTable '
-        'WHERE '
-        'id = ?';
-
-    List params = [id];
-
-    await database!.rawDelete(deleteTextMold, params);
-  }
-
-  @override
   Future<ServiceCategory> getById({required String id}) async {
     await _initDatabase();
 
@@ -126,6 +93,45 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
         .toList();
 
     return serviceCartegories;
+  }
+  
+  @override
+  Future<List<ServiceCategory>> getUnsync({required DateTime dateLastSync}) {
+    // TODO: implement getUnsync
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> insert({required ServiceCategory serviceCategory}) async {
+    await _initDatabase();
+
+    String insert = ''
+        'INSERT INTO $serviceCategoriesTable '
+        '(id, name, nameWithoutDiacritic) '
+        'VALUES (?, ?, ?)';
+    List params = [
+      serviceCategory.id,
+      serviceCategory.name.trim(),
+      serviceCategory.nameWithoutDiacritics.trim(),
+    ];
+    await database!.rawInsert(insert, params);
+
+    return serviceCategory.id;
+  }
+
+  @override
+  Future<void> deleteById({required String id}) async {
+    await _initDatabase();
+
+    String deleteTextMold = ''
+        'DELETE FROM '
+        '$serviceCategoriesTable '
+        'WHERE '
+        'id = ?';
+
+    List params = [id];
+
+    await database!.rawDelete(deleteTextMold, params);
   }
 
   @override
