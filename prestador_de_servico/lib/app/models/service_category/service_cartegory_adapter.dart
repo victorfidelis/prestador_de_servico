@@ -8,7 +8,8 @@ class ServiceCartegoryAdapter {
     return {
       'id': serviceCategory.id,
       'name': serviceCategory.name,
-      'dateSync': serviceCategory.dateSync,
+      'dateSync': serviceCategory.syncDate,
+      'isDeleted': serviceCategory.isDeleted,
     };
   }
 
@@ -16,7 +17,8 @@ class ServiceCartegoryAdapter {
     return ServiceCategory(
       id: map['id'],
       name: map['name'],
-      dateSync: map.containsKey('dateSync') ? map['dateSync'] : null,
+      syncDate: map.containsKey('dateSync') ? map['dateSync'] : null,
+      isDeleted: map.containsKey('isDeleted') ? map['isDeleted'] : false,
     );
   }
 
@@ -24,15 +26,21 @@ class ServiceCartegoryAdapter {
       {required ServiceCategory serviceCategory}) {
     return {
       'name': serviceCategory.name,
-      'dateSync': Timestamp.fromDate(serviceCategory.dateSync!),
+      'dateSync': FieldValue.serverTimestamp(), // Todo envio para o firebase deve conter a data atual do servidor
+      'isDeleted': serviceCategory.isDeleted,
     };
   }
 
   static ServiceCategory fromDocumentSnapshot({required DocumentSnapshot doc}) {
     Map<String, dynamic> map = (doc.data() as Map<String, dynamic>);
-    map['id'] = doc.id;
-    map['dateSync'] = (map['dateSync'] as Timestamp).toDate();
-    ServiceCategory serviceCartegory = fromMap(map: map);
+
+    ServiceCategory serviceCartegory = ServiceCategory(
+      id: doc.id,
+      name: map['name'],
+      syncDate: (map['dateSync'] as Timestamp).toDate(),
+      isDeleted: map['isDeleted'],
+    );
+
     return serviceCartegory;
   }
 

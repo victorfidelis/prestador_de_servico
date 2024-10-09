@@ -4,28 +4,32 @@ import 'package:replace_diacritic/replace_diacritic.dart';
 class ServiceCategory {
   final String id;
   final String name;
-  final DateTime? dateSync;
+  final DateTime? syncDate;
+  final bool isDeleted;
+
   String get nameWithoutDiacritics => replaceDiacritic(name);
 
   ServiceCategory({
     required this.id,
     required this.name,
-    this.dateSync,
+    this.syncDate,
+    this.isDeleted = false,
   });
 
   ServiceCategory copyWith({
     String? id,
     String? name,
-    DateTime? dateSync,
+    DateTime? syncDate,
+    bool? isDeleted,
   }) {
     return ServiceCategory(
       id: id ?? this.id,
       name: name ?? this.name,
-      dateSync: dateSync ?? this.dateSync,
+      syncDate: syncDate ?? this.syncDate,
+      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
-
-
+  
   @override
   bool operator ==(Object other) {
     return (other is ServiceCategory) &&

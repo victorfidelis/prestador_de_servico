@@ -9,6 +9,6 @@ abstract class SyncRepository {
 
   Future<Sync> get(); 
   Future<void> insert({required Sync sync}); 
-  Future<void> updateServiceCategory({required DateTime dateSync}); 
-  Future<void> updateService({required DateTime dateSync}); 
+  Future<void> updateServiceCategory({required DateTime syncDate}); 
+  Future<void> updateService({required DateTime syncDate}); 
 }

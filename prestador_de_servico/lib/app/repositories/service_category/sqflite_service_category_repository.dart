@@ -97,7 +97,6 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   
   @override
   Future<List<ServiceCategory>> getUnsync({required DateTime dateLastSync}) {
-    // TODO: implement getUnsync
     throw UnimplementedError();
   }
 
@@ -153,5 +152,25 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
     ];
 
     await database!.rawUpdate(updateText, params);
+  }
+  
+  @override
+  Future<bool> existsById({required String id}) async {
+    
+    await _initDatabase();
+
+    String selectCommand = ""
+        "SELECT "
+        "ser_cat.id "
+        "FROM "
+        "$serviceCategoriesTable ser_cat "
+        "WHERE "
+        "ser_cat.id = ?";
+
+    List params = [id];
+    List<Map> serviceCategoryMap =
+        await database!.rawQuery(selectCommand, params);
+
+    return serviceCategoryMap.isNotEmpty;
   }
 }

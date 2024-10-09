@@ -10,14 +10,12 @@ class BackNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: GestureDetector(
-        onTap: onTap,
-        child: const Padding(
-          padding: EdgeInsets.all(10),
-          child: Icon(
-            Icons.arrow_back_ios,
-          ),
+    return GestureDetector(
+      onTap: onTap,
+      child: const Padding(
+        padding: EdgeInsets.all(10),
+        child: Icon(
+          Icons.arrow_back_ios,
         ),
       ),
     );

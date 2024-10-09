@@ -9,8 +9,9 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
 
   @override
   Future<List<ServiceCategory>> getAll() async {
-    QuerySnapshot snapServiceCategories =
-        await serviceCategoriesCollection.get();
+    QuerySnapshot snapServiceCategories = await serviceCategoriesCollection
+        .where('isDeleted', isEqualTo: true)
+        .get();
     List<ServiceCategory> serviceCategories = snapServiceCategories.docs
         .map(
           (doc) => ServiceCartegoryAdapter.fromDocumentSnapshot(doc: doc),
@@ -79,6 +80,21 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
 
   @override
   Future<void> deleteById({required String id}) async {
-    await serviceCategoriesCollection.doc(id).delete();
+    DocumentReference doc = serviceCategoriesCollection.doc(id);
+
+    ServiceCategory serviceCategory =
+        ServiceCartegoryAdapter.fromDocumentSnapshot(
+      doc: await doc.get(),
+    );
+    serviceCategory = serviceCategory.copyWith(isDeleted: true);
+
+    await doc.update(
+      ServiceCartegoryAdapter.toFirebaseMap(serviceCategory: serviceCategory),
+    );
+  }
+  
+  @override
+  Future<bool> existsById({required String id}) {
+    return Future.value(false);
   }
 }

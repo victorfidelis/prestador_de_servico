@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/app/app_service.dart';
+import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
 
 class AppController extends ChangeNotifier {
-  final AppService _appService;
+  final AppService appService;
+  late SyncServiceCategoryService _syncServiceCategoryService; 
   
-  AppController({required AppService appService}) : _appService = appService {
+  AppController({required this.appService}) {
     init();
   }
 
@@ -18,7 +20,21 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> init() async {
-    await _appService.initializeApp();
+    await appService.initializeApp();
+
+    _initSyncServices();
+    _syncData();
+    
     _changeState(currentLoginState: AppLoaded());
+  }
+
+  // Services precisam ser iniciados após a inicialização do firebase,
+  // isso pois utilizam o Cloud Firestore
+  void _initSyncServices() {
+    _syncServiceCategoryService = SyncServiceCategoryService.create();
+  }
+
+  Future<void> _syncData() async {
+    await _syncServiceCategoryService.sync();
   }
 }

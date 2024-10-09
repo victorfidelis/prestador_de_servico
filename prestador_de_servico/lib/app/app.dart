@@ -57,7 +57,7 @@ class App extends StatelessWidget {
           '/passwordReset': (context) => const PasswordResetView(),
           '/start': (context) => StartView(),
           '/serviceCategory': (context) => const ServiceCategoryView(),
-          '/serviceCategoryEdit': (context) => ServiceCategoryEditView(),
+          '/serviceCategoryEdit': (context) => const ServiceCategoryEditView(),
         },
       ),
     );

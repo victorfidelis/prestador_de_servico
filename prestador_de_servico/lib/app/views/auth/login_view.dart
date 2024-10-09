@@ -24,7 +24,6 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -70,16 +69,14 @@ class _LoginViewState extends State<LoginView> {
                       }
 
                       if (loginController.state is LoginSuccess) {
-                        WidgetsBinding.instance.addPostFrameCallback(
-                          (_) {
-                            _notifications.showSnackBar(
-                              context: context,
-                              message: 'Usuário autenticado!',
-                            );
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _notifications.showSnackBar(
+                            context: context,
+                            message: 'Usuário autenticado!',
+                          );
 
-                            doStart();
-                          }
-                        );
+                          doStart();
+                        });
                       }
 
                       Widget genericErrorWidget = const SizedBox(height: 18);
@@ -167,7 +164,7 @@ class _LoginViewState extends State<LoginView> {
   void doCreateAccount() {
     context.read<CreateUserController>().init();
     Navigator.pushNamed(context, '/createAccount');
-  } 
+  }
 
   void doPasswordReset() {
     context.read<PasswordResetController>().init();
@@ -175,6 +172,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   void doStart() {
-    Navigator.pushNamedAndRemoveUntil(context, '/start', (Route<dynamic> route) => false);
+    Navigator.pushNamedAndRemoveUntil(
+        context, '/start', (Route<dynamic> route) => false);
   }
 }

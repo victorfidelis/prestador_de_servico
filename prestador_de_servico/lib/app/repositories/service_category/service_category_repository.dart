@@ -4,10 +4,10 @@ import 'package:prestador_de_servico/app/repositories/service_category/sqflite_s
 
 abstract class ServiceCategoryRepository {
 
-  factory ServiceCategoryRepository.create_online() {
+  factory ServiceCategoryRepository.createOnline() {
     return FirebaseServiceCategoryRepository();
   }
-  factory ServiceCategoryRepository.create_offline() {
+  factory ServiceCategoryRepository.createOffline() {
     return SqfliteServiceCategoryRepository();
   }
 
@@ -18,4 +18,5 @@ abstract class ServiceCategoryRepository {
   Future<String> insert({required ServiceCategory serviceCategory});
   Future<void> update({required ServiceCategory serviceCategory});
   Future<void> deleteById({required String id});
+  Future<bool> existsById({required String id});
 }

@@ -85,7 +85,7 @@ class CustomTextField extends StatelessWidget {
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           isDense: true,
-                          contentPadding: EdgeInsets.symmetric(vertical: 6),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 6),
                           errorText: errorMessage,
                         ),
                         style: const TextStyle(

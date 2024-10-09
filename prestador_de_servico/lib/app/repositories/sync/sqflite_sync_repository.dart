@@ -54,26 +54,26 @@ class SqfliteSyncRepository implements SyncRepository {
   }
 
   @override
-  Future<void> updateServiceCategory({required DateTime dateSync}) async {
+  Future<void> updateServiceCategory({required DateTime syncDate}) async {
     await _initDatabase();
 
     String updateText = ''
         'UPDATE $syncControlTable '
         'SET '
         'dateSyncServiceCategories = ?';
-    List params = [dateSync.millisecondsSinceEpoch];
+    List params = [syncDate.millisecondsSinceEpoch];
     await database!.rawUpdate(updateText, params);
   }
 
   @override
-  Future<void> updateService({required DateTime dateSync}) async {
+  Future<void> updateService({required DateTime syncDate}) async {
     await _initDatabase();
 
     String updateText = ''
         'UPDATE $syncControlTable '
         'SET '
         'dateSyncService = ?';
-    List params = [dateSync.millisecondsSinceEpoch];
+    List params = [syncDate.millisecondsSinceEpoch];
     await database!.rawUpdate(updateText, params);
   }
 }

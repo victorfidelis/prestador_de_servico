@@ -4,9 +4,9 @@ import 'package:prestador_de_servico/app/services/service/service_category_servi
 
 class HybridServiceCategoryService implements ServiceCategoryService {
   final ServiceCategoryRepository _onlineServiceCategoryRepository =
-      ServiceCategoryRepository.create_online();
+      ServiceCategoryRepository.createOnline();
   final ServiceCategoryRepository _offlineServiceCategoryRepository =
-      ServiceCategoryRepository.create_offline();
+      ServiceCategoryRepository.createOffline();
 
   @override
   Future<List<ServiceCategory>> getAll() async {

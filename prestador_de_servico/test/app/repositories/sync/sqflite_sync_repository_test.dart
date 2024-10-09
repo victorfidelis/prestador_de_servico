@@ -60,7 +60,7 @@ void main() {
           '''Ao atualizar a sincronização de serviço o mesmo deve ser 
           retornado na consulta de sincronização''', () async {
         sync = sync.copyWith(dateSyncService: DateTime(2024, 10, 6));
-        await syncRepository.updateService(dateSync: sync.dateSyncService!);
+        await syncRepository.updateService(syncDate: sync.dateSyncService!);
         
         Sync returnSync = await syncRepository.get();
         expect(returnSync.dateSyncService, equals(sync.dateSyncService));
@@ -70,7 +70,7 @@ void main() {
           '''Ao atualizar a sincronização de categoria de serviço o mesmo deve ser 
           retornado na consulta de sincronização''', () async {
         sync = sync.copyWith(dateSyncServiceCategories: DateTime(2024, 10, 7));
-        await syncRepository.updateServiceCategory(dateSync: sync.dateSyncServiceCategories!);
+        await syncRepository.updateServiceCategory(syncDate: sync.dateSyncServiceCategories!);
         
         Sync returnSync = await syncRepository.get();
         expect(returnSync.dateSyncServiceCategories, equals(sync.dateSyncServiceCategories));

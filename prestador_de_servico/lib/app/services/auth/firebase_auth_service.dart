@@ -106,13 +106,7 @@ class FirebaseAuthService implements AuthService {
     User? userGet = await _userRepository.getByEmail(email: email); 
 
     if (userGet == null) {
-      String? id = await _userRepository.insert(user: user);
-      if (id == null) {
-        return ErrorCreatingUser(
-          genericMessage:
-              'Ocorreu uma falha ao iserir os dados do usuário. Tente novamente.',
-        );
-      } 
+      String id = await _userRepository.insert(user: user);
       user = user.copyWith(id: id);
     } else  {
       user = user.copyWith(id: userGet.id);
