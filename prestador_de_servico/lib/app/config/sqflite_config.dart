@@ -80,7 +80,7 @@ class SqfliteConfig {
     int? serviceQuantity = Sqflite.firstIntValue(
       await database.rawQuery(
         'SELECT COUNT(*) FROM sqlite_master WHERE name = ?',
-        [serviceCategories],
+        [services],
       ),
     );
     if (serviceQuantity == 0) {

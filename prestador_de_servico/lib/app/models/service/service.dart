@@ -30,9 +30,14 @@ class Service {
 
   @override
   bool operator ==(Object other) {
-    return (other is ServiceCategory) &&
+    return (other is Service) &&
         other.id == id &&
-        other.name == name;
+        other.serviceCategoryId == serviceCategoryId &&
+        other.name == name &&
+        other.price == price &&
+        other.hours == hours && 
+        other.minutes == minutes && 
+        other.urlImage == urlImage; 
   }
 
   Service copyWith({

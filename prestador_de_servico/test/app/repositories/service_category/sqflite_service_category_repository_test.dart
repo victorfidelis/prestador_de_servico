@@ -100,7 +100,7 @@ void main() {
       );
 
       test(
-        '''Ao consultar uma categoria se serviço pelo seu id a respectiva categorita 
+        '''Ao consultar uma categoria de serviço pelo seu id a respectiva categoria 
         de serviço deve ser retornada''',
         () async {
           ServiceCategory serviceCategory = await serviceCategoryRepository.getById(
@@ -145,7 +145,7 @@ void main() {
       );
 
       test(
-        '''Ao efetuar uma busca de por nome passando "cabelo", não deve retornar
+        '''Ao efetuar uma busca por nome passando "cabelo", não deve retornar
         nenhuma categoria de serviço''',
         () async {
           List<ServiceCategory> serviceCartegories =
