@@ -5,19 +5,19 @@ import 'package:prestador_de_servico/app/repositories/service_category/service_c
 import 'package:replace_diacritic/replace_diacritic.dart';
 import 'package:sqflite/sqflite.dart';
 
-class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
-  Database? database;
-  String serviceCategoriesTable = '';
+  class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
+    Database? database;
+    String serviceCategoriesTable = '';
 
-  SqfliteServiceCategoryRepository({this.database});
+    SqfliteServiceCategoryRepository({this.database});
 
-  Future<void> _initDatabase() async {
-    SqfliteConfig sqfliteConfig = SqfliteConfig();
-    database ??= await sqfliteConfig.getDatabase();
-    if (serviceCategoriesTable.isEmpty) {
-      serviceCategoriesTable = sqfliteConfig.serviceCategories;
+    Future<void> _initDatabase() async {
+      SqfliteConfig sqfliteConfig = SqfliteConfig();
+      database ??= await sqfliteConfig.getDatabase();
+      if (serviceCategoriesTable.isEmpty) {
+        serviceCategoriesTable = sqfliteConfig.serviceCategories;
+      }
     }
-  }
   
   @override
   Future<List<ServiceCategory>> getAll() async {
@@ -119,21 +119,6 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   }
 
   @override
-  Future<void> deleteById({required String id}) async {
-    await _initDatabase();
-
-    String deleteTextMold = ''
-        'DELETE FROM '
-        '$serviceCategoriesTable '
-        'WHERE '
-        'id = ?';
-
-    List params = [id];
-
-    await database!.rawDelete(deleteTextMold, params);
-  }
-
-  @override
   Future<void> update({required ServiceCategory serviceCategory}) async {
     await _initDatabase();
 
@@ -152,6 +137,21 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
     ];
 
     await database!.rawUpdate(updateText, params);
+  }
+
+  @override
+  Future<void> deleteById({required String id}) async {
+    await _initDatabase();
+
+    String deleteTextMold = ''
+        'DELETE FROM '
+        '$serviceCategoriesTable '
+        'WHERE '
+        'id = ?';
+
+    List params = [id];
+
+    await database!.rawDelete(deleteTextMold, params);
   }
   
   @override

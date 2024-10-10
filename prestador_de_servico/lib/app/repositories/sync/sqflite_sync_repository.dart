@@ -39,6 +39,21 @@ class SqfliteSyncRepository implements SyncRepository {
   }
 
   @override
+  Future<bool> exists() async {
+    await _initDatabase();
+
+    String selectCommand = ""
+        "SELECT "
+        "1 verify "
+        "FROM "
+        "$syncControlTable syn_con";
+
+    List<Map> syncMap = await database!.rawQuery(selectCommand);
+
+    return syncMap.isNotEmpty;
+  }
+
+  @override
   Future<void> insert({required Sync sync}) async {
     await _initDatabase();
 

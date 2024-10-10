@@ -54,7 +54,12 @@ class SyncServiceCategoryServiceImpl implements SyncServiceCategoryService {
     }
 
     DateTime syncDate = getMaxSyncDate();
-    await _syncRepository.updateServiceCategory(syncDate: syncDate);
+    if (await _syncRepository.exists()) {
+      await _syncRepository.updateServiceCategory(syncDate: syncDate);
+    } else {
+      Sync sync = Sync(dateSyncServiceCategories: syncDate);
+      await _syncRepository.insert(sync: sync);
+    }
   }
 
   DateTime getMaxSyncDate() {
@@ -62,7 +67,7 @@ class SyncServiceCategoryServiceImpl implements SyncServiceCategoryService {
       (value, element) {
         // Todo objeto vindo da nuvem necessariamente deve ter o syncDate
         // Por esse motivo o operador "!" em "syncDate"
-        if (value.syncDate!.compareTo(element.syncDate!) > 1) {
+        if (value.syncDate!.compareTo(element.syncDate!) > 0) {
           return value;
         } else {
           return element;

@@ -10,7 +10,7 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
   @override
   Future<List<ServiceCategory>> getAll() async {
     QuerySnapshot snapServiceCategories = await serviceCategoriesCollection
-        .where('isDeleted', isEqualTo: true)
+        .where('isDeleted', isEqualTo: false)
         .get();
     List<ServiceCategory> serviceCategories = snapServiceCategories.docs
         .map(

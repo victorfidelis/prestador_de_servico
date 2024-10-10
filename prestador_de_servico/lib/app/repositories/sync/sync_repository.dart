@@ -8,6 +8,7 @@ abstract class SyncRepository {
   }
 
   Future<Sync> get(); 
+  Future<bool> exists();
   Future<void> insert({required Sync sync}); 
   Future<void> updateServiceCategory({required DateTime syncDate}); 
   Future<void> updateService({required DateTime syncDate}); 
