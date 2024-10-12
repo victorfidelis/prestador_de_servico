@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
+import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
@@ -64,8 +65,8 @@ class _CreateUserViewState extends State<CreateUserView> {
                   padding: const EdgeInsets.symmetric(horizontal: 38),
                   child: Consumer<CreateUserController>(
                       builder: (context, createAccountController, _) {
-                    bool createAccountSent =
-                        createAccountController.state is CreateUserSent;
+                    bool createUserLoading =
+                        createAccountController.state is LoadingUserCreation;
 
                     if (createAccountController.state is UserCreated) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -87,24 +88,24 @@ class _CreateUserViewState extends State<CreateUserView> {
                     String? confirmPasswordMessage;
                     String? genericMessage;
 
-                    if (createAccountController.state is ErrorCreatingUser) {
+                    if (createAccountController.state is ErrorUserCreation) {
                       nameMessage =
-                          (createAccountController.state as ErrorCreatingUser)
+                          (createAccountController.state as ErrorUserCreation)
                               .nameMessage;
                       surnameMessage =
-                          (createAccountController.state as ErrorCreatingUser)
+                          (createAccountController.state as ErrorUserCreation)
                               .surnameMessage;
                       phoneMessage =
-                          (createAccountController.state as ErrorCreatingUser)
+                          (createAccountController.state as ErrorUserCreation)
                               .phoneMessage;
                       emailMessage =
-                          (createAccountController.state as ErrorCreatingUser)
+                          (createAccountController.state as ErrorUserCreation)
                               .emailMessage;
                       passwordMessage =
-                          (createAccountController.state as ErrorCreatingUser)
+                          (createAccountController.state as ErrorUserCreation)
                               .passwordMessage;
                       genericMessage =
-                          (createAccountController.state as ErrorCreatingUser)
+                          (createAccountController.state as ErrorUserCreation)
                               .genericMessage;
                       if (genericMessage != null) {
                         genericErrorWidget =
@@ -160,7 +161,7 @@ class _CreateUserViewState extends State<CreateUserView> {
                         ),
                         genericErrorWidget,
                         const SizedBox(height: 32),
-                        createAccountSent
+                        createUserLoading
                             ? const Center(
                                 child: CustomLoading(),
                               )
@@ -186,13 +187,15 @@ class _CreateUserViewState extends State<CreateUserView> {
   }
 
   void createAccountWithEmailAndPassword() {
-    context.read<CreateUserController>().createAccountWithEmailAndPassword(
+    User user = User(
           name: _nameController.text.trim(),
           surname: _surnameController.text.trim(),
           phone: _phoneController.text.trim(),
           email: _emailController.text.trim().toLowerCase(),
           password: _passwordController.text.trim(),
           confirmPassword: _confirmPasswordController.text.trim(),
-        );
+    ); 
+
+    context.read<CreateUserController>().createUserWithEmailAndPassword(user: user);
   }
 }

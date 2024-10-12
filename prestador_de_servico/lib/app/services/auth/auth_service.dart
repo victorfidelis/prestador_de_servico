@@ -1,31 +1,116 @@
-import 'package:prestador_de_servico/app/services/auth/firebase_auth_service.dart';
-import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
-import 'package:prestador_de_servico/app/states/auth/login_state.dart';
-import 'package:prestador_de_servico/app/states/auth/password_reset_state.dart';
+import 'package:prestador_de_servico/app/models/user/user.dart';
+import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
+import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
+import 'package:prestador_de_servico/app/shared/either/either.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
+import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
-abstract class AuthService {
+class AuthService {
+  final AuthRepository authRepository;
+  final UserRepository userRepository;
 
-  factory AuthService.create() {
-    return FirebaseAuthService();
+  AuthService({
+    required this.authRepository,
+    required this.userRepository,
+  });
+
+  Future<Either<Failure, User>> signInEmailPasswordAndVerifyEmail({
+    required String email,
+    required String password,
+  }) async {
+    final getByEmailEither = await userRepository.getByEmail(email: email);
+    if (getByEmailEither.isLeft) {
+      return Either.left(getByEmailEither.left);
+    }
+
+    final signInEither = await authRepository.signInEmailPassword(
+        email: email, password: password);
+
+    if (signInEither.isLeft) {
+      if (signInEither.left is EmailNotVerifiedFailure) {
+        final sendEmailVerificationEither = await sendEmailVerification();
+        return sendEmailVerificationEither.fold(
+          (error) => Either.left(error),
+          (_) => Either.left(
+            EmailNotVerifiedFailure(
+                'Email ainda não verificado. Faça a verificação através do link enviado ao seu email.'),
+          ),
+        );
+      }
+      return Either.left(signInEither.left);
+    }
+
+    final User user = (getByEmailEither.right as User);
+    return Either.right(user);
   }
 
-  Future<LoginState> loginWithEmailAndPassword({
-    required String email,
-    required String password,
-  });
+  Future<Either<Failure, Unit>> sendEmailVerification() async {
+    final sendEmailEither =
+        await authRepository.sendEmailVerificationForCurrentUser();
 
-  Future<CreateUserState> createUserWithEmailAndPassword({
-    required String name,
-    required String surname,
-    required String phone,
-    required String email,
-    required String password,
-    required String confirmPassword,
-  });
+    if (sendEmailEither.isLeft) {
+      return Either.left(sendEmailEither.left);
+    }
 
-  Future<PasswordResetState> sendPasswordResetEmail({
-    required String email,
-  });
+    return Either.right(unit);
+  }
+
+  Future<Either<Failure, Unit>> createUserEmailPassword({
+    required User user,
+  }) async {
+    final saveUserEither = await saveUserData(user: user);
+    if (saveUserEither.isLeft) {
+      return Either.left(saveUserEither.left);
+    }
+
+    final createUserEither = await authRepository.createUserEmailPassword(
+      email: user.email,
+      password: user.password,
+    );
+    if (createUserEither.isLeft) {
+      return Either.left(createUserEither.left);
+    }
+
+    final sendEmailEither = await sendEmailVerification();
+    if (sendEmailEither.isLeft) {
+      return Either.left(sendEmailEither.left);
+    }
+
+    return Either.right(unit);
+  }
+
+  Future<Either<Failure, Unit>> saveUserData({required User user}) async {
+    final getByEmailEither = await userRepository.getByEmail(email: user.email);
+
+    if (getByEmailEither.left is UserNotFoundFailure) {
+      final createUserEither = await userRepository.insert(user: user);
+      if (createUserEither.isLeft) {
+        return Either.left(createUserEither.left);
+      }
+      return Either.right(unit);
+    }
+
+    if (getByEmailEither.isLeft) {
+      return Either.left(getByEmailEither.left);
+    }
+
+    // Capturando o id para realizar o update do registro correto
+    user = user.copyWith(id: getByEmailEither.right!.id);
+    final updateUserEither = await userRepository.update(user: user);
+    if (updateUserEither.isLeft) {
+      return Either.left(updateUserEither.left);
+    }
+    return Either.right(unit);
+  }
+
+  Future<Either<Failure, Unit>> sendPasswordResetEmail(
+      {required String email}) async {
+
+    final passwordResetEither = await authRepository.sendPasswordResetEmail(email: email);
+    if (passwordResetEither.isLeft) {
+      return Either.left(passwordResetEither.left);
+    }
+
+    return Either.right(unit);
+  }
 }
-
-

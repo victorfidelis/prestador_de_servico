@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/states/auth/password_reset_state.dart';
 
 class PasswordResetController extends ChangeNotifier {
@@ -7,23 +8,26 @@ class PasswordResetController extends ChangeNotifier {
 
   PasswordResetState _state = WaitingUserSentEmail();
   PasswordResetState get state => _state;
-  void _changeState({required PasswordResetState currentState}) {
+  void _changeState(PasswordResetState currentState) {
     _state = currentState;
     notifyListeners();
   }
 
   PasswordResetController({required this.authService});
-  
+
   void init() {
-    _changeState(currentState: WaitingUserSentEmail());
+    _changeState(WaitingUserSentEmail());
   }
 
   Future<void> sendPasswordResetEmail({required String email}) async {
-    _changeState(currentState: LoadingSentEmail());
+    _changeState(LoadingSentEmail());
 
-    PasswordResetState passwordResetState =
+    final passwordResetEither =
         await authService.sendPasswordResetEmail(email: email);
 
-    _changeState(currentState: passwordResetState);
+    passwordResetEither.fold(
+      (error) => _changeState(ErrorPasswordResetEmail(message: error.message)),
+      (value) => _changeState(PasswordResetEmailSent()),
+    );
   }
 }

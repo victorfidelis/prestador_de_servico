@@ -1,5 +1,5 @@
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-import 'package:prestador_de_servico/app/services/service/hybrid_service_category_service.dart';
+import 'package:prestador_de_servico/app/services/service_category/hybrid_service_category_service.dart';
 
 abstract class ServiceCategoryService {
   factory ServiceCategoryService.create() {

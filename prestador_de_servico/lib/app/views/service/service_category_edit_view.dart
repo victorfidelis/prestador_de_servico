@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_category_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service_category/service_category_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service_category/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';

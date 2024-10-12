@@ -3,12 +3,14 @@ import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/login_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_category_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service_category/service_category_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service_category/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/controllers/start/start_controller.dart';
+import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
+import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/services/app/app_service.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
+import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
@@ -29,14 +31,29 @@ class App extends StatelessWidget {
             create: (context) =>
                 AppController(appService: AppService.create())),
         ChangeNotifierProvider<LoginController>(
-            create: (context) =>
-                LoginController(authService: AuthService.create())),
+          create: (context) => LoginController(
+            authService: AuthService(
+              authRepository: AuthRepository.create(),
+              userRepository: UserRepository.create(),
+            ),
+          ),
+        ),
         ChangeNotifierProvider<CreateUserController>(
-            create: (context) =>
-                CreateUserController(authService: AuthService.create())),
+          create: (context) => CreateUserController(
+            authService: AuthService(
+              authRepository: AuthRepository.create(),
+              userRepository: UserRepository.create(),
+            ),
+          ),
+        ),
         ChangeNotifierProvider<PasswordResetController>(
-            create: (context) =>
-                PasswordResetController(authService: AuthService.create())),
+          create: (context) => PasswordResetController(
+            authService: AuthService(
+              authRepository: AuthRepository.create(),
+              userRepository: UserRepository.create(),
+            ),
+          ),
+        ),
         ChangeNotifierProvider<StartController>(
             create: (context) => StartController()),
         ChangeNotifierProvider<ServiceCategoryController>(

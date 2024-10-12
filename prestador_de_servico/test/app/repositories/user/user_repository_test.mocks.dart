@@ -3,13 +3,14 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i3;
+import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:mockito/src/dummies.dart' as _i5;
-import 'package:prestador_de_servico/app/models/user/user.dart' as _i4;
+import 'package:prestador_de_servico/app/models/user/user.dart' as _i6;
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart'
-    as _i2;
+    as _i3;
+import 'package:prestador_de_servico/app/shared/either/either.dart' as _i2;
+import 'package:prestador_de_servico/app/shared/failure/failure.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -24,18 +25,31 @@ import 'package:prestador_de_servico/app/repositories/user/user_repository.dart'
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
+class _FakeEither_0<L, R> extends _i1.SmartFake implements _i2.Either<L, R> {
+  _FakeEither_0(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [UserRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockUserRepository extends _i1.Mock implements _i2.UserRepository {
+class MockUserRepository extends _i1.Mock implements _i3.UserRepository {
   @override
-  _i3.Future<String> insert({required _i4.User? user}) => (super.noSuchMethod(
+  _i4.Future<_i2.Either<_i5.Failure, String>> insert(
+          {required _i6.User? user}) =>
+      (super.noSuchMethod(
         Invocation.method(
           #insert,
           [],
           {#user: user},
         ),
-        returnValue: _i3.Future<String>.value(_i5.dummyValue<String>(
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, String>>.value(
+            _FakeEither_0<_i5.Failure, String>(
           this,
           Invocation.method(
             #insert,
@@ -44,7 +58,8 @@ class MockUserRepository extends _i1.Mock implements _i2.UserRepository {
           ),
         )),
         returnValueForMissingStub:
-            _i3.Future<String>.value(_i5.dummyValue<String>(
+            _i4.Future<_i2.Either<_i5.Failure, String>>.value(
+                _FakeEither_0<_i5.Failure, String>(
           this,
           Invocation.method(
             #insert,
@@ -52,50 +67,125 @@ class MockUserRepository extends _i1.Mock implements _i2.UserRepository {
             {#user: user},
           ),
         )),
-      ) as _i3.Future<String>);
+      ) as _i4.Future<_i2.Either<_i5.Failure, String>>);
 
   @override
-  _i3.Future<_i4.User?> getById({required String? id}) => (super.noSuchMethod(
+  _i4.Future<_i2.Either<_i5.Failure, _i6.User>> getById(
+          {required String? id}) =>
+      (super.noSuchMethod(
         Invocation.method(
           #getById,
           [],
           {#id: id},
         ),
-        returnValue: _i3.Future<_i4.User?>.value(),
-        returnValueForMissingStub: _i3.Future<_i4.User?>.value(),
-      ) as _i3.Future<_i4.User?>);
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i6.User>>.value(
+            _FakeEither_0<_i5.Failure, _i6.User>(
+          this,
+          Invocation.method(
+            #getById,
+            [],
+            {#id: id},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i6.User>>.value(
+                _FakeEither_0<_i5.Failure, _i6.User>(
+          this,
+          Invocation.method(
+            #getById,
+            [],
+            {#id: id},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i6.User>>);
 
   @override
-  _i3.Future<_i4.User?> getByEmail({required String? email}) =>
+  _i4.Future<_i2.Either<_i5.Failure, _i6.User>> getByEmail(
+          {required String? email}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getByEmail,
           [],
           {#email: email},
         ),
-        returnValue: _i3.Future<_i4.User?>.value(),
-        returnValueForMissingStub: _i3.Future<_i4.User?>.value(),
-      ) as _i3.Future<_i4.User?>);
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i6.User>>.value(
+            _FakeEither_0<_i5.Failure, _i6.User>(
+          this,
+          Invocation.method(
+            #getByEmail,
+            [],
+            {#email: email},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i6.User>>.value(
+                _FakeEither_0<_i5.Failure, _i6.User>(
+          this,
+          Invocation.method(
+            #getByEmail,
+            [],
+            {#email: email},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i6.User>>);
 
   @override
-  _i3.Future<void> deleteById({required String? id}) => (super.noSuchMethod(
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> deleteById(
+          {required String? id}) =>
+      (super.noSuchMethod(
         Invocation.method(
           #deleteById,
           [],
           {#id: id},
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #deleteById,
+            [],
+            {#id: id},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #deleteById,
+            [],
+            {#id: id},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
 
   @override
-  _i3.Future<void> update({required _i4.User? user}) => (super.noSuchMethod(
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> update(
+          {required _i6.User? user}) =>
+      (super.noSuchMethod(
         Invocation.method(
           #update,
           [],
           {#user: user},
         ),
-        returnValue: _i3.Future<void>.value(),
-        returnValueForMissingStub: _i3.Future<void>.value(),
-      ) as _i3.Future<void>);
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #update,
+            [],
+            {#user: user},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #update,
+            [],
+            {#user: user},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
 }

@@ -50,12 +50,12 @@ class _PasswordResetViewState extends State<PasswordResetView> {
                       builder: (context, passwordResetController, _) {
                     String? emailMessage;
 
-                    if (passwordResetController.state is ErrorSentEmail) {
+                    if (passwordResetController.state is ErrorPasswordResetEmail) {
                       emailMessage =
-                          (passwordResetController.state as ErrorSentEmail)
-                              .emailMessage;
+                          (passwordResetController.state as ErrorPasswordResetEmail)
+                              .message;
                     } else if (passwordResetController.state
-                        is ResetEmailSent) {
+                        is PasswordResetEmailSent) {
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [

@@ -97,6 +97,21 @@ class MockServiceCategoryRepository extends _i1.Mock
       ) as _i4.Future<List<_i2.ServiceCategory>>);
 
   @override
+  _i4.Future<List<_i2.ServiceCategory>> getUnsync(
+          {required DateTime? dateLastSync}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getUnsync,
+          [],
+          {#dateLastSync: dateLastSync},
+        ),
+        returnValue: _i4.Future<List<_i2.ServiceCategory>>.value(
+            <_i2.ServiceCategory>[]),
+        returnValueForMissingStub: _i4.Future<List<_i2.ServiceCategory>>.value(
+            <_i2.ServiceCategory>[]),
+      ) as _i4.Future<List<_i2.ServiceCategory>>);
+
+  @override
   _i4.Future<String> insert({required _i2.ServiceCategory? serviceCategory}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -145,4 +160,15 @@ class MockServiceCategoryRepository extends _i1.Mock
         returnValue: _i4.Future<void>.value(),
         returnValueForMissingStub: _i4.Future<void>.value(),
       ) as _i4.Future<void>);
+
+  @override
+  _i4.Future<bool> existsById({required String? id}) => (super.noSuchMethod(
+        Invocation.method(
+          #existsById,
+          [],
+          {#id: id},
+        ),
+        returnValue: _i4.Future<bool>.value(false),
+        returnValueForMissingStub: _i4.Future<bool>.value(false),
+      ) as _i4.Future<bool>);
 }

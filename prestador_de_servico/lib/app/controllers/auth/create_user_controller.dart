@@ -1,13 +1,15 @@
 import 'package:flutter/foundation.dart';
+import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
 
 class CreateUserController extends ChangeNotifier {
   final AuthService authService;
 
-  CreateUserState _state = PendingCreation();
+  CreateUserState _state = WaitingUserCreation();
   CreateUserState get state => _state;
-  void _changeState({required CreateUserState currentState}) {
+  void _changeState(currentState) {
     _state = currentState;
     notifyListeners();
   }
@@ -15,37 +17,51 @@ class CreateUserController extends ChangeNotifier {
   CreateUserController({required this.authService});
 
   void init() {
-    _changeState(currentState: PendingCreation());
+    _changeState(WaitingUserCreation());
   }
 
-  Future<void> createAccountWithEmailAndPassword({
-    required String name,
-    required String surname,
-    required String phone,
-    required String email,
-    required String password,
-    required String confirmPassword,
-  }) async {
-    _changeState(
-        currentState: CreateUserWithEmailAndPasswordSent(
-      name: name,
-      surname: surname,
-      phone: phone,
-      email: email,
-      password: password,
-      confirmPassword: confirmPassword,
-    ));
+  Future<void> createUserWithEmailAndPassword({required User user}) async {
+    _changeState(LoadingUserCreation());
 
-    CreateUserState createAccountState =
-        await authService.createUserWithEmailAndPassword(
-      name: name,
-      surname: surname,
-      phone: phone,
-      email: email,
-      password: password,
-      confirmPassword: confirmPassword,
+    CreateUserState createUserState = _validate(user: user);
+    if (createUserState is ErrorUserCreation) {
+      _changeState(createUserState);
+      return;
+    }
+
+    final createUserEither =
+        await authService.createUserEmailPassword(user: user);
+    createUserEither.fold(
+      (error) => _changeState(
+          ErrorUserCreation(genericMessage: createUserEither.left!.message)),
+      (value) => _changeState(UserCreated(user: user)),
     );
+  }
 
-    _changeState(currentState: createAccountState);
+  CreateUserState _validate({required User user}) {
+    if (user.name.isEmpty) {
+      return ErrorUserCreation(nameMessage: 'Necessário informar o nome');
+    }
+    if (user.surname.isEmpty) {
+      return ErrorUserCreation(
+          surnameMessage: 'Necessário informar o sobrenome');
+    }
+    if (user.email.isEmpty) {
+      return ErrorUserCreation(emailMessage: 'Necessário informar o email');
+    }
+    if (user.password.isEmpty) {
+      return ErrorUserCreation(passwordMessage: 'Necessário informar a senha');
+    }
+    if (user.confirmPassword.isEmpty) {
+      return ErrorUserCreation(
+          confirmPasswordMessage: 'Necessário informar a confirmação da senha');
+    }
+    if (user.password != user.confirmPassword) {
+      return ErrorUserCreation(
+        passwordMessage: 'Senha incompatível',
+        confirmPasswordMessage: 'Senha incompatível',
+      );
+    }
+    return UserValidated();
   }
 }

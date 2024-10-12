@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/states/auth/login_state.dart';
 
 class LoginController extends ChangeNotifier {
@@ -11,7 +12,7 @@ class LoginController extends ChangeNotifier {
   LoginState _state = PendingLogin();
   LoginState get state => _state;
 
-  void _changeState({required LoginState currentState}) {
+  void _changeState(LoginState currentState) {
     _state = currentState;
     notifyListeners();
   }
@@ -21,16 +22,19 @@ class LoginController extends ChangeNotifier {
     required String password,
   }) async {
     
-    _changeState(currentState: LoginWithEmailAndPasswordSent(
+    _changeState(LoginWithEmailAndPasswordSent(
       email: email,
       password: password,
     ));
     
-    LoginState loginState = await _authService.loginWithEmailAndPassword(
+    final signInEither = await _authService.signInEmailPasswordAndVerifyEmail(
       email: email,
       password: password,
     );
 
-    _changeState(currentState: loginState);
+    signInEither.fold(
+      (error) => _changeState(LoginError(genericMessage: error.message)),
+      (value) => _changeState(LoginSuccess(user: value)),
+    );
   }
 }

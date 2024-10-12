@@ -3,16 +3,16 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i6;
+import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:prestador_de_servico/app/services/auth/auth_service.dart'
-    as _i5;
-import 'package:prestador_de_servico/app/states/auth/create_user_state.dart'
+import 'package:prestador_de_servico/app/models/user/user.dart' as _i7;
+import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart'
     as _i3;
-import 'package:prestador_de_servico/app/states/auth/login_state.dart' as _i2;
-import 'package:prestador_de_servico/app/states/auth/password_reset_state.dart'
-    as _i4;
+import 'package:prestador_de_servico/app/repositories/user/user_repository.dart'
+    as _i6;
+import 'package:prestador_de_servico/app/shared/either/either.dart' as _i2;
+import 'package:prestador_de_servico/app/shared/failure/failure.dart' as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -27,8 +27,8 @@ import 'package:prestador_de_servico/app/states/auth/password_reset_state.dart'
 // ignore_for_file: camel_case_types
 // ignore_for_file: subtype_of_sealed_class
 
-class _FakeLoginState_0 extends _i1.SmartFake implements _i2.LoginState {
-  _FakeLoginState_0(
+class _FakeEither_0<L, R> extends _i1.SmartFake implements _i2.Either<L, R> {
+  _FakeEither_0(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -37,50 +37,29 @@ class _FakeLoginState_0 extends _i1.SmartFake implements _i2.LoginState {
         );
 }
 
-class _FakeCreateUserState_1 extends _i1.SmartFake
-    implements _i3.CreateUserState {
-  _FakeCreateUserState_1(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-class _FakePasswordResetState_2 extends _i1.SmartFake
-    implements _i4.PasswordResetState {
-  _FakePasswordResetState_2(
-    Object parent,
-    Invocation parentInvocation,
-  ) : super(
-          parent,
-          parentInvocation,
-        );
-}
-
-/// A class which mocks [AuthService].
+/// A class which mocks [AuthRepository].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockAuthService extends _i1.Mock implements _i5.AuthService {
+class MockAuthRepository extends _i1.Mock implements _i3.AuthRepository {
   @override
-  _i6.Future<_i2.LoginState> loginWithEmailAndPassword({
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> signInEmailPassword({
     required String? email,
     required String? password,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #loginWithEmailAndPassword,
+          #signInEmailPassword,
           [],
           {
             #email: email,
             #password: password,
           },
         ),
-        returnValue: _i6.Future<_i2.LoginState>.value(_FakeLoginState_0(
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
           this,
           Invocation.method(
-            #loginWithEmailAndPassword,
+            #signInEmailPassword,
             [],
             {
               #email: email,
@@ -89,10 +68,11 @@ class MockAuthService extends _i1.Mock implements _i5.AuthService {
           ),
         )),
         returnValueForMissingStub:
-            _i6.Future<_i2.LoginState>.value(_FakeLoginState_0(
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
           this,
           Invocation.method(
-            #loginWithEmailAndPassword,
+            #signInEmailPassword,
             [],
             {
               #email: email,
@@ -100,66 +80,77 @@ class MockAuthService extends _i1.Mock implements _i5.AuthService {
             },
           ),
         )),
-      ) as _i6.Future<_i2.LoginState>);
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
 
   @override
-  _i6.Future<_i3.CreateUserState> createUserWithEmailAndPassword({
-    required String? name,
-    required String? surname,
-    required String? phone,
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>
+      sendEmailVerificationForCurrentUser() => (super.noSuchMethod(
+            Invocation.method(
+              #sendEmailVerificationForCurrentUser,
+              [],
+            ),
+            returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
+              this,
+              Invocation.method(
+                #sendEmailVerificationForCurrentUser,
+                [],
+              ),
+            )),
+            returnValueForMissingStub:
+                _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                    _FakeEither_0<_i5.Failure, _i2.Unit>(
+              this,
+              Invocation.method(
+                #sendEmailVerificationForCurrentUser,
+                [],
+              ),
+            )),
+          ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> createUserEmailPassword({
     required String? email,
     required String? password,
-    required String? confirmPassword,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
-          #createUserWithEmailAndPassword,
+          #createUserEmailPassword,
           [],
           {
-            #name: name,
-            #surname: surname,
-            #phone: phone,
             #email: email,
             #password: password,
-            #confirmPassword: confirmPassword,
           },
         ),
-        returnValue:
-            _i6.Future<_i3.CreateUserState>.value(_FakeCreateUserState_1(
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
           this,
           Invocation.method(
-            #createUserWithEmailAndPassword,
+            #createUserEmailPassword,
             [],
             {
-              #name: name,
-              #surname: surname,
-              #phone: phone,
               #email: email,
               #password: password,
-              #confirmPassword: confirmPassword,
             },
           ),
         )),
         returnValueForMissingStub:
-            _i6.Future<_i3.CreateUserState>.value(_FakeCreateUserState_1(
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
           this,
           Invocation.method(
-            #createUserWithEmailAndPassword,
+            #createUserEmailPassword,
             [],
             {
-              #name: name,
-              #surname: surname,
-              #phone: phone,
               #email: email,
               #password: password,
-              #confirmPassword: confirmPassword,
             },
           ),
         )),
-      ) as _i6.Future<_i3.CreateUserState>);
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
 
   @override
-  _i6.Future<_i4.PasswordResetState> sendPasswordResetEmail(
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> sendPasswordResetEmail(
           {required String? email}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -167,8 +158,8 @@ class MockAuthService extends _i1.Mock implements _i5.AuthService {
           [],
           {#email: email},
         ),
-        returnValue:
-            _i6.Future<_i4.PasswordResetState>.value(_FakePasswordResetState_2(
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
           this,
           Invocation.method(
             #sendPasswordResetEmail,
@@ -177,7 +168,8 @@ class MockAuthService extends _i1.Mock implements _i5.AuthService {
           ),
         )),
         returnValueForMissingStub:
-            _i6.Future<_i4.PasswordResetState>.value(_FakePasswordResetState_2(
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
           this,
           Invocation.method(
             #sendPasswordResetEmail,
@@ -185,5 +177,160 @@ class MockAuthService extends _i1.Mock implements _i5.AuthService {
             {#email: email},
           ),
         )),
-      ) as _i6.Future<_i4.PasswordResetState>);
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
+}
+
+/// A class which mocks [UserRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockUserRepository extends _i1.Mock implements _i6.UserRepository {
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, String>> insert(
+          {required _i7.User? user}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #insert,
+          [],
+          {#user: user},
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, String>>.value(
+            _FakeEither_0<_i5.Failure, String>(
+          this,
+          Invocation.method(
+            #insert,
+            [],
+            {#user: user},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, String>>.value(
+                _FakeEither_0<_i5.Failure, String>(
+          this,
+          Invocation.method(
+            #insert,
+            [],
+            {#user: user},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, String>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i7.User>> getById(
+          {required String? id}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getById,
+          [],
+          {#id: id},
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i7.User>>.value(
+            _FakeEither_0<_i5.Failure, _i7.User>(
+          this,
+          Invocation.method(
+            #getById,
+            [],
+            {#id: id},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i7.User>>.value(
+                _FakeEither_0<_i5.Failure, _i7.User>(
+          this,
+          Invocation.method(
+            #getById,
+            [],
+            {#id: id},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i7.User>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i7.User>> getByEmail(
+          {required String? email}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getByEmail,
+          [],
+          {#email: email},
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i7.User>>.value(
+            _FakeEither_0<_i5.Failure, _i7.User>(
+          this,
+          Invocation.method(
+            #getByEmail,
+            [],
+            {#email: email},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i7.User>>.value(
+                _FakeEither_0<_i5.Failure, _i7.User>(
+          this,
+          Invocation.method(
+            #getByEmail,
+            [],
+            {#email: email},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i7.User>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> deleteById(
+          {required String? id}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteById,
+          [],
+          {#id: id},
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #deleteById,
+            [],
+            {#id: id},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #deleteById,
+            [],
+            {#id: id},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> update(
+          {required _i7.User? user}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #update,
+          [],
+          {#user: user},
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #update,
+            [],
+            {#user: user},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #update,
+            [],
+            {#user: user},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
 }

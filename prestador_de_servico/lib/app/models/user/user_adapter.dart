@@ -10,7 +10,9 @@ class UserAdapter {
       'name': user.name,
       'surname': user.surname,
       'phone': user.phone,
-      'email': user.email
+      'email': user.email,
+      'password': user.password,
+      'confirmPassword': user.confirmPassword,
     };
   }
 
@@ -18,10 +20,12 @@ class UserAdapter {
     return User(
       id: map['id'],
       isAdmin: map['isAdmin'],
+      email: map['email'],
       name: map['name'],
       surname: map['surname'],
       phone: map['phone'],
-      email: map['email'],
+      password: map.containsKey('password') ? map['password'] : '',
+      confirmPassword: map.containsKey('confirmPassword') ? map['confirmPassword'] : '',
     );
   } 
 
@@ -38,9 +42,15 @@ class UserAdapter {
   static User fromDocumentSnapshot({required DocumentSnapshot doc}) {
     Map<String, dynamic> map = (doc.data() as Map<String, dynamic>);
     map['id'] = doc.id;
-
-    User user = UserAdapter.fromMap(map: map);
-    return user;
+    
+    return User(
+      id: map['id'],
+      isAdmin: map['isAdmin'],
+      name: map['name'],
+      surname: map['surname'],
+      phone: map['phone'],
+      email: map['email'],
+    );
   }
 }
 

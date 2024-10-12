@@ -2,205 +2,129 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
+import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
+import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
-import 'package:prestador_de_servico/app/states/auth/login_state.dart';
-
-@GenerateNiceMocks([MockSpec<AuthService>()])
+import 'package:prestador_de_servico/app/shared/either/either.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
+import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'auth_service_test.mocks.dart';
 
-void main() {
-  final mockAuthService = MockAuthService();
+@GenerateNiceMocks([MockSpec<AuthRepository>()])
+@GenerateNiceMocks([MockSpec<UserRepository>()])
 
-  final User user = User(
+void main() {
+  late AuthService authService;
+  final mockAuthRepository = MockAuthRepository();
+  final mockUserRepository = MockUserRepository();
+
+  final userNoNetworkConection = User(
     id: '1',
-    isAdmin: false,
-    email: 'test@test.com',
-    name: 'Test',
-    surname: 'valid',
+    isAdmin: true,
+    email: 'userNoNetworkConection@test.com',
+    name: 'userNoNetworkConection',
+    surname: 'test',
     phone: '11912345678',
+    password: '123456',
+    confirmPassword: '123456',
   );
 
-  test(
-    '''Definição de comportamentos (stubbing)''',
+  final userEmailAlreadyUse = User(
+    id: '2',
+    isAdmin: true,
+    email: 'userEmailAlreadyUse@test.com',
+    name: 'userEmailAlreadyUse',
+    surname: 'test',
+    phone: '11912345678',
+    password: '123456',
+    confirmPassword: '123456',
+  );
+
+  final validUserToCreate = User(
+    id: '3',
+    isAdmin: true,
+    email: 'validUserToCreate@test.com',
+    name: 'validUserToCreate',
+    surname: 'test',
+    phone: '11912345678',
+    password: '123456',
+    confirmPassword: '123456',
+  );
+
+  setUpAll(
     () {
-      when(mockAuthService.loginWithEmailAndPassword(
-        email: 'test@test.com',
-        password: '123456',
-      )).thenAnswer((_) async => LoginSuccess(user: user));
+      authService = AuthService(
+        authRepository: mockAuthRepository,
+        userRepository: mockUserRepository,
+      );
 
-      when(mockAuthService.loginWithEmailAndPassword(
-        email: argThat(isNot('test@test.com'), named: 'email'),
-        password: anyNamed('password'),
+      when(mockAuthRepository.createUserEmailPassword(
+        email: userNoNetworkConection.email,
+        password: userNoNetworkConection.password,
       )).thenAnswer((_) async =>
-          LoginError(genericMessage: 'Credenciais de usuário inválidas'));
+          Either.left(NetworkFailure('Sem conexão com a interner')));
 
-      when(mockAuthService.loginWithEmailAndPassword(
-        email: 'test@test.com',
-        password: argThat(isNot('123456'), named: 'password'),
+      when(mockAuthRepository.createUserEmailPassword(
+        email: userEmailAlreadyUse.email,
+        password: userEmailAlreadyUse.password,
       )).thenAnswer((_) async =>
-          LoginError(genericMessage: 'Credenciais de usuário inválidas'));
+          Either.left(EmailAlreadyInUseFailure('Email já cadastrado')));
+
+      when(mockAuthRepository.createUserEmailPassword(
+        email: validUserToCreate.email,
+        password: validUserToCreate.password,
+      )).thenAnswer((_) async => Either.right(unit));
+
+      when(mockUserRepository.getByEmail(email: userNoNetworkConection.email))
+          .thenAnswer((_) async =>
+              Either.left(NetworkFailure('Sem conexão com a internet')));
+
+      when(mockUserRepository.getByEmail(email: userEmailAlreadyUse.email))
+          .thenAnswer((_) async => Either.right(userEmailAlreadyUse));
+
+      when(mockUserRepository.getByEmail(email: validUserToCreate.email))
+          .thenAnswer((_) async => Either.right(validUserToCreate));
+
+      when(mockUserRepository.update(user: anyNamed("user")))
+          .thenAnswer((_) async => Either.right(unit));
+
+      when(mockAuthRepository.sendEmailVerificationForCurrentUser())
+          .thenAnswer((_) async => Either.right(unit));
     },
   );
 
-  group('Login', () {
-    test(
-        '''Ao efetuar o login com uma crendencial válida o estado de sucesso deve 
-    ser retornado junto ao usuário válido''', () async {
-      LoginState loginState = await mockAuthService.loginWithEmailAndPassword(
-        email: 'test@test.com',
-        password: '123456',
-      );
-
-      expect(loginState.runtimeType, equals(LoginSuccess));
-      if (loginState is LoginSuccess) {
-        expect(loginState.user, equals(user));
-      }
-    });
-
-    test(
-        '''Ao efetuar o login com um email que não existe o estado de erro deve 
-    ser retornado junto a uma mensagem específica''', () async {
-      LoginState loginState = await mockAuthService.loginWithEmailAndPassword(
-        email: 'test2@test2.com',
-        password: '123456',
-      );
-
-      expect(loginState.runtimeType, equals(LoginError));
-      if (loginState is LoginError) {
-        expect(loginState.genericMessage,
-            equals('Credenciais de usuário inválidas'));
-      }
-    });
-
-    test('''Ao efetuar o login com uma senha inválida o estado de erro deve 
-    ser retornado junto a uma mensagem específica''', () async {
-      LoginState loginState = await mockAuthService.loginWithEmailAndPassword(
-        email: 'test@test.com',
-        password: 'incorreta',
-      );
-
-      expect(loginState.runtimeType, equals(LoginError));
-      if (loginState is LoginError) {
-        expect(loginState.genericMessage,
-            equals('Credenciais de usuário inválidas'));
-      }
-    });
-  });
-
   group(
-    'Criação de conta',
+    'Testes referentes a criação de conta',
     () {
       test(
-        '''Definição de comportamentos (stubbing)''',
-        () {
-          when(mockAuthService.createUserWithEmailAndPassword(
-            name: argThat(isEmpty, named: 'name'),
-            surname: anyNamed('surname'),
-            phone: anyNamed('phone'),
-            email: anyNamed('email'),
-            password: anyNamed('password'),
-            confirmPassword: anyNamed('confirmPassword'),
-          )).thenAnswer((_) async =>
-              ErrorCreatingUser(nameMessage: 'Necessário informar o nome'));
-
-          when(mockAuthService.createUserWithEmailAndPassword(
-            name: argThat(isNotEmpty, named: 'name'),
-            surname: argThat(isEmpty, named: 'surname'),
-            phone: anyNamed('phone'),
-            email: anyNamed('email'),
-            password: anyNamed('password'),
-            confirmPassword: anyNamed('confirmPassword'),
-          )).thenAnswer((_) async =>
-              ErrorCreatingUser(surnameMessage: 'Necessário informar o sobrenome'));
-
-          when(mockAuthService.createUserWithEmailAndPassword(
-            name: argThat(isNotEmpty, named: 'name'),
-            surname: argThat(isNotEmpty, named: 'surname'),
-            phone: anyNamed('phone'),
-            email: argThat(isEmpty, named: 'email'),
-            password: anyNamed('password'),
-            confirmPassword: anyNamed('confirmPassword'),
-          )).thenAnswer((_) async =>
-              ErrorCreatingUser(emailMessage: 'Necessário informar o email'));
-
-          when(mockAuthService.createUserWithEmailAndPassword(
-            name: argThat(isNotEmpty, named: 'name'),
-            surname: argThat(isNotEmpty, named: 'surname'),
-            phone: anyNamed('phone'),
-            email: argThat(isNotEmpty, named: 'email'),
-            password: argThat(isEmpty, named: 'password'),
-            confirmPassword: anyNamed('confirmPassword'),
-          )).thenAnswer((_) async =>
-              ErrorCreatingUser(passwordMessage: 'Necessário informar a senha'));
-
-          when(mockAuthService.createUserWithEmailAndPassword(
-            name: argThat(isNotEmpty, named: 'name'),
-            surname: argThat(isNotEmpty, named: 'surname'),
-            phone: anyNamed('phone'),
-            email: argThat(isNotEmpty, named: 'email'),
-            password: argThat(isNotEmpty, named: 'password'),
-            confirmPassword: argThat(isEmpty, named: 'confirmPassword'),
-          )).thenAnswer((_) async => ErrorCreatingUser(
-              confirmPasswordMessage: 'Necessário informar a confirmação da senha'));
-
-          when(mockAuthService.createUserWithEmailAndPassword(
-            name: argThat(isNotEmpty, named: 'name'),
-            surname: argThat(isNotEmpty, named: 'surname'),
-            phone: anyNamed('phone'),
-            email: 'test@test.com',
-            password: argThat(isNotEmpty, named: 'password'),
-            confirmPassword: argThat(isNotEmpty, named: 'confirmPassword'),
-          )).thenAnswer(
-              (_) async => ErrorCreatingUser(emailMessage: 'Email já cadastrado'));
-
-          when(mockAuthService.createUserWithEmailAndPassword(
-            name: argThat(isNotEmpty, named: 'name'),
-            surname: argThat(isNotEmpty, named: 'surname'),
-            phone: anyNamed('phone'),
-            email: argThat(isNot('test@test.com'), named: 'email'),
-            password: argThat(isNotEmpty, named: 'password'),
-            confirmPassword: argThat(isNotEmpty, named: 'confirmPassword'),
-          )).thenAnswer((_) async => UserCreated(user: user));
+        '''Ao tentar criar um usuário sem conexão com a internet um 
+      NetworkFailure deve ser retorndo no left do Either''',
+        () async {
+          final createUserEither = await authService.createUserEmailPassword(
+              user: userNoNetworkConection);
+          expect(createUserEither.isLeft, isTrue);
+          expect(createUserEither.left is NetworkFailure, isTrue);
         },
       );
 
       test(
-        '''Ao tentar criar uma conta através de um email que já existe um estado de erro 
-          será retornando junto a uma mensagem específca''',
+        '''Ao tentar criar um usuário com um email já cadastrado um
+      EmailAlreadyInUseFailure deve ser retorndo no left do Either''',
         () async {
-          CreateUserState createAccountState =
-              await mockAuthService.createUserWithEmailAndPassword(
-            name: 'test',
-            surname: 'test',
-            phone: '11923456789',
-            email: 'test@test.com',
-            password: '123456',
-            confirmPassword: '123465',
-          );
-
-          expect(createAccountState.runtimeType, equals(ErrorCreatingUser));
-          if (createAccountState is ErrorCreatingUser) {
-            expect(createAccountState.emailMessage, 'Email já cadastrado');
-          }
+          final createUserEither = await authService.createUserEmailPassword(
+              user: userEmailAlreadyUse);
+          expect(createUserEither.isLeft, isTrue);
+          expect(createUserEither.left is EmailAlreadyInUseFailure, isTrue);
         },
       );
 
       test(
-        '''Ao tentar criar uma conta através de um email que não existe um estado de 
-        sucesso será retornado''',
+        '''Ao tentar criar um usuário valido um right vazio deve ser retornado no Either''',
         () async {
-          CreateUserState createAccountState =
-              await mockAuthService.createUserWithEmailAndPassword(
-            name: 'test',
-            surname: 'test',
-            phone: '11923456789',
-            email: 'test2@test2.com',
-            password: '123456',
-            confirmPassword: '123465',
-          );
-          
-          expect(createAccountState.runtimeType, UserCreated);
+          final createUserEither = await authService.createUserEmailPassword(
+              user: validUserToCreate);
+          expect(createUserEither.isRight, isTrue);
+          expect(createUserEither.right is Unit, isTrue);
         },
       );
     },

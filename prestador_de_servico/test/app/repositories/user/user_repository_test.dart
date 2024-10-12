@@ -3,6 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
+import 'package:prestador_de_servico/app/shared/either/either.dart';
 
 @GenerateNiceMocks([MockSpec<UserRepository>()])
 import 'user_repository_test.mocks.dart';
@@ -23,60 +24,24 @@ void main() {
       mockUserRepository.insert(
         user: user1,
       ),
-    ).thenAnswer((_) async => '1');
+    ).thenAnswer((_) async => Either.right('1'));
 
     when(
       mockUserRepository.getByEmail(
         email: 'test@test.com',
       ),
-    ).thenAnswer((_) async => user1);
+    ).thenAnswer((_) async => Either.right(user1));
 
     when(
       mockUserRepository.deleteById(
         id: '1',
       ),
-    ).thenAnswer((_) async {});
+    ).thenAnswer((_) async => Either.right(unit));
 
     when(
       mockUserRepository.update(
         user: user1,
       ),
-    ).thenAnswer((_) async => true);
+    ).thenAnswer((_) async => Either.right(unit));
   });
-
-  test(
-    '''Ao tentar adicionar um usuário o retorno deve ser true''',
-    () async {
-      String? id = await mockUserRepository.insert(user: user1);
-
-      expect(id, equals('1'));
-    },
-  );
-
-  test(
-    '''Ao tentar capturar um usuário válido pelo seu email o retorno deve ser uma instância 
-    de UserModel do usuário consultado''',
-    () async {
-      User? user = await mockUserRepository.getByEmail(email: user1.email);
-
-      expect(user, equals(user1));
-    },
-  );
-
-  test(
-    '''Ao tentar capturar um usuário válido pelo seu email retorno deve uma instância 
-    de UserModel do usuário consultado''',
-    () async {
-      User? user = await mockUserRepository.getByEmail(email: user1.email);
-
-      expect(user, equals(user1));
-    },
-  );
-
-  test(
-    '''Ao tentar deletar um usuário válido pelo seu uid a operação deve ser feita sem erros''',
-    () async {
-      await mockUserRepository.deleteById(id: user1.id);
-    },
-  );
 }

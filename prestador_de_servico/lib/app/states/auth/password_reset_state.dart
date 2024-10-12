@@ -3,9 +3,9 @@ abstract class PasswordResetState {}
 
 class WaitingUserSentEmail extends PasswordResetState {}
 class LoadingSentEmail extends PasswordResetState {}
-class ErrorSentEmail extends PasswordResetState {
-  final String? emailMessage;
+class ErrorPasswordResetEmail extends PasswordResetState {
+  final String? message;
 
-  ErrorSentEmail({this.emailMessage});
+  ErrorPasswordResetEmail({this.message});
 }
-class ResetEmailSent extends PasswordResetState {}
+class PasswordResetEmailSent extends PasswordResetState {}

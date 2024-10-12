@@ -6,14 +6,18 @@ class User {
   final String name;
   final String surname;
   final String phone;
+  final String password;
+  final String confirmPassword;
 
   User({
-    required this.id,
-    required this.isAdmin,
+    this.id = '',
+    this.isAdmin = false,
     required this.email,
     required this.name,
     required this.surname,
-    required this.phone,
+    this.phone = '',
+    this.password = '',
+    this.confirmPassword = '',
   });
 
   @override
@@ -21,7 +25,8 @@ class User {
     return other is User &&
         id == other.id &&
         email == other.email &&
-        name == other.name;
+        name == other.name && 
+        surname == other.surname;
   }    
 
   User copyWith({
@@ -31,6 +36,8 @@ class User {
     String? name,
     String? surname,
     String? phone,
+    String? password,
+    String? confirmPassword,
   }) {
     return User(
       id: id ?? this.id,
@@ -39,6 +46,8 @@ class User {
       name: name ?? this.name,
       surname: surname ?? this.surname,
       phone: phone ?? this.phone,
+      password: password ?? this.password,
+      confirmPassword: confirmPassword ?? this.confirmPassword,
     );
   }
 }

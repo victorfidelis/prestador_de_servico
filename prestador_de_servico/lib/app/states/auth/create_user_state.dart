@@ -1,30 +1,12 @@
 import 'package:prestador_de_servico/app/models/user/user.dart';
 
 abstract class CreateUserState {}
-abstract class CreateUserSent extends CreateUserState {}
 
+class WaitingUserCreation extends CreateUserState {}
 
-class PendingCreation extends CreateUserState {}
+class LoadingUserCreation extends CreateUserState {} 
 
-class CreateUserWithEmailAndPasswordSent extends CreateUserSent {
-  final String name;
-  final String surname;
-  final String phone;
-  final String email;
-  final String password;
-  final String confirmPassword;
-
-  CreateUserWithEmailAndPasswordSent({
-    required this.name,
-    required this.surname,
-    required this.phone,
-    required this.email,
-    required this.password,
-    required this.confirmPassword,
-  });
-} 
-
-class ErrorCreatingUser extends CreateUserState {
+class ErrorUserCreation extends CreateUserState {
   final String? nameMessage;
   final String? surnameMessage;
   final String? phoneMessage;
@@ -33,7 +15,7 @@ class ErrorCreatingUser extends CreateUserState {
   final String? confirmPasswordMessage;
   final String? genericMessage;
 
-  ErrorCreatingUser({
+  ErrorUserCreation({
     this.nameMessage, 
     this.surnameMessage, 
     this.phoneMessage, 
@@ -43,6 +25,8 @@ class ErrorCreatingUser extends CreateUserState {
     this.genericMessage,
   });
 }
+
+class UserValidated extends CreateUserState{}
 
 class UserCreated extends CreateUserState {
   final User user;
