@@ -28,7 +28,7 @@ class AuthService {
 
     if (signInEither.isLeft) {
       if (signInEither.left is EmailNotVerifiedFailure) {
-        final sendEmailVerificationEither = await sendEmailVerification();
+        final sendEmailVerificationEither = await _sendEmailVerification();
         return sendEmailVerificationEither.fold(
           (error) => Either.left(error),
           (_) => Either.left(
@@ -44,7 +44,7 @@ class AuthService {
     return Either.right(user);
   }
 
-  Future<Either<Failure, Unit>> sendEmailVerification() async {
+  Future<Either<Failure, Unit>> _sendEmailVerification() async {
     final sendEmailEither =
         await authRepository.sendEmailVerificationForCurrentUser();
 
@@ -58,7 +58,7 @@ class AuthService {
   Future<Either<Failure, Unit>> createUserEmailPassword({
     required User user,
   }) async {
-    final saveUserEither = await saveUserData(user: user);
+    final saveUserEither = await _saveUserData(user: user);
     if (saveUserEither.isLeft) {
       return Either.left(saveUserEither.left);
     }
@@ -71,7 +71,7 @@ class AuthService {
       return Either.left(createUserEither.left);
     }
 
-    final sendEmailEither = await sendEmailVerification();
+    final sendEmailEither = await _sendEmailVerification();
     if (sendEmailEither.isLeft) {
       return Either.left(sendEmailEither.left);
     }
@@ -79,7 +79,7 @@ class AuthService {
     return Either.right(unit);
   }
 
-  Future<Either<Failure, Unit>> saveUserData({required User user}) async {
+  Future<Either<Failure, Unit>> _saveUserData({required User user}) async {
     final getByEmailEither = await userRepository.getByEmail(email: user.email);
 
     if (getByEmailEither.left is UserNotFoundFailure) {

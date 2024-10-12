@@ -26,7 +26,7 @@ class FirebaseAuthRepository implements AuthRepository {
       }
     } on fb_auth.FirebaseAuthException catch (e) {
       if (e.code == 'network-request-failed') {
-        return Either.left(NetworkFailure('Sem conexão com a interner'));
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
       } else if (e.code == 'invalid-credential') {
         return Either.left(
             InvalidCredentialFailure('Credenciais de usuário inválidas'));
@@ -47,12 +47,6 @@ class FirebaseAuthRepository implements AuthRepository {
     } on fb_auth.FirebaseAuthException catch (e) {
       if (e.code == 'network-request-failed') {
         return Either.left(NetworkFailure('Sem conexão com a internet'));
-      } else if (e.code == 'invalid-credential') {
-        return Either.left(InvalidCredentialFailure(
-            'Falha ao enviar o email de verificação. Credenciais de usuário inválidas'));
-      } else if (e.code == 'too-many-requests') {
-        return Either.left(TooManyRequestsFailure(
-            'Bloqueio temporário. Muitas tentativas incorretas'));
       } else {
         return Either.left(Failure('Firestore error: ${e.message}'));
       }
@@ -85,7 +79,6 @@ class FirebaseAuthRepository implements AuthRepository {
   Future<Either<Failure, Unit>> sendPasswordResetEmail({
     required String email,
   }) async {
-    
     try {
       await firebaseAuth.sendPasswordResetEmail(email: email);
       return Either.right(unit);
@@ -96,6 +89,5 @@ class FirebaseAuthRepository implements AuthRepository {
         return Either.left(Failure('Firestore error: ${e.message}'));
       }
     }
-
   }
 }

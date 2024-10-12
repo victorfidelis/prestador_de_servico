@@ -17,7 +17,7 @@ class FirebaseUserRepository implements UserRepository {
       return Either.right(docSnap.id);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
-        return Either.left(NetworkFailure('Sem conexão com a interner'));
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
       } else {
         return Either.left(Failure('Firestore error: ${e.message}'));
       }
@@ -32,7 +32,7 @@ class FirebaseUserRepository implements UserRepository {
       return Either.right(user);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
-        return Either.left(NetworkFailure('Sem conexão com a interner'));
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
       } else {
         return Either.left(Failure('Firestore error: ${e.message}'));
       }
@@ -67,7 +67,7 @@ class FirebaseUserRepository implements UserRepository {
       return Either.right(unit);
     } on FirebaseException catch(e) {
       if (e.code == 'unavailable') {
-        return Either.left(NetworkFailure('Sem conexão com a interner'));
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
       } else {
         return Either.left(Failure('Firestore error: ${e.message}'));
       }
@@ -83,7 +83,7 @@ class FirebaseUserRepository implements UserRepository {
       return Either.right(unit);
     } on FirebaseException catch(e) {
       if (e.code == 'unavailable') {
-        return Either.left(NetworkFailure('Sem conexão com a interner'));
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
       } else {
         return Either.left(Failure('Firestore error: ${e.message}'));
       }
