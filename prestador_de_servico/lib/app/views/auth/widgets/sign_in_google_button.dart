@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class LoginGoogleButton extends StatelessWidget {
+class SignInGoogleButton extends StatelessWidget {
   final Function() onTap;
 
-  const LoginGoogleButton({
+  const SignInGoogleButton({
     super.key,
     required this.onTap,
   });

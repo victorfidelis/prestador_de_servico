@@ -66,7 +66,6 @@ class CreateUserController extends ChangeNotifier {
     }
     if (user.password != user.confirmPassword) {
       return ErrorUserCreation(
-        passwordMessage: 'Senha incompatível',
         confirmPasswordMessage: 'Senha incompatível',
       );
     }

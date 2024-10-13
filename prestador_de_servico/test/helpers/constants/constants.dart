@@ -22,7 +22,7 @@ final userEmailAlreadyUse = User(
   confirmPassword: '123456',
 );
 
-final validUserToCreate = User(
+final userValidToCreate = User(
   id: '3',
   isAdmin: true,
   email: 'validUserToCreate@test.com',
@@ -55,8 +55,19 @@ final userInvalidCredentials = User(
   confirmPassword: '1234567',
 );
 
-final userTooManyRequests = User(
+final userEmailNotVerified = User(
   id: '6',
+  isAdmin: true,
+  email: 'userEmailNotVerified@test.com',
+  name: 'userEmailNotVerified',
+  surname: 'test',
+  phone: '11912345678',
+  password: '1234567',
+  confirmPassword: '1234567',
+);
+
+final userTooManyRequests = User(
+  id: '7',
   isAdmin: true,
   email: 'userTooManyRequests@test.com',
   name: 'userTooManyRequests',
@@ -66,8 +77,8 @@ final userTooManyRequests = User(
   confirmPassword: '1234567',
 );
 
-final validUserToSignIn = User(
-  id: '7',
+final userValidToSignIn = User(
+  id: '8',
   isAdmin: true,
   email: 'validUserToSignIn@test.com',
   name: 'validUserToSignIn',
@@ -77,8 +88,8 @@ final validUserToSignIn = User(
   confirmPassword: '1234567',
 );
 
-final validUserSendResetPasswordEmail = User(
-  id: '7',
+final userValidToSendResetPasswordEmail = User(
+  id: '9',
   isAdmin: true,
   email: 'validUserSendResetPasswordEmail@test.com',
   name: 'validUserSendResetPasswordEmail',
@@ -89,7 +100,7 @@ final validUserSendResetPasswordEmail = User(
 );
 
 final userWithoutEmail = User(
-  id: '8',
+  id: '10',
   isAdmin: true,
   email: '',
   name: 'userWithoutEmail',
@@ -100,7 +111,7 @@ final userWithoutEmail = User(
 );
 
 final userWithoutName = User(
-  id: '9',
+  id: '11',
   isAdmin: true,
   email: 'userWithoutName@test.com',
   name: '',
@@ -111,7 +122,7 @@ final userWithoutName = User(
 );
 
 final userWithoutSurname = User(
-  id: '10',
+  id: '12',
   isAdmin: true,
   email: 'userWithoutSurname@test.com',
   name: 'userWithoutSurname',
@@ -122,7 +133,7 @@ final userWithoutSurname = User(
 );
 
 final userWithoutPhone = User(
-  id: '11',
+  id: '13',
   isAdmin: true,
   email: 'userWithoutSurname@test.com',
   name: 'userWithoutSurname',
@@ -133,7 +144,7 @@ final userWithoutPhone = User(
 );
 
 final userWithoutPassword = User(
-  id: '12',
+  id: '14',
   isAdmin: true,
   email: 'userWithoutSurname@test.com',
   name: 'userWithoutSurname',
@@ -144,7 +155,7 @@ final userWithoutPassword = User(
 );
 
 final userWithoutConfirmPassword = User(
-  id: '12',
+  id: '15',
   isAdmin: true,
   email: 'userWithoutSurname@test.com',
   name: 'userWithoutSurname',
@@ -155,7 +166,7 @@ final userWithoutConfirmPassword = User(
 );
 
 final userInvalidConfirmPassword = User(
-  id: '13',
+  id: '16',
   isAdmin: true,
   email: 'userWithoutSurname@test.com',
   name: 'userWithoutSurname',

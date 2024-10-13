@@ -9,7 +9,7 @@ import '../user/mock_user_repository_helper.mocks.dart';
 @GenerateNiceMocks([MockSpec<AuthRepository>()])
 late MockAuthRepository mockAuthRepository;
 
-void setupMockAuthRepository() {
+void setUpMockAuthRepository() {
   mockAuthRepository = MockAuthRepository();
 
   when(mockAuthRepository.createUserEmailPassword(
@@ -25,8 +25,8 @@ void setupMockAuthRepository() {
       Either.left(EmailAlreadyInUseFailure('Email já cadastrado')));
 
   when(mockAuthRepository.createUserEmailPassword(
-    email: validUserToCreate.email,
-    password: validUserToCreate.password,
+    email: userValidToCreate.email,
+    password: userValidToCreate.password,
   )).thenAnswer((_) async => Either.right(unit));
 
   when(mockAuthRepository.signInEmailPassword(
@@ -48,14 +48,20 @@ void setupMockAuthRepository() {
       InvalidCredentialFailure('Credenciais de usuário inválidas')));
 
   when(mockAuthRepository.signInEmailPassword(
+    email: userEmailNotVerified.email,
+    password: userEmailNotVerified.password,
+  )).thenAnswer((_) async => Either.left(EmailNotVerifiedFailure(
+      'Email ainda não verificado. Faça a verificação através do link enviado ao seu email.')));
+
+  when(mockAuthRepository.signInEmailPassword(
     email: userTooManyRequests.email,
     password: userTooManyRequests.password,
   )).thenAnswer((_) async => Either.left(TooManyRequestsFailure(
       'Bloqueio temporário. Muitas tentativas incorretas')));
 
   when(mockAuthRepository.signInEmailPassword(
-    email: validUserToSignIn.email,
-    password: validUserToSignIn.password,
+    email: userValidToSignIn.email,
+    password: userValidToSignIn.password,
   )).thenAnswer((_) async => Either.right(unit));
 
   when(mockAuthRepository.sendEmailVerificationForCurrentUser())
@@ -67,6 +73,6 @@ void setupMockAuthRepository() {
           Either.left(NetworkFailure('Sem conexão com a internet')));
 
   when(mockAuthRepository.sendPasswordResetEmail(
-          email: validUserSendResetPasswordEmail.email))
+          email: userValidToSendResetPasswordEmail.email))
       .thenAnswer((_) async => Either.right(unit));
 }

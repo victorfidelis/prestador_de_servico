@@ -14,8 +14,8 @@ class AppController extends ChangeNotifier {
   AppState _state = LoadingApp();
   AppState get state => _state;
 
-  void _changeState({required AppState currentLoginState}) {
-    _state = currentLoginState;
+  void _changeState({required AppState currentSignInState}) {
+    _state = currentSignInState;
     notifyListeners();
   }
 
@@ -25,7 +25,7 @@ class AppController extends ChangeNotifier {
     _initSyncServices();
     _syncData();
     
-    _changeState(currentLoginState: AppLoaded());
+    _changeState(currentSignInState: AppLoaded());
   }
 
   // Services precisam ser iniciados após a inicialização do firebase,

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
-import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_login_header.dart';
+import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_sign_in_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/states/auth/password_reset_state.dart';
 import 'package:provider/provider.dart';
@@ -37,7 +37,7 @@ class _PasswordResetViewState extends State<PasswordResetView> {
                   child: Stack(
                     children: [
                       const Center(
-                        child: CustomSecondLoginHeader(title: 'Recuperação\nde senha'),
+                        child: CustomSecondSignInHeader(title: 'Recuperação\nde senha'),
                       ),
                       BackNavigation(onTap: backNavigation),
                     ],
@@ -55,7 +55,7 @@ class _PasswordResetViewState extends State<PasswordResetView> {
                           (passwordResetController.state as ErrorPasswordResetEmail)
                               .message;
                     } else if (passwordResetController.state
-                        is PasswordResetEmailSent) {
+                        is PasswordResetEmailSentSuccess) {
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [

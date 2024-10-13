@@ -3,11 +3,11 @@ import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
-import 'package:prestador_de_servico/app/controllers/auth/login_controller.dart';
-import 'package:prestador_de_servico/app/states/auth/login_state.dart';
+import 'package:prestador_de_servico/app/controllers/auth/sign_in_controller.dart';
+import 'package:prestador_de_servico/app/states/auth/sign_in_state.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/views/auth/widgets/login_google_button.dart';
-import 'package:prestador_de_servico/app/views/auth/widgets/custom_login_header.dart';
+import 'package:prestador_de_servico/app/views/auth/widgets/sign_in_google_button.dart';
+import 'package:prestador_de_servico/app/views/auth/widgets/custom_sign_in_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/register_link.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
@@ -16,14 +16,14 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:provider/provider.dart';
 
-class LoginView extends StatefulWidget {
-  const LoginView({super.key});
+class SignInView extends StatefulWidget {
+  const SignInView({super.key});
 
   @override
-  State<LoginView> createState() => _LoginViewState();
+  State<SignInView> createState() => _SignInViewState();
 }
 
-class _LoginViewState extends State<LoginView> {
+class _SignInViewState extends State<SignInView> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -54,21 +54,21 @@ class _LoginViewState extends State<LoginView> {
                 children: [
                   SizedBox(
                     height: MediaQuery.of(context).size.height / 2.8,
-                    child: const CustomLoginHeader(),
+                    child: const CustomSignInHeader(),
                   ),
                   const SizedBox(height: 20),
                   Container(
                     height: 500,
                     padding: const EdgeInsets.symmetric(horizontal: 38),
-                    child: Consumer<LoginController>(
-                        builder: (context, loginController, _) {
-                      if (loginController.state is LoginSent) {
+                    child: Consumer<SignInController>(
+                        builder: (context, signInController, _) {
+                      if (signInController.state is LoadingSignIn) {
                         return const Center(
                           child: CustomLoading(),
                         );
                       }
 
-                      if (loginController.state is LoginSuccess) {
+                      if (signInController.state is SignInSuccess) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
                           _notifications.showSnackBar(
                             context: context,
@@ -84,12 +84,12 @@ class _LoginViewState extends State<LoginView> {
                       String? passwordMessage;
                       String? genericMessage;
 
-                      if (loginController.state is LoginError) {
+                      if (signInController.state is SignInError) {
                         emailMessage =
-                            (loginController.state as LoginError).emailMessage;
-                        passwordMessage = (loginController.state as LoginError)
+                            (signInController.state as SignInError).emailMessage;
+                        passwordMessage = (signInController.state as SignInError)
                             .passwordMessage;
-                        genericMessage = (loginController.state as LoginError)
+                        genericMessage = (signInController.state as SignInError)
                             .genericMessage;
                         if (genericMessage != null) {
                           genericErrorWidget =
@@ -128,7 +128,7 @@ class _LoginViewState extends State<LoginView> {
                           const SizedBox(height: 32),
                           CustomButton(
                             label: 'Logar',
-                            onTap: loginWithEmailPassword,
+                            onTap: signInEmailPassword,
                           ),
                           const SizedBox(height: 20),
                           const Text(
@@ -138,7 +138,7 @@ class _LoginViewState extends State<LoginView> {
                             ),
                           ),
                           const SizedBox(height: 20),
-                          LoginGoogleButton(onTap: () {}),
+                          SignInGoogleButton(onTap: () {}),
                           const SizedBox(height: 40),
                           RegisterLink(onTap: doCreateAccount),
                         ],
@@ -154,8 +154,8 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  void loginWithEmailPassword() {
-    context.read<LoginController>().loginWithEmailPasswordSent(
+  void signInEmailPassword() {
+    context.read<SignInController>().signInEmailPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );

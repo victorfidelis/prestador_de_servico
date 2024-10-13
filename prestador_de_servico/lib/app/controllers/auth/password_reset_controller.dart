@@ -27,7 +27,7 @@ class PasswordResetController extends ChangeNotifier {
 
     passwordResetEither.fold(
       (error) => _changeState(ErrorPasswordResetEmail(message: error.message)),
-      (value) => _changeState(PasswordResetEmailSent()),
+      (value) => _changeState(PasswordResetEmailSentSuccess()),
     );
   }
 }

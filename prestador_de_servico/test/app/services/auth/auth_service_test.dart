@@ -12,8 +12,8 @@ void main() {
 
   setUpAll(
     () {
-      setupMockAuthRepository();
-      setupMockUserRepository();
+      setUpMockAuthRepository();
+      setUpMockUserRepository();
       authService = AuthService(
         authRepository: mockAuthRepository,
         userRepository: mockUserRepository,
@@ -50,7 +50,7 @@ void main() {
         '''Ao tentar criar um usuário valido um right vazio deve ser retornado no Either''',
         () async {
           final createUserEither = await authService.createUserEmailPassword(
-              user: validUserToCreate);
+              user: userValidToCreate);
           expect(createUserEither.isRight, isTrue);
           expect(createUserEither.right is Unit, isTrue);
         },
@@ -128,12 +128,12 @@ void main() {
         () async {
           final signInEither =
               await authService.signInEmailPasswordAndVerifyEmail(
-            email: validUserToSignIn.email,
-            password: validUserToSignIn.password,
+            email: userValidToSignIn.email,
+            password: userValidToSignIn.password,
           );
 
           expect(signInEither.isRight, isTrue);
-          expect(signInEither.right == validUserToSignIn, isTrue);
+          expect(signInEither.right == userValidToSignIn, isTrue);
         },
       );
     },
@@ -162,7 +162,7 @@ void main() {
         () async {
           final resetPasswordEmailEither =
               await authService.sendPasswordResetEmail(
-            email: validUserSendResetPasswordEmail.email,
+            email: userValidToSendResetPasswordEmail.email,
           );
 
           expect(resetPasswordEmailEither.isRight, isTrue);

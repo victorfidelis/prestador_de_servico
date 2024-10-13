@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
-import 'package:prestador_de_servico/app/controllers/auth/login_controller.dart';
+import 'package:prestador_de_servico/app/controllers/auth/sign_in_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service_category/service_category_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service_category/service_category_edit_controller.dart';
@@ -16,7 +16,7 @@ import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_view.dart';
 import 'package:prestador_de_servico/app/views/start/start_view.dart';
-import 'package:prestador_de_servico/app/views/auth/login_view.dart';
+import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
 import 'package:provider/provider.dart';
 
@@ -30,8 +30,8 @@ class App extends StatelessWidget {
         ChangeNotifierProvider<AppController>(
             create: (context) =>
                 AppController(appService: AppService.create())),
-        ChangeNotifierProvider<LoginController>(
-          create: (context) => LoginController(
+        ChangeNotifierProvider<SignInController>(
+          create: (context) => SignInController(
             authService: AuthService(
               authRepository: AuthRepository.create(),
               userRepository: UserRepository.create(),
@@ -67,9 +67,9 @@ class App extends StatelessWidget {
       ],
       child: MaterialApp(
         theme: mainTheme,
-        initialRoute: '/login',
+        initialRoute: '/signIn',
         routes: {
-          '/login': (context) => const LoginView(),
+          '/signIn': (context) => const SignInView(),
           '/createAccount': (context) => const CreateUserView(),
           '/passwordReset': (context) => const PasswordResetView(),
           '/start': (context) => StartView(),

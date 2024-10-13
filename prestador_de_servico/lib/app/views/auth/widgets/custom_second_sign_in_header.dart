@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-class CustomSecondLoginHeader extends StatelessWidget {
+class CustomSecondSignInHeader extends StatelessWidget {
   final String title;
-  const CustomSecondLoginHeader({super.key, required this.title});
+  const CustomSecondSignInHeader({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {

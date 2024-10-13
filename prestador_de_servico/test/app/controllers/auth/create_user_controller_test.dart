@@ -8,13 +8,16 @@ import '../../../helpers/constants/constants.dart';
 import '../../../helpers/user/mock_user_repository_helper.dart';
 
 void main() {
-  late final CreateUserController createUserController;
-  late final AuthService authService;
+  late CreateUserController createUserController;
+
   setUpAll(
     () {
-      setupMockAuthRepository();
-      setupMockUserRepository();
-      authService = AuthService(
+      // As configurações abaixo criam os comportamentos mockados para diferentes
+      // situações relacionadas a autenticação e cadastro de usuário, além de instânciar
+      // os mocks públicos mockAuthRepository e mockUserRepository
+      setUpMockAuthRepository();
+      setUpMockUserRepository();
+      AuthService authService = AuthService(
         authRepository: mockAuthRepository,
         userRepository: mockUserRepository,
       );
@@ -131,11 +134,11 @@ void main() {
     com o usuário criado''',
     () async {
       await createUserController.createUserEmailPassword(
-          user: validUserToCreate);
+          user: userValidToCreate);
 
       expect(createUserController.state is UserCreated, isTrue);
       final state = createUserController.state as UserCreated;
-      expect(state.user, equals(validUserToCreate));
+      expect(state.user, equals(userValidToCreate));
     },
   );
 }

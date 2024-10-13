@@ -8,7 +8,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
-import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_login_header.dart';
+import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_sign_in_header.dart';
 import 'package:provider/provider.dart';
 
 class CreateUserView extends StatefulWidget {
@@ -54,7 +54,7 @@ class _CreateUserViewState extends State<CreateUserView> {
                   child: Stack(
                     children: [
                       const Center(
-                        child: CustomSecondLoginHeader(title: 'Criar\nConta'),
+                        child: CustomSecondSignInHeader(title: 'Criar\nConta'),
                       ),
                       BackNavigation(onTap: backNavigation),
                     ],
@@ -74,7 +74,8 @@ class _CreateUserViewState extends State<CreateUserView> {
                         _notifications.showSuccessAlert(
                           context: context,
                           title: 'Usuário Cadastrado',
-                          content: 'Faça a confirmação de sua conta através do link enviado para o seu email.', 
+                          content:
+                              'Faça a confirmação de sua conta através do link enviado para o seu email.',
                         );
                       });
                     }
@@ -89,24 +90,15 @@ class _CreateUserViewState extends State<CreateUserView> {
                     String? genericMessage;
 
                     if (createAccountController.state is ErrorUserCreation) {
-                      nameMessage =
-                          (createAccountController.state as ErrorUserCreation)
-                              .nameMessage;
-                      surnameMessage =
-                          (createAccountController.state as ErrorUserCreation)
-                              .surnameMessage;
-                      phoneMessage =
-                          (createAccountController.state as ErrorUserCreation)
-                              .phoneMessage;
-                      emailMessage =
-                          (createAccountController.state as ErrorUserCreation)
-                              .emailMessage;
-                      passwordMessage =
-                          (createAccountController.state as ErrorUserCreation)
-                              .passwordMessage;
-                      genericMessage =
-                          (createAccountController.state as ErrorUserCreation)
-                              .genericMessage;
+                      final errorState =
+                          (createAccountController.state as ErrorUserCreation);
+                      nameMessage = errorState.nameMessage;
+                      surnameMessage = errorState.surnameMessage;
+                      phoneMessage = errorState.phoneMessage;
+                      emailMessage = errorState.emailMessage;
+                      passwordMessage = errorState.passwordMessage;
+                      confirmPasswordMessage = errorState.confirmPasswordMessage;
+                      genericMessage = errorState.genericMessage;
                       if (genericMessage != null) {
                         genericErrorWidget =
                             CustomTextError(message: genericMessage);
@@ -188,13 +180,13 @@ class _CreateUserViewState extends State<CreateUserView> {
 
   void createAccountWithEmailAndPassword() {
     User user = User(
-          name: _nameController.text.trim(),
-          surname: _surnameController.text.trim(),
-          phone: _phoneController.text.trim(),
-          email: _emailController.text.trim().toLowerCase(),
-          password: _passwordController.text.trim(),
-          confirmPassword: _confirmPasswordController.text.trim(),
-    ); 
+      name: _nameController.text.trim(),
+      surname: _surnameController.text.trim(),
+      phone: _phoneController.text.trim(),
+      email: _emailController.text.trim().toLowerCase(),
+      password: _passwordController.text.trim(),
+      confirmPassword: _confirmPasswordController.text.trim(),
+    );
 
     context.read<CreateUserController>().createUserEmailPassword(user: user);
   }
