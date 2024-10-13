@@ -196,6 +196,6 @@ class _CreateUserViewState extends State<CreateUserView> {
           confirmPassword: _confirmPasswordController.text.trim(),
     ); 
 
-    context.read<CreateUserController>().createUserWithEmailAndPassword(user: user);
+    context.read<CreateUserController>().createUserEmailPassword(user: user);
   }
 }

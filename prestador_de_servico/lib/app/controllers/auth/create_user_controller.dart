@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
+import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
 
 class CreateUserController extends ChangeNotifier {
@@ -20,7 +21,7 @@ class CreateUserController extends ChangeNotifier {
     _changeState(WaitingUserCreation());
   }
 
-  Future<void> createUserWithEmailAndPassword({required User user}) async {
+  Future<void> createUserEmailPassword({required User user}) async {
     _changeState(LoadingUserCreation());
 
     CreateUserState createUserState = _validate(user: user);
@@ -32,8 +33,15 @@ class CreateUserController extends ChangeNotifier {
     final createUserEither =
         await authService.createUserEmailPassword(user: user);
     createUserEither.fold(
-      (error) => _changeState(
-          ErrorUserCreation(genericMessage: createUserEither.left!.message)),
+      (error) {
+        if (error is EmailAlreadyInUseFailure) {
+          _changeState(
+              ErrorUserCreation(emailMessage: createUserEither.left!.message));
+        } else {
+          _changeState(ErrorUserCreation(
+              genericMessage: createUserEither.left!.message));
+        }
+      },
       (value) => _changeState(UserCreated(user: user)),
     );
   }
