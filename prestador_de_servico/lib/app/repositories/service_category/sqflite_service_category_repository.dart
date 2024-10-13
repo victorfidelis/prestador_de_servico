@@ -1,4 +1,4 @@
-import 'package:prestador_de_servico/app/config/sqflite_config.dart';
+import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory_adapter.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart';

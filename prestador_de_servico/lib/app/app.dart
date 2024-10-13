@@ -5,17 +5,16 @@ import 'package:prestador_de_servico/app/controllers/auth/sign_in_controller.dar
 import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service_category/service_category_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service_category/service_category_edit_controller.dart';
-import 'package:prestador_de_servico/app/controllers/start/start_controller.dart';
+import 'package:prestador_de_servico/app/controllers/navigation/navigation_controller.dart';
 import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
-import 'package:prestador_de_servico/app/services/app/app_service.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_view.dart';
-import 'package:prestador_de_servico/app/views/start/start_view.dart';
+import 'package:prestador_de_servico/app/views/navigation/navigation_view.dart';
 import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
 import 'package:provider/provider.dart';
@@ -28,8 +27,7 @@ class App extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<AppController>(
-            create: (context) =>
-                AppController(appService: AppService.create())),
+            create: (context) => AppController()),
         ChangeNotifierProvider<SignInController>(
           create: (context) => SignInController(
             authService: AuthService(
@@ -54,8 +52,8 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-        ChangeNotifierProvider<StartController>(
-            create: (context) => StartController()),
+        ChangeNotifierProvider<NavigationController>(
+            create: (context) => NavigationController()),
         ChangeNotifierProvider<ServiceCategoryController>(
             create: (context) => ServiceCategoryController(
                   serviceCategoryService: ServiceCategoryService.create(),
@@ -72,7 +70,7 @@ class App extends StatelessWidget {
           '/signIn': (context) => const SignInView(),
           '/createAccount': (context) => const CreateUserView(),
           '/passwordReset': (context) => const PasswordResetView(),
-          '/start': (context) => StartView(),
+          '/navigation': (context) => NavigationView(),
           '/serviceCategory': (context) => const ServiceCategoryView(),
           '/serviceCategoryEdit': (context) => const ServiceCategoryEditView(),
         },

@@ -1,16 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/user/user_adapter.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
+import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
 class FirebaseUserRepository implements UserRepository {
-  final usersCollection = FirebaseFirestore.instance.collection('users');
+  final _firebaseInitializer = FirebaseInitializer();
 
   @override
   Future<Either<Failure, String>> insert({required User user}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+    
     try {
+      final usersCollection = FirebaseFirestore.instance.collection('users');
       DocumentReference docRef =
           await usersCollection.add(UserAdapter.toFirebaseMap(user: user));
       DocumentSnapshot docSnap = await docRef.get();
@@ -26,7 +34,13 @@ class FirebaseUserRepository implements UserRepository {
 
   @override
   Future<Either<Failure, User>> getById({required String id}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
     try {
+      final usersCollection = FirebaseFirestore.instance.collection('users');
       DocumentSnapshot docSnap = await usersCollection.doc(id).get();
       User user = UserAdapter.fromDocumentSnapshot(doc: docSnap);
       return Either.right(user);
@@ -41,7 +55,13 @@ class FirebaseUserRepository implements UserRepository {
 
   @override
   Future<Either<Failure, User>> getByEmail({required String email}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+    
     try {
+      final usersCollection = FirebaseFirestore.instance.collection('users');
       QuerySnapshot querySnap =
           await usersCollection.where('email', isEqualTo: email).limit(1).get();
 
@@ -62,10 +82,16 @@ class FirebaseUserRepository implements UserRepository {
 
   @override
   Future<Either<Failure, Unit>> deleteById({required String id}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+    
     try {
+      final usersCollection = FirebaseFirestore.instance.collection('users');
       await usersCollection.doc(id).delete();
       return Either.right(unit);
-    } on FirebaseException catch(e) {
+    } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
         return Either.left(NetworkFailure('Sem conexão com a internet'));
       } else {
@@ -76,12 +102,18 @@ class FirebaseUserRepository implements UserRepository {
 
   @override
   Future<Either<Failure, Unit>> update({required User user}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+    
     try {
+      final usersCollection = FirebaseFirestore.instance.collection('users');
       await usersCollection
           .doc(user.id)
           .update(UserAdapter.toFirebaseMap(user: user));
       return Either.right(unit);
-    } on FirebaseException catch(e) {
+    } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
         return Either.left(NetworkFailure('Sem conexão com a internet'));
       } else {

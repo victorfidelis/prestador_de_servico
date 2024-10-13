@@ -75,7 +75,7 @@ class _SignInViewState extends State<SignInView> {
                             message: 'Usuário autenticado!',
                           );
 
-                          doStart();
+                          doMainView();
                         });
                       }
 
@@ -171,8 +171,8 @@ class _SignInViewState extends State<SignInView> {
     Navigator.pushNamed(context, '/passwordReset');
   }
 
-  void doStart() {
+  void doMainView() {
     Navigator.pushNamedAndRemoveUntil(
-        context, '/start', (Route<dynamic> route) => false);
+        context, '/navigation', (Route<dynamic> route) => false);
   }
 }

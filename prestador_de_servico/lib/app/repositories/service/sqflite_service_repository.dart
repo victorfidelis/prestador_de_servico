@@ -1,4 +1,4 @@
-import 'package:prestador_de_servico/app/config/sqflite_config.dart';
+import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service/service_adapter.dart';
 import 'package:prestador_de_servico/app/repositories/service/service_repository.dart';

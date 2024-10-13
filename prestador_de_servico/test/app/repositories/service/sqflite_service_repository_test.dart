@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prestador_de_servico/app/config/sqflite_config.dart';
+import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/repositories/service/sqflite_service_repository.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';

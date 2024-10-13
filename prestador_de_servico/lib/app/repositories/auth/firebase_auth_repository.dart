@@ -1,17 +1,25 @@
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
+import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
 class FirebaseAuthRepository implements AuthRepository {
-  final fb_auth.FirebaseAuth firebaseAuth = fb_auth.FirebaseAuth.instance;
+  final _firebaseInitializer = FirebaseInitializer();
 
   @override
   Future<Either<Failure, Unit>> signInEmailPassword({
     required String email,
     required String password,
   }) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
     try {
+      final fb_auth.FirebaseAuth firebaseAuth = fb_auth.FirebaseAuth.instance;
       final userCredential = await firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
@@ -41,8 +49,14 @@ class FirebaseAuthRepository implements AuthRepository {
 
   @override
   Future<Either<Failure, Unit>> sendEmailVerificationForCurrentUser() async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
     try {
-      await fb_auth.FirebaseAuth.instance.currentUser!.sendEmailVerification();
+      final fb_auth.FirebaseAuth firebaseAuth = fb_auth.FirebaseAuth.instance;
+      await firebaseAuth.currentUser!.sendEmailVerification();
       return Either.right(unit);
     } on fb_auth.FirebaseAuthException catch (e) {
       if (e.code == 'network-request-failed') {
@@ -58,7 +72,13 @@ class FirebaseAuthRepository implements AuthRepository {
     required String email,
     required String password,
   }) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
     try {
+      final fb_auth.FirebaseAuth firebaseAuth = fb_auth.FirebaseAuth.instance;
       await firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -79,7 +99,13 @@ class FirebaseAuthRepository implements AuthRepository {
   Future<Either<Failure, Unit>> sendPasswordResetEmail({
     required String email,
   }) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
     try {
+      final fb_auth.FirebaseAuth firebaseAuth = fb_auth.FirebaseAuth.instance;
       await firebaseAuth.sendPasswordResetEmail(email: email);
       return Either.right(unit);
     } on fb_auth.FirebaseAuthException catch (e) {

@@ -1,14 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory_adapter.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
+import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart';
 
 class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
-  final serviceCategoriesCollection =
-      FirebaseFirestore.instance.collection('serviceCategories');
+  final _firebaseInitializer = FirebaseInitializer();
 
   @override
   Future<List<ServiceCategory>> getAll() async {
+    final serviceCategoriesCollection =
+        FirebaseFirestore.instance.collection('serviceCategories');
     QuerySnapshot snapServiceCategories = await serviceCategoriesCollection
         .where('isDeleted', isEqualTo: false)
         .get();
@@ -23,6 +25,8 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
 
   @override
   Future<ServiceCategory> getById({required String id}) async {
+    final serviceCategoriesCollection =
+        FirebaseFirestore.instance.collection('serviceCategories');
     DocumentSnapshot docSnap = await serviceCategoriesCollection.doc(id).get();
     ServiceCategory serviceCartegory =
         ServiceCartegoryAdapter.fromDocumentSnapshot(doc: docSnap);
@@ -45,6 +49,8 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
   @override
   Future<List<ServiceCategory>> getUnsync(
       {required DateTime dateLastSync}) async {
+    final serviceCategoriesCollection =
+        FirebaseFirestore.instance.collection('serviceCategories');
     Timestamp timestampLastSync = Timestamp.fromDate(dateLastSync);
     QuerySnapshot snapServiceCategories = await serviceCategoriesCollection
         .where('dateSync', isGreaterThan: timestampLastSync)
@@ -61,6 +67,8 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
 
   @override
   Future<String> insert({required ServiceCategory serviceCategory}) async {
+    final serviceCategoriesCollection =
+        FirebaseFirestore.instance.collection('serviceCategories');
     DocumentReference docRef = await serviceCategoriesCollection.add(
       ServiceCartegoryAdapter.toFirebaseMap(
         serviceCategory: serviceCategory,
@@ -72,6 +80,8 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
 
   @override
   Future<void> update({required ServiceCategory serviceCategory}) async {
+    final serviceCategoriesCollection =
+        FirebaseFirestore.instance.collection('serviceCategories');
     await serviceCategoriesCollection.doc(serviceCategory.id).update(
           ServiceCartegoryAdapter.toFirebaseMap(
               serviceCategory: serviceCategory),
@@ -80,6 +90,8 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
 
   @override
   Future<void> deleteById({required String id}) async {
+    final serviceCategoriesCollection =
+        FirebaseFirestore.instance.collection('serviceCategories');
     DocumentReference doc = serviceCategoriesCollection.doc(id);
 
     ServiceCategory serviceCategory =
@@ -92,7 +104,7 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
       ServiceCartegoryAdapter.toFirebaseMap(serviceCategory: serviceCategory),
     );
   }
-  
+
   @override
   Future<bool> existsById({required String id}) {
     return Future.value(false);

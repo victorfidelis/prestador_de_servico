@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/start/start_controller.dart';
-import 'package:prestador_de_servico/app/states/start/start_state.dart';
+import 'package:prestador_de_servico/app/controllers/navigation/navigation_controller.dart';
+import 'package:prestador_de_servico/app/states/navigation/navigation_state.dart';
 import 'package:prestador_de_servico/app/views/agenda/agenda_view.dart';
 import 'package:prestador_de_servico/app/views/home/home_view.dart';
 import 'package:prestador_de_servico/app/views/menu/menu_view.dart';
-import 'package:prestador_de_servico/app/views/start/widgets/custom_menu_buttom.dart';
+import 'package:prestador_de_servico/app/views/navigation/widgets/custom_menu_buttom.dart';
 import 'package:provider/provider.dart';
 
-class StartView extends StatelessWidget {
+class NavigationView extends StatelessWidget {
   final PageController _pageController = PageController(initialPage: 0);
   
-  StartView({super.key});
+  NavigationView({super.key});
 
 
   @override
@@ -26,7 +26,7 @@ class StartView extends StatelessWidget {
         ],
       ),
       bottomNavigationBar:
-          Consumer<StartController>(builder: (context, startController, _) {
+          Consumer<NavigationController>(builder: (context, navigationController, _) {
           
         return BottomAppBar(
           color: Theme.of(context).colorScheme.secondary,
@@ -36,34 +36,34 @@ class StartView extends StatelessWidget {
               Expanded(
                 child: CustomMenuButtom(
                   onTap: () {
-                    _pageController.jumpToPage(HomeStart().numberPage);
-                    startController.changePage(startState: HomeStart());
+                    _pageController.jumpToPage(HomeNavigationPage().numberPage);
+                    navigationController.changePage(navigationState: HomeNavigationPage());
                   },
                   icon: Icons.home,
                   text: 'Home',
-                  isCurrent: (startController.state is HomeStart),
+                  isCurrent: (navigationController.state is HomeNavigationPage),
                 ),
               ),
               Expanded(
                 child: CustomMenuButtom(
                   onTap: () {
-                    _pageController.jumpToPage(AgendaStart().numberPage);
-                    startController.changePage(startState: AgendaStart());
+                    _pageController.jumpToPage(AgendaNavigationPage().numberPage);
+                    navigationController.changePage(navigationState: AgendaNavigationPage());
                   },
                   icon: Icons.view_agenda_outlined,
                   text: 'Agenda',
-                  isCurrent: (startController.state is AgendaStart),
+                  isCurrent: (navigationController.state is AgendaNavigationPage),
                 ),
               ),
               Expanded(
                 child: CustomMenuButtom(
                   onTap: () {
-                    _pageController.jumpToPage(MenuStart().numberPage);
-                    startController.changePage(startState: MenuStart());
+                    _pageController.jumpToPage(MenuNavigationPage().numberPage);
+                    navigationController.changePage(navigationState: MenuNavigationPage());
                   },
                   icon: Icons.menu,
                   text: 'Menu',
-                  isCurrent: (startController.state is MenuStart),
+                  isCurrent: (navigationController.state is MenuNavigationPage),
                 ),
               ),
             ],
