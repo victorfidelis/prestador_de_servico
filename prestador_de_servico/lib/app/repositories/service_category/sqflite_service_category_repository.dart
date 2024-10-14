@@ -1,27 +1,41 @@
+import 'dart:io';
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory_adapter.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart';
+import 'package:prestador_de_servico/app/shared/either/either.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
+import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:replace_diacritic/replace_diacritic.dart';
 import 'package:sqflite/sqflite.dart';
 
-  class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
-    Database? database;
-    String serviceCategoriesTable = '';
+class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
+  Database? database;
+  String serviceCategoriesTable = '';
 
-    SqfliteServiceCategoryRepository({this.database});
+  SqfliteServiceCategoryRepository({this.database});
 
-    Future<void> _initDatabase() async {
-      SqfliteConfig sqfliteConfig = SqfliteConfig();
+  Future<Either<Failure, Unit>> _initDatabase() async {
+    SqfliteConfig sqfliteConfig = SqfliteConfig();
+    try {
       database ??= await sqfliteConfig.getDatabase();
       if (serviceCategoriesTable.isEmpty) {
         serviceCategoriesTable = sqfliteConfig.serviceCategories;
       }
+      return Either.right(unit);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao acessar banco de dados local: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao acessar arquivo de banco de dados local: ${e.message}'));
     }
-  
+  }
+
   @override
-  Future<List<ServiceCategory>> getAll() async {
-    await _initDatabase();
+  Future<Either<Failure, List<ServiceCategory>>> getAll() async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
     String selectCommand = ""
         "SELECT "
@@ -31,21 +45,24 @@ import 'package:sqflite/sqflite.dart';
         "FROM "
         "$serviceCategoriesTable ser_cat";
 
-    List<Map> serviceCategoryMap = await database!.rawQuery(selectCommand);
-
-    List<ServiceCategory> serviceCartegories = serviceCategoryMap
-        .map(
-          (serviceCategory) =>
-              ServiceCartegoryAdapter.fromSqflite(map: serviceCategory),
-        )
-        .toList();
-
-    return serviceCartegories;
+    try {
+      final map = await database!.rawQuery(selectCommand);
+      final serviceCartegories =
+          map.map((serviceCategory) => ServiceCartegoryAdapter.fromSqflite(serviceCategory)).toList();
+      return Either.right(serviceCartegories);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+    }
   }
 
   @override
-  Future<ServiceCategory> getById({required String id}) async {
-    await _initDatabase();
+  Future<Either<Failure, ServiceCategory>> getById({required String id}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
     String selectCommand = ""
         "SELECT "
@@ -56,23 +73,27 @@ import 'package:sqflite/sqflite.dart';
         "$serviceCategoriesTable ser_cat "
         "WHERE "
         "ser_cat.id = ?";
-
     List params = [id];
-    List<Map> serviceCategoryMap =
-        await database!.rawQuery(selectCommand, params);
 
-    ServiceCategory serviceCartegory =
-        ServiceCartegoryAdapter.fromSqflite(map: serviceCategoryMap[0]);
-
-    return serviceCartegory;
+    try {
+      final map = await database!.rawQuery(selectCommand, params);
+      final serviceCartegory = ServiceCartegoryAdapter.fromSqflite(map[0]);
+      return Either.right(serviceCartegory);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+    }
   }
 
   @override
-  Future<List<ServiceCategory>> getNameContained(
-      {required String name}) async {
-    await _initDatabase();
-    String nameWithoutDiacritic = replaceDiacritic(name).trim().toUpperCase();
+  Future<Either<Failure, List<ServiceCategory>>> getNameContained({required String name}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
+    String nameWithoutDiacritic = replaceDiacritic(name).trim().toUpperCase();
     String selectCommand = ""
         "SELECT "
         "ser_cat.id, "
@@ -83,26 +104,29 @@ import 'package:sqflite/sqflite.dart';
         "WHERE "
         "trim(upper(ser_cat.nameWithoutDiacritic)) LIKE '%$nameWithoutDiacritic%'";
 
-    List<Map> serviceCategoryMap = await database!.rawQuery(selectCommand);
-
-    List<ServiceCategory> serviceCartegories = serviceCategoryMap
-        .map(
-          (serviceCategory) =>
-              ServiceCartegoryAdapter.fromSqflite(map: serviceCategory),
-        )
-        .toList();
-
-    return serviceCartegories;
+    try {
+      final map = await database!.rawQuery(selectCommand);
+      final serviceCartegories =
+          map.map((serviceCategory) => ServiceCartegoryAdapter.fromSqflite(serviceCategory)).toList();
+      return Either.right(serviceCartegories);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+    }
   }
-  
+
   @override
-  Future<List<ServiceCategory>> getUnsync({required DateTime dateLastSync}) {
+  Future<Either<Failure, List<ServiceCategory>>> getUnsync({required DateTime dateLastSync}) {
     throw UnimplementedError();
   }
 
   @override
-  Future<String> insert({required ServiceCategory serviceCategory}) async {
-    await _initDatabase();
+  Future<Either<Failure, String>> insert({required ServiceCategory serviceCategory}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
     String insert = ''
         'INSERT INTO $serviceCategoriesTable '
@@ -113,14 +137,23 @@ import 'package:sqflite/sqflite.dart';
       serviceCategory.name.trim(),
       serviceCategory.nameWithoutDiacritics.trim(),
     ];
-    await database!.rawInsert(insert, params);
 
-    return serviceCategory.id;
+    try {
+      await database!.rawInsert(insert, params);
+      return Either.right(serviceCategory.id);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao inserir dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao inserir dados locais: ${e.message})'));
+    }
   }
 
   @override
-  Future<void> update({required ServiceCategory serviceCategory}) async {
-    await _initDatabase();
+  Future<Either<Failure, Unit>> update({required ServiceCategory serviceCategory}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
     String updateText = ''
         'UPDATE $serviceCategoriesTable '
@@ -129,35 +162,52 @@ import 'package:sqflite/sqflite.dart';
         'nameWithoutDiacritic = ? '
         'WHERE '
         'id = ?';
-
     List params = [
       serviceCategory.name.trim(),
       serviceCategory.nameWithoutDiacritics.trim(),
       serviceCategory.id,
     ];
 
-    await database!.rawUpdate(updateText, params);
+    try {
+      await database!.rawUpdate(updateText, params);
+      return Either.right(unit);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao atualizar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao atualizar dados locais: ${e.message})'));
+    }
   }
 
   @override
-  Future<void> deleteById({required String id}) async {
-    await _initDatabase();
+  Future<Either<Failure, Unit>> deleteById({required String id}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
     String deleteTextMold = ''
         'DELETE FROM '
         '$serviceCategoriesTable '
         'WHERE '
         'id = ?';
-
     List params = [id];
 
-    await database!.rawDelete(deleteTextMold, params);
+    try {
+      await database!.rawDelete(deleteTextMold, params);
+      return Either.right(unit);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao apagar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao apagar dados locais: ${e.message})'));
+    }
   }
-  
+
   @override
-  Future<bool> existsById({required String id}) async {
-    
-    await _initDatabase();
+  Future<Either<Failure, bool>> existsById({required String id}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
     String selectCommand = ""
         "SELECT "
@@ -166,11 +216,15 @@ import 'package:sqflite/sqflite.dart';
         "$serviceCategoriesTable ser_cat "
         "WHERE "
         "ser_cat.id = ?";
-
     List params = [id];
-    List<Map> serviceCategoryMap =
-        await database!.rawQuery(selectCommand, params);
 
-    return serviceCategoryMap.isNotEmpty;
+    try {
+      final map = await database!.rawQuery(selectCommand, params);
+      return Either.right(map.isNotEmpty);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+    }
   }
 }

@@ -9,7 +9,8 @@ class HybridServiceCategoryService implements ServiceCategoryService {
       ServiceCategoryRepository.createOffline();
 
   @override
-  Future<List<ServiceCategory>> getAll() async {
+  Future<List<ServiceCategory>
+  > getAll() async {
     return await _offlineServiceCategoryRepository.getAll();
   }
 

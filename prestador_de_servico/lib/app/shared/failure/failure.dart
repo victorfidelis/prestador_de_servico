@@ -33,3 +33,7 @@ class SendEmailVerificationFailure extends Failure {
 class EmailAlreadyInUseFailure extends Failure {
   EmailAlreadyInUseFailure(super.message);
 }
+
+class GetDatabaseFailure extends Failure {
+  GetDatabaseFailure(super.message);
+}

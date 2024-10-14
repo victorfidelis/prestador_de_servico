@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 
 class ServiceCartegoryAdapter {
-  static Map<String, dynamic> toMap({
-    required ServiceCategory serviceCategory,
-  }) {
+  static Map<String, dynamic> toMap(ServiceCategory serviceCategory) {
     return {
       'id': serviceCategory.id,
       'name': serviceCategory.name,
@@ -13,7 +11,7 @@ class ServiceCartegoryAdapter {
     };
   }
 
-  static ServiceCategory fromMap({required Map<String, dynamic> map}) {
+  static ServiceCategory fromMap(Map<String, dynamic> map) {
     return ServiceCategory(
       id: map['id'],
       name: map['name'],
@@ -22,8 +20,7 @@ class ServiceCartegoryAdapter {
     );
   }
 
-  static Map<String, dynamic> toFirebaseMap(
-      {required ServiceCategory serviceCategory}) {
+  static Map<String, dynamic> toFirebaseMap(ServiceCategory serviceCategory) {
     return {
       'name': serviceCategory.name,
       'dateSync': FieldValue.serverTimestamp(), // Todo envio para o firebase deve conter a data atual do servidor
@@ -31,7 +28,7 @@ class ServiceCartegoryAdapter {
     };
   }
 
-  static ServiceCategory fromDocumentSnapshot({required DocumentSnapshot doc}) {
+  static ServiceCategory fromFirebase(DocumentSnapshot doc) {
     Map<String, dynamic> map = (doc.data() as Map<String, dynamic>);
 
     ServiceCategory serviceCartegory = ServiceCategory(
@@ -44,7 +41,7 @@ class ServiceCartegoryAdapter {
     return serviceCartegory;
   }
 
-  static ServiceCategory fromSqflite({required Map map}) {
+  static ServiceCategory fromSqflite(Map map) {
     return ServiceCategory(
       id: map['id'],
       name: map['name'],

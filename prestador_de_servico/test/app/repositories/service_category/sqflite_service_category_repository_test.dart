@@ -1,7 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/repositories/service_category/sqflite_service_category_repository.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
@@ -38,9 +40,11 @@ void main() {
       test(
           '''A primeira consulta de categorias de serviços deve retornar uma lista vazia''',
           () async {
-        List<ServiceCategory> serviceCategories =
+        final serviceCategoriesEither =
             await serviceCategoryRepository.getAll();
-        expect(serviceCategories.isEmpty, isTrue);
+        
+        expect(serviceCategoriesEither.isRight, isTrue);
+        expect(serviceCategoriesEither.right!.isEmpty, isTrue);
       });
 
       test(

@@ -3,110 +3,156 @@ import 'package:prestador_de_servico/app/models/service_category/service_cartego
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart';
+import 'package:prestador_de_servico/app/shared/either/either.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
+import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
 class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
   final _firebaseInitializer = FirebaseInitializer();
 
   @override
-  Future<List<ServiceCategory>> getAll() async {
-    final serviceCategoriesCollection =
-        FirebaseFirestore.instance.collection('serviceCategories');
-    QuerySnapshot snapServiceCategories = await serviceCategoriesCollection
-        .where('isDeleted', isEqualTo: false)
-        .get();
-    List<ServiceCategory> serviceCategories = snapServiceCategories.docs
-        .map(
-          (doc) => ServiceCartegoryAdapter.fromDocumentSnapshot(doc: doc),
-        )
-        .toList();
+  Future<Either<Failure, List<ServiceCategory>>> getAll() async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
 
-    return serviceCategories;
+    try {
+      final colletion = FirebaseFirestore.instance.collection('serviceCategories');
+      final querySnap = await colletion.where('isDeleted', isEqualTo: false).get();
+      final serviceCategories = querySnap.docs.map((doc) => ServiceCartegoryAdapter.fromFirebase(doc)).toList();
+      return Either.right(serviceCategories);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
   }
 
   @override
-  Future<ServiceCategory> getById({required String id}) async {
-    final serviceCategoriesCollection =
-        FirebaseFirestore.instance.collection('serviceCategories');
-    DocumentSnapshot docSnap = await serviceCategoriesCollection.doc(id).get();
-    ServiceCategory serviceCartegory =
-        ServiceCartegoryAdapter.fromDocumentSnapshot(doc: docSnap);
-    return serviceCartegory;
+  Future<Either<Failure, ServiceCategory>> getById({required String id}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    try {
+      final collection = FirebaseFirestore.instance.collection('serviceCategories');
+      final docSnap = await collection.doc(id).get();
+      final serviceCartegory = ServiceCartegoryAdapter.fromFirebase(docSnap);
+      return Either.right(serviceCartegory);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
   }
 
   @override
-  Future<List<ServiceCategory>> getNameContained({required String name}) async {
-    List<ServiceCategory> serviceCategories = await getAll();
+  Future<Either<Failure, List<ServiceCategory>>> getNameContained({required String name}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
 
-    serviceCategories = serviceCategories.where((serviceCategory) {
+    final serviceCategoriesEither = await getAll();
+    if (serviceCategoriesEither.isLeft) {
+      return Either.left(serviceCategoriesEither.left);
+    }
+
+    final serviceCategories = serviceCategoriesEither.right!.where((serviceCategory) {
       String upperName = serviceCategory.name.trim().toUpperCase();
       String upperNameSearch = serviceCategory.name.trim().toUpperCase();
       return upperName.contains(upperNameSearch);
     }).toList();
 
-    return serviceCategories;
+    return Either.right(serviceCategories);
   }
 
   @override
-  Future<List<ServiceCategory>> getUnsync(
-      {required DateTime dateLastSync}) async {
-    final serviceCategoriesCollection =
-        FirebaseFirestore.instance.collection('serviceCategories');
-    Timestamp timestampLastSync = Timestamp.fromDate(dateLastSync);
-    QuerySnapshot snapServiceCategories = await serviceCategoriesCollection
-        .where('dateSync', isGreaterThan: timestampLastSync)
-        .get();
+  Future<Either<Failure, List<ServiceCategory>>> getUnsync({required DateTime dateLastSync}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
 
-    List<ServiceCategory> serviceCategories = snapServiceCategories.docs
-        .map(
-          (doc) => ServiceCartegoryAdapter.fromDocumentSnapshot(doc: doc),
-        )
-        .toList();
-
-    return serviceCategories;
+    try {
+      final collection = FirebaseFirestore.instance.collection('serviceCategories');
+      final timestampLastSync = Timestamp.fromDate(dateLastSync);
+      final querySnap = await collection.where('dateSync', isGreaterThan: timestampLastSync).get();
+      final serviceCategories = querySnap.docs.map((doc) => ServiceCartegoryAdapter.fromFirebase(doc)).toList();
+      return Either.right(serviceCategories);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
   }
 
   @override
-  Future<String> insert({required ServiceCategory serviceCategory}) async {
-    final serviceCategoriesCollection =
-        FirebaseFirestore.instance.collection('serviceCategories');
-    DocumentReference docRef = await serviceCategoriesCollection.add(
-      ServiceCartegoryAdapter.toFirebaseMap(
-        serviceCategory: serviceCategory,
-      ),
-    );
+  Future<Either<Failure, String>> insert({required ServiceCategory serviceCategory}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    final collection = FirebaseFirestore.instance.collection('serviceCategories');
+    final docRef = await collection.add(ServiceCartegoryAdapter.toFirebaseMap(serviceCategory));
     DocumentSnapshot docSnap = await docRef.get();
-    return docSnap.id;
+    return Either.right(docSnap.id);
   }
 
   @override
-  Future<void> update({required ServiceCategory serviceCategory}) async {
-    final serviceCategoriesCollection =
-        FirebaseFirestore.instance.collection('serviceCategories');
-    await serviceCategoriesCollection.doc(serviceCategory.id).update(
-          ServiceCartegoryAdapter.toFirebaseMap(
-              serviceCategory: serviceCategory),
-        );
+  Future<Either<Failure, Unit>> update({required ServiceCategory serviceCategory}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    try {
+      final collection = FirebaseFirestore.instance.collection('serviceCategories');
+      await collection.doc(serviceCategory.id).update(ServiceCartegoryAdapter.toFirebaseMap(serviceCategory));
+      return Either.right(unit);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
   }
 
   @override
-  Future<void> deleteById({required String id}) async {
-    final serviceCategoriesCollection =
-        FirebaseFirestore.instance.collection('serviceCategories');
-    DocumentReference doc = serviceCategoriesCollection.doc(id);
+  Future<Either<Failure, Unit>> deleteById({required String id}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
 
-    ServiceCategory serviceCategory =
-        ServiceCartegoryAdapter.fromDocumentSnapshot(
-      doc: await doc.get(),
-    );
-    serviceCategory = serviceCategory.copyWith(isDeleted: true);
-
-    await doc.update(
-      ServiceCartegoryAdapter.toFirebaseMap(serviceCategory: serviceCategory),
-    );
+    try {
+      final collection = FirebaseFirestore.instance.collection('serviceCategories');
+      final doc = collection.doc(id);
+      var serviceCategory = ServiceCartegoryAdapter.fromFirebase(await doc.get());
+      serviceCategory = serviceCategory.copyWith(isDeleted: true);
+      await doc.update(ServiceCartegoryAdapter.toFirebaseMap(serviceCategory));
+      return Either.right(unit);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
   }
 
   @override
-  Future<bool> existsById({required String id}) {
-    return Future.value(false);
+  Future<Either<Failure, bool>> existsById({required String id}) {
+    throw UnimplementedError();
   }
 }
