@@ -7,6 +7,7 @@ import 'package:prestador_de_servico/app/controllers/service_category/service_ca
 import 'package:prestador_de_servico/app/controllers/service_category/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/controllers/navigation/navigation_controller.dart';
 import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
@@ -26,8 +27,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AppController>(
-            create: (context) => AppController()),
+        ChangeNotifierProvider<AppController>(create: (context) => AppController()),
         ChangeNotifierProvider<SignInController>(
           create: (context) => SignInController(
             authService: AuthService(
@@ -52,15 +52,20 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-        ChangeNotifierProvider<NavigationController>(
-            create: (context) => NavigationController()),
+        ChangeNotifierProvider<NavigationController>(create: (context) => NavigationController()),
         ChangeNotifierProvider<ServiceCategoryController>(
             create: (context) => ServiceCategoryController(
-                  serviceCategoryService: ServiceCategoryService.create(),
+                  serviceCategoryService: ServiceCategoryService(
+                    onlineServiceCategoryRepository: ServiceCategoryRepository.createOnline(),
+                    offlineServiceCategoryRepository: ServiceCategoryRepository.createOffline(),
+                  ),
                 )),
         ChangeNotifierProvider<ServiceCategoryEditController>(
             create: (context) => ServiceCategoryEditController(
-                  serviceCategoryService: ServiceCategoryService.create(),
+                  serviceCategoryService: ServiceCategoryService(
+                    onlineServiceCategoryRepository: ServiceCategoryRepository.createOnline(),
+                    offlineServiceCategoryRepository: ServiceCategoryRepository.createOffline(),
+                  ),
                 )),
       ],
       child: MaterialApp(

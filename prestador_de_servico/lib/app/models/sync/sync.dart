@@ -1,12 +1,14 @@
 class Sync {
   final DateTime? dateSyncServiceCategories; 
-  final DateTime? dateSyncService; 
+  final DateTime? dateSyncServices; 
+
+  bool get existsSyncDateServiceCategories => dateSyncServiceCategories != null;
+  bool get existsSyncDateServices => dateSyncServices != null;
 
   Sync({
     this.dateSyncServiceCategories,
-    this.dateSyncService,
+    this.dateSyncServices,
   });
-  
 
   Sync copyWith({
     DateTime? dateSyncServiceCategories,
@@ -14,7 +16,7 @@ class Sync {
   }) {
     return Sync(
       dateSyncServiceCategories: dateSyncServiceCategories ?? this.dateSyncServiceCategories,
-      dateSyncService: dateSyncService ?? this.dateSyncService,
+      dateSyncServices: dateSyncService ?? this.dateSyncServices,
     );
   }
 }

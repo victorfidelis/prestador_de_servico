@@ -24,6 +24,6 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> _syncData() async {
-    await _syncServiceCategoryService.sync();
+    await _syncServiceCategoryService.synchronize();
   }
 }

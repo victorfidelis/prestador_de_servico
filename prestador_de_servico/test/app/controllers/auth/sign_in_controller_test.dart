@@ -4,7 +4,7 @@ import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/states/auth/sign_in_state.dart';
 
 import '../../../helpers/auth/mock_auth_repository_helper.dart';
-import '../../../helpers/constants/constants.dart';
+import '../../../helpers/constants/user_constants.dart';
 import '../../../helpers/user/mock_user_repository_helper.dart';
 
 void main() {

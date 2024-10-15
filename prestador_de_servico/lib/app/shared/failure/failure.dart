@@ -37,3 +37,7 @@ class EmailAlreadyInUseFailure extends Failure {
 class GetDatabaseFailure extends Failure {
   GetDatabaseFailure(super.message);
 }
+
+class EmptySyncDataFailure extends Failure {
+  EmptySyncDataFailure(super.message);
+}

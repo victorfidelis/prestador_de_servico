@@ -14,7 +14,7 @@ class SyncAdapter {
 
     return Sync(
       dateSyncServiceCategories: dateSyncServiceCategories,
-      dateSyncService: dateSyncService,
+      dateSyncServices: dateSyncService,
     );
   }
   
@@ -25,8 +25,8 @@ class SyncAdapter {
     }
     
     int dateSyncService = 0;
-    if (sync.dateSyncService != null) {
-      dateSyncService = sync.dateSyncService!.millisecondsSinceEpoch;
+    if (sync.dateSyncServices != null) {
+      dateSyncService = sync.dateSyncServices!.millisecondsSinceEpoch;
     }
 
     return {

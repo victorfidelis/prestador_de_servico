@@ -102,10 +102,18 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
       return Either.left(initializeEither.left);
     }
 
-    final collection = FirebaseFirestore.instance.collection('serviceCategories');
-    final docRef = await collection.add(ServiceCartegoryAdapter.toFirebaseMap(serviceCategory));
-    DocumentSnapshot docSnap = await docRef.get();
-    return Either.right(docSnap.id);
+    try {
+      final collection = FirebaseFirestore.instance.collection('serviceCategories');
+      final docRef = await collection.add(ServiceCartegoryAdapter.toFirebaseMap(serviceCategory));
+      DocumentSnapshot docSnap = await docRef.get();
+      return Either.right(docSnap.id);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
   }
 
   @override

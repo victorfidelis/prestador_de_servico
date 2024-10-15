@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
 import 'package:prestador_de_servico/app/models/sync/sync_adapter.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
+import 'package:prestador_de_servico/app/shared/either/either.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
+import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:sqflite/sqflite.dart';
 
 class SqfliteSyncRepository implements SyncRepository {
@@ -10,17 +15,27 @@ class SqfliteSyncRepository implements SyncRepository {
 
   SqfliteSyncRepository({this.database});
 
-  Future<void> _initDatabase() async {
+  Future<Either<Failure, Unit>> _initDatabase() async {
     SqfliteConfig sqfliteConfig = SqfliteConfig();
-    database ??= await sqfliteConfig.getDatabase();
-    if (syncControlTable.isEmpty) {
-      syncControlTable = sqfliteConfig.syncControl;
+    try {
+      database ??= await sqfliteConfig.getDatabase();
+      if (syncControlTable.isEmpty) {
+        syncControlTable = sqfliteConfig.syncControl;
+      }
+      return Either.right(unit);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao acessar banco de dados local: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao acessar arquivo de banco de dados local: ${e.message}'));
     }
   }
-  
+
   @override
-  Future<Sync> get() async {
-    await _initDatabase();
+  Future<Either<Failure, Sync>> get() async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
     String selectCommand = ""
         "SELECT "
@@ -29,18 +44,26 @@ class SqfliteSyncRepository implements SyncRepository {
         "FROM "
         "$syncControlTable syn_con";
 
-    List<Map> syncMap = await database!.rawQuery(selectCommand);
-
-    if (syncMap.isEmpty) {
-      return Sync();
+    try {
+      final syncMap = await database!.rawQuery(selectCommand);
+      if (syncMap.isEmpty) {
+        return Either.right(Sync());
+      }
+      final sync = SyncAdapter.fromSqflite(map: syncMap[0]);
+      return Either.right(sync);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
     }
-
-    return SyncAdapter.fromSqflite(map: syncMap[0]);
   }
 
   @override
-  Future<bool> exists() async {
-    await _initDatabase();
+  Future<Either<Failure, bool>> exists() async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
     String selectCommand = ""
         "SELECT "
@@ -48,14 +71,22 @@ class SqfliteSyncRepository implements SyncRepository {
         "FROM "
         "$syncControlTable syn_con";
 
-    List<Map> syncMap = await database!.rawQuery(selectCommand);
-
-    return syncMap.isNotEmpty;
+    try {
+      final syncMap = await database!.rawQuery(selectCommand);
+      return Either.right(syncMap.isNotEmpty);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+    }
   }
 
   @override
-  Future<void> insert({required Sync sync}) async {
-    await _initDatabase();
+  Future<Either<Failure, Unit>> insert({required Sync sync}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
     String insert = ''
         'INSERT INTO $syncControlTable '
@@ -63,32 +94,62 @@ class SqfliteSyncRepository implements SyncRepository {
         'VALUES (?, ?)';
     List params = [
       sync.dateSyncServiceCategories?.millisecondsSinceEpoch ?? 0,
-      sync.dateSyncService?.millisecondsSinceEpoch ?? 0,
+      sync.dateSyncServices?.millisecondsSinceEpoch ?? 0,
     ];
-    await database!.rawInsert(insert, params);
+
+    try {
+      await database!.rawInsert(insert, params);
+      return Either.right(unit);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+    }
   }
 
   @override
-  Future<void> updateServiceCategory({required DateTime syncDate}) async {
-    await _initDatabase();
+  Future<Either<Failure, Unit>> updateServiceCategory({required DateTime syncDate}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
     String updateText = ''
         'UPDATE $syncControlTable '
         'SET '
         'dateSyncServiceCategories = ?';
     List params = [syncDate.millisecondsSinceEpoch];
-    await database!.rawUpdate(updateText, params);
+
+    try {
+      await database!.rawUpdate(updateText, params);
+      return Either.right(unit);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+    }
   }
 
   @override
-  Future<void> updateService({required DateTime syncDate}) async {
-    await _initDatabase();
+  Future<Either<Failure, Unit>> updateService({required DateTime syncDate}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
 
     String updateText = ''
         'UPDATE $syncControlTable '
         'SET '
         'dateSyncService = ?';
     List params = [syncDate.millisecondsSinceEpoch];
-    await database!.rawUpdate(updateText, params);
+
+    try {
+      await database!.rawUpdate(updateText, params);
+      return Either.right(unit);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+    }
   }
 }

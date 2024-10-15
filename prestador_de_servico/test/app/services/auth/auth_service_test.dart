@@ -4,7 +4,7 @@ import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import '../../../helpers/auth/mock_auth_repository_helper.dart';
-import '../../../helpers/constants/constants.dart';
+import '../../../helpers/constants/user_constants.dart';
 import '../../../helpers/user/mock_user_repository_helper.dart';
 
 void main() {

@@ -3,7 +3,7 @@ import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import '../constants/constants.dart';
+import '../constants/user_constants.dart';
 import 'mock_user_repository_helper.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<UserRepository>()])
