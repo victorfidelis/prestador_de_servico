@@ -166,6 +166,6 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
   }
 
   void deleteServiceCategory({required ServiceCategory serviceCategory}) {
-    context.read<ServiceCategoryController>().deleteServiceCategory(serviceCategory: serviceCategory);
+    context.read<ServiceCategoryController>().delete(serviceCategory: serviceCategory);
   }
 }

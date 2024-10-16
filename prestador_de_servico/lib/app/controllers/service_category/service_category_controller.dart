@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
@@ -27,17 +26,17 @@ class ServiceCategoryController extends ChangeNotifier {
     );
   }
 
-  Future<void> filter({required String value}) async {
+  Future<void> filter({required String name}) async {
     _changeState(currentState: ServiceCategoryLoading());
     
-    final filterEither = await serviceCategoryService.getNameContained(name: value);
+    final filterEither = await serviceCategoryService.getNameContained(name: name);
     filterEither.fold(
       (error) => _changeState(currentState: ServiceCategoryError(message: error.message)),
       (value) => _changeState(currentState: ServiceCategoryLoaded(serviceCategories: value)),
     );
   }
 
-  void deleteServiceCategory({required ServiceCategory serviceCategory}) async {
+  Future<void> delete({required ServiceCategory serviceCategory}) async {
     _changeState(currentState: ServiceCategoryLoading());
     
     final deleteEither = await serviceCategoryService.delete(serviceCategory: serviceCategory);
