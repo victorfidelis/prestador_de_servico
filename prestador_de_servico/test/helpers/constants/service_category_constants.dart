@@ -52,3 +52,7 @@ final serCatInsert = ServiceCategory(id: '7', name: 'Insert');
 final serCatUpdate = ServiceCategory(id: '8', name: 'Update');
 
 final serCatDelete = ServiceCategory(id: '9', name: 'Delete');
+
+final serCatInsertWithoutName = ServiceCategory(id: '', name: '');
+
+final serCatUpdateWithoutName = ServiceCategory(id: '1', name: '');

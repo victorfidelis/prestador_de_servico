@@ -41,3 +41,8 @@ class GetDatabaseFailure extends Failure {
 class EmptySyncDataFailure extends Failure {
   EmptySyncDataFailure(super.message);
 }
+
+class ServiceCategoryValidationFailure extends Failure {
+  final String? nameMessage;
+  ServiceCategoryValidationFailure({required this.nameMessage}) : super('');
+}

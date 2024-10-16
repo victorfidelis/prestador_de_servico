@@ -3,7 +3,7 @@ import 'package:prestador_de_servico/app/services/sync/sync_service_category_ser
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
 
 class AppController extends ChangeNotifier {
-  final SyncServiceCategoryService _syncServiceCategoryService = SyncServiceCategoryService.create();
+  final _syncServiceCategoryService = SyncServiceCategoryService();
 
   AppController() {
     init();
@@ -18,7 +18,7 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> init() async {
-    // _syncData();
+    _syncData();
 
     _changeState(currentSignInState: AppLoaded());
   }

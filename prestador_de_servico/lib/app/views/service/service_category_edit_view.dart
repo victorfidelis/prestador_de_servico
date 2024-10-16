@@ -90,12 +90,12 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
             Widget genericErrorWidget = const SizedBox(height: 18);
 
             if (serviceCategoryEditController.state
-                is ServiceCategoryEditValidationError) {
+                is ServiceCategoryEditError) {
               nameErrorMessage = (serviceCategoryEditController.state
-                      as ServiceCategoryEditValidationError)
+                      as ServiceCategoryEditError)
                   .nameMessage;
               genericErrorMessage = (serviceCategoryEditController.state
-                      as ServiceCategoryEditValidationError)
+                      as ServiceCategoryEditError)
                   .genericMessage;
               if (genericErrorMessage != null) {
                 genericErrorWidget =
