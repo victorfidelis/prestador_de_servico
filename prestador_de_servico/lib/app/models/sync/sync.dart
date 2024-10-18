@@ -1,6 +1,6 @@
 class Sync {
-  final DateTime? dateSyncServiceCategories; 
-  final DateTime? dateSyncServices; 
+  final DateTime? dateSyncServiceCategories;
+  final DateTime? dateSyncServices;
 
   bool get existsSyncDateServiceCategories => dateSyncServiceCategories != null;
   bool get existsSyncDateServices => dateSyncServices != null;
@@ -12,11 +12,18 @@ class Sync {
 
   Sync copyWith({
     DateTime? dateSyncServiceCategories,
-    DateTime? dateSyncService,
+    DateTime? dateSyncServices,
   }) {
     return Sync(
       dateSyncServiceCategories: dateSyncServiceCategories ?? this.dateSyncServiceCategories,
-      dateSyncServices: dateSyncService ?? this.dateSyncServices,
+      dateSyncServices: dateSyncServices ?? this.dateSyncServices,
     );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return (other is Sync) && 
+    other.dateSyncServiceCategories == dateSyncServiceCategories && 
+    other.dateSyncServices == dateSyncServices;
   }
 }

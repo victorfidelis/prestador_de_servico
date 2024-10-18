@@ -7,10 +7,16 @@ import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
 class SyncServiceCategoryService {
-  final _offlineServiceCategoryRepository = ServiceCategoryRepository.createOffline();
-  final _onlineServiceCategoryRepository = ServiceCategoryRepository.createOnline();
-  final _syncRepository = SyncRepository.create();
+  final SyncRepository syncRepository;
+  final ServiceCategoryRepository offlineRepository;
+  final ServiceCategoryRepository onlineRepository;
   late Sync sync;
+
+  SyncServiceCategoryService({
+    required this.syncRepository,
+    required this.offlineRepository,
+    required this.onlineRepository,
+  });
 
   List<ServiceCategory> serviceCategoriesToSync = [];
 
@@ -38,8 +44,8 @@ class SyncServiceCategoryService {
     return Either.right(unit);
   }
 
-  Future<Either<Failure, dynamic>> loadSyncInfo() async {
-    final getSyncEither = await _syncRepository.get();
+  Future<Either<Failure, Unit>> loadSyncInfo() async {
+    final getSyncEither = await syncRepository.get();
     if (getSyncEither.isLeft) {
       return Either.left(getSyncEither.left);
     }
@@ -50,9 +56,9 @@ class SyncServiceCategoryService {
   Future<Either<Failure, Unit>> loadUnsynced() async {
     Either getEither;
     if (sync.existsSyncDateServiceCategories) {
-      getEither = await _onlineServiceCategoryRepository.getAll();
+      getEither = await onlineRepository.getUnsync(dateLastSync: sync.dateSyncServiceCategories!);
     } else {
-      getEither = await _onlineServiceCategoryRepository.getUnsync(dateLastSync: sync.dateSyncServiceCategories!);
+      getEither = await onlineRepository.getAll();
     }
     if (getEither.isLeft) {
       return Either.left(getEither.left);
@@ -75,18 +81,18 @@ class SyncServiceCategoryService {
 
   Future<Either<Failure, Unit>> syncServiceCategory(ServiceCategory serviceCategory) async {
     if (serviceCategory.isDeleted) {
-      return await _offlineServiceCategoryRepository.deleteById(id: serviceCategory.id);
+      return await offlineRepository.deleteById(id: serviceCategory.id);
     } 
     
-    final existsEither = await _offlineServiceCategoryRepository.existsById(id: serviceCategory.id);
+    final existsEither = await offlineRepository.existsById(id: serviceCategory.id);
     if (existsEither.isLeft) {
       return Either.left(existsEither.left); 
     }
 
     if (existsEither.right!) {
-      return await _offlineServiceCategoryRepository.update(serviceCategory: serviceCategory);
+      return await offlineRepository.update(serviceCategory: serviceCategory);
     } else {
-      final insertEither = await _offlineServiceCategoryRepository.insert(serviceCategory: serviceCategory);
+      final insertEither = await offlineRepository.insert(serviceCategory: serviceCategory);
       if (insertEither.isLeft) {
         return Either.left(insertEither.left);
       }
@@ -100,16 +106,16 @@ class SyncServiceCategoryService {
     }
 
     DateTime syncDate = getMaxSyncDate();
-    final existsEither = await _syncRepository.exists(); 
+    final existsEither = await syncRepository.exists(); 
     if (existsEither.isLeft) {
       return Either.left(existsEither.left);
     }
 
     if (existsEither.right!) {
-      return await _syncRepository.updateServiceCategory(syncDate: syncDate);
+      return await syncRepository.updateServiceCategory(syncDate: syncDate);
     } else {
       sync = sync.copyWith(dateSyncServiceCategories: syncDate);
-      return await _syncRepository.insert(sync: sync);
+      return await syncRepository.insert(sync: sync);
     }
   }
 

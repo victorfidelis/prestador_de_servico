@@ -1,4 +1,3 @@
-
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 
 final serCatGeneric = ServiceCategory(id: '2', name: 'Massagem');
@@ -56,3 +55,11 @@ final serCatDelete = ServiceCategory(id: '9', name: 'Delete');
 final serCatInsertWithoutName = ServiceCategory(id: '', name: '');
 
 final serCatUpdateWithoutName = ServiceCategory(id: '1', name: '');
+
+final serCatIsDeleted = ServiceCategory(id: '1', name: 'isDeleted', isDeleted: true);
+
+final serCatSync20241015 = ServiceCategory(id: '1', name: 'serviceCategory1', syncDate: DateTime(2024, 10, 15));
+
+final serCatSync20241016 = ServiceCategory(id: '2', name: 'serviceCategory2', syncDate: DateTime(2024, 10, 16));
+
+final serCatSync20241017 = ServiceCategory(id: '3', name: 'serviceCategory3', syncDate: DateTime(2024, 10, 17));

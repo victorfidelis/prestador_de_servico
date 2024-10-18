@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
 
-class AppController extends ChangeNotifier {
-  final _syncServiceCategoryService = SyncServiceCategoryService();
+class SyncController extends ChangeNotifier {
+  final SyncServiceCategoryService syncServiceCategoryService;
 
-  AppController() {
+  SyncController({required this.syncServiceCategoryService}) {
     init();
   }
 
@@ -24,6 +24,6 @@ class AppController extends ChangeNotifier {
   }
 
   Future<void> _syncData() async {
-    await _syncServiceCategoryService.synchronize();
+    await syncServiceCategoryService.synchronize();
   }
 }

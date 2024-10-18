@@ -60,7 +60,7 @@ void main() {
         '''Ao atualizar a sincronização de serviço o mesmo deve ser 
           retornado na consulta de sincronização''',
         () async {
-          sync = sync.copyWith(dateSyncService: DateTime(2024, 10, 6));
+          sync = sync.copyWith(dateSyncServices: DateTime(2024, 10, 6));
           await syncRepository.updateService(syncDate: sync.dateSyncServices!);
 
           final syncEither = await syncRepository.get();

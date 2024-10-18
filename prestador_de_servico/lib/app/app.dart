@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
+import 'package:prestador_de_servico/app/controllers/sync/sync_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/sign_in_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
@@ -8,9 +8,12 @@ import 'package:prestador_de_servico/app/controllers/service_category/service_ca
 import 'package:prestador_de_servico/app/controllers/navigation/navigation_controller.dart';
 import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
 import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service_category/sqflite_service_category_repository.dart';
+import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
+import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
@@ -27,7 +30,15 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<AppController>(create: (context) => AppController()),
+        ChangeNotifierProvider<SyncController>(
+          create: (context) => SyncController(
+            syncServiceCategoryService: SyncServiceCategoryService(
+              syncRepository: SyncRepository.create(),
+              offlineRepository: ServiceCategoryRepository.createOffline(),
+              onlineRepository: ServiceCategoryRepository.createOnline(),
+            ),
+          ),
+        ),
         ChangeNotifierProvider<SignInController>(
           create: (context) => SignInController(
             authService: AuthService(

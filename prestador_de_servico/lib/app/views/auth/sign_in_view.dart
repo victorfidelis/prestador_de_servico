@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/app/app_controller.dart';
+import 'package:prestador_de_servico/app/controllers/sync/sync_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
@@ -35,7 +35,7 @@ class _SignInViewState extends State<SignInView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<AppController>(builder: (context, appController, _) {
+      body: Consumer<SyncController>(builder: (context, appController, _) {
         if (appController.state is LoadingApp) {
           return const Center(
             child: Center(child: CircularProgressIndicator()),
