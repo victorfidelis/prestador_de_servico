@@ -63,3 +63,9 @@ final serCatSync20241015 = ServiceCategory(id: '1', name: 'serviceCategory1', sy
 final serCatSync20241016 = ServiceCategory(id: '2', name: 'serviceCategory2', syncDate: DateTime(2024, 10, 16));
 
 final serCatSync20241017 = ServiceCategory(id: '3', name: 'serviceCategory3', syncDate: DateTime(2024, 10, 17));
+
+final serCatGetAllHasDate = [
+  serCatSync20241015,
+  serCatSync20241016,
+  serCatSync20241017,
+];

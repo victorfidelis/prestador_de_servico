@@ -1,5 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:prestador_de_servico/app/controllers/service_category/service_category_controller.dart';
+import 'package:prestador_de_servico/app/models/sync/sync.dart';
+import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
@@ -422,15 +425,13 @@ void main() {
         () {
           syncServiceCategoryService.serviceCategoriesToSync = [];
 
-          final maxSyncDate = syncServiceCategoryService.getMaxSyncDate();
-
-          expect(maxSyncDate, serCatSync20241015.syncDate);
+          expect(() => syncServiceCategoryService.getMaxSyncDate(), throwsA(isA<Error>()));
         },
       );
 
       test(
         '''Ao executar getMaxSyncDate capturar a maior data dentre 
-        serviceCategoriesToSync''',
+        serviceCategoriesToSync, neste caso 17/10/2024''',
         () {
           syncServiceCategoryService.serviceCategoriesToSync = [
             serCatSync20241015,
@@ -446,7 +447,7 @@ void main() {
 
       test(
         '''Ao executar getMaxSyncDate capturar a maior data dentre 
-        serviceCategoriesToSync''',
+        serviceCategoriesToSync, neste caso 16/10/2024''',
         () {
           syncServiceCategoryService.serviceCategoriesToSync = [
             serCatSync20241015,
@@ -461,7 +462,7 @@ void main() {
 
       test(
         '''Ao executar getMaxSyncDate capturar a maior data dentre 
-        serviceCategoriesToSync''',
+        serviceCategoriesToSync, neste caso 15/10/2024''',
         () {
           syncServiceCategoryService.serviceCategoriesToSync = [
             serCatSync20241015,
@@ -470,6 +471,237 @@ void main() {
           final maxSyncDate = syncServiceCategoryService.getMaxSyncDate();
 
           expect(maxSyncDate, serCatSync20241015.syncDate);
+        },
+      );
+    },
+  );
+
+  group(
+    'Testes do método updateSyncDate',
+    () {
+      test(
+        '''Ao executar o updateSyncDate e uma falha ocorrer em exists esta falha 
+        deve ser retornada''',
+        () async {
+          syncServiceCategoryService.sync = Sync();
+          syncServiceCategoryService.serviceCategoriesToSync = [
+            serCatSync20241015,
+            serCatSync20241016,
+            serCatSync20241017,
+          ];
+
+          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(NetworkFailure('Falha de teste')));
+
+          final updateEither = await syncServiceCategoryService.updateSyncDate();
+
+          expect(updateEither.isLeft, isTrue);
+          expect(updateEither.left is NetworkFailure, isTrue);
+        },
+      );
+
+      test(
+        '''Ao executar o updateSyncDate sem serviceCatories em serviceCategoriesToSync
+        um Unit deve ser retornado''',
+        () async {
+          syncServiceCategoryService.sync = Sync();
+          syncServiceCategoryService.serviceCategoriesToSync = [];
+
+          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(Failure('Falha de teste')));
+
+          final updateEither = await syncServiceCategoryService.updateSyncDate();
+
+          expect(updateEither.isRight, isTrue);
+          expect(updateEither.right is Unit, isTrue);
+        },
+      );
+
+      test(
+        '''Ao executar o updateSyncDate com serviceCatories em serviceCategoriesToSync
+        e uma falha ocorrer no insert esta falha deve ser retornada''',
+        () async {
+          syncServiceCategoryService.sync = Sync();
+          syncServiceCategoryService.serviceCategoriesToSync = [
+            serCatSync20241015,
+            serCatSync20241016,
+            serCatSync20241017,
+          ];
+
+          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
+          when(mockSyncRepository.insert(sync: anyNamed('sync')))
+              .thenAnswer((_) async => Either.left(NetworkFailure('Falha de teste')));
+          when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))
+              .thenAnswer((_) async => Either.right(unit));
+
+          final updateEither = await syncServiceCategoryService.updateSyncDate();
+
+          expect(updateEither.isLeft, isTrue);
+          expect(updateEither.left is NetworkFailure, isTrue);
+        },
+      );
+
+      test(
+        '''Ao executar o updateSyncDate com serviceCatories em serviceCategoriesToSync
+        e uma falha ocorrer no update esta falha deve ser retornada''',
+        () async {
+          syncServiceCategoryService.sync = Sync();
+          syncServiceCategoryService.serviceCategoriesToSync = [
+            serCatSync20241015,
+            serCatSync20241016,
+            serCatSync20241017,
+          ];
+
+          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
+          when(mockSyncRepository.insert(sync: anyNamed('sync'))).thenAnswer((_) async => Either.right(unit));
+          when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))
+              .thenAnswer((_) async => Either.left(NetworkFailure('Falha de teste')));
+
+          final updateEither = await syncServiceCategoryService.updateSyncDate();
+
+          expect(updateEither.isLeft, isTrue);
+          expect(updateEither.left is NetworkFailure, isTrue);
+        },
+      );
+
+      test(
+        '''Ao executar o updateSyncDate com serviceCatories em serviceCategoriesToSync
+        e o insert ocorrer normalmente um Unit deve ser retornado''',
+        () async {
+          syncServiceCategoryService.sync = Sync();
+          syncServiceCategoryService.serviceCategoriesToSync = [
+            serCatSync20241015,
+            serCatSync20241016,
+            serCatSync20241017,
+          ];
+
+          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
+          when(mockSyncRepository.insert(sync: anyNamed('sync'))).thenAnswer((_) async => Either.right(unit));
+          when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))
+              .thenAnswer((_) async => Either.left(NetworkFailure('Falha de teste')));
+
+          final updateEither = await syncServiceCategoryService.updateSyncDate();
+
+          expect(updateEither.isRight, isTrue);
+          expect(updateEither.right is Unit, isTrue);
+        },
+      );
+
+      test(
+        '''Ao executar o updateSyncDate com serviceCatories em serviceCategoriesToSync
+        e o update ocorrer normalmente um Unit deve ser retornado''',
+        () async {
+          syncServiceCategoryService.sync = Sync();
+          syncServiceCategoryService.serviceCategoriesToSync = [
+            serCatSync20241015,
+            serCatSync20241016,
+            serCatSync20241017,
+          ];
+
+          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
+          when(mockSyncRepository.insert(sync: anyNamed('sync')))
+              .thenAnswer((_) async => Either.left(NetworkFailure('Falha de teste')));
+          when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))
+              .thenAnswer((_) async => Either.right(unit));
+
+          final updateEither = await syncServiceCategoryService.updateSyncDate();
+
+          expect(updateEither.isRight, isTrue);
+          expect(updateEither.right is Unit, isTrue);
+        },
+      );
+    },
+  );
+
+  group(
+    'Testes do método synchronize',
+    () {
+      test(
+        '''Ao executar o synchronize e uma falha ocorrer em loadSyncInfo, esta falha deve
+        ser retornada''',
+        () async {
+          const failureMessage = 'Falha loadSyncInfo';
+          when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
+
+          final syncEither = await syncServiceCategoryService.synchronize();
+
+          expect(syncEither.isLeft, isTrue);
+          expect(syncEither.left is Failure, isTrue);
+          expect((syncEither.left as Failure).message, equals(failureMessage));
+        },
+      );
+
+      test(
+        '''Ao executar o synchronize e uma falha ocorrer em loadUnsynced, esta falha deve
+        ser retornada''',
+        () async {
+          const failureMessage = 'Falha loadUnsynced';
+          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(mockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
+
+          final syncEither = await syncServiceCategoryService.synchronize();
+
+          expect(syncEither.isLeft, isTrue);
+          expect(syncEither.left is Failure, isTrue);
+          expect((syncEither.left as Failure).message, equals(failureMessage));
+        },
+      );
+
+      test(
+        '''Ao executar o synchronize e uma falha ocorrer em syncUnsynced, esta falha deve
+        ser retornada''',
+        () async {
+          const failureMessage = 'Falha syncUnsynced';
+          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(mockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAll));
+          when(mockServiceCategoryRepository.existsById(id: anyNamed('id')))
+              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
+
+          final syncEither = await syncServiceCategoryService.synchronize();
+
+          expect(syncEither.isLeft, isTrue);
+          expect(syncEither.left is Failure, isTrue);
+          expect((syncEither.left as Failure).message, equals(failureMessage));
+        },
+      );
+
+      test(
+        '''Ao executar o synchronize e uma falha ocorrer em updateSyncDate, esta falha deve
+        ser retornada''',
+        () async {
+          const failureMessage = 'Falha updateSyncDate';
+          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(mockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAllHasDate));
+          when(mockServiceCategoryRepository.existsById(id: anyNamed('id')))
+              .thenAnswer((_) async => Either.right(true));
+          when(mockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
+              .thenAnswer((_) async => Either.right(unit));
+          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
+
+          final syncEither = await syncServiceCategoryService.synchronize();
+
+          expect(syncEither.isLeft, isTrue);
+          expect(syncEither.left is Failure, isTrue);
+          expect((syncEither.left as Failure).message, equals(failureMessage));
+        },
+      );
+
+      test(
+        '''Ao executar o synchronize e nenhuma falha ocorrer, um Unit deve ser 
+        retornado''',
+        () async {
+          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(mockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAllHasDate));
+          when(mockServiceCategoryRepository.existsById(id: anyNamed('id')))
+              .thenAnswer((_) async => Either.right(true));
+          when(mockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
+              .thenAnswer((_) async => Either.right(unit));
+          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
+          when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))
+              .thenAnswer((_) async => Either.right(unit));
+
+          final syncEither = await syncServiceCategoryService.synchronize();
+
+          expect(syncEither.isRight, isTrue);
+          expect(syncEither.right is Unit, isTrue);
         },
       );
     },
