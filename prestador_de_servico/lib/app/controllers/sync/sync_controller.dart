@@ -1,29 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/states/app/app_state.dart';
 
 class SyncController extends ChangeNotifier {
   final SyncServiceCategoryService syncServiceCategoryService;
 
-  SyncController({required this.syncServiceCategoryService}) {
+SyncController({required this.syncServiceCategoryService}) {
     init();
   }
 
-  AppState _state = LoadingApp();
-  AppState get state => _state;
+  SyncState _state = Syncing();
+  SyncState get state => _state;
 
-  void _changeState({required AppState currentSignInState}) {
-    _state = currentSignInState;
+  void _changeState(currentState) {
+    _state = currentState;
     notifyListeners();
   }
 
   Future<void> init() async {
-    _syncData();
-
-    _changeState(currentSignInState: AppLoaded());
+    _changeState(await _syncData());
   }
 
-  Future<void> _syncData() async {
-    await syncServiceCategoryService.synchronize();
+  Future<SyncState> _syncData() async {
+    final syncEither = await syncServiceCategoryService.synchronize();
+
+    if (syncEither.isLeft) {
+      return SyncError(syncEither.left!.message);
+    }
+
+    return Synchronized();
   }
 }

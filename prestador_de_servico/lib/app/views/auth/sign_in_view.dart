@@ -36,7 +36,7 @@ class _SignInViewState extends State<SignInView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Consumer<SyncController>(builder: (context, appController, _) {
-        if (appController.state is LoadingApp) {
+        if (appController.state is Syncing) {
           return const Center(
             child: Center(child: CircularProgressIndicator()),
           );

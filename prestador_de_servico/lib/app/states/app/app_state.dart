@@ -1,10 +1,13 @@
 
-abstract class AppState {}
+abstract class SyncState {}
 
-class LoadingApp extends AppState {}
+class Syncing extends SyncState {}
 
-class AppLoaded extends AppState {}
+class Synchronized extends SyncState {}
 
-class AppError extends AppState {}
+class SyncError extends SyncState {
+  final String message;
+  SyncError(this.message);
+}
 
 
