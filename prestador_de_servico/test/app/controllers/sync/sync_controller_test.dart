@@ -5,7 +5,7 @@ import 'package:prestador_de_servico/app/models/sync/sync.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/app/app_state.dart';
+import 'package:prestador_de_servico/app/states/sync/sync_state.dart';
 
 import '../../../helpers/constants/service_category_constants.dart';
 import '../../../helpers/service_category/mock_service_category_repository.dart';

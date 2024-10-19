@@ -3,6 +3,8 @@ abstract class SyncState {}
 
 class Syncing extends SyncState {}
 
+class NoNetworkToSync extends SyncState {}
+
 class Synchronized extends SyncState {}
 
 class SyncError extends SyncState {

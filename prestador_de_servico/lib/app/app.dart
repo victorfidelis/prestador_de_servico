@@ -12,6 +12,7 @@ import 'package:prestador_de_servico/app/repositories/service_category/sqflite_s
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
+import 'package:prestador_de_servico/app/services/network/network_service.dart';
 import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
@@ -32,6 +33,7 @@ class App extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<SyncController>(
           create: (context) => SyncController(
+            networkService: NetworkService.create(),
             syncServiceCategoryService: SyncServiceCategoryService(
               syncRepository: SyncRepository.create(),
               offlineRepository: ServiceCategoryRepository.createOffline(),

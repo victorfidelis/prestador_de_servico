@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/services/network/network_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
-import 'package:prestador_de_servico/app/states/app/app_state.dart';
+import 'package:prestador_de_servico/app/states/sync/sync_state.dart';
 
 class SyncController extends ChangeNotifier {
+  final NetworkService networkService;
   final SyncServiceCategoryService syncServiceCategoryService;
 
-SyncController({required this.syncServiceCategoryService}) {
+  SyncController({
+    required this.networkService,
+    required this.syncServiceCategoryService,
+  }) {
     init();
   }
 
@@ -19,7 +24,11 @@ SyncController({required this.syncServiceCategoryService}) {
   }
 
   Future<void> init() async {
-    _changeState(await _syncData());
+    if (await networkService.isConnectedToInternet()) {
+      _changeState(await _syncData());
+    } else {
+      _changeState(NoNetworkToSync());
+    }
   }
 
   Future<SyncState> _syncData() async {

@@ -35,6 +35,7 @@ dependencies:
   cloud_firestore: ^5.4.2
   provider: ^6.1.2
   sqflite: ^2.3.3+2
+  connectivity_plus: ^6.1.0
   replace_diacritic:
     git:
       url: https://github.com/victorfidelis/replace_diacritic.git
