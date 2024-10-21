@@ -4,7 +4,7 @@ import 'package:prestador_de_servico/app/repositories/user/user_repository.dart'
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import '../constants/user_constants.dart';
-import 'mock_user_repository_helper.mocks.dart';
+import 'mock_user_repository.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<UserRepository>()])
 late MockUserRepository mockUserRepository;

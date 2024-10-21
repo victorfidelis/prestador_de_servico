@@ -8,8 +8,9 @@ import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:prestador_de_servico/app/states/sync/sync_state.dart';
 
 import '../../../helpers/constants/service_category_constants.dart';
+import '../../../helpers/network/mock_network_service.dart';
 import '../../../helpers/service_category/mock_service_category_repository.dart';
-import '../../../helpers/sync/mock_sync_repository_helper.dart';
+import '../../../helpers/sync/mock_sync_repository.dart';
 
 void main() {
   late SyncServiceCategoryService syncServiceCategoryService;
@@ -18,6 +19,7 @@ void main() {
     () {
       setUpMockSyncRepository();
       setUpMockServiceCategoryRepository();
+      setUpNetworkService();
       syncServiceCategoryService = SyncServiceCategoryService(
         syncRepository: mockSyncRepository,
         offlineRepository: mockServiceCategoryRepository,
@@ -25,31 +27,56 @@ void main() {
       );
     },
   );
-  
+
   test(
-    '''Imediatamento após o início do SyncController o estado do do controller 
+    '''Imediatamento após o início do SyncController o estado do controller 
     deve ser um Syncing''',
     () async {
       const failureMessage = 'Falha loadSyncInfo';
       when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-      final syncController = SyncController(syncServiceCategoryService: syncServiceCategoryService);
-      
+      final syncController = SyncController(
+        networkService: mockNetworkService,
+        syncServiceCategoryService: syncServiceCategoryService,
+      );
+
       expect(syncController.state is Syncing, isTrue);
     },
   );
 
   test(
-    '''Ao iniciar o SyncController e um ocorrer em _syncData, o estado do do controller 
+    '''Ao iniciar o SyncController e um erro ocorrer em _syncData, o estado do controller 
     deve ser um SyncError''',
     () async {
       const failureMessage = 'Falha loadSyncInfo';
       when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
+      when(mockNetworkService.isConnectedToInternet()).thenAnswer((_) async => true);
 
-      final syncController = SyncController(syncServiceCategoryService: syncServiceCategoryService);
+      final syncController = SyncController(
+        networkService: mockNetworkService,
+        syncServiceCategoryService: syncServiceCategoryService,
+      );
       await Future.delayed(const Duration(seconds: 2));
 
       expect(syncController.state is SyncError, isTrue);
+    },
+  );
+
+  test(
+    '''Ao iniciar o SyncController  ee o dispositivo estiver disconectado da internet, 
+    o estado do controller deve ser um NoNetworkToSync''',
+    () async {
+      const failureMessage = 'Falha loadSyncInfo';
+      when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
+      when(mockNetworkService.isConnectedToInternet()).thenAnswer((_) async => false);
+
+      final syncController = SyncController(
+        networkService: mockNetworkService,
+        syncServiceCategoryService: syncServiceCategoryService,
+      );
+      await Future.delayed(const Duration(seconds: 2));
+
+      expect(syncController.state is NoNetworkToSync, isTrue);
     },
   );
 
@@ -65,8 +92,12 @@ void main() {
       when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
       when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))
           .thenAnswer((_) async => Either.right(unit));
+      when(mockNetworkService.isConnectedToInternet()).thenAnswer((_) async => true);
 
-      final syncController = SyncController(syncServiceCategoryService: syncServiceCategoryService);
+      final syncController = SyncController(
+        networkService: mockNetworkService,
+        syncServiceCategoryService: syncServiceCategoryService,
+      );
 
       await Future.delayed(const Duration(seconds: 2));
 

@@ -3,9 +3,9 @@ import 'package:prestador_de_servico/app/controllers/auth/password_reset_control
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/states/auth/password_reset_state.dart';
 
-import '../../../helpers/auth/mock_auth_repository_helper.dart';
+import '../../../helpers/auth/mock_auth_repository.dart';
 import '../../../helpers/constants/user_constants.dart';
-import '../../../helpers/user/mock_user_repository_helper.dart';
+import '../../../helpers/user/mock_user_repository.dart';
 
 void main() {
   late PasswordResetController passwordResetController;

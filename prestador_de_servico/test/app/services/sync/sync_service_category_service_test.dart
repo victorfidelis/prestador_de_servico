@@ -11,7 +11,7 @@ import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import '../../../helpers/constants/service_category_constants.dart';
 import '../../../helpers/constants/sync_constants.dart';
 import '../../../helpers/service_category/mock_service_category_repository.dart';
-import '../../../helpers/sync/mock_sync_repository_helper.dart';
+import '../../../helpers/sync/mock_sync_repository.dart';
 
 void main() {
   late SyncServiceCategoryService syncServiceCategoryService;
