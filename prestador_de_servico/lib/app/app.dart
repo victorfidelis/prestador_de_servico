@@ -69,15 +69,15 @@ class App extends StatelessWidget {
         ChangeNotifierProvider<ServiceCategoryController>(
             create: (context) => ServiceCategoryController(
                   serviceCategoryService: ServiceCategoryService(
-                    onlineServiceCategoryRepository: ServiceCategoryRepository.createOnline(),
-                    offlineServiceCategoryRepository: ServiceCategoryRepository.createOffline(),
+                    onlineRepository: ServiceCategoryRepository.createOnline(),
+                    offlineRepository: ServiceCategoryRepository.createOffline(),
                   ),
                 )),
         ChangeNotifierProvider<ServiceCategoryEditController>(
             create: (context) => ServiceCategoryEditController(
                   serviceCategoryService: ServiceCategoryService(
-                    onlineServiceCategoryRepository: ServiceCategoryRepository.createOnline(),
-                    offlineServiceCategoryRepository: ServiceCategoryRepository.createOffline(),
+                    onlineRepository: ServiceCategoryRepository.createOnline(),
+                    offlineRepository: ServiceCategoryRepository.createOffline(),
                   ),
                 )),
       ],

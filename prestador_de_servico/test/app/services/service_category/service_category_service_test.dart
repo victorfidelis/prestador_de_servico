@@ -14,8 +14,8 @@ void main() {
     () {
       setUpMockServiceCategoryRepository();
       serviceCategoryService = ServiceCategoryService(
-        onlineServiceCategoryRepository: mockServiceCategoryRepository,
-        offlineServiceCategoryRepository: mockServiceCategoryRepository,
+        onlineRepository: mockServiceCategoryRepository,
+        offlineRepository: mockServiceCategoryRepository,
       );
     },
   );

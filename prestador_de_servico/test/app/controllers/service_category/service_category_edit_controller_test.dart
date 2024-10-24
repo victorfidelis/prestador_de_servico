@@ -13,8 +13,8 @@ void main() {
     () {
       setUpMockServiceCategoryRepository();
       ServiceCategoryService serviceCategoryService = ServiceCategoryService(
-        onlineServiceCategoryRepository: mockServiceCategoryRepository,
-        offlineServiceCategoryRepository: mockServiceCategoryRepository,
+        onlineRepository: mockServiceCategoryRepository,
+        offlineRepository: mockServiceCategoryRepository,
       );
       serviceCategoryEditController = ServiceCategoryEditController(serviceCategoryService: serviceCategoryService);
     },

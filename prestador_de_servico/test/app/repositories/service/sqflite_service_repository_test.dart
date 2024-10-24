@@ -1,7 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/repositories/service/sqflite_service_repository.dart';
+import 'package:prestador_de_servico/app/shared/either/either.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {
@@ -56,8 +60,10 @@ void main() {
       test(
         '''A primeira consulta de serviços deve retornar uma lista vazia''',
         () async {
-          List<Service> services = await serviceRepository.getAll();
-          expect(services.isEmpty, isTrue);
+          final getAllEither = await serviceRepository.getAll();
+          
+          expect(getAllEither.isRight, isTrue);
+          expect(getAllEither.right!.isEmpty, isTrue);
         },
       );
 
@@ -65,10 +71,10 @@ void main() {
         '''Ao adicionar um serviço deve-se retornar o id do serviço 
       adicionado''',
         () async {
-          String serviceCategoryId =
-              await serviceRepository.insert(service: service1);
+          final insertEither = await serviceRepository.insert(service: service1);
 
-          expect(serviceCategoryId, equals(service1.id));
+          expect(insertEither.isRight, isTrue);
+          expect(insertEither.right, equals(service1.id));
         },
       );
 
@@ -76,12 +82,11 @@ void main() {
         '''Após a adição, a consulta de serviço
          deve retornar uma lista com 1 serviço''',
         () async {
-          List<Service> services =
-              await serviceRepository.getAll();
-          expect(services.length, equals(1));
-          if (services.length == 1) {
-            expect(services[0], equals(service1));
-          }
+          final getAllEither = await serviceRepository.getAll();
+
+          expect(getAllEither.isRight, isTrue);
+          expect(getAllEither.right!.length, equals(1));
+          expect(getAllEither.right![0], equals(service1));
         },
       );
 
@@ -90,14 +95,16 @@ void main() {
       em questão no banco de dados''',
         () async {
           service1 = service1.copyWith(name: 'Luzes cabelo curto');
-          await serviceRepository.update(
-            service: service1,
-          );
+          final updateEither = await serviceRepository.update(service: service1);
+          
+          expect(updateEither.isRight, isTrue);
+          expect(updateEither.right is Unit, isTrue);
 
-          List<Service> services =
-              await serviceRepository.getAll();
-          expect(services.length, equals(1));
-          expect(services[0], equals(service1));
+          final getAllEither = await serviceRepository.getAll();
+          
+          expect(getAllEither.isRight, isTrue);
+          expect(getAllEither.right!.length, equals(1));
+          expect(getAllEither.right![0], equals(service1));
         },
       );
 
@@ -105,17 +112,16 @@ void main() {
         '''Após mais uma adição, a consulta de serviços
          deve retornar uma lista com 2 serviços''',
         () async {
-          String serviceId = await serviceRepository.insert(
-            service: service2,
-          );
+          final insertEither = await serviceRepository.insert(service: service2);
 
-          expect(serviceId, equals(service2.id));
+          expect(insertEither.isRight, isTrue);
+          expect(insertEither.right, equals(service2.id));
           
-          List<Service> services =
-              await serviceRepository.getAll();
-          expect(services.length, equals(2));
-          expect(services[0], equals(service1));
-          expect(services[1], equals(service2));
+          final getAllEither = await serviceRepository.getAll();
+          expect(getAllEither.isRight, isTrue);
+          expect(getAllEither.right!.length, equals(2));
+          expect(getAllEither.right![0], equals(service1));
+          expect(getAllEither.right![1], equals(service2));
         },
       );
 
@@ -123,18 +129,18 @@ void main() {
         '''Após mais uma adição, a consulta de serviços
          deve retornar uma lista com 3 serviços''',
         () async {
-          String serviceId = await serviceRepository.insert(
-            service: service3,
-          );
+          final insertEither = await serviceRepository.insert(service: service3);
 
-          expect(serviceId, equals(service3.id));
+          expect(insertEither.isRight, isTrue);
+          expect(insertEither.right, equals(service3.id));
           
-          List<Service> services =
-              await serviceRepository.getAll();
-          expect(services.length, equals(3));
-          expect(services[0], equals(service1));
-          expect(services[1], equals(service2));
-          expect(services[2], equals(service3));
+          final getAllEither = await serviceRepository.getAll();
+
+          expect(getAllEither.isRight, isTrue);
+          expect(getAllEither.right!.length, equals(3));
+          expect(getAllEither.right![0], equals(service1));
+          expect(getAllEither.right![1], equals(service2));
+          expect(getAllEither.right![2], equals(service3));
         },
       );
 
@@ -143,12 +149,12 @@ void main() {
         referente a esta categoria deverão ser retornados, 
         neste caso, os serviços da categoria 1''',
         () async {
-          List<Service> services = await serviceRepository.getByServiceCategoryId(
-            serviceCategoryId: '1',
-          );
-          expect(services.length, equals(2));
-          expect(services[0], equals(service1));
-          expect(services[1], equals(service2));
+          final getByEither = await serviceRepository.getByServiceCategoryId(serviceCategoryId: '1');
+          
+          expect(getByEither.isRight, isTrue);
+          expect(getByEither.right!.length, equals(2));
+          expect(getByEither.right![0], equals(service1));
+          expect(getByEither.right![1], equals(service2));
         },
       );
       
@@ -157,11 +163,11 @@ void main() {
         referente a esta categoria deverão ser retornados, 
         neste caso, os serviços da categoria 2''',
         () async {
-          List<Service> services = await serviceRepository.getByServiceCategoryId(
-            serviceCategoryId: '2',
-          );
-          expect(services.length, equals(1));
-          expect(services[0], equals(service3));
+          final getByEither = await serviceRepository.getByServiceCategoryId(serviceCategoryId: '2');
+          
+          expect(getByEither.isRight, isTrue);
+          expect(getByEither.right!.length, equals(1));
+          expect(getByEither.right![0], equals(service3));
         },
       );
 
@@ -169,10 +175,10 @@ void main() {
         '''Ao consultar um serviço pelo seu id o respectivo 
         serviço deve ser retornado''',
         () async {
-          Service service = await serviceRepository.getById(
-            id: service1.id,
-          );
-          expect(service, equals(service1));
+          final getByEither = await serviceRepository.getById(id: service1.id);
+          
+          expect(getByEither.isRight, isTrue);
+          expect(getByEither.right, equals(service1));
         },
       );
 
@@ -180,10 +186,11 @@ void main() {
         '''Ao efetuar uma busca de por nome passando "curto", deve retornar apenas 
           1 serviço, sendo o service1''',
         () async {
-          List<Service> services =
-              await serviceRepository.getNameContained(name: 'curto');
-          expect(services.length, equals(1));
-          expect(services[0], equals(service1));
+          final getNameEither = await serviceRepository.getNameContained(name: 'curto');
+          
+          expect(getNameEither.isRight, isTrue);
+          expect(getNameEither.right!.length, equals(1));
+          expect(getNameEither.right![0], equals(service1));
         },
       );
 
@@ -191,10 +198,11 @@ void main() {
         '''Ao efetuar uma busca de por nome passando "escov", deve retornar apenas 
           1 serviço, sendo o service2''',
         () async {
-          List<Service> services =
-              await serviceRepository.getNameContained(name: 'escov');
-          expect(services.length, equals(1));
-          expect(services[0], equals(service2));
+          final getNameEither = await serviceRepository.getNameContained(name: 'escov');
+              
+          expect(getNameEither.isRight, isTrue);
+          expect(getNameEither.right!.length, equals(1));
+          expect(getNameEither.right![0], equals(service2));
         },
       );
 
@@ -203,12 +211,13 @@ void main() {
         serviços, o primeiro sendo a service1, o segundo o service2 e o 
         terceiro o service3''',
         () async {
-          List<Service> services =
-              await serviceRepository.getNameContained(name: 'e');
-          expect(services.length, equals(3));
-          expect(services[0], equals(service1));
-          expect(services[1], equals(service2));
-          expect(services[2], equals(service3));
+          final getNameEither = await serviceRepository.getNameContained(name: 'e');
+          
+          expect(getNameEither.isRight, isTrue);
+          expect(getNameEither.right!.length, equals(3));
+          expect(getNameEither.right![0], equals(service1));
+          expect(getNameEither.right![1], equals(service2));
+          expect(getNameEither.right![2], equals(service3));
         },
       );
 
@@ -216,11 +225,10 @@ void main() {
         '''Ao efetuar uma busca por nome passando "manicure", não deve retornar
         nenhum serviço''',
         () async {
-          List<Service> services =
-              await serviceRepository.getNameContained(
-            name: 'manicure',
-          );
-          expect(services.length, equals(0));
+          final getNameEither = await serviceRepository.getNameContained(name: 'manicure');
+          
+          expect(getNameEither.isRight, isTrue);
+          expect(getNameEither.right!.length, equals(0));
         },
       );
 
@@ -230,28 +238,32 @@ void main() {
         () async {
           await serviceRepository.deleteById(id: service1.id);
 
-          List<Service> services = await serviceRepository.getAll();
-          expect(services.length, equals(2));
-          expect(services[0], equals(service2));
-          expect(services[1], equals(service3));
+          final getAllEither = await serviceRepository.getAll();
+          
+          expect(getAllEither.isRight, isTrue);
+          expect(getAllEither.right!.length, equals(2));
+          expect(getAllEither.right![0], equals(service2));
+          expect(getAllEither.right![1], equals(service3));
         },
       );
 
       test(
         '''Após deletar um serviço, a verificação se o mesmo existe deve retornar false''',
         () async {
-          bool exists = await serviceRepository.existsById(id: service1.id);
+          final existsEither = await serviceRepository.existsById(id: service1.id);
 
-          expect(exists, isFalse);
+          expect(existsEither.isRight, isTrue);
+          expect(existsEither.right, isFalse);
         },
       );
 
       test(
         '''A verificação de um serviço que existe deve retornar true''',
         () async {
-          bool exists = await serviceRepository.existsById(id: service2.id);
+          final existsEither = await serviceRepository.existsById(id: service2.id);
 
-          expect(exists, isTrue);
+          expect(existsEither.isRight, isTrue);
+          expect(existsEither.right, isTrue);
         },
       );
     },
