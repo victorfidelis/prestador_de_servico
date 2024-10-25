@@ -1,8 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:replace_diacritic/replace_diacritic.dart';
 
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-
 class Service {
   final String id;
   final String serviceCategoryId;

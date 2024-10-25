@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service_category/service_category_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service_category/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
+import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
@@ -10,7 +11,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/search_text_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
-import 'package:prestador_de_servico/app/states/service/service_category_state.dart';
+import 'package:prestador_de_servico/app/states/service_category/service_category_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_category_card.dart';
 import 'package:provider/provider.dart';
 
@@ -97,9 +98,8 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
               );
             }
 
-            List<ServiceCategory> serviceCategories =
-                (serviceCategoryController.state as ServiceCategoryLoaded)
-                    .serviceCategories;
+            List<ServicesByCategory> serviceListByCategory =
+                (serviceCategoryController.state as ServiceCategoryLoaded).servicesByCategory;
 
             return SliverPadding(
               padding: const EdgeInsets.symmetric(
@@ -112,7 +112,7 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
                     return Column(
                       children: [
                         ServiceCategoryCard(
-                          serviceCategory: serviceCategories[index],
+                          serviceCategory: serviceListByCategory[index].serviceCategory,
                           onEdit: onEditServiceCategory,
                           onDelete: onDeleteServiceCategory,
                         ),
@@ -120,7 +120,7 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
                       ],
                     );
                   },
-                  childCount: serviceCategories.length,
+                  childCount: serviceListByCategory.length,
                 ),
               ),
             );

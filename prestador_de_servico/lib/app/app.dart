@@ -7,12 +7,13 @@ import 'package:prestador_de_servico/app/controllers/service_category/service_ca
 import 'package:prestador_de_servico/app/controllers/service_category/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/controllers/navigation/navigation_controller.dart';
 import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service_repository.dart';
 import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart';
-import 'package:prestador_de_servico/app/repositories/service_category/sqflite_service_category_repository.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/services/network/network_service.dart';
+import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
@@ -69,8 +70,12 @@ class App extends StatelessWidget {
         ChangeNotifierProvider<ServiceCategoryController>(
             create: (context) => ServiceCategoryController(
                   serviceCategoryService: ServiceCategoryService(
-                    onlineRepository: ServiceCategoryRepository.createOnline(),
                     offlineRepository: ServiceCategoryRepository.createOffline(),
+                    onlineRepository: ServiceCategoryRepository.createOnline(),
+                  ),
+                  serviceService: ServiceService(
+                    offlineRepository: ServiceRepository.createOffline(),
+                    onlineRepository: ServiceRepository.createOnline(),
                   ),
                 )),
         ChangeNotifierProvider<ServiceCategoryEditController>(

@@ -1,9 +1,19 @@
 
 import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/repositories/service/firebase_service_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/sqflite_service_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
 abstract class ServiceRepository {
+
+  factory ServiceRepository.createOffline() {
+    return SqfliteServiceRepository();
+  }
+
+  factory ServiceRepository.createOnline() {
+    return FirebaseServiceRepository();
+  }
 
   Future<Either<Failure, List<Service>>> getAll();
   Future<Either<Failure, List<Service>>> getByServiceCategoryId({required String serviceCategoryId});

@@ -9,68 +9,71 @@ import '../constants/service_category_constants.dart';
 import 'mock_service_category_repository.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<ServiceCategoryRepository>()])
-late MockServiceCategoryRepository mockServiceCategoryRepository;
+late MockServiceCategoryRepository onlineMockServiceCategoryRepository;
+late MockServiceCategoryRepository offlineMockServiceCategoryRepository;
 
 void setUpMockServiceCategoryRepository() {
-  mockServiceCategoryRepository = MockServiceCategoryRepository();
+  onlineMockServiceCategoryRepository = MockServiceCategoryRepository();
+  offlineMockServiceCategoryRepository = MockServiceCategoryRepository();
 
-  when(mockServiceCategoryRepository.getAll()).thenAnswer(
+
+  when(onlineMockServiceCategoryRepository.getAll()).thenAnswer(
     (_) async => Either.right(serCatGetAll)
   );
 
-  when(mockServiceCategoryRepository.getById(id: serCatNoNetworkConnection.id)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.getById(id: serCatNoNetworkConnection.id)).thenAnswer(
     (_) async => Either.left(NetworkFailure('Sem conexão com a internet'))
   );
 
-  when(mockServiceCategoryRepository.getById(id: serCatGetById.id)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.getById(id: serCatGetById.id)).thenAnswer(
     (_) async => Either.right(serCatGetById)
   );
 
-  when(mockServiceCategoryRepository.getNameContained(name: serCatNoNetworkConnection.name)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.getNameContained(name: serCatNoNetworkConnection.name)).thenAnswer(
     (_) async => Either.left(NetworkFailure('Sem conexão com a internet'))
   );
 
-  when(mockServiceCategoryRepository.getNameContained(name: serCatNameContainedWithoutResult)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.getNameContained(name: serCatNameContainedWithoutResult)).thenAnswer(
     (_) async => Either.right(serCatGetNameContainedWithoutResult)
   );
 
-  when(mockServiceCategoryRepository.getNameContained(name: serCatNameContained1Result)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.getNameContained(name: serCatNameContained1Result)).thenAnswer(
     (_) async => Either.right(serCatGetNameContained1Result)
   );
 
-  when(mockServiceCategoryRepository.getNameContained(name: serCatNameContained2Result)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.getNameContained(name: serCatNameContained2Result)).thenAnswer(
     (_) async => Either.right(serCatGetNameContained2Result)
   );
 
-  when(mockServiceCategoryRepository.getNameContained(name: serCatNameContained3Result)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.getNameContained(name: serCatNameContained3Result)).thenAnswer(
     (_) async => Either.right(serCatGetNameContained3Result)
   );
 
-  when(mockServiceCategoryRepository.getUnsync(dateLastSync: anyNamed('dateLastSync'))).thenAnswer(
+  when(onlineMockServiceCategoryRepository.getUnsync(dateLastSync: anyNamed('dateLastSync'))).thenAnswer(
     (_) async => Either.right(serCatGetUnsync)
   );
 
-  when(mockServiceCategoryRepository.insert(serviceCategory: serCatNoNetworkConnection)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.insert(serviceCategory: serCatNoNetworkConnection)).thenAnswer(
     (_) async => Either.left(NetworkFailure('Sem conexão com a internet'))
   );
 
-  when(mockServiceCategoryRepository.insert(serviceCategory: serCatInsert)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.insert(serviceCategory: serCatInsert)).thenAnswer(
     (_) async => Either.right(serCatInsert.id)
   );
 
-  when(mockServiceCategoryRepository.update(serviceCategory: serCatNoNetworkConnection)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.update(serviceCategory: serCatNoNetworkConnection)).thenAnswer(
     (_) async => Either.left(NetworkFailure('Sem conexão com a internet'))
   );
 
-  when(mockServiceCategoryRepository.update(serviceCategory: serCatUpdate)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.update(serviceCategory: serCatUpdate)).thenAnswer(
     (_) async => Either.right(unit)
   );
 
-  when(mockServiceCategoryRepository.deleteById(id: serCatNoNetworkConnection.id)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.deleteById(id: serCatNoNetworkConnection.id)).thenAnswer(
     (_) async => Either.left(NetworkFailure('Sem conexão com a internet'))
   );
 
-  when(mockServiceCategoryRepository.deleteById(id: serCatDelete.id)).thenAnswer(
+  when(onlineMockServiceCategoryRepository.deleteById(id: serCatDelete.id)).thenAnswer(
     (_) async => Either.right(unit)
   );
 }

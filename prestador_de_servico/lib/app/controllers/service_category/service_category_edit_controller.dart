@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/service/service_category_edit_state.dart';
+import 'package:prestador_de_servico/app/states/service_category/service_category_edit_state.dart';
 
 class ServiceCategoryEditController extends ChangeNotifier {
   final ServiceCategoryService serviceCategoryService;

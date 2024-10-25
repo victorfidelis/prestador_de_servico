@@ -1,8 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/service_category/service_category_controller.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
-import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
@@ -22,8 +20,8 @@ void main() {
       setUpMockServiceCategoryRepository();
       syncServiceCategoryService = SyncServiceCategoryService(
         syncRepository: mockSyncRepository,
-        offlineRepository: mockServiceCategoryRepository,
-        onlineRepository: mockServiceCategoryRepository,
+        offlineRepository: offlineMockServiceCategoryRepository,
+        onlineRepository: onlineMockServiceCategoryRepository,
       );
     },
   );
@@ -105,7 +103,7 @@ void main() {
         () async {
           syncServiceCategoryService.sync = emptySync;
           syncServiceCategoryService.serviceCategoriesToSync = [];
-          when(mockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.left(Failure('Falha de teste')));
+          when(offlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.left(Failure('Falha de teste')));
 
           final unsyncedEither = await syncServiceCategoryService.loadUnsynced();
 
@@ -120,7 +118,7 @@ void main() {
         () async {
           syncServiceCategoryService.sync = emptySync;
           syncServiceCategoryService.serviceCategoriesToSync = [];
-          when(mockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAll));
+          when(offlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAll));
 
           await syncServiceCategoryService.loadUnsynced();
 
@@ -133,7 +131,7 @@ void main() {
         () async {
           syncServiceCategoryService.sync = syncServiceCategoryData;
           syncServiceCategoryService.serviceCategoriesToSync = [];
-          when(mockServiceCategoryRepository.getUnsync(dateLastSync: syncServiceCategoryData.dateSyncServiceCategories))
+          when(onlineMockServiceCategoryRepository.getUnsync(dateLastSync: syncServiceCategoryData.dateSyncServiceCategories))
               .thenAnswer((_) async => Either.left(Failure('Falha de teste')));
 
           final uncyncedEither = await syncServiceCategoryService.loadUnsynced();
@@ -149,7 +147,7 @@ void main() {
         () async {
           syncServiceCategoryService.sync = syncServiceCategoryData;
           syncServiceCategoryService.serviceCategoriesToSync = [];
-          when(mockServiceCategoryRepository.getUnsync(dateLastSync: anyNamed('dateLastSync')))
+          when(onlineMockServiceCategoryRepository.getUnsync(dateLastSync: anyNamed('dateLastSync')))
               .thenAnswer((_) async => Either.right(serCatGetUnsync));
 
           await syncServiceCategoryService.loadUnsynced();
@@ -167,7 +165,7 @@ void main() {
         '''Ao executar o syncServiceCategory para deletar um ServiceCategory,
         retornar um Failure''',
         () async {
-          when(mockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
+          when(offlineMockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
               .thenAnswer((_) async => Either.left(Failure('Falha de teste')));
 
           final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serCatIsDeleted);
@@ -181,9 +179,9 @@ void main() {
         '''Ao executar o syncServiceCategory para inserir um ServiceCategory, 
         retornar um Failure''',
         () async {
-          when(mockServiceCategoryRepository.insert(serviceCategory: serCatGeneric))
+          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serCatGeneric))
               .thenAnswer((_) async => Either.left(Failure('Falha de teste')));
-          when(mockServiceCategoryRepository.existsById(id: serCatGeneric.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatGeneric.id))
               .thenAnswer((_) async => Either.right(false));
 
           final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serCatGeneric);
@@ -197,9 +195,9 @@ void main() {
         '''Ao executar o syncServiceCategory para alterar um ServiceCategory, 
         retornar um Failure''',
         () async {
-          when(mockServiceCategoryRepository.update(serviceCategory: serCatGeneric))
+          when(offlineMockServiceCategoryRepository.update(serviceCategory: serCatGeneric))
               .thenAnswer((_) async => Either.left(Failure('Falha de teste')));
-          when(mockServiceCategoryRepository.existsById(id: serCatGeneric.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatGeneric.id))
               .thenAnswer((_) async => Either.right(true));
 
           final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serCatGeneric);
@@ -213,7 +211,7 @@ void main() {
         '''Ao executar o syncServiceCategory, 
         retornar um Failure devido a um erro no existsById''',
         () async {
-          when(mockServiceCategoryRepository.existsById(id: serCatGeneric.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatGeneric.id))
               .thenAnswer((_) async => Either.left(Failure('Falha de teste')));
 
           final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serCatGeneric);
@@ -227,7 +225,7 @@ void main() {
         '''Ao executar o syncServiceCategory para deletar um ServiceCategory,
         retornar um Unit''',
         () async {
-          when(mockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
+          when(offlineMockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
               .thenAnswer((_) async => Either.right(unit));
 
           final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serCatIsDeleted);
@@ -241,9 +239,9 @@ void main() {
         '''Ao executar o syncServiceCategory para inserir um ServiceCategory,
         retornar um Unit''',
         () async {
-          when(mockServiceCategoryRepository.insert(serviceCategory: serCatGeneric))
+          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serCatGeneric))
               .thenAnswer((_) async => Either.right(serCatGeneric.id));
-          when(mockServiceCategoryRepository.existsById(id: serCatGeneric.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatGeneric.id))
               .thenAnswer((_) async => Either.right(false));
 
           final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serCatGeneric);
@@ -257,9 +255,9 @@ void main() {
         '''Ao executar o syncServiceCategory para alterar um ServiceCategory,
         retornar um Unit''',
         () async {
-          when(mockServiceCategoryRepository.update(serviceCategory: serCatGeneric))
+          when(offlineMockServiceCategoryRepository.update(serviceCategory: serCatGeneric))
               .thenAnswer((_) async => Either.right(unit));
-          when(mockServiceCategoryRepository.existsById(id: serCatGeneric.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatGeneric.id))
               .thenAnswer((_) async => Either.right(true));
 
           final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serCatGeneric);
@@ -278,15 +276,15 @@ void main() {
         '''Ao executar o syncUnsynced e um erro ocorrer em deleteById, 
         retornar um Failure''',
         () async {
-          when(mockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
+          when(offlineMockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
               .thenAnswer((_) async => Either.left(Failure('Falha de teste')));
-          when(mockServiceCategoryRepository.existsById(id: serCatInsert.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatInsert.id))
               .thenAnswer((_) async => Either.right(false));
-          when(mockServiceCategoryRepository.insert(serviceCategory: serCatInsert))
+          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serCatInsert))
               .thenAnswer((_) async => Either.right(serCatInsert.id));
-          when(mockServiceCategoryRepository.existsById(id: serCatUpdate.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatUpdate.id))
               .thenAnswer((_) async => Either.right(true));
-          when(mockServiceCategoryRepository.update(serviceCategory: serCatUpdate))
+          when(offlineMockServiceCategoryRepository.update(serviceCategory: serCatUpdate))
               .thenAnswer((_) async => Either.right(unit));
 
           syncServiceCategoryService.serviceCategoriesToSync = [
@@ -306,15 +304,15 @@ void main() {
         '''Ao executar o syncUnsynced e um erro ocorrer em insert, 
         retornar um Failure''',
         () async {
-          when(mockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
+          when(offlineMockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
               .thenAnswer((_) async => Either.right(unit));
-          when(mockServiceCategoryRepository.existsById(id: serCatInsert.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatInsert.id))
               .thenAnswer((_) async => Either.right(false));
-          when(mockServiceCategoryRepository.insert(serviceCategory: serCatInsert))
+          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serCatInsert))
               .thenAnswer((_) async => Either.left(Failure('Falha de teste')));
-          when(mockServiceCategoryRepository.existsById(id: serCatUpdate.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatUpdate.id))
               .thenAnswer((_) async => Either.right(true));
-          when(mockServiceCategoryRepository.update(serviceCategory: serCatUpdate))
+          when(offlineMockServiceCategoryRepository.update(serviceCategory: serCatUpdate))
               .thenAnswer((_) async => Either.right(unit));
 
           syncServiceCategoryService.serviceCategoriesToSync = [
@@ -334,15 +332,15 @@ void main() {
         '''Ao executar o syncUnsynced e um erro ocorrer em update, 
         retornar um Failure''',
         () async {
-          when(mockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
+          when(offlineMockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
               .thenAnswer((_) async => Either.right(unit));
-          when(mockServiceCategoryRepository.existsById(id: serCatInsert.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatInsert.id))
               .thenAnswer((_) async => Either.right(false));
-          when(mockServiceCategoryRepository.insert(serviceCategory: serCatInsert))
+          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serCatInsert))
               .thenAnswer((_) async => Either.right(serCatInsert.id));
-          when(mockServiceCategoryRepository.existsById(id: serCatUpdate.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatUpdate.id))
               .thenAnswer((_) async => Either.right(true));
-          when(mockServiceCategoryRepository.update(serviceCategory: serCatUpdate))
+          when(offlineMockServiceCategoryRepository.update(serviceCategory: serCatUpdate))
               .thenAnswer((_) async => Either.left(Failure('Falha de teste')));
 
           syncServiceCategoryService.serviceCategoriesToSync = [
@@ -362,15 +360,15 @@ void main() {
         '''Ao executar o syncUnsynced e um erro ocorrer em existsById, 
         retornar um Failure''',
         () async {
-          when(mockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
+          when(offlineMockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
               .thenAnswer((_) async => Either.right(unit));
-          when(mockServiceCategoryRepository.existsById(id: anyNamed('id')))
+          when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
               .thenAnswer((_) async => Either.left(Failure('Falha de teste')));
-          when(mockServiceCategoryRepository.insert(serviceCategory: serCatInsert))
+          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serCatInsert))
               .thenAnswer((_) async => Either.right(serCatInsert.id));
-          when(mockServiceCategoryRepository.existsById(id: serCatUpdate.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatUpdate.id))
               .thenAnswer((_) async => Either.right(true));
-          when(mockServiceCategoryRepository.update(serviceCategory: serCatUpdate))
+          when(offlineMockServiceCategoryRepository.update(serviceCategory: serCatUpdate))
               .thenAnswer((_) async => Either.left(Failure('Falha de teste')));
 
           syncServiceCategoryService.serviceCategoriesToSync = [
@@ -390,15 +388,15 @@ void main() {
         '''Ao executar o syncUnsynced e nenhum erro ocorrer, 
         retornar um Unit''',
         () async {
-          when(mockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
+          when(offlineMockServiceCategoryRepository.deleteById(id: serCatIsDeleted.id))
               .thenAnswer((_) async => Either.right(unit));
-          when(mockServiceCategoryRepository.existsById(id: anyNamed('id')))
+          when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
               .thenAnswer((_) async => Either.right(false));
-          when(mockServiceCategoryRepository.insert(serviceCategory: serCatInsert))
+          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serCatInsert))
               .thenAnswer((_) async => Either.right(serCatInsert.id));
-          when(mockServiceCategoryRepository.existsById(id: serCatUpdate.id))
+          when(offlineMockServiceCategoryRepository.existsById(id: serCatUpdate.id))
               .thenAnswer((_) async => Either.right(true));
-          when(mockServiceCategoryRepository.update(serviceCategory: serCatUpdate))
+          when(offlineMockServiceCategoryRepository.update(serviceCategory: serCatUpdate))
               .thenAnswer((_) async => Either.right(unit));
 
           syncServiceCategoryService.serviceCategoriesToSync = [
@@ -635,7 +633,7 @@ void main() {
         () async {
           const failureMessage = 'Falha loadUnsynced';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(mockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
+          when(onlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           final syncEither = await syncServiceCategoryService.synchronize();
 
@@ -651,8 +649,8 @@ void main() {
         () async {
           const failureMessage = 'Falha syncUnsynced';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(mockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAll));
-          when(mockServiceCategoryRepository.existsById(id: anyNamed('id')))
+          when(onlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAll));
+          when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           final syncEither = await syncServiceCategoryService.synchronize();
@@ -669,10 +667,10 @@ void main() {
         () async {
           const failureMessage = 'Falha updateSyncDate';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(mockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAllHasDate));
-          when(mockServiceCategoryRepository.existsById(id: anyNamed('id')))
+          when(onlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAllHasDate));
+          when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
               .thenAnswer((_) async => Either.right(true));
-          when(mockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
+          when(offlineMockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
               .thenAnswer((_) async => Either.right(unit));
           when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
@@ -689,10 +687,10 @@ void main() {
         retornado''',
         () async {
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(mockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAllHasDate));
-          when(mockServiceCategoryRepository.existsById(id: anyNamed('id')))
+          when(onlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAllHasDate));
+          when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
               .thenAnswer((_) async => Either.right(true));
-          when(mockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
+          when(offlineMockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
               .thenAnswer((_) async => Either.right(unit));
           when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
           when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))

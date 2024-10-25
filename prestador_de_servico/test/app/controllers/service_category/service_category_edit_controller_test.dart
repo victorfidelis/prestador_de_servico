@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:prestador_de_servico/app/controllers/service_category/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
-import 'package:prestador_de_servico/app/states/service/service_category_edit_state.dart';
+import 'package:prestador_de_servico/app/states/service_category/service_category_edit_state.dart';
 
 import '../../../helpers/constants/service_category_constants.dart';
 import '../../../helpers/service_category/mock_service_category_repository.dart';
@@ -13,8 +13,8 @@ void main() {
     () {
       setUpMockServiceCategoryRepository();
       ServiceCategoryService serviceCategoryService = ServiceCategoryService(
-        onlineRepository: mockServiceCategoryRepository,
-        offlineRepository: mockServiceCategoryRepository,
+        onlineRepository: onlineMockServiceCategoryRepository,
+        offlineRepository: offlineMockServiceCategoryRepository,
       );
       serviceCategoryEditController = ServiceCategoryEditController(serviceCategoryService: serviceCategoryService);
     },

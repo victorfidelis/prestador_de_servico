@@ -22,8 +22,8 @@ void main() {
       setUpNetworkService();
       syncServiceCategoryService = SyncServiceCategoryService(
         syncRepository: mockSyncRepository,
-        offlineRepository: mockServiceCategoryRepository,
-        onlineRepository: mockServiceCategoryRepository,
+        offlineRepository: onlineMockServiceCategoryRepository,
+        onlineRepository: offlineMockServiceCategoryRepository,
       );
     },
   );
@@ -85,9 +85,9 @@ void main() {
     deve ser um Synchronized''',
     () async {
       when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-      when(mockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAllHasDate));
-      when(mockServiceCategoryRepository.existsById(id: anyNamed('id'))).thenAnswer((_) async => Either.right(true));
-      when(mockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
+      when(offlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAllHasDate));
+      when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id'))).thenAnswer((_) async => Either.right(true));
+      when(offlineMockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
           .thenAnswer((_) async => Either.right(unit));
       when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
       when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))

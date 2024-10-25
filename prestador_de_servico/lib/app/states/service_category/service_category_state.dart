@@ -1,4 +1,4 @@
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
+import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 
 abstract class ServiceCategoryState {}
 
@@ -8,11 +8,11 @@ class ServiceCategoryLoading extends ServiceCategoryState {}
 
 class ServiceCategoryError extends ServiceCategoryState {
   final String message;
-  ServiceCategoryError({required this.message});
+  ServiceCategoryError(this.message);
 }
 
 class ServiceCategoryLoaded extends ServiceCategoryState {
-  final List<ServiceCategory> serviceCategories;
+  final List<ServicesByCategory> servicesByCategory;
 
-  ServiceCategoryLoaded({required this.serviceCategories});
+  ServiceCategoryLoaded(this.servicesByCategory);
 } 
