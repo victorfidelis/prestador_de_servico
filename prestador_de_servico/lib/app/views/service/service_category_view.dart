@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/service_category/service_category_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service_category/service_category_edit_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
@@ -11,7 +11,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/search_text_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
-import 'package:prestador_de_servico/app/states/service_category/service_category_state.dart';
+import 'package:prestador_de_servico/app/states/service/service_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_category_card.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +29,7 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback(
-        (_) => context.read<ServiceCategoryController>().load());
+        (_) => context.read<ServiceController>().load());
   }
 
   @override
@@ -74,23 +74,23 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
               ),
             ),
           ),
-          Consumer<ServiceCategoryController>(
+          Consumer<ServiceController>(
               builder: (context, serviceCategoryController, _) {
-            if (serviceCategoryController.state is ServiceCategoryInitial) {
+            if (serviceCategoryController.state is ServiceInitial) {
               return const SliverFillRemaining();
             }
 
-            if (serviceCategoryController.state is ServiceCategoryError) {
+            if (serviceCategoryController.state is ServiceError) {
               return SliverFillRemaining(
                 child: Center(
                   child: Text(
-                      (serviceCategoryController.state as ServiceCategoryError)
+                      (serviceCategoryController.state as ServiceError)
                           .message),
                 ),
               );
             }
 
-            if (serviceCategoryController.state is ServiceCategoryLoading) {
+            if (serviceCategoryController.state is ServiceLoading) {
               return const SliverFillRemaining(
                 child: Center(
                   child: CustomLoading(),
@@ -99,7 +99,7 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
             }
 
             List<ServicesByCategory> serviceListByCategory =
-                (serviceCategoryController.state as ServiceCategoryLoaded).servicesByCategory;
+                (serviceCategoryController.state as ServiceLoaded).servicesByCategory;
 
             return SliverPadding(
               padding: const EdgeInsets.symmetric(
@@ -166,6 +166,6 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
   }
 
   void deleteServiceCategory({required ServiceCategory serviceCategory}) {
-    context.read<ServiceCategoryController>().delete(serviceCategory: serviceCategory);
+    context.read<ServiceController>().delete(serviceCategory: serviceCategory);
   }
 }

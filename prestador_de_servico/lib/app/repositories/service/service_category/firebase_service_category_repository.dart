@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory_adapter.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
-import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';

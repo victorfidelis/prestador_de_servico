@@ -1,11 +1,11 @@
 
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
-import '../constants/service_category_constants.dart';
+import '../../constants/service_category_constants.dart';
 import 'mock_service_category_repository.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<ServiceCategoryRepository>()])

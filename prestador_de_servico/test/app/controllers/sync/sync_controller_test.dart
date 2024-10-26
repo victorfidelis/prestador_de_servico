@@ -9,7 +9,7 @@ import 'package:prestador_de_servico/app/states/sync/sync_state.dart';
 
 import '../../../helpers/constants/service_category_constants.dart';
 import '../../../helpers/network/mock_network_service.dart';
-import '../../../helpers/service_category/mock_service_category_repository.dart';
+import '../../../helpers/service/service_category/mock_service_category_repository.dart';
 import '../../../helpers/sync/mock_sync_repository.dart';
 
 void main() {

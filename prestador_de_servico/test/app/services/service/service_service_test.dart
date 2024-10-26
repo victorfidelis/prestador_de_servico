@@ -7,7 +7,7 @@ import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
-import '../../../helpers/service/mock_service_repository.dart';
+import '../../../helpers/service/service/mock_service_repository.dart';
 
 void main() {
   late ServiceService serviceService;

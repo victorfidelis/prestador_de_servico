@@ -3,18 +3,20 @@ import 'package:prestador_de_servico/app/controllers/sync/sync_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/sign_in_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service_category/service_category_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service_category/service_category_edit_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/controllers/navigation/navigation_controller.dart';
 import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
-import 'package:prestador_de_servico/app/repositories/service/service_repository.dart';
-import 'package:prestador_de_servico/app/repositories/service_category/service_category_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/services_by_category/services_by_category_repository.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/services/network/network_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
-import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
+import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
+import 'package:prestador_de_servico/app/services/service/services_by_category_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
@@ -67,8 +69,8 @@ class App extends StatelessWidget {
           ),
         ),
         ChangeNotifierProvider<NavigationController>(create: (context) => NavigationController()),
-        ChangeNotifierProvider<ServiceCategoryController>(
-            create: (context) => ServiceCategoryController(
+        ChangeNotifierProvider<ServiceController>(
+            create: (context) => ServiceController(
                   serviceCategoryService: ServiceCategoryService(
                     offlineRepository: ServiceCategoryRepository.createOffline(),
                     onlineRepository: ServiceCategoryRepository.createOnline(),
@@ -76,6 +78,9 @@ class App extends StatelessWidget {
                   serviceService: ServiceService(
                     offlineRepository: ServiceRepository.createOffline(),
                     onlineRepository: ServiceRepository.createOnline(),
+                  ),
+                  servicesByCategoryService: ServicesByCategoryService(
+                    offlineRepository: ServicesByCategoryRepository.createOffline(),
                   ),
                 )),
         ChangeNotifierProvider<ServiceCategoryEditController>(

@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prestador_de_servico/app/services/service_category/service_category_service.dart';
+import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
 import '../../../helpers/constants/service_category_constants.dart';
-import '../../../helpers/service_category/mock_service_category_repository.dart';
+import '../../../helpers/service/service_category/mock_service_category_repository.dart';
 
 void main() {
   late ServiceCategoryService serviceCategoryService;

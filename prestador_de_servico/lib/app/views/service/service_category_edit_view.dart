@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/service_category/service_category_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service_category/service_category_edit_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
@@ -10,7 +10,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/states/service_category/service_category_edit_state.dart';
+import 'package:prestador_de_servico/app/states/service/service_category_edit_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/custom_text_name.dart';
 import 'package:provider/provider.dart';
 
@@ -173,12 +173,12 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
 
   void afterSave({required ServiceCategory serviceCategory}) {
     if (isUpdate) {
-      context.read<ServiceCategoryController>().updateOnList(
+      context.read<ServiceController>().updateOnList(
             serviceCategory: serviceCategory,
           );
     } else {
       context
-          .read<ServiceCategoryController>()
+          .read<ServiceController>()
           .addOnList(serviceCategory: serviceCategory);
     }
   }
