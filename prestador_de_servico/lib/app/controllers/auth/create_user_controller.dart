@@ -30,16 +30,13 @@ class CreateUserController extends ChangeNotifier {
       return;
     }
 
-    final createUserEither =
-        await authService.createUserEmailPassword(user: user);
+    final createUserEither = await authService.createUserEmailPassword(user: user);
     createUserEither.fold(
       (error) {
         if (error is EmailAlreadyInUseFailure) {
-          _changeState(
-              ErrorUserCreation(emailMessage: createUserEither.left!.message));
+          _changeState(ErrorUserCreation(emailMessage: createUserEither.left!.message));
         } else {
-          _changeState(ErrorUserCreation(
-              genericMessage: createUserEither.left!.message));
+          _changeState(ErrorUserCreation(genericMessage: createUserEither.left!.message));
         }
       },
       (value) => _changeState(UserCreated(user: user)),
@@ -51,8 +48,7 @@ class CreateUserController extends ChangeNotifier {
       return ErrorUserCreation(nameMessage: 'Necessário informar o nome');
     }
     if (user.surname.isEmpty) {
-      return ErrorUserCreation(
-          surnameMessage: 'Necessário informar o sobrenome');
+      return ErrorUserCreation(surnameMessage: 'Necessário informar o sobrenome');
     }
     if (user.email.isEmpty) {
       return ErrorUserCreation(emailMessage: 'Necessário informar o email');
@@ -61,8 +57,7 @@ class CreateUserController extends ChangeNotifier {
       return ErrorUserCreation(passwordMessage: 'Necessário informar a senha');
     }
     if (user.confirmPassword.isEmpty) {
-      return ErrorUserCreation(
-          confirmPasswordMessage: 'Necessário informar a confirmação da senha');
+      return ErrorUserCreation(confirmPasswordMessage: 'Necessário informar a confirmação da senha');
     }
     if (user.password != user.confirmPassword) {
       return ErrorUserCreation(

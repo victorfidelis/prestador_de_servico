@@ -185,7 +185,7 @@ void main() {
 
           expect(serviceController.state is ServiceLoaded, isTrue);
           final serviceState = serviceController.state as ServiceLoaded;
-          expect(serviceState.servicesByCategory.isEmpty, isTrue);
+          expect(serviceState.servicesByCategories.isEmpty, isTrue);
         },
       );
 
@@ -206,7 +206,7 @@ void main() {
 
           expect(serviceController.state is ServiceLoaded, isTrue);
           final serviceState = serviceController.state as ServiceLoaded;
-          expect(serviceState.servicesByCategory.length, equals(servicesByCategories.length));
+          expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
         },
       );
 
@@ -227,7 +227,7 @@ void main() {
 
           expect(serviceController.state is ServiceLoaded, isTrue);
 
-          final servicesByCategoriesActual = (serviceController.state as ServiceLoaded).servicesByCategory;
+          final servicesByCategoriesActual = (serviceController.state as ServiceLoaded).servicesByCategories;
 
           expect(servicesByCategoriesActual.length, equals(servicesByCategories.length));
           expect(servicesByCategoriesActual[0].services.length, equals(servicesByCategories[0].services.length));
@@ -275,7 +275,7 @@ void main() {
 
           expect(serviceController.state is ServiceFiltered, isTrue);
           final serviceState = serviceController.state as ServiceFiltered;
-          expect(serviceState.servicesByCategory.isEmpty, isTrue);
+          expect(serviceState.servicesByCategories.isEmpty, isTrue);
         },
       );
 
@@ -298,59 +298,82 @@ void main() {
           expect(serviceController.state is ServiceFiltered, isTrue);
           final serviceState = serviceController.state as ServiceFiltered;
 
-          expect(serviceState.servicesByCategory.length, equals(servicesByCategories.length));
+          expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
 
-          expect(serviceState.servicesByCategory[0].serviceCategory, equals(servicesByCategories[0].serviceCategory));
-          expect(serviceState.servicesByCategory[0].services.length, equals(servicesByCategories[0].services.length));
+          expect(serviceState.servicesByCategories[0].serviceCategory, equals(servicesByCategories[0].serviceCategory));
+          expect(serviceState.servicesByCategories[0].services.length, equals(servicesByCategories[0].services.length));
 
-          expect(serviceState.servicesByCategory[1].serviceCategory, equals(servicesByCategories[1].serviceCategory));
-          expect(serviceState.servicesByCategory[1].services.length, equals(servicesByCategories[1].services.length));
+          expect(serviceState.servicesByCategories[1].serviceCategory, equals(servicesByCategories[1].serviceCategory));
+          expect(serviceState.servicesByCategories[1].services.length, equals(servicesByCategories[1].services.length));
         },
       );
     },
   );
 
-  // test(
-  //   '''Ao executar um filtro por nome de categorias de serviço, o estado
-  //   do controller deve ser alterado para ServiceCategoryLoaded com a lista das
-  //   categorias de serviço filtradas, neste caso, uma categoria deve ser
-  //   retornada''',
-  //   () async {
-  //     await serviceCategoryController.filter(name: serCatNameContained1Result);
+  group(
+    '''Testes para o método deleteCategory''',
+    () {
+      test(
+        '''Ao executar deleteCategory e um Failure retornar pelo Service, o estado do 
+        controller deve ser alterado para ServiceDeleteError com a mensagem de erro 
+        e a lista carregada''',
+        () async {
+          const failureMessage = 'Teste de falha';
+          final servicesByCategories = <ServicesByCategory>[];
 
-  //     expect(serviceCategoryController.state is ServiceCategoryLoaded, isTrue);
-  //     final serviceCategoryState = serviceCategoryController.state as ServiceCategoryLoaded;
-  //     expect(serviceCategoryState.cards.length, equals(serCatGetNameContained1Result.length));
-  //   },
-  // );
+          when(onlineMockServiceRepository.deleteByCategoryId(serviceCategory1.id))
+              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
+          when(offlineMockServiceRepository.deleteByCategoryId(serviceCategory1.id))
+              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-  // test(
-  //   '''Ao executar um filtro por nome de categorias de serviço, o estado
-  //   do controller deve ser alterado para ServiceCategoryLoaded com a lista das
-  //   categorias de serviço filtradas, neste caso, duas categorias devem ser
-  //   retornadas''',
-  //   () async {
-  //     await serviceCategoryController.filter(name: serCatNameContained2Result);
+          when(onlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
+          when(offlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-  //     expect(serviceCategoryController.state is ServiceCategoryLoaded, isTrue);
-  //     final serviceCategoryState = serviceCategoryController.state as ServiceCategoryLoaded;
-  //     expect(serviceCategoryState.cards.length, equals(serCatGetNameContained2Result.length));
-  //   },
-  // );
+          when(offlineMockServicesByCategoryRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesByCategories));
 
-  // test(
-  //   '''Ao executar um filtro por nome de categorias de serviço, o estado
-  //   do controller deve ser alterado para ServiceCategoryLoaded com a lista das
-  //   categorias de serviço filtradas, neste caso, três categorias devem ser
-  //   retornadas''',
-  //   () async {
-  //     await serviceCategoryController.filter(name: serCatNameContained3Result);
+          await serviceController.deleteCategory(serviceCategory: serviceCategory1);
 
-  //     expect(serviceCategoryController.state is ServiceCategoryLoaded, isTrue);
-  //     final serviceCategoryState = serviceCategoryController.state as ServiceCategoryLoaded;
-  //     expect(serviceCategoryState.cards.length, equals(serCatGetNameContained3Result.length));
-  //   },
-  // );
+          expect(serviceController.state is ServiceLoaded, isTrue);
+          final serviceState = serviceController.state as ServiceLoaded;
+          expect(serviceState.message, equals(failureMessage));
+          expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
+        },
+      );
+
+      test(
+        '''Ao executar deleteCategory e a exclusão for efetuada com sucesso, o estado do 
+        controller deve ser alterado para ServiceLoaded com a lista carregada''',
+        () async {
+          final servicesByCategories = <ServicesByCategory>[
+            servicesByCategory2,
+            servicesByCategory3,
+          ];
+
+          when(onlineMockServiceRepository.deleteByCategoryId(serviceCategory1.id))
+              .thenAnswer((_) async => Either.right(unit));
+          when(offlineMockServiceRepository.deleteByCategoryId(serviceCategory1.id))
+              .thenAnswer((_) async => Either.right(unit));
+
+          when(onlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+              .thenAnswer((_) async => Either.right(unit));
+          when(offlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+              .thenAnswer((_) async => Either.right(unit));
+
+          when(offlineMockServicesByCategoryRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesByCategories));
+
+          await serviceController.deleteCategory(serviceCategory: serviceCategory1);
+
+          expect(serviceController.state is ServiceLoaded, isTrue);
+          final serviceState = serviceController.state as ServiceLoaded;
+          expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
+        },
+      );
+    },
+  );
 
   // test(
   //   '''Ao deletar uma categoria de serviço, além da exclusão da categoria, o estado

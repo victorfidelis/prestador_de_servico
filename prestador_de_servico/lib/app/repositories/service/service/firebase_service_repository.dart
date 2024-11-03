@@ -173,9 +173,35 @@ class FirebaseServiceRepository implements ServiceRepository {
     try {
       final servicesCollection = FirebaseFirestore.instance.collection('services');
       final doc = servicesCollection.doc(id);
-      var service = ServiceAdapter.fromDocumentSnapshot(doc: await doc.get());
-      service = service.copyWith(isDeleted: true);
-      await doc.update(ServiceAdapter.toFirebaseMap(service: service));
+      await doc.update({'isDeleted': true});
+      return Either.right(unit);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> deleteByCategoryId(String serviceCategoryId) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    try {
+      final servicesCollection = FirebaseFirestore.instance.collection('services');
+      final batch = FirebaseFirestore.instance.batch();
+
+      final snapServices = await servicesCollection.where('serviceCategoryId', isEqualTo: serviceCategoryId).get();
+      for (final doc in snapServices.docs) {
+        batch.update(doc.reference, {'isDeleted': true});
+      }
+
+      await batch.commit();
+
       return Either.right(unit);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {

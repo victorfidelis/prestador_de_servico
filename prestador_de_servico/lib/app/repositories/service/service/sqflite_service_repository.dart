@@ -272,6 +272,30 @@ class SqfliteServiceRepository implements ServiceRepository {
     } on FileSystemException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao apagar dados locais: ${e.message})'));
     }
+  } 
+
+  @override 
+  Future<Either<Failure, Unit>> deleteByCategoryId(String serviceCategoryId) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    } 
+
+    String deleteTextMold = ''
+        'DELETE FROM '
+        '$servicesTable '
+        'WHERE '
+        'serviceCategoryId = ?';
+    final params = [serviceCategoryId];
+
+    try {
+      await database!.rawDelete(deleteTextMold, params);
+      return Either.right(unit);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao apagar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao apagar dados locais: ${e.message})'));
+    }
   }
 
   @override

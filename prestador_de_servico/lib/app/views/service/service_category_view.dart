@@ -28,8 +28,7 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback(
-        (_) => context.read<ServiceController>().load());
+    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ServiceController>().load());
   }
 
   @override
@@ -51,10 +50,7 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(
-                              width: 60,
-                              child: BackNavigation(
-                                  onTap: () => Navigator.pop(context))),
+                          SizedBox(width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
                           const Expanded(
                             child: CustomAppBarTitle(title: 'Serviços'),
                           ),
@@ -75,56 +71,55 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
             ),
           ),
           Consumer<ServiceController>(
-              builder: (context, serviceCategoryController, _) {
-            if (serviceCategoryController.state is ServiceInitial) {
-              return const SliverFillRemaining();
-            }
+            builder: (context, serviceCategoryController, _) {
+              if (serviceCategoryController.state is ServiceInitial) {
+                return const SliverFillRemaining();
+              }
 
-            if (serviceCategoryController.state is ServiceError) {
-              return SliverFillRemaining(
-                child: Center(
-                  child: Text(
-                      (serviceCategoryController.state as ServiceError)
-                          .message),
+              if (serviceCategoryController.state is ServiceError) {
+                return SliverFillRemaining(
+                  child: Center(
+                    child: Text((serviceCategoryController.state as ServiceError).message),
+                  ),
+                );
+              }
+
+              if (serviceCategoryController.state is ServiceLoading) {
+                return const SliverFillRemaining(
+                  child: Center(
+                    child: CustomLoading(),
+                  ),
+                );
+              }
+
+              List<ServicesByCategory> serviceListByCategory =
+                  (serviceCategoryController.state as ServiceLoaded).servicesByCategories;
+
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 6,
+                ),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      return Column(
+                        children: [
+                          ServiceCategoryCard(
+                            serviceCategory: serviceListByCategory[index].serviceCategory,
+                            onEdit: onEditServiceCategory,
+                            onDelete: onDeleteServiceCategory,
+                          ),
+                          Divider(color: Theme.of(context).colorScheme.shadow),
+                        ],
+                      );
+                    },
+                    childCount: serviceListByCategory.length,
+                  ),
                 ),
               );
-            }
-
-            if (serviceCategoryController.state is ServiceLoading) {
-              return const SliverFillRemaining(
-                child: Center(
-                  child: CustomLoading(),
-                ),
-              );
-            }
-
-            List<ServicesByCategory> serviceListByCategory =
-                (serviceCategoryController.state as ServiceLoaded).servicesByCategory;
-
-            return SliverPadding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 14,
-                vertical: 6,
-              ),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    return Column(
-                      children: [
-                        ServiceCategoryCard(
-                          serviceCategory: serviceListByCategory[index].serviceCategory,
-                          onEdit: onEditServiceCategory,
-                          onDelete: onDeleteServiceCategory,
-                        ),
-                        Divider(color: Theme.of(context).colorScheme.shadow),
-                      ],
-                    );
-                  },
-                  childCount: serviceListByCategory.length,
-                ),
-              ),
-            );
-          }),
+            },
+          ),
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
@@ -166,6 +161,6 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
   }
 
   void deleteServiceCategory({required ServiceCategory serviceCategory}) {
-    context.read<ServiceController>().delete(serviceCategory: serviceCategory);
+    context.read<ServiceController>().deleteCategory(serviceCategory: serviceCategory);
   }
 }

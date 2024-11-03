@@ -1,6 +1,10 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
+import 'package:prestador_de_servico/app/shared/either/either.dart';
+import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:prestador_de_servico/app/states/service/service_category_edit_state.dart';
 
 import '../../../helpers/constants/service_category_constants.dart';
@@ -9,7 +13,15 @@ import '../../../helpers/service/service_category/mock_service_category_reposito
 void main() {
   late ServiceCategoryEditController serviceCategoryEditController;
 
-  setUpAll(
+  late ServiceCategory serviceCategory1;
+  late ServiceCategory serviceCategoryWithoutName;
+
+  setUpValues() {
+    serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
+    serviceCategoryWithoutName = ServiceCategory(id: '100', name: '');
+  }
+
+  setUp(
     () {
       setUpMockServiceCategoryRepository();
       ServiceCategoryService serviceCategoryService = ServiceCategoryService(
@@ -17,107 +29,138 @@ void main() {
         offlineRepository: offlineMockServiceCategoryRepository,
       );
       serviceCategoryEditController = ServiceCategoryEditController(serviceCategoryService: serviceCategoryService);
+      setUpValues();
     },
   );
 
-  test(
-    '''Ao iniciar uma inserção de uma categoria de serviço, o estado do 
-    controller deve ser alterado para ServiceCategoryEditAdd''',
+  group(
+    'initInsert',
     () {
-      serviceCategoryEditController.initInsert();
+      test(
+        'Deve alterar o estado para ServiceCategoryEditAdd',
+        () {
+          serviceCategoryEditController.initInsert();
 
-      expect(serviceCategoryEditController.state is ServiceCategoryEditAdd, isTrue);
+          expect(serviceCategoryEditController.state is ServiceCategoryEditAdd, isTrue);
+        },
+      );
     },
   );
-  
-  test(
-    '''Ao iniciar uma alteração de uma categoria de serviço, o estado do 
-    controller deve ser alterado para ServiceCategoryEditAdd, e este estado deve 
-    conter a categoria a ser alterada''',
+
+  group(
+    'initUpdate',
     () {
-      serviceCategoryEditController.initUpdate(serviceCategory: serCatGeneric);
+      test(
+        '''Deve alterar o estado para ServiceCategoryEditUpdate.
+        O estado deve conter o ServiceCategory a ser alterado.''',
+        () {
+          serviceCategoryEditController.initUpdate(serviceCategory: serCatGeneric);
 
-      expect(serviceCategoryEditController.state is ServiceCategoryEditUpdate, isTrue);
-      final state = (serviceCategoryEditController.state as ServiceCategoryEditUpdate);
-      expect(state.serviceCategory, equals(serCatGeneric));
+          expect(serviceCategoryEditController.state is ServiceCategoryEditUpdate, isTrue);
+          final state = (serviceCategoryEditController.state as ServiceCategoryEditUpdate);
+          expect(state.serviceCategory, equals(serCatGeneric));
+        },
+      );
     },
   );
-  
-  test(
-    '''Ao tentar inserir um serviço de categoria sem informar o nome, o estado do controller
-    deve ser alterado para ServiceCategoryEditError, e este estado deve conter 
-    uma mensagem no campo nameMessage''',
-    () async {
-      await serviceCategoryEditController.validateAndInsert(serviceCategory: serCatInsertWithoutName);
 
-      expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
-      final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
-      expect(state.nameMessage, isNotNull);
+  group(
+    'validateAndInsert',
+    () {
+      test(
+        '''Deve alterar o estado para ServiceCategoryEditError quando o campo "name" estiver vazio.
+        O estado deve ter a mensagem de erro no campo "nameMessage"''',
+        () async {
+          await serviceCategoryEditController.validateAndInsert(serviceCategory: serviceCategoryWithoutName);
+
+          expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
+          final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
+          expect(state.nameMessage, isNotNull);
+        },
+      );
+
+      test(
+        '''Deve alterar o estado para ServiceCategoryEditError quando não estiver acesso 
+        a internet. O estado deve conter uma mensagem no campo "genericMessage"''',
+        () async {
+          const failureMessage = 'Teste de falha';
+          when(onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
+              .thenAnswer((_) async => Either.left((NetworkFailure(failureMessage))));
+
+          await serviceCategoryEditController.validateAndInsert(serviceCategory: serviceCategory1);
+
+          expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
+          final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
+          expect(state.genericMessage, equals(failureMessage));
+        },
+      );
+
+      test(
+        '''Deve alterar o estado para ServiceCategoryEditSuccess quando a inserção for válida.
+        O estado deve conter o ServiceCategory inserido.''',
+        () async {
+          when(onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
+              .thenAnswer((_) async => Either.right(serviceCategory1.id));
+          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
+              .thenAnswer((_) async => Either.right(serviceCategory1.id));
+
+          await serviceCategoryEditController.validateAndInsert(serviceCategory: serviceCategory1);
+
+          expect(serviceCategoryEditController.state is ServiceCategoryEditSuccess, isTrue);
+          final state = (serviceCategoryEditController.state as ServiceCategoryEditSuccess);
+          expect(state.serviceCategory, equals(serviceCategory1));
+        },
+      );
     },
   );
-  
-  test(
-    '''Ao tentar alterar um serviço de categoria sem informar o nome, o estado do controller
-    deve ser alterado para ServiceCategoryEditError, e este estado deve conter 
-    uma mensagem no campo nameMessage''',
-    () async {
-      await serviceCategoryEditController.validateAndUpdate(serviceCategory: serCatUpdateWithoutName);
 
-      expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
-      final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
-      expect(state.nameMessage, isNotNull);
+  group(
+    'validateAndUpdate',
+    () {
+      test(
+        '''Deve alterar o estado para ServiceCategoryEditError quando o campo "name" estiver vazio.
+        O estado deve ter a mensagem de erro no campo "nameMessage"''',
+        () async {
+          await serviceCategoryEditController.validateAndUpdate(serviceCategory: serviceCategoryWithoutName);
+
+          expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
+          final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
+          expect(state.nameMessage, isNotNull);
+        },
+      );
+
+      test(
+        '''Deve alterar o estado para ServiceCategoryEditError quando não estiver acesso 
+        a internet. O estado deve conter uma mensagem no campo "genericMessage''',
+        () async {
+          const failureMessage = 'Teste de falha';
+          when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+              .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
+
+          await serviceCategoryEditController.validateAndUpdate(serviceCategory: serviceCategory1);
+
+          expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
+          final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
+          expect(state.genericMessage, equals(failureMessage));
+        },
+      );
     },
   );
-  
-  test(
-    '''Ao tentar inserir um serviço de categoria sem estar conectado a internet, 
-    o estado do controller deve ser alterado para ServiceCategoryEditError, e este 
-    estado deve conter uma mensagem no campo genericMessage''',
-    () async {
-      await serviceCategoryEditController.validateAndInsert(serviceCategory: serCatNoNetworkConnection);
 
-      expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
-      final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
-      expect(state.genericMessage, isNotNull);
-    },
-  );
-  
   test(
-    '''Ao tentar alterar um serviço de categoria sem estar conectado a internet, 
-    o estado do controller deve ser alterado para ServiceCategoryEditError, e este 
-    estado deve conter uma mensagem no campo genericMessage''',
+    '''Deve alterar o estado para ServiceCategoryEditSuccess quando a alteração for válida.
+        O estado deve conter o ServiceCategory alterado.''',
     () async {
-      await serviceCategoryEditController.validateAndUpdate(serviceCategory: serCatNoNetworkConnection);
+      when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          .thenAnswer((_) async => Either.right(unit));
+      when(offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          .thenAnswer((_) async => Either.right(unit));
 
-      expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
-      final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
-      expect(state.genericMessage, isNotNull);
-    },
-  );
-  
-  test(
-    '''Ao tentar inserir um serviço de categoria valido, o estado do controller 
-    deve ser alterado para ServiceCategoryEditSuccess, e este 
-    estado deve conter a categoria de servido inserida''',
-    () async {
-      await serviceCategoryEditController.validateAndInsert(serviceCategory: serCatInsert);
+      await serviceCategoryEditController.validateAndUpdate(serviceCategory: serviceCategory1);
 
       expect(serviceCategoryEditController.state is ServiceCategoryEditSuccess, isTrue);
       final state = (serviceCategoryEditController.state as ServiceCategoryEditSuccess);
-      expect(state.serviceCategory, equals(serCatInsert));
-    },
-  );
-  
-  test(
-    '''Ao tentar alterar um serviço de categoria valido, o estado do controller 
-    deve ser alterado para ServiceCategoryEditSuccess, e este 
-    estado deve conter a categoria de servido inserida''',
-    () async {
-      await serviceCategoryEditController.validateAndUpdate(serviceCategory: serCatUpdate);
-
-      expect(serviceCategoryEditController.state is ServiceCategoryEditSuccess, isTrue);
-      final state = (serviceCategoryEditController.state as ServiceCategoryEditSuccess);
-      expect(state.serviceCategory, equals(serCatUpdate));
+      expect(state.serviceCategory, equals(serviceCategory1));
     },
   );
 }

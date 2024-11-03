@@ -47,4 +47,11 @@ class ServiceCartegoryAdapter {
       name: map['name'],
     );
   }
+
+  static ServiceCategory fromSqfliteJoins(Map map) {
+    return ServiceCategory(
+      id: map['serviceCategoryId'],
+      name: map['serviceCategoryName'],
+    );
+  }
 }

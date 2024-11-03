@@ -12,13 +12,14 @@ class ServiceError extends ServiceState {
 }
 
 class ServiceLoaded extends ServiceState {
-  final List<ServicesByCategory> servicesByCategory;
+  final List<ServicesByCategory> servicesByCategories;
+  final String message;
 
-  ServiceLoaded(this.servicesByCategory);
-} 
+  ServiceLoaded({required this.servicesByCategories, this.message = ''});
+}
 
 class ServiceFiltered extends ServiceState {
-  final List<ServicesByCategory> servicesByCategory;
+  final List<ServicesByCategory> servicesByCategories;
 
-  ServiceFiltered(this.servicesByCategory);
-} 
+  ServiceFiltered(this.servicesByCategories);
+}

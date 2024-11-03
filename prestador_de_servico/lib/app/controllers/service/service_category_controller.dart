@@ -33,7 +33,7 @@ class ServiceCategoryController extends ChangeNotifier {
       return;
     }
 
-    _changeState(ServiceLoaded(getAllEither.right!));
+    _changeState(ServiceLoaded(servicesByCategories: getAllEither.right!));
   }
 
   Future<void> filter(String name) async {

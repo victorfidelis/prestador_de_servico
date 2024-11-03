@@ -280,6 +280,33 @@ class MockServiceRepository extends _i1.Mock implements _i3.ServiceRepository {
       ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
 
   @override
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> deleteByCategoryId(
+          String? serviceCategoryId) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #deleteByCategoryId,
+          [serviceCategoryId],
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #deleteByCategoryId,
+            [serviceCategoryId],
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #deleteByCategoryId,
+            [serviceCategoryId],
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
+
+  @override
   _i4.Future<_i2.Either<_i5.Failure, bool>> existsById({required String? id}) =>
       (super.noSuchMethod(
         Invocation.method(

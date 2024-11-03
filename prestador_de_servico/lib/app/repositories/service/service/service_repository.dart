@@ -23,5 +23,6 @@ abstract class ServiceRepository {
   Future<Either<Failure, String>> insert({required Service service});
   Future<Either<Failure, Unit>> update({required Service service});
   Future<Either<Failure, Unit>> deleteById({required String id});
+  Future<Either<Failure, Unit>> deleteByCategoryId(String serviceCategoryId);
   Future<Either<Failure, bool>> existsById({required String id});
 }

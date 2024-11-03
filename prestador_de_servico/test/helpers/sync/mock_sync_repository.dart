@@ -14,8 +14,6 @@ void setUpMockSyncRepository() {
   mockSyncRepository = MockSyncRepository();
 
   when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-
-  
 }
 
 

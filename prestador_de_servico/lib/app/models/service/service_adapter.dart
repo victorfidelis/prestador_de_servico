@@ -2,9 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 
 class ServiceAdapter {
-  static Map<String, dynamic> toMap({
-    required Service service,
-  }) {
+  static Map<String, dynamic> toMap({required Service service}) {
     return {
       'id': service.id,
       'serviceCategoryId': service.serviceCategoryId,
@@ -32,8 +30,7 @@ class ServiceAdapter {
     );
   }
 
-  static Map<String, dynamic> toFirebaseMap(
-      {required Service service}) {
+  static Map<String, dynamic> toFirebaseMap({required Service service}) {
     return {
       'serviceCategoryId': service.serviceCategoryId,
       'name': service.name,
@@ -73,6 +70,18 @@ class ServiceAdapter {
       hours: map['hours'],
       minutes: map['minutes'],
       urlImage: map['urlImage'],
+    );
+  }
+
+  static Service fromSqfliteJoins({required Map map}) {
+    return Service(
+      id: map['serviceId'],
+      serviceCategoryId: map['serviceCategoryId'],
+      name: map['serviceName'],
+      price: map['servicePrice'],
+      hours: map['serviceHours'],
+      minutes: map['serviceMinutes'],
+      urlImage: map['serviceUrlImage'],
     );
   }
 }

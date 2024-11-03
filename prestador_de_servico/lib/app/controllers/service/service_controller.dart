@@ -33,7 +33,7 @@ class ServiceController extends ChangeNotifier {
       return;
     }
 
-    _changeState(ServiceLoaded(getAllEither.right!));
+    _changeState(ServiceLoaded(servicesByCategories: getAllEither.right!));
   }
 
   Future<void> filter(String name) async {
@@ -48,20 +48,30 @@ class ServiceController extends ChangeNotifier {
     _changeState(ServiceFiltered(getByEither.right!));
   }
 
-  Future<void> delete({required ServiceCategory serviceCategory}) async {
+  Future<void> deleteCategory({required ServiceCategory serviceCategory}) async {
     _changeState(ServiceLoading());
 
     final deleteEither = await serviceCategoryService.delete(serviceCategory: serviceCategory);
-    if (deleteEither.isLeft) {
-      _changeState(ServiceError(deleteEither.left!.message));
+
+    final getAllEither = await servicesByCategoryService.getAll();
+    if (getAllEither.isLeft) {
+      _changeState(ServiceError(getAllEither.left!.message));
       return;
     }
 
-    // final getAllEither = await serviceCategoryService.getAll();
-    // getAllEither.fold(
-    //   (error) => _changeState(ServiceCategoryError(error.message)),
-    //   (value) => _changeState(ServiceCategoryLoaded(cards: value)),
-    // );
+    var message = '';
+    if (deleteEither.isLeft) {
+      message = deleteEither.left!.message;
+    } else {
+      message = 'Serviço excluído com sucesso';
+    }
+
+    _changeState(
+      ServiceLoaded(
+        servicesByCategories: getAllEither.right!,
+        message: message,
+      ),
+    );
   }
 
   void addOnList({required ServiceCategory serviceCategory}) {
