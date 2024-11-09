@@ -13,7 +13,7 @@ import '../../../helpers/user/mock_user_repository.dart';
 void main() {
   late SignInController signInController;
 
-  late User user1;;
+  late User user1;
 
   setUpValues() {
     user1 = User(

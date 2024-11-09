@@ -7,7 +7,6 @@ import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:prestador_de_servico/app/states/service/service_category_edit_state.dart';
 
-import '../../../helpers/constants/service_category_constants.dart';
 import '../../../helpers/service/service_category/mock_service_category_repository.dart';
 
 void main() {
@@ -51,14 +50,14 @@ void main() {
     'initUpdate',
     () {
       test(
-        '''Deve alterar o estado para ServiceCategoryEditUpdate.
-        O estado deve conter o ServiceCategory a ser alterado.''',
+        '''Deve alterar o estado para ServiceCategoryEditUpdate e definir o ServiceCategory 
+        a ser alterado''',
         () {
-          serviceCategoryEditController.initUpdate(serviceCategory: serCatGeneric);
+          serviceCategoryEditController.initUpdate(serviceCategory: serviceCategory1);
 
           expect(serviceCategoryEditController.state is ServiceCategoryEditUpdate, isTrue);
           final state = (serviceCategoryEditController.state as ServiceCategoryEditUpdate);
-          expect(state.serviceCategory, equals(serCatGeneric));
+          expect(state.serviceCategory, equals(serviceCategory1));
         },
       );
     },
@@ -68,8 +67,8 @@ void main() {
     'validateAndInsert',
     () {
       test(
-        '''Deve alterar o estado para ServiceCategoryEditError quando o campo "name" estiver vazio.
-        O estado deve ter a mensagem de erro no campo "nameMessage"''',
+        '''Deve alterar o estado para ServiceCategoryEditError e definir uma mensagem de erro 
+        no campo "nameMessage" quando o campo "name" estiver vazio.''',
         () async {
           await serviceCategoryEditController.validateAndInsert(serviceCategory: serviceCategoryWithoutName);
 
@@ -80,8 +79,8 @@ void main() {
       );
 
       test(
-        '''Deve alterar o estado para ServiceCategoryEditError quando não estiver acesso 
-        a internet. O estado deve conter uma mensagem no campo "genericMessage"''',
+        '''Deve alterar o estado para ServiceCategoryEditError e definir uma mensagem no campo 
+        "genericMessagequando" quando não estiver acesso a internet.''',
         () async {
           const failureMessage = 'Teste de falha';
           when(onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
@@ -96,8 +95,8 @@ void main() {
       );
 
       test(
-        '''Deve alterar o estado para ServiceCategoryEditSuccess quando a inserção for válida.
-        O estado deve conter o ServiceCategory inserido.''',
+        '''Deve alterar o estado para ServiceCategoryEditSuccess com o ServiceCategory inserido
+        quando a inserção for válida..''',
         () async {
           when(onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.right(serviceCategory1.id));
@@ -118,8 +117,8 @@ void main() {
     'validateAndUpdate',
     () {
       test(
-        '''Deve alterar o estado para ServiceCategoryEditError quando o campo "name" estiver vazio.
-        O estado deve ter a mensagem de erro no campo "nameMessage"''',
+        '''Deve alterar o estado para ServiceCategoryEditError e definir uma mensagem de erro no 
+        campo "nameMessage" quando o campo "name" estiver vazio.''',
         () async {
           await serviceCategoryEditController.validateAndUpdate(serviceCategory: serviceCategoryWithoutName);
 
@@ -130,8 +129,8 @@ void main() {
       );
 
       test(
-        '''Deve alterar o estado para ServiceCategoryEditError quando não estiver acesso 
-        a internet. O estado deve conter uma mensagem no campo "genericMessage''',
+        '''Deve alterar o estado para ServiceCategoryEditError e definir uma mensagem no campo 
+        "genericMessage" quando não estiver acesso a internet.''',
         () async {
           const failureMessage = 'Teste de falha';
           when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
@@ -148,8 +147,8 @@ void main() {
   );
 
   test(
-    '''Deve alterar o estado para ServiceCategoryEditSuccess quando a alteração for válida.
-        O estado deve conter o ServiceCategory alterado.''',
+    '''Deve alterar o estado para ServiceCategoryEditSuccess com o ServiceCategory alterado 
+    quando a alteração for válida.''',
     () async {
       when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
           .thenAnswer((_) async => Either.right(unit));

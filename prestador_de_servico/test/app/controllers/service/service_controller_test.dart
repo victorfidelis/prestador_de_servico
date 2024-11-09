@@ -126,7 +126,7 @@ void main() {
     );
   }
 
-  setUpAll(
+  setUp(
     () {
       setUpMockServiceCategoryRepository();
       setUpMockServiceRepository();
@@ -152,15 +152,13 @@ void main() {
   );
 
   group(
-    '''Teste para o método load''',
+    'load',
     () {
       test(
-        '''Ao executar o método load e um Failure for retornado pelo Service, o status 
-        ServiceError deve ser atribuído para a controller com a mensagem de erro 
-        retornada pelo serviço''',
+        '''Deve alterar o estado para ServiceError e definir uma mensagem de erro no campo 
+        "message" quando um erro ocorrer no Service/Repository.''',
         () async {
           const failureMessage = 'Teste de falha';
-
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
@@ -173,8 +171,8 @@ void main() {
       );
 
       test(
-        '''Ao executar o método load e nenhum registro for retornado, o status 
-        ServiceLoaded deve ser retornado com uma lista vazia de ServicesByCategory''',
+        '''Deve alterar o estado para ServiceLoaded com uma lista de ServicesByCategory vazia
+        quando nenhum ServiceCategory estiver cadastrado.''',
         () async {
           final servicesByCategories = <ServicesByCategory>[];
 
@@ -190,8 +188,8 @@ void main() {
       );
 
       test(
-        '''Ao executar o método load e diversos registros forem retornados, o status 
-        ServiceLoaded deve ser retornado com uma lista de ServicesByCategory''',
+        '''Deve alterar o estado para ServiceLoaded com um lista de ServicesByCategory preenchida
+        quando algum ServiceCategory estiver cadastrado.''',
         () async {
           final servicesByCategories = <ServicesByCategory>[
             servicesByCategory1,
@@ -211,9 +209,9 @@ void main() {
       );
 
       test(
-        '''Ao executar o método load e diversos registros forem retornados, o status 
-        ServiceLoaded deve ser retornado com uma lista de ServicesByCategory com 
-        os respectivos Services em cada category''',
+        '''Deve alterar o estado para ServiceLoaded com uma lista de ServicesByCategory, onde
+        cada ServicesByCategory possui seus respectivos Services, quando tanto ServiceCategory
+        quanto Service estiverem cadastrados.''',
         () async {
           final servicesByCategories = <ServicesByCategory>[
             servicesByCategory1,
@@ -239,12 +237,11 @@ void main() {
   );
 
   group(
-    '''Testes para o método filter''',
+    'filter',
     () {
       test(
-        '''Ao executar o filter e um Failure for retornado pelo Service, 
-        o estado do controller deve ser alterado para ServiceError com a mensagem de 
-        erro retornada''',
+        '''Deve alterar o estado para ServiceError e definir uma mensagem de erro no campo 
+        "message" quando um erro ocorrer no Service/Repository.''',
         () async {
           const nameFilter = 'teste sem resultado';
           const failureMessage = 'Teste de falha';
@@ -261,9 +258,8 @@ void main() {
       );
 
       test(
-        '''Ao executar o filter e nenhum registro retornar do Service, o estado do controller 
-        deve ser alterado para ServiceFiltered com a lista das ServicesbyCategories 
-        vazia''',
+        '''Deve alterar o estado para ServiceFiltered com uma lista de ServicesbyCategories vazia
+        quando a filtragem não corresponder a nenhum ServiceCategory ou Service.''',
         () async {
           const nameFilter = 'teste sem resultado';
           final servicesByCategories = <ServicesByCategory>[];
@@ -280,9 +276,8 @@ void main() {
       );
 
       test(
-        '''Ao executar o filter e diversos registros forem retornados pelo Service, o estado 
-        do controller deve ser alterado para ServiceFiltered com a lista de ServicesByCategory
-        consultada''',
+        '''Deve alterar o estado para ServiceFiltered com uma lista de ServicesByCategory preenchida
+        quando a filtragem corresponder a cadastrados de ServiceCategory ou Service.''',
         () async {
           const nameFilter = 'teste com resultado';
           final servicesByCategories = <ServicesByCategory>[
@@ -311,12 +306,11 @@ void main() {
   );
 
   group(
-    '''Testes para o método deleteCategory''',
+    'deleteCategory',
     () {
       test(
-        '''Ao executar deleteCategory e um Failure retornar pelo Service, o estado do 
-        controller deve ser alterado para ServiceDeleteError com a mensagem de erro 
-        e a lista carregada''',
+        '''Deve alterar o estado para ServiceLoaded e definir uma mensagem de erro no campo 
+        "message" quando um erro ocorrer no Service/Repository.''',
         () async {
           const failureMessage = 'Teste de falha';
           final servicesByCategories = <ServicesByCategory>[];
@@ -344,8 +338,8 @@ void main() {
       );
 
       test(
-        '''Ao executar deleteCategory e a exclusão for efetuada com sucesso, o estado do 
-        controller deve ser alterado para ServiceLoaded com a lista carregada''',
+        '''Deve alterar o estado para ServiceLoaded com uma lista de ServicesByCategory 
+        sem o registro deletado quando a exclusão for feita com sucesso''',
         () async {
           final servicesByCategories = <ServicesByCategory>[
             servicesByCategory2,
@@ -374,49 +368,4 @@ void main() {
       );
     },
   );
-
-  // test(
-  //   '''Ao deletar uma categoria de serviço, além da exclusão da categoria, o estado
-  //   o controller deve ser alterado para ServiceCategoryLoaded com uma nova lista de
-  //   categorias de serviço''',
-  //   () async {
-  //     await serviceCategoryController.delete(serviceCategory: serCatDelete);
-
-  //     expect(serviceCategoryController.state is ServiceCategoryLoaded, isTrue);
-  //     final serviceCategoryState = serviceCategoryController.state as ServiceCategoryLoaded;
-  //     expect(serviceCategoryState.cards.length, equals(serCatGetAll.length));
-  //   },
-  // );
-
-  // test(
-  //   '''Ao adicionar uma categoria de serviço a lista de categorias já carregadas,
-  //   a mesma deve ser inserida no topo da lista''',
-  //   () async {
-  //     await serviceCategoryController.load();
-
-  //     final lenBefore = (serviceCategoryController.state as ServiceCategoryLoaded).cards.length;
-  //     serviceCategoryController.addOnList(serviceCategory: serCatGeneric);
-  //     final newState = (serviceCategoryController.state as ServiceCategoryLoaded);
-
-  //     expect(newState.cards.length, equals(lenBefore + 1));
-  //     expect(newState.cards[0], equals(serCatGeneric));
-  //   },
-  // );
-
-  // test(
-  //   '''Ao alterar uma categoria de serviço em uma lista de categorias já carregadas,
-  //   a mesma deve ser alterarada no estado do controller''',
-  //   () async {
-  //     await serviceCategoryController.load();
-  //     serviceCategoryController.addOnList(serviceCategory: serCatGeneric);
-
-  //     final lenBefore = (serviceCategoryController.state as ServiceCategoryLoaded).cards.length;
-  //     final serviceCategoryUpdate = serCatGeneric.copyWith(name: 'Test update');
-  //     serviceCategoryController.updateOnList(serviceCategory: serviceCategoryUpdate);
-  //     final newState = (serviceCategoryController.state as ServiceCategoryLoaded);
-
-  //     expect(newState.cards.length, equals(lenBefore));
-  //     expect(newState.cards[0], equals(serviceCategoryUpdate));
-  //   },
-  // );
 }
