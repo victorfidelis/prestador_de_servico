@@ -556,46 +556,46 @@ void main() {
     'synchronize',
     () {
       test(
-        '''Ao executar o synchronize e uma falha ocorrer em loadSyncInfo, esta falha deve
-        ser retornada''',
+        '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline 
+        ao consultar os dados de sincronização''',
         () async {
-          const failureMessage = 'Falha loadSyncInfo';
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
+          const failureMessage = 'Teste de falha';
+          when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final syncEither = await syncServiceCategoryService.synchronize();
 
           expect(syncEither.isLeft, isTrue);
-          expect(syncEither.left is Failure, isTrue);
-          expect((syncEither.left as Failure).message, equals(failureMessage));
+          expect(syncEither.left is GetDatabaseFailure, isTrue);
+          expect((syncEither.left as GetDatabaseFailure).message, equals(failureMessage));
         },
       );
 
       test(
-        '''Ao executar o synchronize e uma falha ocorrer em loadUnsynced, esta falha deve
-        ser retornada''',
+        '''Deve retornar um NetworkFailure quando não tiver acesso a internet ao consultar os
+        ServiceCategory a serem sincronizados''',
         () async {
-          const failureMessage = 'Falha loadUnsynced';
+          const failureMessage = '';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
           when(onlineMockServiceCategoryRepository.getAll())
-              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
+              .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final syncEither = await syncServiceCategoryService.synchronize();
 
           expect(syncEither.isLeft, isTrue);
-          expect(syncEither.left is Failure, isTrue);
-          expect((syncEither.left as Failure).message, equals(failureMessage));
+          expect(syncEither.left is NetworkFailure, isTrue);
+          expect((syncEither.left as NetworkFailure).message, equals(failureMessage));
         },
       );
 
       test(
-        '''Ao executar o synchronize e uma falha ocorrer em syncUnsynced, esta falha deve
-        ser retornada''',
+        '''Deve retornar um GetDatabaseFailure quando uma falha ocorrer no banco offline ao 
+        verificar se o ServiceCategory existe''',
         () async {
           const failureMessage = 'Falha syncUnsynced';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
           when(onlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAll));
           when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
-              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
+              .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final syncEither = await syncServiceCategoryService.synchronize();
 
@@ -606,8 +606,8 @@ void main() {
       );
 
       test(
-        '''Ao executar o synchronize e uma falha ocorrer em updateSyncDate, esta falha deve
-        ser retornada''',
+        '''Deve retornar um GetDatabaseFailure quando uma falha ocorrer no banco offline ao 
+        verificar existe alguma sincronização anterior''',
         () async {
           const failureMessage = 'Falha updateSyncDate';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
@@ -616,7 +616,7 @@ void main() {
               .thenAnswer((_) async => Either.right(true));
           when(offlineMockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
               .thenAnswer((_) async => Either.right(unit));
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
+          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final syncEither = await syncServiceCategoryService.synchronize();
 
@@ -627,8 +627,7 @@ void main() {
       );
 
       test(
-        '''Ao executar o synchronize e nenhuma falha ocorrer, um Unit deve ser 
-        retornado''',
+        '''Deve retornar um Unit quando a sincronização for realizada com sucesso''',
         () async {
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
           when(onlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serCatGetAllHasDate));
