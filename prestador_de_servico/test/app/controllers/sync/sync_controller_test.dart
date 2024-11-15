@@ -13,6 +13,8 @@ import '../../../helpers/service/service_category/mock_service_category_reposito
 import '../../../helpers/sync/mock_sync_repository.dart';
 
 void main() {
+  late SyncController syncController;
+
   late SyncServiceCategoryService syncServiceCategoryService;
 
   late ServiceCategory serviceCategory1;
@@ -30,6 +32,11 @@ void main() {
       serviceCategory2,
       serviceCategory3,
     ];
+
+    syncController = SyncController(
+      networkService: mockNetworkService,
+      syncServiceCategoryService: syncServiceCategoryService,
+    );
   }
 
   setUp(
@@ -47,7 +54,7 @@ void main() {
   );
 
   group(
-    'Construtor',
+    'syncData',
     () {
       test(
         '''Deve alterar o estado para Syncing''',
@@ -55,10 +62,7 @@ void main() {
           const failureMessage = 'Falha loadSyncInfo';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          final syncController = SyncController(
-            networkService: mockNetworkService,
-            syncServiceCategoryService: syncServiceCategoryService,
-          );
+          syncController.syncData();
 
           expect(syncController.state is Syncing, isTrue);
         },
@@ -71,10 +75,8 @@ void main() {
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
           when(mockNetworkService.isConnectedToInternet()).thenAnswer((_) async => true);
 
-          final syncController = SyncController(
-            networkService: mockNetworkService,
-            syncServiceCategoryService: syncServiceCategoryService,
-          );
+          syncController.syncData();
+
           await Future.delayed(const Duration(seconds: 2));
 
           expect(syncController.state is SyncError, isTrue);
@@ -88,10 +90,8 @@ void main() {
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
           when(mockNetworkService.isConnectedToInternet()).thenAnswer((_) async => false);
 
-          final syncController = SyncController(
-            networkService: mockNetworkService,
-            syncServiceCategoryService: syncServiceCategoryService,
-          );
+          syncController.syncData();
+
           await Future.delayed(const Duration(seconds: 2));
 
           expect(syncController.state is NoNetworkToSync, isTrue);
@@ -112,10 +112,7 @@ void main() {
               .thenAnswer((_) async => Either.right(unit));
           when(mockNetworkService.isConnectedToInternet()).thenAnswer((_) async => true);
 
-          final syncController = SyncController(
-            networkService: mockNetworkService,
-            syncServiceCategoryService: syncServiceCategoryService,
-          );
+          syncController.syncData();
 
           await Future.delayed(const Duration(seconds: 2));
 

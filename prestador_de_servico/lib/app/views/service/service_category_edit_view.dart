@@ -118,15 +118,24 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 44,
-          vertical: 10,
-        ),
-        child: CustomButton(
-          label: 'Salvar',
-          onTap: save,
-        ),
+      floatingActionButton: Consumer<ServiceCategoryEditController>(
+        builder: (context, serviceCategoryEditController, _) {
+          if (serviceCategoryEditController.state is ServiceCategoryEditLoading ||
+              serviceCategoryEditController.state is ServiceCategoryEditSuccess) {
+            return Container();
+          }
+
+          return Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 44,
+              vertical: 10,
+            ),
+            child: CustomButton(
+              label: 'Salvar',
+              onTap: save,
+            ),
+          );
+        },
       ),
     );
   }

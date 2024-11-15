@@ -11,9 +11,7 @@ class SyncController extends ChangeNotifier {
   SyncController({
     required this.networkService,
     required this.syncServiceCategoryService,
-  }) {
-    init();
-  }
+  });
 
   SyncState _state = Syncing();
   SyncState get state => _state;
@@ -23,7 +21,7 @@ class SyncController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> init() async {
+  Future<void> syncData() async {
     if (await networkService.isConnectedToInternet()) {
       _changeState(await _syncData());
     } else {

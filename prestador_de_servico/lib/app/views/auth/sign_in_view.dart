@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/sign_in_controller.dart';
+import 'package:prestador_de_servico/app/controllers/sync/sync_controller.dart';
 import 'package:prestador_de_servico/app/states/auth/sign_in_state.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/sign_in_google_button.dart';
@@ -29,6 +30,12 @@ class _SignInViewState extends State<SignInView> {
   final FocusNode _focusNodePassword = FocusNode();
 
   final CustomNotifications _notifications = CustomNotifications();
+
+  @override
+  void initState() {
+    context.read<SyncController>().syncData();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -338,8 +338,7 @@ void main() {
       );
 
       test(
-        '''Deve alterar o estado para ServiceLoaded com uma lista de ServicesByCategory 
-        sem o registro deletado quando a exclusão for feita com sucesso''',
+        '''Deve manter o estado quando a exclusão ocorrer normalmente''',
         () async {
           final servicesByCategories = <ServicesByCategory>[
             servicesByCategory2,
@@ -359,11 +358,11 @@ void main() {
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
+          final state = serviceController.state;
+
           await serviceController.deleteCategory(serviceCategory: serviceCategory1);
 
-          expect(serviceController.state is ServiceLoaded, isTrue);
-          final serviceState = serviceController.state as ServiceLoaded;
-          expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
+          expect(serviceController.state, equals(state));
         },
       );
     },

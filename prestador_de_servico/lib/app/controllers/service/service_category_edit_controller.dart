@@ -25,6 +25,10 @@ class ServiceCategoryEditController extends ChangeNotifier {
   }
 
   Future<void> validateAndInsert({required ServiceCategory serviceCategory}) async {
+    if (state is ServiceCategoryEditLoading) {
+      return;
+    }
+
     _changeState(ServiceCategoryEditLoading());
 
     final validEither = _validade(serviceCategory: serviceCategory);
@@ -43,6 +47,10 @@ class ServiceCategoryEditController extends ChangeNotifier {
   }
 
   Future<void> validateAndUpdate({required ServiceCategory serviceCategory}) async {
+    if (state is ServiceCategoryEditLoading) {
+      return;
+    }
+    
     _changeState(ServiceCategoryEditLoading());
 
     final validEither = _validade(serviceCategory: serviceCategory);
