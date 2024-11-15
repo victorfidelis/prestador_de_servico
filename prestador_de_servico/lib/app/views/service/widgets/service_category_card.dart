@@ -7,6 +7,7 @@ class ServiceCategoryCard extends StatelessWidget {
   final ServicesByCategory servicesByCategory;
   final Function({required ServicesByCategory servicesByCategory, required int index}) onEdit;
   final Function({required ServiceCategory serviceCategory, required int index}) onDelete;
+  final Function({required ServiceCategory serviceCategory}) onAddService;
   final int index;
   final Animation<double> animation;
 
@@ -15,6 +16,7 @@ class ServiceCategoryCard extends StatelessWidget {
     required this.servicesByCategory,
     required this.onEdit,
     required this.onDelete,
+    required this.onAddService,
     required this.index,
     required this.animation,
   });
@@ -67,7 +69,9 @@ class ServiceCategoryCard extends StatelessWidget {
                   Expanded(
                       child: CustomLink(
                     label: 'Adicionar novo',
-                    onTap: () {},
+                    onTap: () {
+                      onAddService(serviceCategory: servicesByCategory.serviceCategory);
+                    },
                   )),
                   CustomLink(label: 'Mostrar tudo', onTap: () {})
                 ],

@@ -1,14 +1,19 @@
 import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 
 abstract class ServiceEditState {}
 
 class ServiceEditInitial extends ServiceEditState {}
 
-class ServiceEditAdd extends ServiceEditState {}
+class ServiceEditAdd extends ServiceEditState {
+  final ServiceCategory serviceCategory;
+  ServiceEditAdd({required this.serviceCategory});
+}
 
 class ServiceEditUpdate extends ServiceEditState {
+  final ServiceCategory serviceCategory;
   final Service service;
-  ServiceEditUpdate({required this.service});
+  ServiceEditUpdate({required this.serviceCategory, required this.service});
 }
 
 class ServiceEditLoading extends ServiceEditState {}

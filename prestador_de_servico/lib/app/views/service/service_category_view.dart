@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
@@ -154,6 +155,7 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
           servicesByCategory: _listServicesByCategories[index],
           onEdit: _onEditServiceCategory,
           onDelete: _onDeleteServiceCategory,
+          onAddService: _onAddService,
           index: index,
           animation: animation,
         ),
@@ -173,6 +175,7 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
           servicesByCategory: servicesByCategory,
           onEdit: ({required ServicesByCategory servicesByCategory, required int index}) {},
           onDelete: ({required ServiceCategory serviceCategory, required int index}) {},
+          onAddService: ({required ServiceCategory serviceCategory}) {},
           index: 0,
           animation: animation,
         ),
@@ -230,6 +233,11 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
     _listServicesByCategories.removeAt(index);
     await Future.delayed(const Duration(milliseconds: 500));
     _listServicesByCategories.insertAt(index, servicesByCategory);
+  }
+  
+  Future<void> _onAddService({required ServiceCategory serviceCategory}) async {
+    context.read<ServiceEditController>().initInsert(serviceCategory: serviceCategory);
+    await Navigator.of(context).pushNamed('/serviceEdit');
   }
 
   Future<void> _scrollToEnd() async {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/states/service/service_edit_state.dart';
@@ -16,12 +17,12 @@ class ServiceEditController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void initInsert() {
-    _changeState(ServiceEditAdd());
+  void initInsert({required ServiceCategory serviceCategory}) {
+    _changeState(ServiceEditAdd(serviceCategory: serviceCategory));
   }
 
-  void initUpdate({required Service service}) {
-    _changeState(ServiceEditUpdate(service: service));
+  void initUpdate({required ServiceCategory serviceCategory, required Service service}) {
+    _changeState(ServiceEditUpdate(serviceCategory: serviceCategory, service: service));
   }
 
   Future<void> validateAndInsert({required Service service}) async {

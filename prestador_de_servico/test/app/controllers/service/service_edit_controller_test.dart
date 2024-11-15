@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
@@ -12,12 +13,16 @@ import '../../../helpers/service/service/mock_service_repository.dart';
 void main() {
   late ServiceEditController serviceEditController;
 
+  late ServiceCategory serviceCategory1;
+
   late Service service1;
   late Service serviceWithoutName;
   late Service serviceWithoutPrice;
   late Service serviceWithoutHoursAndMinutes;
 
   void setUpValues() {
+    serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
+
     service1 = Service(
       id: '1',
       serviceCategoryId: '1',
@@ -77,7 +82,7 @@ void main() {
       test(
         'Deve alterar o estado para ServiceEditAdd',
         () {
-          serviceEditController.initInsert();
+          serviceEditController.initInsert(serviceCategory: serviceCategory1);
 
           expect(serviceEditController.state is ServiceEditAdd, isTrue);
         },
@@ -91,7 +96,7 @@ void main() {
       test(
         '''Deve alterar o estado para ServiceEditUpdate e definir o Service a ser alterado''',
         () {
-          serviceEditController.initUpdate(service: service1);
+          serviceEditController.initUpdate(serviceCategory: serviceCategory1, service: service1);
 
           expect(serviceEditController.state is ServiceEditUpdate, isTrue);
           final state = (serviceEditController.state as ServiceEditUpdate);

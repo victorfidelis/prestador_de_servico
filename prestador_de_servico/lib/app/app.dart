@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
 import 'package:prestador_de_servico/app/controllers/sync/sync_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/sign_in_controller.dart';
@@ -25,6 +26,7 @@ import 'package:prestador_de_servico/app/views/service/service_category_view.dar
 import 'package:prestador_de_servico/app/views/navigation/navigation_view.dart';
 import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
+import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatelessWidget {
@@ -70,26 +72,36 @@ class App extends StatelessWidget {
         ),
         ChangeNotifierProvider<NavigationController>(create: (context) => NavigationController()),
         ChangeNotifierProvider<ServiceController>(
-            create: (context) => ServiceController(
-                  serviceCategoryService: ServiceCategoryService(
-                    offlineRepository: ServiceCategoryRepository.createOffline(),
-                    onlineRepository: ServiceCategoryRepository.createOnline(),
-                  ),
-                  serviceService: ServiceService(
-                    offlineRepository: ServiceRepository.createOffline(),
-                    onlineRepository: ServiceRepository.createOnline(),
-                  ),
-                  servicesByCategoryService: ServicesByCategoryService(
-                    offlineRepository: ServicesByCategoryRepository.createOffline(),
-                  ),
-                )),
+          create: (context) => ServiceController(
+            serviceCategoryService: ServiceCategoryService(
+              offlineRepository: ServiceCategoryRepository.createOffline(),
+              onlineRepository: ServiceCategoryRepository.createOnline(),
+            ),
+            serviceService: ServiceService(
+              offlineRepository: ServiceRepository.createOffline(),
+              onlineRepository: ServiceRepository.createOnline(),
+            ),
+            servicesByCategoryService: ServicesByCategoryService(
+              offlineRepository: ServicesByCategoryRepository.createOffline(),
+            ),
+          ),
+        ),
         ChangeNotifierProvider<ServiceCategoryEditController>(
-            create: (context) => ServiceCategoryEditController(
-                  serviceCategoryService: ServiceCategoryService(
-                    onlineRepository: ServiceCategoryRepository.createOnline(),
-                    offlineRepository: ServiceCategoryRepository.createOffline(),
-                  ),
-                )),
+          create: (context) => ServiceCategoryEditController(
+            serviceCategoryService: ServiceCategoryService(
+              onlineRepository: ServiceCategoryRepository.createOnline(),
+              offlineRepository: ServiceCategoryRepository.createOffline(),
+            ),
+          ),
+        ),
+        ChangeNotifierProvider<ServiceEditController>(
+          create: (context) => ServiceEditController(
+            serviceService: ServiceService(
+              offlineRepository: ServiceRepository.createOffline(),
+              onlineRepository: ServiceRepository.createOnline(),
+            ),
+          ),
+        ),
       ],
       child: MaterialApp(
         theme: mainTheme,
@@ -101,6 +113,7 @@ class App extends StatelessWidget {
           '/navigation': (context) => NavigationView(),
           '/serviceCategory': (context) => const ServiceCategoryView(),
           '/serviceCategoryEdit': (context) => const ServiceCategoryEditView(),
+          '/serviceEdit': (context) => const ServiceEditView(),
         },
       ),
     );
