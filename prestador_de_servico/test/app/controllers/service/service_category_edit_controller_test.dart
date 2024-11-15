@@ -15,7 +15,7 @@ void main() {
   late ServiceCategory serviceCategory1;
   late ServiceCategory serviceCategoryWithoutName;
 
-  setUpValues() {
+  void setUpValues() {
     serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
     serviceCategoryWithoutName = ServiceCategory(id: '100', name: '');
   }
@@ -143,23 +143,23 @@ void main() {
           expect(state.genericMessage, equals(failureMessage));
         },
       );
-    },
-  );
+      
+      test(
+        '''Deve alterar o estado para ServiceCategoryEditSuccess com o ServiceCategory alterado 
+        quando a alteração for válida.''',
+        () async {
+          when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+              .thenAnswer((_) async => Either.right(unit));
+          when(offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+              .thenAnswer((_) async => Either.right(unit));
 
-  test(
-    '''Deve alterar o estado para ServiceCategoryEditSuccess com o ServiceCategory alterado 
-    quando a alteração for válida.''',
-    () async {
-      when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
-          .thenAnswer((_) async => Either.right(unit));
-      when(offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
-          .thenAnswer((_) async => Either.right(unit));
+          await serviceCategoryEditController.validateAndUpdate(serviceCategory: serviceCategory1);
 
-      await serviceCategoryEditController.validateAndUpdate(serviceCategory: serviceCategory1);
-
-      expect(serviceCategoryEditController.state is ServiceCategoryEditSuccess, isTrue);
-      final state = (serviceCategoryEditController.state as ServiceCategoryEditSuccess);
-      expect(state.serviceCategory, equals(serviceCategory1));
+          expect(serviceCategoryEditController.state is ServiceCategoryEditSuccess, isTrue);
+          final state = (serviceCategoryEditController.state as ServiceCategoryEditSuccess);
+          expect(state.serviceCategory, equals(serviceCategory1));
+        },
+      );
     },
   );
 }

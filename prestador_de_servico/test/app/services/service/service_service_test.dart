@@ -85,7 +85,8 @@ void main() {
           final insertEither = await serviceService.insert(service: service1);
 
           expect(insertEither.isRight, isTrue);
-          expect(insertEither.right is Unit, isTrue);
+          expect(insertEither.right is Service, isTrue);
+          expect(insertEither.right, equals(service1));
         },
       );
     },

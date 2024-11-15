@@ -25,7 +25,7 @@ class ServiceService {
     return await offlineRepository.getNameContained(name: name);
   }
 
-  Future<Either<Failure, Unit>> insert({required Service service}) async {
+  Future<Either<Failure, Service>> insert({required Service service}) async {
     final insertOnlineEither = await onlineRepository.insert(service: service);
     if (insertOnlineEither.isLeft) {
       return Either.left(insertOnlineEither.left);
@@ -37,7 +37,7 @@ class ServiceService {
       return Either.left(insertOfflineEither.left);
     } 
 
-    return Either.right(unit);
+    return Either.right(service);
   }
 
   Future<Either<Failure, Unit>> update({required Service service}) async {
