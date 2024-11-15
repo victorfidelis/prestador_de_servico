@@ -14,6 +14,7 @@ import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.
 import 'package:prestador_de_servico/app/states/service/service_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_category_card.dart';
 import 'package:provider/provider.dart';
+import 'package:prestador_de_servico/app/shared/helpers/custom_animated_list.dart';
 
 class ServiceCategoryView extends StatefulWidget {
   const ServiceCategoryView({super.key});
@@ -24,17 +25,28 @@ class ServiceCategoryView extends StatefulWidget {
 
 class _ServiceCategoryViewState extends State<ServiceCategoryView> {
   final CustomNotifications _notifications = CustomNotifications();
+  final GlobalKey<SliverAnimatedListState> _animatedListKey = GlobalKey<SliverAnimatedListState>();
+  late CustomAnimatedList<ServicesByCategory> _listServicesByCategories;
+  final _scrollController = ScrollController();
 
   @override
   void initState() {
-    super.initState();
+    context.read<ServiceController>().init();
     WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ServiceController>().load());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: CustomScrollView(
+        controller: _scrollController,
         slivers: [
           SliverPersistentHeader(
             floating: true,
@@ -92,30 +104,20 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
                 );
               }
 
-              List<ServicesByCategory> serviceListByCategory =
-                  (serviceCategoryController.state as ServiceLoaded).servicesByCategories;
+              _listServicesByCategories = CustomAnimatedList<ServicesByCategory>(
+                  listKey: _animatedListKey,
+                  removedItemBuilder: _buildRemovedItem,
+                  initialItems: (serviceCategoryController.state as ServiceLoaded).servicesByCategories);
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 14,
                   vertical: 6,
                 ),
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      return Column(
-                        children: [
-                          ServiceCategoryCard(
-                            serviceCategory: serviceListByCategory[index].serviceCategory,
-                            onEdit: onEditServiceCategory,
-                            onDelete: onDeleteServiceCategory,
-                          ),
-                          Divider(color: Theme.of(context).colorScheme.shadow),
-                        ],
-                      );
-                    },
-                    childCount: serviceListByCategory.length,
-                  ),
+                sliver: SliverAnimatedList(
+                  key: _animatedListKey,
+                  initialItemCount: _listServicesByCategories.length + 1,
+                  itemBuilder: _itemBuilder,
                 ),
               );
             },
@@ -130,37 +132,116 @@ class _ServiceCategoryViewState extends State<ServiceCategoryView> {
         ),
         child: CustomButton(
           label: 'Nova categoria',
-          onTap: onAddServiceCategory,
+          onTap: _onAddServiceCategory,
         ),
       ),
     );
   }
 
-  void onAddServiceCategory() {
+  Widget _itemBuilder(
+    BuildContext context,
+    int index,
+    Animation<double> animation,
+  ) {
+    if (index == _listServicesByCategories.length) {
+      return const SizedBox(
+        height: 220,
+      );
+    }
+    return Column(
+      children: [
+        ServiceCategoryCard(
+          servicesByCategory: _listServicesByCategories[index],
+          onEdit: _onEditServiceCategory,
+          onDelete: _onDeleteServiceCategory,
+          index: index,
+          animation: animation,
+        ),
+        Divider(color: Theme.of(context).colorScheme.shadow),
+      ],
+    );
+  }
+
+  Widget _buildRemovedItem(
+    ServicesByCategory servicesByCategory,
+    BuildContext context,
+    Animation<double> animation,
+  ) {
+    return Column(
+      children: [
+        ServiceCategoryCard(
+          servicesByCategory: servicesByCategory,
+          onEdit: ({required ServicesByCategory servicesByCategory, required int index}) {},
+          onDelete: ({required ServiceCategory serviceCategory, required int index}) {},
+          index: 0,
+          animation: animation,
+        ),
+        Divider(color: Theme.of(context).colorScheme.shadow),
+      ],
+    );
+  }
+
+  Future<void> _onAddServiceCategory() async {
     context.read<ServiceCategoryEditController>().initInsert();
-    Navigator.of(context).pushNamed('/serviceCategoryEdit');
+    final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
+    if (result != null) {
+      await _scrollToEnd();
+      final serviceCategoryInsert = result as ServiceCategory;
+      _onInsertServiceCategory(serviceCategory: serviceCategoryInsert);
+    }
   }
 
-  void onEditServiceCategory({required ServiceCategory serviceCategory}) {
-    context.read<ServiceCategoryEditController>().initUpdate(
-          serviceCategory: serviceCategory,
-        );
-    Navigator.of(context).pushNamed('/serviceCategoryEdit');
+  Future<void> _onEditServiceCategory({required ServicesByCategory servicesByCategory, required int index}) async {
+    context.read<ServiceCategoryEditController>().initUpdate(serviceCategory: servicesByCategory.serviceCategory);
+    final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
+    if (result != null) {
+      final serviceCategoryUpdate = result as ServiceCategory;
+      servicesByCategory = servicesByCategory.copyWith(serviceCategory: serviceCategoryUpdate);
+      _onUpdateServiceCategory(servicesByCategory: servicesByCategory, index: index);
+    }
   }
 
-  void onDeleteServiceCategory({required ServiceCategory serviceCategory}) {
+  void _onInsertServiceCategory({
+    required ServiceCategory serviceCategory,
+  }) {
+    final serviceByCategory = ServicesByCategory(serviceCategory: serviceCategory, services: []);
+    _listServicesByCategories.insert(serviceByCategory);
+  }
+
+  void _onDeleteServiceCategory({
+    required ServiceCategory serviceCategory,
+    required int index,
+  }) {
     _notifications.showQuestionAlert(
       context: context,
       title: 'Excluir categoria de serviço',
       content: 'Tem certeza que deseja excluir a categoria de serviço?',
       confirmCallback: () {
-        deleteServiceCategory(serviceCategory: serviceCategory);
+        _listServicesByCategories.removeAt(index);
+        context.read<ServiceController>().deleteCategory(serviceCategory: serviceCategory);
       },
-      cancelCallback: () {},
     );
   }
 
-  void deleteServiceCategory({required ServiceCategory serviceCategory}) {
-    context.read<ServiceController>().deleteCategory(serviceCategory: serviceCategory);
+  Future<void> _onUpdateServiceCategory({
+    required ServicesByCategory servicesByCategory,
+    required int index,
+  }) async {
+    _listServicesByCategories.removeAt(index);
+    await Future.delayed(const Duration(milliseconds: 500));
+    _listServicesByCategories.insertAt(index, servicesByCategory);
+  }
+
+  Future<void> _scrollToEnd() async {
+    await _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeIn,
+    );
+    await _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.linear,
+    );
   }
 }

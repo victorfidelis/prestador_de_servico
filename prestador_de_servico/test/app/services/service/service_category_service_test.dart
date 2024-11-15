@@ -66,7 +66,7 @@ void main() {
       );
 
       test(
-        '''Deve retornar um Unit quando o ServiceCategory for gravado com sucesso''',
+        '''Deve retornar um ServiceCategory quando o ServiceCategory for gravado com sucesso''',
         () async {
           when(onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.right(serviceCategory1.id));
@@ -76,7 +76,7 @@ void main() {
           final serviceCategoryEither = await serviceCategoryService.insert(serviceCategory: serviceCategory1);
 
           expect(serviceCategoryEither.isRight, isTrue);
-          expect(serviceCategoryEither.right is Unit, isTrue);
+          expect(serviceCategoryEither.right, equals(serviceCategory1));
         },
       );
     },

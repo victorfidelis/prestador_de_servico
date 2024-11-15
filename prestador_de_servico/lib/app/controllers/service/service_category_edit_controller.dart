@@ -39,7 +39,7 @@ class ServiceCategoryEditController extends ChangeNotifier {
       return;
     }
 
-    _changeState(ServiceCategoryEditSuccess(serviceCategory: serviceCategory));
+    _changeState(ServiceCategoryEditSuccess(serviceCategory: insertEither.right!));
   }
 
   Future<void> validateAndUpdate({required ServiceCategory serviceCategory}) async {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
@@ -18,8 +17,7 @@ class ServiceCategoryEditView extends StatefulWidget {
   const ServiceCategoryEditView({super.key});
 
   @override
-  State<ServiceCategoryEditView> createState() =>
-      _ServiceCategoryEditViewState();
+  State<ServiceCategoryEditView> createState() => _ServiceCategoryEditViewState();
 }
 
 class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
@@ -30,12 +28,10 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
 
   @override
   void initState() {
-    isUpdate = (context.read<ServiceCategoryEditController>().state
-        is ServiceCategoryEditUpdate);
+    isUpdate = (context.read<ServiceCategoryEditController>().state is ServiceCategoryEditUpdate);
     if (isUpdate) {
-      serviceCategory = (context.read<ServiceCategoryEditController>().state
-              as ServiceCategoryEditUpdate)
-          .serviceCategory;
+      serviceCategory =
+          (context.read<ServiceCategoryEditController>().state as ServiceCategoryEditUpdate).serviceCategory;
       nameController.text = serviceCategory!.name;
     }
     super.initState();
@@ -52,32 +48,24 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
               padding: const EdgeInsets.only(top: 10),
               child: Row(
                 children: [
-                  SizedBox(
-                      width: 60,
-                      child:
-                          BackNavigation(onTap: () => Navigator.pop(context))),
+                  SizedBox(width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
                   const Expanded(child: CustomAppBarTitle(title: 'Serviços')),
                   const SizedBox(width: 60),
                 ],
               ),
             ),
           ),
-          Consumer<ServiceCategoryEditController>(
-              builder: (context, serviceCategoryEditController, _) {
-            if (serviceCategoryEditController.state
-                is ServiceCategoryEditSuccess) {
+          Consumer<ServiceCategoryEditController>(builder: (context, serviceCategoryEditController, _) {
+            if (serviceCategoryEditController.state is ServiceCategoryEditSuccess) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                ServiceCategory serviceCategory = (serviceCategoryEditController
-                        .state as ServiceCategoryEditSuccess)
-                    .serviceCategory;
-                afterSave(serviceCategory: serviceCategory);
-                Navigator.pop(context);
+                ServiceCategory serviceCategory =
+                    (serviceCategoryEditController.state as ServiceCategoryEditSuccess).serviceCategory;
+                Navigator.pop(context, serviceCategory);
               });
               return Container();
             }
 
-            if (serviceCategoryEditController.state
-                is ServiceCategoryEditLoading) {
+            if (serviceCategoryEditController.state is ServiceCategoryEditLoading) {
               return const Expanded(
                 child: Center(
                   child: CustomLoading(),
@@ -89,17 +77,11 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
             String? genericErrorMessage;
             Widget genericErrorWidget = const SizedBox(height: 18);
 
-            if (serviceCategoryEditController.state
-                is ServiceCategoryEditError) {
-              nameErrorMessage = (serviceCategoryEditController.state
-                      as ServiceCategoryEditError)
-                  .nameMessage;
-              genericErrorMessage = (serviceCategoryEditController.state
-                      as ServiceCategoryEditError)
-                  .genericMessage;
+            if (serviceCategoryEditController.state is ServiceCategoryEditError) {
+              nameErrorMessage = (serviceCategoryEditController.state as ServiceCategoryEditError).nameMessage;
+              genericErrorMessage = (serviceCategoryEditController.state as ServiceCategoryEditError).genericMessage;
               if (genericErrorMessage != null) {
-                genericErrorWidget =
-                    CustomTextError(message: genericErrorMessage);
+                genericErrorWidget = CustomTextError(message: genericErrorMessage);
               }
             }
 
@@ -109,10 +91,7 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
                 children: [
                   Row(
                     children: [
-                      CustomText(
-                          text: (isUpdate
-                              ? 'Alterando categoria'
-                              : 'Nova categoria')),
+                      CustomText(text: (isUpdate ? 'Alterando categoria' : 'Nova categoria')),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -120,9 +99,7 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Column(
                       children: [
-                        isUpdate
-                            ? CustomTextName(text: serviceCategory!.name)
-                            : Container(),
+                        isUpdate ? CustomTextName(text: serviceCategory!.name) : Container(),
                         isUpdate ? const SizedBox(height: 12) : Container(),
                         CustomTextField(
                           label: 'Nome',
@@ -161,25 +138,9 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
     );
 
     if (isUpdate) {
-      context
-          .read<ServiceCategoryEditController>()
-          .validateAndUpdate(serviceCategory: serviceCategoryEdit);
+      context.read<ServiceCategoryEditController>().validateAndUpdate(serviceCategory: serviceCategoryEdit);
     } else {
-      context
-          .read<ServiceCategoryEditController>()
-          .validateAndInsert(serviceCategory: serviceCategoryEdit);
-    }
-  }
-
-  void afterSave({required ServiceCategory serviceCategory}) {
-    if (isUpdate) {
-      context.read<ServiceController>().updateOnList(
-            serviceCategory: serviceCategory,
-          );
-    } else {
-      context
-          .read<ServiceController>()
-          .addOnList(serviceCategory: serviceCategory);
+      context.read<ServiceCategoryEditController>().validateAndInsert(serviceCategory: serviceCategoryEdit);
     }
   }
 }

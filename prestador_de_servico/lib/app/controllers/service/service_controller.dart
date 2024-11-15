@@ -24,6 +24,10 @@ class ServiceController extends ChangeNotifier {
     required this.servicesByCategoryService,
   });
 
+  void init() {
+    _state = ServiceInitial();
+  }
+
   Future<void> load() async {
     _changeState(ServiceLoading());
 
@@ -49,21 +53,20 @@ class ServiceController extends ChangeNotifier {
   }
 
   Future<void> deleteCategory({required ServiceCategory serviceCategory}) async {
+    final deleteEither = await serviceCategoryService.delete(serviceCategory: serviceCategory);
+
+    if (deleteEither.isRight) {
+      return;
+    }
+
     _changeState(ServiceLoading());
 
-    final deleteEither = await serviceCategoryService.delete(serviceCategory: serviceCategory);
+    final message = deleteEither.left!.message;
 
     final getAllEither = await servicesByCategoryService.getAll();
     if (getAllEither.isLeft) {
       _changeState(ServiceError(getAllEither.left!.message));
       return;
-    }
-
-    var message = '';
-    if (deleteEither.isLeft) {
-      message = deleteEither.left!.message;
-    } else {
-      message = 'Serviço excluído com sucesso';
     }
 
     _changeState(
