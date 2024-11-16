@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
+import 'package:prestador_de_servico/app/services/image/image_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/states/service/service_edit_state.dart';
 
 class ServiceEditController extends ChangeNotifier {
   final ServiceService serviceService;
+  final ImageService imageService;
 
-  ServiceEditController({required this.serviceService});
+  ServiceEditController({required this.serviceService, required this.imageService});
 
   ServiceEditState _state = ServiceEditInitial();
   ServiceEditState get state => _state;
@@ -80,5 +82,14 @@ class ServiceEditController extends ChangeNotifier {
       return ServiceEditError(hoursAndMinutesMessage: 'Necessário informar o tempo');
     }
     return ServiceEditValidated();
+  }
+
+  Future<void> pickImageFromGallery() async {
+    final eitherPickImage = await imageService.pickImageFromGallery();
+    if (eitherPickImage.isLeft) {
+      _changeState(PickImageError(eitherPickImage.left!.message));
+    } else {
+      _changeState(PickImageSuccess(eitherPickImage.right!));
+    }
   }
 }

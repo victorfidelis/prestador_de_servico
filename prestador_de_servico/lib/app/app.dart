@@ -14,6 +14,7 @@ import 'package:prestador_de_servico/app/repositories/service/services_by_catego
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
+import 'package:prestador_de_servico/app/services/image/image_service.dart';
 import 'package:prestador_de_servico/app/services/network/network_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
@@ -100,6 +101,7 @@ class App extends StatelessWidget {
               offlineRepository: ServiceRepository.createOffline(),
               onlineRepository: ServiceRepository.createOnline(),
             ),
+            imageService: ImageService.create(),
           ),
         ),
       ],

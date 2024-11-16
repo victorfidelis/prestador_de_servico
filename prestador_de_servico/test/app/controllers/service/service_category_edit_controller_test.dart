@@ -27,7 +27,10 @@ void main() {
         onlineRepository: onlineMockServiceCategoryRepository,
         offlineRepository: offlineMockServiceCategoryRepository,
       );
-      serviceCategoryEditController = ServiceCategoryEditController(serviceCategoryService: serviceCategoryService);
+
+      serviceCategoryEditController = ServiceCategoryEditController(
+        serviceCategoryService: serviceCategoryService,
+      );
       setUpValues();
     },
   );
@@ -143,7 +146,7 @@ void main() {
           expect(state.genericMessage, equals(failureMessage));
         },
       );
-      
+
       test(
         '''Deve alterar o estado para ServiceCategoryEditSuccess com o ServiceCategory alterado 
         quando a alteração for válida.''',

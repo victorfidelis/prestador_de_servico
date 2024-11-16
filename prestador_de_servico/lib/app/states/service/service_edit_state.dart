@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 
@@ -38,4 +40,14 @@ class ServiceEditSuccess extends ServiceEditState {
   final Service service;
 
   ServiceEditSuccess({required this.service});
+}
+
+class PickImageError extends ServiceEditState{
+  final String message;
+  PickImageError(this.message);
+}
+
+class PickImageSuccess extends ServiceEditState{
+  final File imageFile;
+  PickImageSuccess(this.imageFile);
 }

@@ -1,21 +1,36 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class CustomImageField extends StatelessWidget {
+  final Function() onTap;
   final String label;
-  final String urlImage;
+  final File? fileImage;
+  final String? urlImage;
 
   const CustomImageField({
     super.key,
+    required this.onTap,
     required this.label,
-    required this.urlImage,
+    this.fileImage,
+    this.urlImage,
   });
 
   @override
   Widget build(BuildContext context) {
+    Image image;
+    
+    if (fileImage != null) {
+      image = Image.file(fileImage!, fit: BoxFit.fitWidth);
+    } else if (urlImage != null) {
+      image = Image.network(urlImage!, fit: BoxFit.fitWidth);
+    } else {
+      image = Image.asset('assets/images/adicionar_imagem.jpg');
+    }
+
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.only(left: 12, top: 8, right: 12, bottom: 12),
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
           borderRadius: const BorderRadius.all(Radius.circular(12)),
@@ -32,20 +47,19 @@ class CustomImageField extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 14,
+            Padding(
+              padding: const EdgeInsets.only(left: 12, top: 8, right: 12, bottom: 6),
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 14,
+                ),
               ),
             ),
-            const SizedBox(height: 6),
             ClipRRect(
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              child: Image.network(
-                urlImage,
-                fit: BoxFit.fitWidth,
-              ),
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              child: image,
             )
           ],
         ),

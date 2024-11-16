@@ -50,7 +50,7 @@ class ServiceCategoryEditController extends ChangeNotifier {
     if (state is ServiceCategoryEditLoading) {
       return;
     }
-    
+
     _changeState(ServiceCategoryEditLoading());
 
     final validEither = _validade(serviceCategory: serviceCategory);

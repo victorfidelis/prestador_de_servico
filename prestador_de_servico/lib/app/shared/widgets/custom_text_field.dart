@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   final String label;
@@ -6,7 +7,9 @@ class CustomTextField extends StatelessWidget {
   final FocusNode focusNode;
   final bool isPassword;
   final bool isEmail;
+  final bool isNumeric;
   final String? errorMessage;
+  final List<TextInputFormatter> inputFormatters;
 
   CustomTextField({
     super.key,
@@ -15,16 +18,26 @@ class CustomTextField extends StatelessWidget {
     required this.focusNode,
     this.isPassword = false,
     this.isEmail = false,
+    this.isNumeric = false,
     this.errorMessage,
+    this.inputFormatters = const [],
   });
 
   final ValueNotifier<bool> obscureText = ValueNotifier(true);
 
   @override
   Widget build(BuildContext context) {
+    final TextInputType textInputType;
+    if (isNumeric) {
+      textInputType = TextInputType.number;
+    } else if (isEmail) {
+      textInputType = TextInputType.emailAddress;
+    } else {
+      textInputType = TextInputType.text;
+    }
 
     return GestureDetector(
-      onTap: () { 
+      onTap: () {
         focusNode.requestFocus();
       },
       child: Container(
@@ -92,7 +105,8 @@ class CustomTextField extends StatelessWidget {
                           fontSize: 16,
                         ),
                         obscureText: isPassword && obscureText.value,
-                        keyboardType: TextInputType.emailAddress,
+                        keyboardType: textInputType,
+                        inputFormatters: inputFormatters,
                       ),
                     ),
                     Padding(

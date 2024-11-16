@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
@@ -8,6 +10,7 @@ import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:prestador_de_servico/app/states/service/service_edit_state.dart';
 
+import '../../../helpers/image/mock_image_service.dart';
 import '../../../helpers/service/service/mock_service_repository.dart';
 
 void main() {
@@ -71,7 +74,13 @@ void main() {
         onlineRepository: onlineMockServiceRepository,
         offlineRepository: offlineMockServiceRepository,
       );
-      serviceEditController = ServiceEditController(serviceService: serviceService);
+
+      setUpMockImageService();
+
+      serviceEditController = ServiceEditController(
+        serviceService: serviceService,
+        imageService: mockImageService,
+      );
       setUpValues();
     },
   );
@@ -239,16 +248,52 @@ void main() {
         '''Deve alterar o estado para ServiceEditSuccess com o Service atualizado
         quando a atualização for válida.''',
         () async {
-          when(onlineMockServiceRepository.update(service: service1))
-              .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.update(service: service1))
-              .thenAnswer((_) async => Either.right(unit));
+          when(onlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
+          when(offlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
 
           await serviceEditController.validateAndUpdate(service: service1);
 
           expect(serviceEditController.state is ServiceEditSuccess, isTrue);
           final state = (serviceEditController.state as ServiceEditSuccess);
           expect(state.service, equals(service1));
+        },
+      );
+    },
+  );
+  
+
+  group(
+    'pickImageFromGallery',
+    () {
+      test(
+        '''Deve alterar o estado para PickImageError com a mensagem de erro
+        quando uma falha ocorrer na captura de imagem.''',
+        () async {
+          const failureMessage = 'Teste de falha';
+          when(mockImageService.pickImageFromGallery())
+              .thenAnswer((_) async => Either.left(PickImageFailure(failureMessage)));
+
+          await serviceEditController.pickImageFromGallery();
+
+          expect(serviceEditController.state is PickImageError, isTrue);
+          final state = (serviceEditController.state as PickImageError);
+          expect(state.message, equals(failureMessage));
+        },
+      );
+
+      test(
+        '''Deve alterar o estado para PickImageSuccess com a imagem selecionada
+        quando a captura da imagem ocorrer normalmente.''',
+        () async {
+          final file = File('caminho da imagem selecionada');
+          when(mockImageService.pickImageFromGallery())
+              .thenAnswer((_) async => Either.right(file));
+
+          await serviceEditController.pickImageFromGallery();
+
+          expect(serviceEditController.state is PickImageSuccess, isTrue);
+          final state = (serviceEditController.state as PickImageSuccess);
+          expect(state.imageFile, equals(file));
         },
       );
     },

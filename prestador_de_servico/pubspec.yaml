@@ -39,7 +39,8 @@ dependencies:
   replace_diacritic:
     git:
       url: https://github.com/victorfidelis/replace_diacritic.git
-      ref: main # branch name
+      ref: main 
+  image_picker: ^1.1.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

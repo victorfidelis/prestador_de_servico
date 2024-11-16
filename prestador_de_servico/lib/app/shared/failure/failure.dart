@@ -45,3 +45,7 @@ class ServiceCategoryValidationFailure extends Failure {
   final String? nameMessage;
   ServiceCategoryValidationFailure({required this.nameMessage}) : super('');
 }
+
+class PickImageFailure extends Failure {
+  PickImageFailure(super.message); 
+}
