@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:prestador_de_servico/app/services/image/image_service.dart';
+import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
-class ImageServiceImpl implements ImageService {
+class OfflineImageServiceImpl implements OfflineImageService {
   final ImagePicker _picker = ImagePicker();
 
   @override

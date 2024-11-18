@@ -49,3 +49,7 @@ class ServiceCategoryValidationFailure extends Failure {
 class PickImageFailure extends Failure {
   PickImageFailure(super.message); 
 }
+
+class UploadImageFailure extends Failure {
+  UploadImageFailure(super.message);
+}

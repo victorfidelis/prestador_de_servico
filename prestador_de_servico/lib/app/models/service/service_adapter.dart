@@ -10,7 +10,7 @@ class ServiceAdapter {
       'price': service.price,
       'hours': service.hours,
       'minutes': service.minutes,
-      'urlImage': service.urlImage,
+      'urlImage': service.imageUrl,
       'dateSync': service.syncDate,
       'isDeleted': service.isDeleted,
     };
@@ -24,7 +24,7 @@ class ServiceAdapter {
       price: map['price'],
       hours: map['hours'],
       minutes: map['minutes'],
-      urlImage: map['urlImage'],
+      imageUrl: map['urlImage'],
       syncDate: map.containsKey('dateSync') ? map['dateSync'] : null,
       isDeleted: map.containsKey('isDeleted') ? map['isDeleted'] : false,
     );
@@ -37,7 +37,7 @@ class ServiceAdapter {
       'price': service.price,
       'hours': service.hours,
       'minutes': service.minutes,
-      'urlImage': service.urlImage,
+      'urlImage': service.imageUrl,
       'dateSync': FieldValue.serverTimestamp(), // Todo envio para o firebase deve conter a data atual do servidor
       'isDeleted': service.isDeleted,
     };
@@ -53,7 +53,7 @@ class ServiceAdapter {
       price: map['price'],
       hours: map['hours'],
       minutes: map['minutes'],
-      urlImage: map['urlImage'],
+      imageUrl: map['urlImage'],
       syncDate: (map['dateSync'] as Timestamp).toDate(),
       isDeleted: map['isDeleted'],
     );
@@ -69,7 +69,7 @@ class ServiceAdapter {
       price: map['price'],
       hours: map['hours'],
       minutes: map['minutes'],
-      urlImage: map['urlImage'],
+      imageUrl: map['urlImage'],
     );
   }
 
@@ -81,7 +81,7 @@ class ServiceAdapter {
       price: map['servicePrice'],
       hours: map['serviceHours'],
       minutes: map['serviceMinutes'],
-      urlImage: map['serviceUrlImage'],
+      imageUrl: map['serviceUrlImage'],
     );
   }
 }

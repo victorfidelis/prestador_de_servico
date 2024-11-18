@@ -195,7 +195,7 @@ class SqfliteServiceRepository implements ServiceRepository {
       service.price,
       service.hours,
       service.minutes,
-      service.urlImage.trim(),
+      service.imageUrl.trim(),
       service.nameWithoutDiacritics.trim(),
     ];
 
@@ -235,7 +235,7 @@ class SqfliteServiceRepository implements ServiceRepository {
       service.price,
       service.hours,
       service.minutes,
-      service.urlImage.trim(),
+      service.imageUrl.trim(),
       service.nameWithoutDiacritics.trim(),
       service.id,
     ];

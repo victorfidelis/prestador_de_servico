@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:io';
+
 import 'package:replace_diacritic/replace_diacritic.dart';
 
 class Service {
@@ -8,7 +10,8 @@ class Service {
   final double price;
   final int hours;
   final int minutes;
-  final String urlImage;
+  final String imageUrl;
+  final File? imageFile;
   final DateTime? syncDate;
   final bool isDeleted;
 
@@ -21,7 +24,8 @@ class Service {
     required this.price,
     required this.hours,
     required this.minutes,
-    required this.urlImage,
+    required this.imageUrl,
+    this.imageFile,
     this.syncDate,
     this.isDeleted = false,
   });
@@ -34,8 +38,7 @@ class Service {
         other.name == name &&
         other.price == price &&
         other.hours == hours && 
-        other.minutes == minutes && 
-        other.urlImage == urlImage; 
+        other.minutes == minutes; 
   }
 
   Service copyWith({
@@ -46,6 +49,7 @@ class Service {
     int? hours,
     int? minutes,
     String? urlImage,
+    File? fileImage,
     DateTime? syncDate,
     bool? isDeleted,
   }) {
@@ -56,7 +60,8 @@ class Service {
       price: price ?? this.price,
       hours: hours ?? this.hours,
       minutes: minutes ?? this.minutes,
-      urlImage: urlImage ?? this.urlImage,
+      imageUrl: urlImage ?? this.imageUrl,
+      imageFile: fileImage ?? this.imageFile,
       syncDate: syncDate ?? this.syncDate,
       isDeleted: isDeleted ?? this.isDeleted,
     );

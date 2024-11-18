@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-import 'package:prestador_de_servico/app/services/image/image_service.dart';
+import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
+import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/states/service/service_edit_state.dart';
 
 class ServiceEditController extends ChangeNotifier {
   final ServiceService serviceService;
-  final ImageService imageService;
+  final ImageRepository imageRepository;
+  final OfflineImageService offlineImageService;
 
-  ServiceEditController({required this.serviceService, required this.imageService});
+  ServiceEditController({
+    required this.serviceService,
+    required this.imageRepository,
+    required this.offlineImageService,
+  });
 
   ServiceEditState _state = ServiceEditInitial();
   ServiceEditState get state => _state;
@@ -39,7 +45,7 @@ class ServiceEditController extends ChangeNotifier {
       _changeState(validation);
       return;
     }
-    
+
     final insertEither = await serviceService.insert(service: service);
     if (insertEither.isLeft) {
       _changeState(ServiceEditError(genericMessage: insertEither.left!.message));
@@ -61,7 +67,7 @@ class ServiceEditController extends ChangeNotifier {
       _changeState(validation);
       return;
     }
-    
+
     final insertEither = await serviceService.update(service: service);
     if (insertEither.isLeft) {
       _changeState(ServiceEditError(genericMessage: insertEither.left!.message));
@@ -85,7 +91,7 @@ class ServiceEditController extends ChangeNotifier {
   }
 
   Future<void> pickImageFromGallery() async {
-    final eitherPickImage = await imageService.pickImageFromGallery();
+    final eitherPickImage = await offlineImageService.pickImageFromGallery();
     if (eitherPickImage.isLeft) {
       _changeState(PickImageError(eitherPickImage.left!.message));
     } else {

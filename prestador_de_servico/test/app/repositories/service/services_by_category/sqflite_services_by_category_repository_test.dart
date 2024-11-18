@@ -34,7 +34,7 @@ void main() {
       price: 80.90,
       hours: 1,
       minutes: 30,
-      urlImage: 'image1.com.br/image1/jpg',
+      imageUrl: 'image1.com.br/image1/jpg',
     );
     service2 = Service(
       id: '2',
@@ -43,7 +43,7 @@ void main() {
       price: 80.90,
       hours: 1,
       minutes: 30,
-      urlImage: 'image1.com.br/image2/jpg',
+      imageUrl: 'image1.com.br/image2/jpg',
     );
     service3 = Service(
       id: '3',
@@ -52,7 +52,7 @@ void main() {
       price: 80.90,
       hours: 1,
       minutes: 30,
-      urlImage: 'image1.com.br/image3/jpg',
+      imageUrl: 'image1.com.br/image3/jpg',
     );
 
     final servicesByCategory1 = ServicesByCategory(

@@ -22,7 +22,7 @@ void main() {
       price: 49.90,
       hours: 1,
       minutes: 30,
-      urlImage: 'testeUrlImage',
+      imageUrl: 'testeUrlImage',
     );
   }
 

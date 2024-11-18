@@ -48,7 +48,7 @@ void main() {
       price: 49.90,
       hours: 1,
       minutes: 30,
-      urlImage: 'testeUrlImage',
+      imageUrl: 'testeUrlImage',
     );
     service2 = Service(
       id: '2',
@@ -57,7 +57,7 @@ void main() {
       price: 49.90,
       hours: 1,
       minutes: 30,
-      urlImage: 'testeUrlImage',
+      imageUrl: 'testeUrlImage',
     );
 
     service3 = Service(
@@ -67,7 +67,7 @@ void main() {
       price: 49.90,
       hours: 1,
       minutes: 30,
-      urlImage: 'testeUrlImage',
+      imageUrl: 'testeUrlImage',
     );
 
     service4 = Service(
@@ -77,7 +77,7 @@ void main() {
       price: 49.90,
       hours: 1,
       minutes: 30,
-      urlImage: 'testeUrlImage',
+      imageUrl: 'testeUrlImage',
     );
 
     service5 = Service(
@@ -87,7 +87,7 @@ void main() {
       price: 49.90,
       hours: 1,
       minutes: 30,
-      urlImage: 'testeUrlImage',
+      imageUrl: 'testeUrlImage',
     );
 
     service6 = Service(
@@ -97,7 +97,7 @@ void main() {
       price: 49.90,
       hours: 1,
       minutes: 30,
-      urlImage: 'testeUrlImage',
+      imageUrl: 'testeUrlImage',
     );
 
     servicesByCategory1 = ServicesByCategory(

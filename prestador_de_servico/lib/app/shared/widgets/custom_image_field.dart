@@ -5,25 +5,25 @@ import 'package:flutter/material.dart';
 class CustomImageField extends StatelessWidget {
   final Function() onTap;
   final String label;
-  final File? fileImage;
-  final String? urlImage;
+  final File? imageFile;
+  final String? imageUrl;
 
   const CustomImageField({
     super.key,
     required this.onTap,
     required this.label,
-    this.fileImage,
-    this.urlImage,
+    this.imageFile,
+    this.imageUrl,
   });
 
   @override
   Widget build(BuildContext context) {
     Image image;
     
-    if (fileImage != null) {
-      image = Image.file(fileImage!, fit: BoxFit.fitWidth);
-    } else if (urlImage != null) {
-      image = Image.network(urlImage!, fit: BoxFit.fitWidth);
+    if (imageFile != null) {
+      image = Image.file(imageFile!, fit: BoxFit.fitWidth);
+    } else if (imageUrl != null && imageUrl!.isNotEmpty) {
+      image = Image.network(imageUrl!, fit: BoxFit.fitWidth);
     } else {
       image = Image.asset('assets/images/adicionar_imagem.jpg');
     }

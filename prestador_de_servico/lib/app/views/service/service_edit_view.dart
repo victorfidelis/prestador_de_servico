@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
@@ -35,8 +34,8 @@ class _ServiceEditViewState extends State<ServiceEditView> {
   final TextEditingController priceController = TextEditingController();
   final TextEditingController hoursController = TextEditingController();
   final TextEditingController minutesController = TextEditingController();
-  String? urlImage;
-  File? fileImage;
+  String? imageUrl;
+  File? imageFile;
 
   final FocusNode nameFocus = FocusNode();
   final FocusNode priceFocus = FocusNode();
@@ -114,7 +113,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
         
               if (serviceEditController.state is PickImageSuccess) {
                 final pickImageSuccessState = (serviceEditController.state as PickImageSuccess);
-                fileImage = pickImageSuccessState.imageFile;
+                imageFile = pickImageSuccessState.imageFile;
               }
         
               String? nameErrorMessage;
@@ -188,12 +187,21 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                               ),
                             ],
                           ),
+                          hoursAndMinutesErrorMessage == null ? Container() : 
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                                const SizedBox(height: 16),
+                                CustomTextError(message: hoursAndMinutesErrorMessage),
+                            ],
+                          ),
                           const SizedBox(height: 20),
                           CustomImageField(
                             onTap: onSelectImage,
                             label: 'Imagem',
-                            urlImage: urlImage,
-                            fileImage: fileImage,
+                            imageUrl: imageUrl,
+                            imageFile: imageFile,
                           ),
                         ],
                       ),
@@ -271,7 +279,8 @@ class _ServiceEditViewState extends State<ServiceEditView> {
       price: price,
       hours: hours,
       minutes: minutes,
-      urlImage: '',
+      imageUrl: imageUrl ?? '',
+      imageFile: imageFile,
     );
   }
 

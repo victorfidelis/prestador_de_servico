@@ -10,7 +10,8 @@ import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:prestador_de_servico/app/states/service/service_edit_state.dart';
 
-import '../../../helpers/image/mock_image_service.dart';
+import '../../../helpers/image/mock_image_repository.dart';
+import '../../../helpers/offline_image/mock_offline_image_service.dart';
 import '../../../helpers/service/service/mock_service_repository.dart';
 
 void main() {
@@ -33,7 +34,7 @@ void main() {
       price: 50.90,
       hours: 0,
       minutes: 30,
-      urlImage: '',
+      imageUrl: '',
     );
 
     serviceWithoutName = Service(
@@ -43,7 +44,7 @@ void main() {
       price: 50.90,
       hours: 0,
       minutes: 30,
-      urlImage: '',
+      imageUrl: '',
     );
 
     serviceWithoutPrice = Service(
@@ -53,7 +54,7 @@ void main() {
       price: 0,
       hours: 0,
       minutes: 30,
-      urlImage: '',
+      imageUrl: '',
     );
 
     serviceWithoutHoursAndMinutes = Service(
@@ -63,7 +64,7 @@ void main() {
       price: 50.90,
       hours: 0,
       minutes: 0,
-      urlImage: '',
+      imageUrl: '',
     );
   }
 
@@ -75,11 +76,13 @@ void main() {
         offlineRepository: offlineMockServiceRepository,
       );
 
-      setUpMockImageService();
+      setUpMockImageRepository();
+      setUpMockOfflineImageService();
 
       serviceEditController = ServiceEditController(
         serviceService: serviceService,
-        imageService: mockImageService,
+        imageRepository: mockImageRepository,
+        offlineImageService: mockOfflineImageService,
       );
       setUpValues();
     },
@@ -270,7 +273,7 @@ void main() {
         quando uma falha ocorrer na captura de imagem.''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockImageService.pickImageFromGallery())
+          when(mockOfflineImageService.pickImageFromGallery())
               .thenAnswer((_) async => Either.left(PickImageFailure(failureMessage)));
 
           await serviceEditController.pickImageFromGallery();
@@ -286,7 +289,7 @@ void main() {
         quando a captura da imagem ocorrer normalmente.''',
         () async {
           final file = File('caminho da imagem selecionada');
-          when(mockImageService.pickImageFromGallery())
+          when(mockOfflineImageService.pickImageFromGallery())
               .thenAnswer((_) async => Either.right(file));
 
           await serviceEditController.pickImageFromGallery();
