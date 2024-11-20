@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -7,12 +8,15 @@ import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
+import '../../../helpers/image/mock_image_repository.dart';
 import '../../../helpers/service/service/mock_service_repository.dart';
 
 void main() {
   late ServiceService serviceService;
 
   late Service service1;
+  late Service serviceWithImageFile;
+  late Service serviceWithImageUrl;
 
   setUpValues() {
     service1 = Service(
@@ -22,16 +26,40 @@ void main() {
       price: 49.90,
       hours: 1,
       minutes: 30,
-      imageUrl: 'testeUrlImage',
+      imageUrl: '',
+    );
+
+    serviceWithImageFile = Service(
+      id: '1',
+      serviceCategoryId: '1',
+      name: 'Luzes',
+      price: 49.90,
+      hours: 1,
+      minutes: 30,
+      imageUrl: '',
+      imageFile: File('caminho imagem'),
+    );
+
+    serviceWithImageUrl = Service(
+      id: '1',
+      serviceCategoryId: '1',
+      name: 'Luzes',
+      price: 49.90,
+      hours: 1,
+      minutes: 30,
+      imageUrl: 'prestador_de_servico.com/imagem_teste.jpg',
+      imageFile: null,
     );
   }
 
   setUp(
     () {
       setUpMockServiceRepository();
+      setUpMockImageRepository();
       serviceService = ServiceService(
         offlineRepository: offlineMockServiceRepository,
         onlineRepository: onlineMockServiceRepository,
+        imageRepository: mockImageRepository,
       );
       setUpValues();
     },
@@ -70,6 +98,30 @@ void main() {
           expect(insertEither.isLeft, isTrue);
           expect(insertEither.left is GetDatabaseFailure, isTrue);
           final state = (insertEither.left as GetDatabaseFailure);
+          expect(state.message, equals(failureMessage));
+        },
+      );
+
+      test(
+        '''Deve retornar um UploadImageFailure quando ocorrer uma falha ao enviar imagem para a
+        nuvem''',
+        () async {
+          const failureMessage = 'Falha de teste';
+
+          when(onlineMockServiceRepository.insert(service: serviceWithImageFile))
+              .thenAnswer((_) async => Either.right(serviceWithImageFile.id));
+          when(offlineMockServiceRepository.insert(service: serviceWithImageFile))
+              .thenAnswer((_) async => Either.right(serviceWithImageFile.id));
+          when(mockImageRepository.uploadImage(
+            imageFile: serviceWithImageFile.imageFile,
+            imageFileName: serviceWithImageFile.imageName,
+          )).thenAnswer((_) async => Either.left(UploadImageFailure(failureMessage)));
+
+          final insertEither = await serviceService.insert(service: serviceWithImageFile);
+
+          expect(insertEither.isLeft, isTrue);
+          expect(insertEither.left is UploadImageFailure, isTrue);
+          final state = (insertEither.left as UploadImageFailure);
           expect(state.message, equals(failureMessage));
         },
       );
@@ -115,8 +167,7 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockServiceRepository.update(service: service1))
-              .thenAnswer((_) async => Either.right(unit));
+          when(onlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
           when(offlineMockServiceRepository.update(service: service1))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
@@ -130,12 +181,30 @@ void main() {
       );
 
       test(
+        '''Deve retornar um UploadImageFailure quando ocorrer uma falha ao enviar imagem para a
+        nuvem''',
+        () async {
+          const failureMessage = 'Falha de teste';
+
+          when(mockImageRepository.uploadImage(
+            imageFile: serviceWithImageFile.imageFile,
+            imageFileName: serviceWithImageFile.imageName,
+          )).thenAnswer((_) async => Either.left(UploadImageFailure(failureMessage)));
+
+          final insertEither = await serviceService.update(service: serviceWithImageFile);
+
+          expect(insertEither.isLeft, isTrue);
+          expect(insertEither.left is UploadImageFailure, isTrue);
+          final state = (insertEither.left as UploadImageFailure);
+          expect(state.message, equals(failureMessage));
+        },
+      );
+
+      test(
         '''Deve retornar um Unit quando a gravação do Service for feita com sucesso''',
         () async {
-          when(onlineMockServiceRepository.update(service: service1))
-              .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.update(service: service1))
-              .thenAnswer((_) async => Either.right(unit));
+          when(onlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
+          when(offlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
 
           final insertEither = await serviceService.update(service: service1);
 
@@ -169,8 +238,7 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockServiceRepository.deleteById(id: service1.id))
-              .thenAnswer((_) async => Either.right(unit));
+          when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
           when(offlineMockServiceRepository.deleteById(id: service1.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
@@ -184,12 +252,26 @@ void main() {
       );
 
       test(
+        '''Deve retornar um DeleteImageFailure quando um erro ocorrer ao excluir uma imagem''',
+        () async {
+          const failureMessage = 'Falha de teste';
+          when(mockImageRepository.deleteImage(imageUrl: serviceWithImageUrl.imageUrl))
+              .thenAnswer((_) async => Either.left(DeleteImageFailure(failureMessage)));
+
+          final insertEither = await serviceService.delete(service: serviceWithImageUrl);
+
+          expect(insertEither.isLeft, isTrue);
+          expect(insertEither.left is DeleteImageFailure, isTrue);
+          final state = (insertEither.left as DeleteImageFailure);
+          expect(state.message, equals(failureMessage));
+        },
+      );
+
+      test(
         '''Deve retornar um Unit quando a gravação do Service for feita com sucesso''',
         () async {
-          when(onlineMockServiceRepository.deleteById(id: service1.id))
-              .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.deleteById(id: service1.id))
-              .thenAnswer((_) async => Either.right(unit));
+          when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
+          when(offlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
 
           final insertEither = await serviceService.delete(service: service1);
 

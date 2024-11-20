@@ -1,77 +1,76 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
+import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
-import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
+import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
-import '../../../helpers/service/service_category/mock_service_category_repository.dart';
+import '../../../helpers/service/service/mock_service_repository.dart';
 import '../../../helpers/sync/mock_sync_repository.dart';
 
 void main() {
-  late SyncServiceCategoryService syncServiceCategoryService;
+  late SyncServiceService syncServiceService;
 
   late Sync syncEmpty;
-  late Sync syncServiceCategory;
+  late Sync syncService;
 
-  late ServiceCategory serviceCategory1;
-  late ServiceCategory serviceCategory2;
-  late ServiceCategory serviceCategory3;
-  late ServiceCategory serviceCategory4;
-  late ServiceCategory serviceCategory5Deleted;
+  late Service service1;
+  late Service service2;
+  late Service service3;
+  late Service service4;
+  late Service service5Deleted;
+  
+  late Service serviceLowestDate;
+  late Service serviceIntermediateDate;
+  late Service serviceBiggestDate;
+  
+  late List<Service> servicesGetAll;
+  late List<Service> servicesGetSync;
+  late List<Service> servicesGetHasDate;
 
-  late ServiceCategory serviceCategoryLowestDate;
-  late ServiceCategory serviceCategoryIntermediateDate;
-  late ServiceCategory serviceCategoryBiggestDate;
-
-  late List<ServiceCategory> serviceCategoriesGetAll;
-  late List<ServiceCategory> serviceCategoriesGetSync;
-  late List<ServiceCategory> serviceCategoriesGetHasDate;
-
-  setUpValues() {
+  void setUpValues() {
     syncEmpty = Sync();
-    syncServiceCategory = Sync(dateSyncServiceCategories: DateTime(2024, 10, 10));
+    syncService = Sync(dateSyncServices: DateTime(2024, 10, 10));
 
-    serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
-    serviceCategory2 = ServiceCategory(id: '2', name: 'Manicure');
-    serviceCategory3 = ServiceCategory(id: '3', name: 'Pedicure');
-    serviceCategory4 = ServiceCategory(id: '4', name: 'Luzes');
-    serviceCategory5Deleted = ServiceCategory(id: '4', name: 'Luzes', isDeleted: true);
-
-    serviceCategoryLowestDate = ServiceCategory(id: '1', name: 'Cabelo', syncDate: DateTime(2024, 11, 5));
-    serviceCategoryIntermediateDate = ServiceCategory(id: '2', name: 'Manicure', syncDate: DateTime(2024, 11, 10));
-    serviceCategoryBiggestDate = ServiceCategory(id: '3', name: 'Pedicure', syncDate: DateTime(2024, 11, 15));
-
-    serviceCategoriesGetAll = [
-      serviceCategory1,
-      serviceCategory2,
-      serviceCategory3,
-      serviceCategory4,
-      serviceCategory5Deleted,
-    ];
-
-    serviceCategoriesGetSync = [
-      serviceCategory3,
-      serviceCategory4,
-    ];
+    service1 = Service(id: '1', serviceCategoryId: '1', name: 'Luzes', price: 80, hours: 1, minutes: 15, imageUrl: 'imageurlluzes.jpg');
+    service2 = Service(id: '2', serviceCategoryId: '1', name: 'Chapinha', price: 40, hours: 0, minutes: 35, imageUrl: 'imageurlchapinha.jpg');
+    service3 = Service(id: '3', serviceCategoryId: '1', name: 'Escova', price: 40, hours: 0, minutes: 45, imageUrl: 'imageurlescova.jpg');
+    service4 = Service(id: '4', serviceCategoryId: '1', name: 'Platinado', price: 50, hours: 1, minutes: 40, imageUrl: 'imageurlplatinado.jpg');
+    service5Deleted = Service(id: '4', serviceCategoryId: '1', name: 'Degradê', price: 30, hours: 0, minutes: 45, imageUrl: 'imageurldegrade.jpg', isDeleted: true);
+  
+    serviceLowestDate = Service(id: '1', serviceCategoryId: '1', name: 'Luzes', price: 80, hours: 1, minutes: 15, imageUrl: 'imageurlluzes.jpg', syncDate: DateTime(2024, 11, 5));
+    serviceIntermediateDate = Service(id: '2', serviceCategoryId: '1', name: 'Chapinha', price: 40, hours: 0, minutes: 35, imageUrl: 'imageurlchapinha.jpg', syncDate: DateTime(2024, 11, 10));
+    serviceBiggestDate = Service(id: '3', serviceCategoryId: '1', name: 'Escova', price: 40, hours: 0, minutes: 45, imageUrl: 'imageurlescova.jpg', syncDate: DateTime(2024, 11, 15));
     
-    serviceCategoriesGetHasDate = [
-      serviceCategoryLowestDate,
-      serviceCategoryIntermediateDate,
-      serviceCategoryBiggestDate,
+    servicesGetAll = [
+      service1,
+      service2,
+      service3,
+      service4,
+      service5Deleted,
+    ];
+
+    servicesGetSync = [
+      service3,
+      service4,
+    ];
+
+    servicesGetHasDate = [
+      serviceLowestDate,
+      serviceIntermediateDate,
+      serviceBiggestDate,
     ];
   }
 
-  setUp(
-    () {
+  setUp(() {
       setUpMockSyncRepository();
-      setUpMockServiceCategoryRepository();
-      syncServiceCategoryService = SyncServiceCategoryService(
+      setUpMockServiceRepository();
+      syncServiceService = SyncServiceService(
         syncRepository: mockSyncRepository,
-        offlineRepository: offlineMockServiceCategoryRepository,
-        onlineRepository: onlineMockServiceCategoryRepository,
+        offlineRepository: offlineMockServiceRepository,
+        onlineRepository: onlineMockServiceRepository,
       );
       setUpValues();
     },
@@ -86,7 +85,7 @@ void main() {
           const failureMessage = 'Teste de falha';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final loadEither = await syncServiceCategoryService.loadSyncInfo();
+          final loadEither = await syncServiceService.loadSyncInfo();
 
           expect(loadEither.isLeft, isTrue);
           expect(loadEither.left is GetDatabaseFailure, isTrue);
@@ -96,31 +95,31 @@ void main() {
       );
 
       test(
-        '''Deve retornar um Unit e carregar o campo "sync" sem dados em "dateSyncServiceCategories"
+        '''Deve retornar um Unit e carregar o campo "sync" sem dados em "dateSyncServices"
         quando não houver sincronizações de ServiceCategory anteriores''',
         () async {
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(syncEmpty));
 
-          final loadEither = await syncServiceCategoryService.loadSyncInfo();
+          final loadEither = await syncServiceService.loadSyncInfo();
 
           expect(loadEither.isRight, isTrue);
           expect(loadEither.right is Unit, isTrue);
-          expect(syncServiceCategoryService.sync.dateSyncServiceCategories, isNull);
+          expect(syncServiceService.sync.dateSyncServices, isNull);
         },
       );
 
       test(
-        '''Deve retornar um Unit e carregar o campo "sync" com dados em "dateSyncServiceCategories"
-        quando houver sincronizações de ServiceCategory anteriores''',
+        '''Deve retornar um Unit e carregar o campo "sync" com dados em "dateSyncServices"
+        quando houver sincronizações de Service anteriores''',
         () async {
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(syncServiceCategory));
+          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(syncService));
 
-          final loadEither = await syncServiceCategoryService.loadSyncInfo();
+          final loadEither = await syncServiceService.loadSyncInfo();
 
           expect(loadEither.isRight, isTrue);
           expect(loadEither.right is Unit, isTrue);
-          expect(syncServiceCategoryService.sync.dateSyncServiceCategories,
-              equals(syncServiceCategory.dateSyncServiceCategories));
+          expect(syncServiceService.sync.dateSyncServices,
+              equals(syncService.dateSyncServices));
         },
       );
     },
@@ -131,14 +130,14 @@ void main() {
     () {
       test(
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet e não tiver 
-        sincronização de ServiceCategory anterior''',
+        sincronização de Service anterior''',
         () async {
           const failureMessage = 'Teste de falha';
-          syncServiceCategoryService.sync = syncEmpty;
-          when(onlineMockServiceCategoryRepository.getAll())
+          syncServiceService.sync = syncEmpty;
+          when(onlineMockServiceRepository.getAll())
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
-          final unsyncedEither = await syncServiceCategoryService.loadUnsynced();
+          final unsyncedEither = await syncServiceService.loadUnsynced();
 
           expect(unsyncedEither.isLeft, isTrue);
           expect(unsyncedEither.left is NetworkFailure, isTrue);
@@ -149,15 +148,15 @@ void main() {
 
       test(
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet e tiver 
-        sincronização de ServiceCategory anterior''',
+        sincronização de Service anterior''',
         () async {
           const failureMessage = 'Teste de falha';
-          syncServiceCategoryService.sync = syncServiceCategory;
-          when(onlineMockServiceCategoryRepository.getUnsync(
-                  dateLastSync: syncServiceCategory.dateSyncServiceCategories))
+          syncServiceService.sync = syncService;
+          when(onlineMockServiceRepository.getUnsync(
+                  dateLastSync: syncService.dateSyncServices))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
-          final unsyncedEither = await syncServiceCategoryService.loadUnsynced();
+          final unsyncedEither = await syncServiceService.loadUnsynced();
 
           expect(unsyncedEither.isLeft, isTrue);
           expect(unsyncedEither.left is NetworkFailure, isTrue);
@@ -167,42 +166,41 @@ void main() {
       );
 
       test(
-        '''Deve retornar um Unit e carregar o campo "serviceCategoriesToSync" com todos os
-        ServiceCategory cadastrados quando não tiver sincronização de ServiceCategory 
-        anterior''',
+        '''Deve retornar um Unit e carregar o campo "servicesToSync" com todos os
+        Service cadastrados quando não tiver sincronização de Service anterior''',
         () async {
-          syncServiceCategoryService.sync = syncEmpty;
-          when(onlineMockServiceCategoryRepository.getAll())
-              .thenAnswer((_) async => Either.right(serviceCategoriesGetAll));
+          syncServiceService.sync = syncEmpty;
+          when(onlineMockServiceRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesGetAll));
 
-          final loadUnsyncedEither = await syncServiceCategoryService.loadUnsynced();
+          final loadUnsyncedEither = await syncServiceService.loadUnsynced();
 
           expect(loadUnsyncedEither.isRight, isTrue);
           expect(loadUnsyncedEither.right is Unit, isTrue);
           expect(
-            syncServiceCategoryService.serviceCategoriesToSync.length,
-            equals(serviceCategoriesGetAll.length),
+            syncServiceService.servicesToSync.length,
+            equals(servicesGetAll.length),
           );
         },
       );
 
       test(
-        '''Deve retornar um Unit e carregar o campo "serviceCategoriesToSync" com os 
-        ServiceCategory que precisam ser sincronizados quando tiver alguma sincronização 
-        de ServiceCategory anterior''',
+        '''Deve retornar um Unit e carregar o campo "servicesToSync" com os 
+        Service que precisam ser sincronizados quando tiver alguma sincronização 
+        de Service anterior''',
         () async {
-          syncServiceCategoryService.sync = syncServiceCategory;
-          when(onlineMockServiceCategoryRepository.getUnsync(
-                  dateLastSync: syncServiceCategory.dateSyncServiceCategories))
-              .thenAnswer((_) async => Either.right(serviceCategoriesGetSync));
+          syncServiceService.sync = syncService;
+          when(onlineMockServiceRepository.getUnsync(
+                  dateLastSync: syncService.dateSyncServices))
+              .thenAnswer((_) async => Either.right(servicesGetSync));
 
-          final loadUnsyncedEither = await syncServiceCategoryService.loadUnsynced();
+          final loadUnsyncedEither = await syncServiceService.loadUnsynced();
 
           expect(loadUnsyncedEither.isRight, isTrue);
           expect(loadUnsyncedEither.right is Unit, isTrue);
           expect(
-            syncServiceCategoryService.serviceCategoriesToSync.length,
-            equals(serviceCategoriesGetSync.length),
+            syncServiceService.servicesToSync.length,
+            equals(servicesGetSync.length),
           );
         },
       );
@@ -210,17 +208,17 @@ void main() {
   );
 
   group(
-    'syncServiceCategory',
+    'syncService',
     () {
       test(
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline na 
-        verificação da existência do ServiceCategory''',
+        verificação da existência do Service''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceCategoryRepository.existsById(id: serviceCategory1.id))
+          when(offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serviceCategory1);
+          final unsyncedEither = await syncServiceService.syncService(service1);
 
           expect(unsyncedEither.isLeft, isTrue);
           expect(unsyncedEither.left is GetDatabaseFailure, isTrue);
@@ -231,15 +229,15 @@ void main() {
 
       test(
         '''Deve retornar um GetDatabaseFailure quando ocorrer um erro no banco offline na 
-        inserção do ServiceCategory''',
+        inserção do Service''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceCategoryRepository.existsById(id: serviceCategory1.id))
+          when(offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.right(false));
-          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
+          when(offlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serviceCategory1);
+          final unsyncedEither = await syncServiceService.syncService(service1);
 
           expect(unsyncedEither.isLeft, isTrue);
           expect(unsyncedEither.left is GetDatabaseFailure, isTrue);
@@ -250,15 +248,15 @@ void main() {
 
       test(
         '''Deve retornar um GetDatabaseFailure quando ocorrer um erro no banco offline na 
-        alteração do ServiceCategory''',
+        alteração do Service''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceCategoryRepository.existsById(id: serviceCategory1.id))
+          when(offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          when(offlineMockServiceRepository.update(service: service1))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serviceCategory1);
+          final unsyncedEither = await syncServiceService.syncService(service1);
 
           expect(unsyncedEither.isLeft, isTrue);
           expect(unsyncedEither.left is GetDatabaseFailure, isTrue);
@@ -269,13 +267,13 @@ void main() {
 
       test(
         '''Deve retornar um GetDatabaseFailure quando ocorrer um erro no banco offline na 
-        exclusão do ServiceCategory''',
+        exclusão do Service''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceCategoryRepository.deleteById(id: serviceCategory5Deleted.id))
+          when(offlineMockServiceRepository.deleteById(id: service5Deleted.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serviceCategory5Deleted);
+          final unsyncedEither = await syncServiceService.syncService(service5Deleted);
 
           expect(unsyncedEither.isLeft, isTrue);
           expect(unsyncedEither.left is GetDatabaseFailure, isTrue);
@@ -285,14 +283,14 @@ void main() {
       );
 
       test(
-        '''Deve retornar um Unit quando a inserção de um ServiceCategory for feita com sucesso''',
+        '''Deve retornar um Unit quando a inserção de um Service for feita com sucesso''',
         () async {
-          when(offlineMockServiceCategoryRepository.existsById(id: serviceCategory1.id))
+          when(offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.right(false));
-          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
-              .thenAnswer((_) async => Either.right(serviceCategory1.id));
+          when(offlineMockServiceRepository.insert(service: service1))
+              .thenAnswer((_) async => Either.right(service1.id));
 
-          final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serviceCategory1);
+          final unsyncedEither = await syncServiceService.syncService(service1);
 
           expect(unsyncedEither.isRight, isTrue);
           expect(unsyncedEither.right is Unit, isTrue);
@@ -300,14 +298,14 @@ void main() {
       );
 
       test(
-        '''Deve retornar um Unit quando a alteração de um ServiceCategory for feita com sucesso''',
+        '''Deve retornar um Unit quando a alteração de um Service for feita com sucesso''',
         () async {
-          when(offlineMockServiceCategoryRepository.existsById(id: serviceCategory1.id))
+          when(offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          when(offlineMockServiceRepository.update(service: service1))
               .thenAnswer((_) async => Either.right(unit));
 
-          final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serviceCategory1);
+          final unsyncedEither = await syncServiceService.syncService(service1);
 
           expect(unsyncedEither.isRight, isTrue);
           expect(unsyncedEither.right is Unit, isTrue);
@@ -315,12 +313,12 @@ void main() {
       );
 
       test(
-        '''Deve retornar um Unit quando a exclusão de um ServiceCategory for feitas com sucesso''',
+        '''Deve retornar um Unit quando a exclusão de um Service for feitas com sucesso''',
         () async {
-          when(offlineMockServiceCategoryRepository.deleteById(id: serviceCategory5Deleted.id))
+          when(offlineMockServiceRepository.deleteById(id: service5Deleted.id))
               .thenAnswer((_) async => Either.right(unit));
 
-          final unsyncedEither = await syncServiceCategoryService.syncServiceCategory(serviceCategory5Deleted);
+          final unsyncedEither = await syncServiceService.syncService(service5Deleted);
 
           expect(unsyncedEither.isRight, isTrue);
           expect(unsyncedEither.right is Unit, isTrue);
@@ -335,12 +333,12 @@ void main() {
       test(
         '''Deve retornar um GetDatabaseFailure quando ocorrer algum erro no banco offline''',
         () async {
-          syncServiceCategoryService.serviceCategoriesToSync = serviceCategoriesGetAll;
+          syncServiceService.servicesToSync = servicesGetAll;
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceCategoryRepository.existsById(id: serviceCategory1.id))
+          when(offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final uncyncedEither = await syncServiceCategoryService.syncUnsynced();
+          final uncyncedEither = await syncServiceService.syncUnsynced();
 
           expect(uncyncedEither.isLeft, isTrue);
           expect(uncyncedEither.left is GetDatabaseFailure, isTrue);
@@ -352,19 +350,19 @@ void main() {
       test(
         '''Deve retornar um Unit''',
         () async {
-          syncServiceCategoryService.serviceCategoriesToSync = serviceCategoriesGetAll;
-          when(offlineMockServiceCategoryRepository.deleteById(id: anyNamed('id')))
+          syncServiceService.servicesToSync = servicesGetAll;
+          when(offlineMockServiceRepository.deleteById(id: anyNamed('id')))
               .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
+          when(offlineMockServiceRepository.existsById(id: anyNamed('id')))
               .thenAnswer((_) async => Either.right(false));
-          when(offlineMockServiceCategoryRepository.insert(serviceCategory: anyNamed('serviceCategory')))
-              .thenAnswer((_) async => Either.right(serviceCategory1.id));
-          when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
+          when(offlineMockServiceRepository.insert(service: anyNamed('service')))
+              .thenAnswer((_) async => Either.right(service1.id));
+          when(offlineMockServiceRepository.existsById(id: anyNamed('id')))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
+          when(offlineMockServiceRepository.update(service: anyNamed('service')))
               .thenAnswer((_) async => Either.right(unit));
 
-          final uncyncedEither = await syncServiceCategoryService.syncUnsynced();
+          final uncyncedEither = await syncServiceService.syncUnsynced();
 
           expect(uncyncedEither.isRight, isTrue);
           expect(uncyncedEither.right is Unit, isTrue);
@@ -377,53 +375,53 @@ void main() {
     'getMaxSyncDate',
     () {
       test(
-        '''Deve retornar um erro quando o campo "serviceCategoriesToSync" estiver vazio''',
+        '''Deve retornar um erro quando o campo "servicesToSync" estiver vazio''',
         () {
-          syncServiceCategoryService.serviceCategoriesToSync = [];
+          syncServiceService.servicesToSync = [];
 
-          expect(() => syncServiceCategoryService.getMaxSyncDate(), throwsA(isA<Error>()));
+          expect(() => syncServiceService.getMaxSyncDate(), throwsA(isA<Error>()));
         },
       );
 
       test(
-        '''Deve retornar a data de "serviceCategoryBiggestDate"''',
+        '''Deve retornar a data de "serviceBiggestDate"''',
         () {
-          syncServiceCategoryService.serviceCategoriesToSync = [
-            serviceCategoryLowestDate,
-            serviceCategoryIntermediateDate,
-            serviceCategoryBiggestDate,
+          syncServiceService.servicesToSync = [
+            serviceLowestDate,
+            serviceIntermediateDate,
+            serviceBiggestDate,
           ];
 
-          final maxSyncDate = syncServiceCategoryService.getMaxSyncDate();
+          final maxSyncDate = syncServiceService.getMaxSyncDate();
 
-          expect(maxSyncDate, serviceCategoryBiggestDate.syncDate);
+          expect(maxSyncDate, serviceBiggestDate.syncDate);
         },
       );
 
       test(
-        '''Deve retornar a data de "serviceCategoryIntermediateDate"''',
+        '''Deve retornar a data de "serviceIntermediateDate"''',
         () {
-          syncServiceCategoryService.serviceCategoriesToSync = [
-            serviceCategoryIntermediateDate,
-            serviceCategoryLowestDate,
+          syncServiceService.servicesToSync = [
+            serviceIntermediateDate,
+            serviceLowestDate,
           ];
 
-          final maxSyncDate = syncServiceCategoryService.getMaxSyncDate();
+          final maxSyncDate = syncServiceService.getMaxSyncDate();
 
-          expect(maxSyncDate, serviceCategoryIntermediateDate.syncDate);
+          expect(maxSyncDate, serviceIntermediateDate.syncDate);
         },
       );
 
       test(
-        '''Deve retornar a data de "serviceCategoryLowestDate"''',
+        '''Deve retornar a data de "serviceLowestDate"''',
         () {
-          syncServiceCategoryService.serviceCategoriesToSync = [
-            serviceCategoryLowestDate,
+          syncServiceService.servicesToSync = [
+            serviceLowestDate,
           ];
 
-          final maxSyncDate = syncServiceCategoryService.getMaxSyncDate();
+          final maxSyncDate = syncServiceService.getMaxSyncDate();
 
-          expect(maxSyncDate, serviceCategoryLowestDate.syncDate);
+          expect(maxSyncDate, serviceLowestDate.syncDate);
         },
       );
     },
@@ -436,15 +434,15 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline ao 
         verificar a existência de sincronizações anteriores''',
         () async {
-          syncServiceCategoryService.serviceCategoriesToSync = [
-            serviceCategoryLowestDate,
-            serviceCategoryIntermediateDate,
-            serviceCategoryBiggestDate,
+          syncServiceService.servicesToSync = [
+            serviceLowestDate,
+            serviceIntermediateDate,
+            serviceBiggestDate,
           ];
           const failureMessage = 'Teste de falha';
           when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final updateEither = await syncServiceCategoryService.updateSyncDate();
+          final updateEither = await syncServiceService.updateSyncDate();
 
           expect(updateEither.isLeft, isTrue);
           expect(updateEither.left is GetDatabaseFailure, isTrue);
@@ -457,18 +455,18 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline ao 
         inserir uma data de sincronização''',
         () async {
-          syncServiceCategoryService.sync = syncEmpty;
-          syncServiceCategoryService.serviceCategoriesToSync = [
-            serviceCategoryLowestDate,
-            serviceCategoryIntermediateDate,
-            serviceCategoryBiggestDate,
+          syncServiceService.sync = syncEmpty;
+          syncServiceService.servicesToSync = [
+            serviceLowestDate,
+            serviceIntermediateDate,
+            serviceBiggestDate,
           ];
           const failureMessage = 'Teste de falha';
           when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
           when(mockSyncRepository.insert(sync: anyNamed('sync')))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final updateEither = await syncServiceCategoryService.updateSyncDate();
+          final updateEither = await syncServiceService.updateSyncDate();
 
           expect(updateEither.isLeft, isTrue);
           expect(updateEither.left is GetDatabaseFailure, isTrue);
@@ -481,18 +479,18 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline ao 
         alterar uma data de sincronização''',
         () async {
-          syncServiceCategoryService.sync = syncEmpty;
-          syncServiceCategoryService.serviceCategoriesToSync = [
-            serviceCategoryLowestDate,
-            serviceCategoryIntermediateDate,
-            serviceCategoryBiggestDate,
+          syncServiceService.sync = syncEmpty;
+          syncServiceService.servicesToSync = [
+            serviceLowestDate,
+            serviceIntermediateDate,
+            serviceBiggestDate,
           ];
           const failureMessage = 'Teste de falha';
           when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
-          when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))
+          when(mockSyncRepository.updateService(syncDate: anyNamed('syncDate')))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final updateEither = await syncServiceCategoryService.updateSyncDate();
+          final updateEither = await syncServiceService.updateSyncDate();
 
           expect(updateEither.isLeft, isTrue);
           expect(updateEither.left is GetDatabaseFailure, isTrue);
@@ -502,11 +500,11 @@ void main() {
       );
 
       test(
-        '''Deve retornar um Unit quando o serviceCategoriesToSync estiver vazio''',
+        '''Deve retornar um Unit quando o servicesToSync estiver vazio''',
         () async {
-          syncServiceCategoryService.serviceCategoriesToSync = [];
+          syncServiceService.servicesToSync = [];
 
-          final updateEither = await syncServiceCategoryService.updateSyncDate();
+          final updateEither = await syncServiceService.updateSyncDate();
 
           expect(updateEither.isRight, isTrue);
           expect(updateEither.right is Unit, isTrue);
@@ -517,17 +515,17 @@ void main() {
         '''Deve retornar um Unit quando a inserção de uma nova data de sincronização for
         feita com sucesso''',
         () async {
-          syncServiceCategoryService.sync = syncEmpty;
-          syncServiceCategoryService.serviceCategoriesToSync = [
-            serviceCategoryLowestDate,
-            serviceCategoryIntermediateDate,
-            serviceCategoryBiggestDate,
+          syncServiceService.sync = syncEmpty;
+          syncServiceService.servicesToSync = [
+            serviceLowestDate,
+            serviceIntermediateDate,
+            serviceBiggestDate,
           ];
 
           when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
           when(mockSyncRepository.insert(sync: anyNamed('sync'))).thenAnswer((_) async => Either.right(unit));
 
-          final updateEither = await syncServiceCategoryService.updateSyncDate();
+          final updateEither = await syncServiceService.updateSyncDate();
 
           expect(updateEither.isRight, isTrue);
           expect(updateEither.right is Unit, isTrue);
@@ -538,18 +536,18 @@ void main() {
         '''Deve retornar um Unit quando a atualização de uma nova data de sincronização for
         feita com sucesso''',
         () async {
-          syncServiceCategoryService.sync = syncEmpty;
-          syncServiceCategoryService.serviceCategoriesToSync = [
-            serviceCategoryLowestDate,
-            serviceCategoryIntermediateDate,
-            serviceCategoryBiggestDate,
+          syncServiceService.sync = syncEmpty;
+          syncServiceService.servicesToSync = [
+            serviceLowestDate,
+            serviceIntermediateDate,
+            serviceBiggestDate,
           ];
 
           when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
-          when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))
+          when(mockSyncRepository.updateService(syncDate: anyNamed('syncDate')))
               .thenAnswer((_) async => Either.right(unit));
 
-          final updateEither = await syncServiceCategoryService.updateSyncDate();
+          final updateEither = await syncServiceService.updateSyncDate();
 
           expect(updateEither.isRight, isTrue);
           expect(updateEither.right is Unit, isTrue);
@@ -568,7 +566,7 @@ void main() {
           const failureMessage = 'Teste de falha';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final syncEither = await syncServiceCategoryService.synchronize();
+          final syncEither = await syncServiceService.synchronize();
 
           expect(syncEither.isLeft, isTrue);
           expect(syncEither.left is GetDatabaseFailure, isTrue);
@@ -582,10 +580,10 @@ void main() {
         () async {
           const failureMessage = '';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceCategoryRepository.getAll())
+          when(onlineMockServiceRepository.getAll())
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
-          final syncEither = await syncServiceCategoryService.synchronize();
+          final syncEither = await syncServiceService.synchronize();
 
           expect(syncEither.isLeft, isTrue);
           expect(syncEither.left is NetworkFailure, isTrue);
@@ -595,15 +593,15 @@ void main() {
 
       test(
         '''Deve retornar um GetDatabaseFailure quando uma falha ocorrer no banco offline ao 
-        verificar se o ServiceCategory existe''',
+        verificar se o Service existe''',
         () async {
           const failureMessage = 'Falha syncUnsynced';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serviceCategoriesGetAll));
-          when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
+          when(onlineMockServiceRepository.getAll()).thenAnswer((_) async => Either.right(servicesGetAll));
+          when(offlineMockServiceRepository.existsById(id: anyNamed('id')))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final syncEither = await syncServiceCategoryService.synchronize();
+          final syncEither = await syncServiceService.synchronize();
 
           expect(syncEither.isLeft, isTrue);
           expect(syncEither.left is Failure, isTrue);
@@ -617,14 +615,14 @@ void main() {
         () async {
           const failureMessage = 'Falha updateSyncDate';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serviceCategoriesGetHasDate));
-          when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
+          when(onlineMockServiceRepository.getAll()).thenAnswer((_) async => Either.right(servicesGetHasDate));
+          when(offlineMockServiceRepository.existsById(id: anyNamed('id')))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
+          when(offlineMockServiceRepository.update(service: anyNamed('service')))
               .thenAnswer((_) async => Either.right(unit));
           when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final syncEither = await syncServiceCategoryService.synchronize();
+          final syncEither = await syncServiceService.synchronize();
 
           expect(syncEither.isLeft, isTrue);
           expect(syncEither.left is Failure, isTrue);
@@ -636,16 +634,16 @@ void main() {
         '''Deve retornar um Unit quando a sincronização for realizada com sucesso''',
         () async {
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serviceCategoriesGetHasDate));
-          when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
+          when(onlineMockServiceRepository.getAll()).thenAnswer((_) async => Either.right(servicesGetHasDate));
+          when(offlineMockServiceRepository.existsById(id: anyNamed('id')))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
+          when(offlineMockServiceRepository.update(service: anyNamed('service')))
               .thenAnswer((_) async => Either.right(unit));
           when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
-          when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))
+          when(mockSyncRepository.updateService(syncDate: anyNamed('syncDate')))
               .thenAnswer((_) async => Either.right(unit));
 
-          final syncEither = await syncServiceCategoryService.synchronize();
+          final syncEither = await syncServiceService.synchronize();
 
           expect(syncEither.isRight, isTrue);
           expect(syncEither.right is Unit, isTrue);

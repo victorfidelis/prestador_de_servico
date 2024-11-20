@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
@@ -9,12 +8,10 @@ import 'package:prestador_de_servico/app/states/service/service_edit_state.dart'
 
 class ServiceEditController extends ChangeNotifier {
   final ServiceService serviceService;
-  final ImageRepository imageRepository;
   final OfflineImageService offlineImageService;
 
   ServiceEditController({
     required this.serviceService,
-    required this.imageRepository,
     required this.offlineImageService,
   });
 

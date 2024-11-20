@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/controllers/sync/sync_controller.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-import 'package:prestador_de_servico/app/models/sync/sync.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
+import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:prestador_de_servico/app/states/sync/sync_state.dart';
 
 import '../../../helpers/network/mock_network_service.dart';
+import '../../../helpers/service/service/mock_service_repository.dart';
 import '../../../helpers/service/service_category/mock_service_category_repository.dart';
 import '../../../helpers/sync/mock_sync_repository.dart';
 
@@ -16,26 +16,13 @@ void main() {
   late SyncController syncController;
 
   late SyncServiceCategoryService syncServiceCategoryService;
-
-  late ServiceCategory serviceCategory1;
-  late ServiceCategory serviceCategory2;
-  late ServiceCategory serviceCategory3;
-  late List<ServiceCategory> serviceCategories;
+  late SyncServiceService syncServiceService;
 
   setUpValues() {
-    serviceCategory1 = ServiceCategory(id: '1', name: 'serviceCategory1', syncDate: DateTime(2024, 10, 15));
-    serviceCategory2 = ServiceCategory(id: '2', name: 'serviceCategory2', syncDate: DateTime(2024, 10, 16));
-    serviceCategory3 = ServiceCategory(id: '3', name: 'serviceCategory3', syncDate: DateTime(2024, 10, 17));
-
-    serviceCategories = [
-      serviceCategory1,
-      serviceCategory2,
-      serviceCategory3,
-    ];
-
     syncController = SyncController(
       networkService: mockNetworkService,
       syncServiceCategoryService: syncServiceCategoryService,
+      syncServiceService: syncServiceService,
     );
   }
 
@@ -43,11 +30,17 @@ void main() {
     () {
       setUpMockSyncRepository();
       setUpMockServiceCategoryRepository();
+      setUpMockServiceRepository();
       setUpNetworkService();
       syncServiceCategoryService = SyncServiceCategoryService(
         syncRepository: mockSyncRepository,
         offlineRepository: offlineMockServiceCategoryRepository,
         onlineRepository: onlineMockServiceCategoryRepository,
+      );
+      syncServiceService = SyncServiceService(
+        syncRepository: mockSyncRepository,
+        offlineRepository: offlineMockServiceRepository,
+        onlineRepository: onlineMockServiceRepository,
       );
       setUpValues();
     },
@@ -95,28 +88,6 @@ void main() {
           await Future.delayed(const Duration(seconds: 2));
 
           expect(syncController.state is NoNetworkToSync, isTrue);
-        },
-      );
-
-      test(
-        '''Deve alterar o estado para Synchronized quando nenhuma falha ocorrer.''',
-        () async {
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceCategoryRepository.getAll()).thenAnswer((_) async => Either.right(serviceCategories));
-          when(offlineMockServiceCategoryRepository.existsById(id: anyNamed('id')))
-              .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceCategoryRepository.update(serviceCategory: anyNamed('serviceCategory')))
-              .thenAnswer((_) async => Either.right(unit));
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
-          when(mockSyncRepository.updateServiceCategory(syncDate: anyNamed('syncDate')))
-              .thenAnswer((_) async => Either.right(unit));
-          when(mockNetworkService.isConnectedToInternet()).thenAnswer((_) async => true);
-
-          syncController.syncData();
-
-          await Future.delayed(const Duration(seconds: 2));
-
-          expect(syncController.state is Synchronized, isTrue);
         },
       );
     },

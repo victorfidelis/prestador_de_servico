@@ -40,27 +40,29 @@ class _FakeEither_0<L, R> extends _i1.SmartFake implements _i2.Either<L, R> {
 /// See the documentation for Mockito's code generation for more information.
 class MockImageRepository extends _i1.Mock implements _i3.ImageRepository {
   @override
-  _i4.Future<_i2.Either<_i5.Failure, String>> uploadImage(
-    String? imageFileName,
-    _i6.File? imageFile,
-  ) =>
+  _i4.Future<_i2.Either<_i5.Failure, String>> uploadImage({
+    required String? imageFileName,
+    required _i6.File? imageFile,
+  }) =>
       (super.noSuchMethod(
         Invocation.method(
           #uploadImage,
-          [
-            imageFileName,
-            imageFile,
-          ],
+          [],
+          {
+            #imageFileName: imageFileName,
+            #imageFile: imageFile,
+          },
         ),
         returnValue: _i4.Future<_i2.Either<_i5.Failure, String>>.value(
             _FakeEither_0<_i5.Failure, String>(
           this,
           Invocation.method(
             #uploadImage,
-            [
-              imageFileName,
-              imageFile,
-            ],
+            [],
+            {
+              #imageFileName: imageFileName,
+              #imageFile: imageFile,
+            },
           ),
         )),
         returnValueForMissingStub:
@@ -69,27 +71,31 @@ class MockImageRepository extends _i1.Mock implements _i3.ImageRepository {
           this,
           Invocation.method(
             #uploadImage,
-            [
-              imageFileName,
-              imageFile,
-            ],
+            [],
+            {
+              #imageFileName: imageFileName,
+              #imageFile: imageFile,
+            },
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, String>>);
 
   @override
-  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> deleteImage(String? imageUrl) =>
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> deleteImage(
+          {required String? imageUrl}) =>
       (super.noSuchMethod(
         Invocation.method(
           #deleteImage,
-          [imageUrl],
+          [],
+          {#imageUrl: imageUrl},
         ),
         returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
             _FakeEither_0<_i5.Failure, _i2.Unit>(
           this,
           Invocation.method(
             #deleteImage,
-            [imageUrl],
+            [],
+            {#imageUrl: imageUrl},
           ),
         )),
         returnValueForMissingStub:
@@ -98,7 +104,8 @@ class MockImageRepository extends _i1.Mock implements _i3.ImageRepository {
           this,
           Invocation.method(
             #deleteImage,
-            [imageUrl],
+            [],
+            {#imageUrl: imageUrl},
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);

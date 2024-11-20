@@ -1,4 +1,5 @@
 import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
@@ -7,10 +8,12 @@ import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 class ServiceService {
   ServiceRepository offlineRepository;
   ServiceRepository onlineRepository;
+  ImageRepository imageRepository;
 
   ServiceService({
     required this.offlineRepository,
     required this.onlineRepository,
+    required this.imageRepository,
   });
 
   Future<Either<Failure, List<Service>>> getAll() async {
@@ -29,27 +32,52 @@ class ServiceService {
     final insertOnlineEither = await onlineRepository.insert(service: service);
     if (insertOnlineEither.isLeft) {
       return Either.left(insertOnlineEither.left);
-    } 
+    }
 
     service = service.copyWith(id: insertOnlineEither.right);
     final insertOfflineEither = await offlineRepository.insert(service: service);
     if (insertOfflineEither.isLeft) {
       return Either.left(insertOfflineEither.left);
-    } 
+    }
+
+    // É necessário primeiro inserir o Service depois inserir a imagem
+    // Após isso, atualizar o Service com a imagem inserida
+    if (service.imageFile != null) { 
+      final updateEither = await update(service: service);
+      if (updateEither.isLeft) {
+        return Either.left(updateEither.left);
+      }
+    }
 
     return Either.right(service);
   }
 
   Future<Either<Failure, Unit>> update({required Service service}) async {
+    if (service.imageFile != null) {
+      final uploadImageEither =
+          await imageRepository.uploadImage(imageFileName: service.imageName, imageFile: service.imageFile!);
+      if (uploadImageEither.isLeft) {
+        return Either.left(uploadImageEither.left);
+      }
+      service = service.copyWith(urlImage: uploadImageEither.right);
+    }
+
     final insertOnlineEither = await onlineRepository.update(service: service);
     if (insertOnlineEither.isLeft) {
       return Either.left(insertOnlineEither.left);
-    } 
+    }
 
     return await offlineRepository.update(service: service);
   }
-  
+
   Future<Either<Failure, Unit>> delete({required Service service}) async {
+    if (service.imageUrl.isNotEmpty) {
+      final deleteImageEither = await imageRepository.deleteImage(imageUrl: service.imageUrl);
+      if (deleteImageEither.isLeft) {
+        return Either.left(deleteImageEither.left!);
+      }
+    }
+
     final deleteOnlineEither = await onlineRepository.deleteById(id: service.id);
     if (deleteOnlineEither.isLeft) {
       return Either.left(deleteOnlineEither.left);

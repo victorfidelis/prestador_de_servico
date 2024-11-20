@@ -71,17 +71,17 @@ void main() {
   setUp(
     () {
       setUpMockServiceRepository();
+      setUpMockImageRepository();
       ServiceService serviceService = ServiceService(
         onlineRepository: onlineMockServiceRepository,
         offlineRepository: offlineMockServiceRepository,
+        imageRepository: mockImageRepository,
       );
 
-      setUpMockImageRepository();
       setUpMockOfflineImageService();
 
       serviceEditController = ServiceEditController(
         serviceService: serviceService,
-        imageRepository: mockImageRepository,
         offlineImageService: mockOfflineImageService,
       );
       setUpValues();

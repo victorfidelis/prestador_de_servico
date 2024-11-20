@@ -17,6 +17,8 @@ class Service {
 
   String get nameWithoutDiacritics => replaceDiacritic(name);
 
+  String get imageName => 'images/services/${id}_01.png';
+
   Service({
     required this.id,
     required this.serviceCategoryId,

@@ -21,6 +21,7 @@ import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/services/service/services_by_category_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
+import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
@@ -45,6 +46,11 @@ class App extends StatelessWidget {
               syncRepository: SyncRepository.create(),
               offlineRepository: ServiceCategoryRepository.createOffline(),
               onlineRepository: ServiceCategoryRepository.createOnline(),
+            ),
+            syncServiceService: SyncServiceService(
+              syncRepository: SyncRepository.create(),
+              offlineRepository: ServiceRepository.createOffline(),
+              onlineRepository: ServiceRepository.createOnline(),
             ),
           ),
         ),
@@ -82,6 +88,7 @@ class App extends StatelessWidget {
             serviceService: ServiceService(
               offlineRepository: ServiceRepository.createOffline(),
               onlineRepository: ServiceRepository.createOnline(),
+              imageRepository: ImageRepository.create(),
             ),
             servicesByCategoryService: ServicesByCategoryService(
               offlineRepository: ServicesByCategoryRepository.createOffline(),
@@ -101,8 +108,8 @@ class App extends StatelessWidget {
             serviceService: ServiceService(
               offlineRepository: ServiceRepository.createOffline(),
               onlineRepository: ServiceRepository.createOnline(),
+              imageRepository: ImageRepository.create(),
             ),
-            imageRepository: ImageRepository.create(),
             offlineImageService: OfflineImageService.create(),
           ),
         ),

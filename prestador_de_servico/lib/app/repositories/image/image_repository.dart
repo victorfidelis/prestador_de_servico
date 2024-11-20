@@ -10,6 +10,6 @@ abstract class ImageRepository {
     return FirebaseImageRepository();
   }
 
-  Future<Either<Failure, String>> uploadImage(String imageFileName, File imageFile);
-  Future<Either<Failure, Unit>> deleteImage(String imageUrl); 
+  Future<Either<Failure, String>> uploadImage({required String imageFileName, required File imageFile});
+  Future<Either<Failure, Unit>> deleteImage({required String imageUrl});
 }

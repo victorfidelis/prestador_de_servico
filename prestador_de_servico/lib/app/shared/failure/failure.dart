@@ -53,3 +53,7 @@ class PickImageFailure extends Failure {
 class UploadImageFailure extends Failure {
   UploadImageFailure(super.message);
 }
+
+class DeleteImageFailure extends Failure {
+  DeleteImageFailure(super.message);
+}

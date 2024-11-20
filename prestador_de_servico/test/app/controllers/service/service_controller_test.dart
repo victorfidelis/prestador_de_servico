@@ -11,6 +11,7 @@ import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:prestador_de_servico/app/states/service/service_state.dart';
 
+import '../../../helpers/image/mock_image_repository.dart';
 import '../../../helpers/service/service/mock_service_repository.dart';
 import '../../../helpers/service/service_category/mock_service_category_repository.dart';
 import '../../../helpers/service/services_by_category/mock_services_by_category_repository.dart';
@@ -131,6 +132,7 @@ void main() {
       setUpMockServiceCategoryRepository();
       setUpMockServiceRepository();
       setUpMockServicesByCategoryRepository();
+      setUpMockImageRepository();
       final serviceCategoryService = ServiceCategoryService(
         onlineRepository: onlineMockServiceCategoryRepository,
         offlineRepository: offlineMockServiceCategoryRepository,
@@ -138,6 +140,7 @@ void main() {
       final serviceService = ServiceService(
         offlineRepository: offlineMockServiceRepository,
         onlineRepository: onlineMockServiceRepository,
+        imageRepository: mockImageRepository,
       );
       final servicesByCategoryService = ServicesByCategoryService(
         offlineRepository: offlineMockServicesByCategoryRepository,
