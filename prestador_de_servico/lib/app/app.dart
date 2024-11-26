@@ -25,7 +25,7 @@ import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
-import 'package:prestador_de_servico/app/views/service/service_category_view.dart';
+import 'package:prestador_de_servico/app/views/service/service_view.dart';
 import 'package:prestador_de_servico/app/views/navigation/navigation_view.dart';
 import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
@@ -122,7 +122,7 @@ class App extends StatelessWidget {
           '/createAccount': (context) => const CreateUserView(),
           '/passwordReset': (context) => const PasswordResetView(),
           '/navigation': (context) => NavigationView(),
-          '/serviceCategory': (context) => const ServiceCategoryView(),
+          '/service': (context) => const ServiceView(),
           '/serviceCategoryEdit': (context) => const ServiceCategoryEditView(),
           '/serviceEdit': (context) => const ServiceEditView(),
         },

@@ -16,7 +16,7 @@ class MenuView extends StatelessWidget {
               label: 'Serviços',
               icon: Icons.handyman_outlined,
               onTap: () {
-                Navigator.of(context).pushNamed('/serviceCategory');
+                Navigator.of(context).pushNamed('/service');
               },
             ),
             Divider(

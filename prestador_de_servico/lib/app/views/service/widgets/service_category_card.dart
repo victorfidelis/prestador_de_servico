@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
+import 'package:prestador_de_servico/app/views/service/widgets/service_card.dart';
 
 class ServiceCategoryCard extends StatelessWidget {
   final ServicesByCategory servicesByCategory;
@@ -30,7 +31,7 @@ class ServiceCategoryCard extends StatelessWidget {
       ),
       child: SizeTransition(
         sizeFactor: animation,
-        child: FadeTransition(  
+        child: FadeTransition(
           opacity: animation,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,6 +65,17 @@ class ServiceCategoryCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 6),
+              SizedBox(
+                height: 160,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: servicesByCategory.services.length,
+                  itemBuilder: (context, index) {
+                    return ServiceCard(onTap: () {}, service: servicesByCategory.services[index]);
+                  },
+                ),
+              ),
+              const SizedBox(height: 6),
               Row(
                 children: [
                   Expanded(
@@ -81,5 +93,5 @@ class ServiceCategoryCard extends StatelessWidget {
         ),
       ),
     );
-  } 
+  }
 }

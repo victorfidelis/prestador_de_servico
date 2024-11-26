@@ -17,14 +17,14 @@ import 'package:prestador_de_servico/app/views/service/widgets/service_category_
 import 'package:provider/provider.dart';
 import 'package:prestador_de_servico/app/shared/helpers/custom_animated_list.dart';
 
-class ServiceCategoryView extends StatefulWidget {
-  const ServiceCategoryView({super.key});
+class ServiceView extends StatefulWidget {
+  const ServiceView({super.key});
 
   @override
-  State<ServiceCategoryView> createState() => _ServiceCategoryViewState();
+  State<ServiceView> createState() => _ServiceViewState();
 }
 
-class _ServiceCategoryViewState extends State<ServiceCategoryView> {
+class _ServiceViewState extends State<ServiceView> {
   final CustomNotifications _notifications = CustomNotifications();
   final GlobalKey<SliverAnimatedListState> _animatedListKey = GlobalKey<SliverAnimatedListState>();
   late CustomAnimatedList<ServicesByCategory> _listServicesByCategories;
