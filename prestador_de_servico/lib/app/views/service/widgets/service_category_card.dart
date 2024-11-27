@@ -24,9 +24,11 @@ class ServiceCategoryCard extends StatelessWidget {
 
   @override
   build(BuildContext context) {
+    final hasService = servicesByCategory.services.isNotEmpty;
+
     return Container(
       padding: const EdgeInsets.symmetric(
-        horizontal: 12,
+        // horizontal: 12,
         vertical: 12,
       ),
       child: SizeTransition(
@@ -36,62 +38,81 @@ class ServiceCategoryCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      servicesByCategory.serviceCategory.name,
-                      style: const TextStyle(fontSize: 18),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 26),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        servicesByCategory.serviceCategory.name,
+                        style: const TextStyle(fontSize: 18),
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      onDelete(serviceCategory: servicesByCategory.serviceCategory, index: index);
-                    },
-                    icon: Icon(
-                      Icons.delete,
-                      color: Theme.of(context).colorScheme.error,
+                    IconButton(
+                      onPressed: () {
+                        onDelete(serviceCategory: servicesByCategory.serviceCategory, index: index);
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {
-                      onEdit(servicesByCategory: servicesByCategory, index: index);
-                    },
-                    icon: Icon(
-                      Icons.edit,
-                      color: Theme.of(context).colorScheme.secondary,
+                    IconButton(
+                      onPressed: () {
+                        onEdit(servicesByCategory: servicesByCategory, index: index);
+                      },
+                      icon: Icon(
+                        Icons.edit,
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 6),
-              SizedBox(
-                height: 160,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: servicesByCategory.services.length,
-                  itemBuilder: (context, index) {
-                    return ServiceCard(onTap: () {}, service: servicesByCategory.services[index]);
-                  },
+                  ],
                 ),
               ),
+              hasService ? const SizedBox(height: 6) : Container(),
+              hasService
+                  ? SizedBox(
+                      height: 160,
+                      child: ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: servicesByCategory.services.length,
+                        itemBuilder: (context, index) {
+                          return _serviceWidget(index);
+                        },
+                      ),
+                    )
+                  : Container(),
               const SizedBox(height: 6),
-              Row(
-                children: [
-                  Expanded(
-                      child: CustomLink(
-                    label: 'Adicionar novo',
-                    onTap: () {
-                      onAddService(serviceCategory: servicesByCategory.serviceCategory);
-                    },
-                  )),
-                  CustomLink(label: 'Mostrar tudo', onTap: () {})
-                ],
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 26),
+                child: Row(
+                  children: [
+                    Expanded(
+                        child: CustomLink(
+                      label: 'Adicionar novo',
+                      onTap: () {
+                        onAddService(serviceCategory: servicesByCategory.serviceCategory);
+                      },
+                    )),
+                    CustomLink(label: 'Mostrar tudo', onTap: () {})
+                  ],
+                ),
               )
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _serviceWidget(int index) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        index == 0 ? const SizedBox(width: 16) : Container(),
+        ServiceCard(onTap: () {}, service: servicesByCategory.services[index]),
+        index == servicesByCategory.services.length - 1 ? const SizedBox(width: 16) : Container(),
+      ],
     );
   }
 }

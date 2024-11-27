@@ -1,11 +1,11 @@
 import 'package:flutter/services.dart';
 
-class HoursFormatter extends TextInputFormatter {
+class MinutesTextInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     var filteredText = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
 
-    if (filteredText.isNotEmpty && int.parse(filteredText) >= 24) {
+    if (filteredText.isNotEmpty && int.parse(filteredText) >= 60) {
       filteredText = oldValue.text;
     }
 

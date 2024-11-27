@@ -1,6 +1,6 @@
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 
-extension EitherExtension<L, R> on Either<L, R> {
+extension EitherExtensions<L, R> on Either<L, R> {
   bool get isLeft => left != null;
   bool get isRight => right != null;
 

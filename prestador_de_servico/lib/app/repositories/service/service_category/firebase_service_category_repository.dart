@@ -4,7 +4,7 @@ import 'package:prestador_de_servico/app/models/service_category/service_cartego
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
+import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
 class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {

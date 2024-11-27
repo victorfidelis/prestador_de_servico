@@ -3,7 +3,7 @@ import 'package:prestador_de_servico/app/models/service_category/service_cartego
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/services/service/services_by_category_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either_extension.dart';
+import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
 import 'package:prestador_de_servico/app/states/service/service_state.dart';
 
 class ServiceController extends ChangeNotifier {

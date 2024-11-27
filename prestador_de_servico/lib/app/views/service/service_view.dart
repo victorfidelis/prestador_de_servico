@@ -112,7 +112,7 @@ class _ServiceViewState extends State<ServiceView> {
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 14,
+                  // horizontal: 14,
                   vertical: 6,
                 ),
                 sliver: SliverAnimatedList(

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-import 'package:prestador_de_servico/app/shared/fomatters/hours_formatter.dart';
-import 'package:prestador_de_servico/app/shared/fomatters/minutes_formatter.dart';
-import 'package:prestador_de_servico/app/shared/fomatters/money_formatter.dart';
+import 'package:prestador_de_servico/app/shared/text_input_fomatters/hours_text_input_formatter.dart';
+import 'package:prestador_de_servico/app/shared/text_input_fomatters/minutes_text_input_formatter.dart';
+import 'package:prestador_de_servico/app/shared/text_input_fomatters/money_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
@@ -161,7 +161,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                             focusNode: priceFocus,
                             errorMessage: priceErrorMessage,
                             isNumeric: true,
-                            inputFormatters: [MoneyFormatter()],
+                            inputFormatters: [MoneyTextInputFormatter()],
                           ),
                           const SizedBox(height: 20),
                           Row(
@@ -172,7 +172,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                                   controller: hoursController,
                                   focusNode: hoursFocus,
                                   isNumeric: true,
-                                  inputFormatters: [HoursFormatter()],
+                                  inputFormatters: [HoursTextInputFormatter()],
                                 ),
                               ),
                               const SizedBox(width: 20),
@@ -182,7 +182,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                                   controller: minutesController,
                                   focusNode: minutesFocus,
                                   isNumeric: true,
-                                  inputFormatters: [MinutesFormatter()],
+                                  inputFormatters: [MinutesTextInputFormatter()],
                                 ),
                               ),
                             ],

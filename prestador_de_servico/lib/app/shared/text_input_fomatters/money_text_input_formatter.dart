@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-class MoneyFormatter extends TextInputFormatter {
+class MoneyTextInputFormatter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
     var filteredText = newValue.text.replaceAll(RegExp(r'[^0-9,]'), '');

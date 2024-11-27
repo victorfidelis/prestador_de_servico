@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
 
 class ServiceCard extends StatelessWidget {
   final Function() onTap;
@@ -25,7 +26,7 @@ class ServiceCard extends StatelessWidget {
       onTap: () {},
       child: Container(
         width: 180,
-        margin: const EdgeInsets.symmetric(horizontal: 4),
+        margin: const EdgeInsets.symmetric(horizontal: 6),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -65,7 +66,7 @@ class ServiceCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          service.minutes.toString(),
+                          Formatters.formatHoursAndMinutes(service.hours, service.minutes),
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -73,7 +74,7 @@ class ServiceCard extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        service.price.toString(),
+                        Formatters.formatPrice(service.price),
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
