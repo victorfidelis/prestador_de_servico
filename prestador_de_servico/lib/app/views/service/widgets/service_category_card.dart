@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_card.dart';
+import 'package:provider/provider.dart';
 
-class ServiceCategoryCard extends StatelessWidget {
-  final ServicesByCategory servicesByCategory;
-  final Function({required ServicesByCategory servicesByCategory, required int index}) onEdit;
+class ServiceCategoryCard extends StatefulWidget {
+  ServicesByCategory servicesByCategory;
   final Function({required ServiceCategory serviceCategory, required int index}) onDelete;
   final Function({required ServiceCategory serviceCategory}) onAddService;
   final int index;
   final Animation<double> animation;
 
-  const ServiceCategoryCard({
+  ServiceCategoryCard({
     super.key,
     required this.servicesByCategory,
-    required this.onEdit,
     required this.onDelete,
     required this.onAddService,
     required this.index,
@@ -23,18 +23,37 @@ class ServiceCategoryCard extends StatelessWidget {
   });
 
   @override
+  State<ServiceCategoryCard> createState() => _ServiceCategoryCardState();
+}
+
+class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    duration: const Duration(milliseconds: 500),
+    vsync: this,
+  );
+
+  @override
+  void initState() {
+    _controller.animateTo(1, curve: Curves.easeIn);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   build(BuildContext context) {
-    final hasService = servicesByCategory.services.isNotEmpty;
+    final hasService = widget.servicesByCategory.services.isNotEmpty;
 
     return Container(
-      padding: const EdgeInsets.symmetric(
-        // horizontal: 12,
-        vertical: 12,
-      ),
+      padding: const EdgeInsets.only(bottom: 12),
       child: SizeTransition(
-        sizeFactor: animation,
+        sizeFactor: widget.animation,
         child: FadeTransition(
-          opacity: animation,
+          opacity: widget.animation,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -43,14 +62,22 @@ class ServiceCategoryCard extends StatelessWidget {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Text(
-                        servicesByCategory.serviceCategory.name,
-                        style: const TextStyle(fontSize: 18),
-                      ),
+                      child: AnimatedBuilder(
+                          animation: _controller,
+                          builder: (context, _) {
+                            return Opacity(
+                              opacity: _controller.value,
+                              child: Text(
+                                widget.servicesByCategory.serviceCategory.name,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            );
+                          }),
                     ),
                     IconButton(
                       onPressed: () {
-                        onDelete(serviceCategory: servicesByCategory.serviceCategory, index: index);
+                        widget.onDelete(
+                            serviceCategory: widget.servicesByCategory.serviceCategory, index: widget.index);
                       },
                       icon: Icon(
                         Icons.delete,
@@ -59,7 +86,8 @@ class ServiceCategoryCard extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () {
-                        onEdit(servicesByCategory: servicesByCategory, index: index);
+                        _onEdit();
+                        // widget.onEdit(servicesByCategory: widget.servicesByCategory, index: widget.index);
                       },
                       icon: Icon(
                         Icons.edit,
@@ -72,10 +100,10 @@ class ServiceCategoryCard extends StatelessWidget {
               hasService ? const SizedBox(height: 6) : Container(),
               hasService
                   ? SizedBox(
-                      height: 160,
+                      height: 190,
                       child: ListView.builder(
                         scrollDirection: Axis.horizontal,
-                        itemCount: servicesByCategory.services.length,
+                        itemCount: widget.servicesByCategory.services.length,
                         itemBuilder: (context, index) {
                           return _serviceWidget(index);
                         },
@@ -91,7 +119,7 @@ class ServiceCategoryCard extends StatelessWidget {
                         child: CustomLink(
                       label: 'Adicionar novo',
                       onTap: () {
-                        onAddService(serviceCategory: servicesByCategory.serviceCategory);
+                        widget.onAddService(serviceCategory: widget.servicesByCategory.serviceCategory);
                       },
                     )),
                     CustomLink(label: 'Mostrar tudo', onTap: () {})
@@ -110,9 +138,26 @@ class ServiceCategoryCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         index == 0 ? const SizedBox(width: 16) : Container(),
-        ServiceCard(onTap: () {}, service: servicesByCategory.services[index]),
-        index == servicesByCategory.services.length - 1 ? const SizedBox(width: 16) : Container(),
+        ServiceCard(onTap: () {}, service: widget.servicesByCategory.services[index]),
+        index == widget.servicesByCategory.services.length - 1 ? const SizedBox(width: 16) : Container(),
       ],
     );
+  }
+
+  Future<void> _onEdit() async {
+    context
+        .read<ServiceCategoryEditController>()
+        .initUpdate(serviceCategory: widget.servicesByCategory.serviceCategory);
+    final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
+    if (result != null) {
+      final serviceCategoryUpdate = result as ServiceCategory;
+      await _changeCategory(serviceCategoryUpdate);
+    }
+  }
+
+  Future<void> _changeCategory(ServiceCategory serviceCategory) async {
+    await _controller.animateTo(0, curve: Curves.easeIn);
+    widget.servicesByCategory = widget.servicesByCategory.copyWith(serviceCategory: serviceCategory);
+    await _controller.animateTo(1, curve: Curves.easeIn);
   }
 }

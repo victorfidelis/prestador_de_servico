@@ -112,7 +112,6 @@ class _ServiceViewState extends State<ServiceView> {
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(
-                  // horizontal: 14,
                   vertical: 6,
                 ),
                 sliver: SliverAnimatedList(
@@ -153,13 +152,15 @@ class _ServiceViewState extends State<ServiceView> {
       children: [
         ServiceCategoryCard(
           servicesByCategory: _listServicesByCategories[index],
-          onEdit: _onEditServiceCategory,
           onDelete: _onDeleteServiceCategory,
           onAddService: _onAddService,
           index: index,
           animation: animation,
         ),
-        Divider(color: Theme.of(context).colorScheme.shadow),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Divider(color: Theme.of(context).colorScheme.shadow, height: 2),
+        ),
       ],
     );
   }
@@ -173,7 +174,6 @@ class _ServiceViewState extends State<ServiceView> {
       children: [
         ServiceCategoryCard(
           servicesByCategory: servicesByCategory,
-          onEdit: ({required ServicesByCategory servicesByCategory, required int index}) {},
           onDelete: ({required ServiceCategory serviceCategory, required int index}) {},
           onAddService: ({required ServiceCategory serviceCategory}) {},
           index: 0,
@@ -191,16 +191,6 @@ class _ServiceViewState extends State<ServiceView> {
       await _scrollToEnd();
       final serviceCategoryInsert = result as ServiceCategory;
       _onInsertServiceCategory(serviceCategory: serviceCategoryInsert);
-    }
-  }
-
-  Future<void> _onEditServiceCategory({required ServicesByCategory servicesByCategory, required int index}) async {
-    context.read<ServiceCategoryEditController>().initUpdate(serviceCategory: servicesByCategory.serviceCategory);
-    final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
-    if (result != null) {
-      final serviceCategoryUpdate = result as ServiceCategory;
-      servicesByCategory = servicesByCategory.copyWith(serviceCategory: serviceCategoryUpdate);
-      _onUpdateServiceCategory(servicesByCategory: servicesByCategory, index: index);
     }
   }
 
@@ -224,15 +214,6 @@ class _ServiceViewState extends State<ServiceView> {
         context.read<ServiceController>().deleteCategory(serviceCategory: serviceCategory);
       },
     );
-  }
-
-  Future<void> _onUpdateServiceCategory({
-    required ServicesByCategory servicesByCategory,
-    required int index,
-  }) async {
-    _listServicesByCategories.removeAt(index);
-    await Future.delayed(const Duration(milliseconds: 500));
-    _listServicesByCategories.insertAt(index, servicesByCategory);
   }
   
   Future<void> _onAddService({required ServiceCategory serviceCategory}) async {
