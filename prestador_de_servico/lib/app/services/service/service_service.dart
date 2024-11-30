@@ -47,12 +47,13 @@ class ServiceService {
       if (updateEither.isLeft) {
         return Either.left(updateEither.left);
       }
+      service = updateEither.right!;
     }
 
     return Either.right(service);
   }
 
-  Future<Either<Failure, Unit>> update({required Service service}) async {
+  Future<Either<Failure, Service>> update({required Service service}) async {
     if (service.imageFile != null) {
       final uploadImageEither =
           await imageRepository.uploadImage(imageFileName: service.imageName, imageFile: service.imageFile!);
@@ -67,7 +68,12 @@ class ServiceService {
       return Either.left(insertOnlineEither.left);
     }
 
-    return await offlineRepository.update(service: service);
+    final updateEither = await offlineRepository.update(service: service);
+    if (updateEither.isLeft) {
+      return Either.left(updateEither.left);
+    }
+
+    return Either.right(service);
   }
 
   Future<Either<Failure, Unit>> delete({required Service service}) async {

@@ -15,7 +15,7 @@ import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.
 import 'package:prestador_de_servico/app/states/service/service_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_category_card.dart';
 import 'package:provider/provider.dart';
-import 'package:prestador_de_servico/app/shared/helpers/custom_animated_list.dart';
+import 'package:prestador_de_servico/app/shared/helpers/custom_sliver_animated_list.dart';
 
 class ServiceView extends StatefulWidget {
   const ServiceView({super.key});
@@ -27,7 +27,7 @@ class ServiceView extends StatefulWidget {
 class _ServiceViewState extends State<ServiceView> {
   final CustomNotifications _notifications = CustomNotifications();
   final GlobalKey<SliverAnimatedListState> _animatedListKey = GlobalKey<SliverAnimatedListState>();
-  late CustomAnimatedList<ServicesByCategory> _listServicesByCategories;
+  late CustomSliverAnimatedList<ServicesByCategory> _listServicesByCategories;
   final _scrollController = ScrollController();
 
   @override
@@ -105,7 +105,7 @@ class _ServiceViewState extends State<ServiceView> {
                 );
               }
 
-              _listServicesByCategories = CustomAnimatedList<ServicesByCategory>(
+              _listServicesByCategories = CustomSliverAnimatedList<ServicesByCategory>(
                   listKey: _animatedListKey,
                   removedItemBuilder: _buildRemovedItem,
                   initialItems: (serviceCategoryController.state as ServiceLoaded).servicesByCategories);
@@ -153,7 +153,6 @@ class _ServiceViewState extends State<ServiceView> {
         ServiceCategoryCard(
           servicesByCategory: _listServicesByCategories[index],
           onDelete: _onDeleteServiceCategory,
-          onAddService: _onAddService,
           index: index,
           animation: animation,
         ),
@@ -175,7 +174,6 @@ class _ServiceViewState extends State<ServiceView> {
         ServiceCategoryCard(
           servicesByCategory: servicesByCategory,
           onDelete: ({required ServiceCategory serviceCategory, required int index}) {},
-          onAddService: ({required ServiceCategory serviceCategory}) {},
           index: 0,
           animation: animation,
         ),
@@ -214,11 +212,6 @@ class _ServiceViewState extends State<ServiceView> {
         context.read<ServiceController>().deleteCategory(serviceCategory: serviceCategory);
       },
     );
-  }
-  
-  Future<void> _onAddService({required ServiceCategory serviceCategory}) async {
-    context.read<ServiceEditController>().initInsert(serviceCategory: serviceCategory);
-    await Navigator.of(context).pushNamed('/serviceEdit');
   }
 
   Future<void> _scrollToEnd() async {

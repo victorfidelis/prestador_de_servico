@@ -201,7 +201,7 @@ void main() {
       );
 
       test(
-        '''Deve retornar um Unit quando a gravação do Service for feita com sucesso''',
+        '''Deve retornar um Service quando a gravação do Service for feita com sucesso''',
         () async {
           when(onlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
           when(offlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
@@ -209,7 +209,8 @@ void main() {
           final insertEither = await serviceService.update(service: service1);
 
           expect(insertEither.isRight, isTrue);
-          expect(insertEither.right is Unit, isTrue);
+          expect(insertEither.right is Service, isTrue);
+          expect(insertEither.right, equals(service1));
         },
       );
     },

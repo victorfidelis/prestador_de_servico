@@ -65,13 +65,13 @@ class ServiceEditController extends ChangeNotifier {
       return;
     }
 
-    final insertEither = await serviceService.update(service: service);
-    if (insertEither.isLeft) {
-      _changeState(ServiceEditError(genericMessage: insertEither.left!.message));
+    final updateEither = await serviceService.update(service: service);
+    if (updateEither.isLeft) {
+      _changeState(ServiceEditError(genericMessage: updateEither.left!.message));
       return;
     }
 
-    _changeState(ServiceEditSuccess(service: service));
+    _changeState(ServiceEditSuccess(service: updateEither.right!));
   }
 
   ServiceEditState _validade({required Service service}) {
