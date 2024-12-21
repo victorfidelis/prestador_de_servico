@@ -99,4 +99,17 @@ class ServiceController extends ChangeNotifier {
 
     // _changeState(currentState: currentState);
   }
+
+  void deleteOnList({required ServiceCategory serviceCategory}) {
+    if (state is! ServiceLoaded) {
+      return;
+    }
+
+    ServiceLoaded currentState = state as ServiceLoaded;
+    currentState.servicesByCategories.removeWhere(
+      (element) => element.serviceCategory.id == serviceCategory.id,
+    );
+
+    _changeState(currentState);
+  }
 }

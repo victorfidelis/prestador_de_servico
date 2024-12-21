@@ -9,7 +9,7 @@ class CustomSliverAnimatedList<E> {
 
   final GlobalKey<SliverAnimatedListState> listKey;
   final Function(E item, BuildContext context, Animation<double> animation) removedItemBuilder;
-  final List<E> _items;
+  List<E> _items;
 
   SliverAnimatedListState get _animatedList => listKey.currentState!;
 
@@ -40,6 +40,11 @@ class CustomSliverAnimatedList<E> {
       );
     }
     return removedItem;
+  }
+
+  void removeAndInsertAll(List<E> items) {
+    _items = [];
+    _items = items;
   }
 
   int get length => _items.length;

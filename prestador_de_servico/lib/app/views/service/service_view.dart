@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
@@ -29,9 +28,15 @@ class _ServiceViewState extends State<ServiceView> {
   final GlobalKey<SliverAnimatedListState> _animatedListKey = GlobalKey<SliverAnimatedListState>();
   late CustomSliverAnimatedList<ServicesByCategory> _listServicesByCategories;
   final _scrollController = ScrollController();
+  ValueNotifier refreshList = ValueNotifier(true);
 
   @override
   void initState() {
+    _listServicesByCategories = CustomSliverAnimatedList<ServicesByCategory>(
+      listKey: _animatedListKey,
+      removedItemBuilder: _buildRemovedItem,
+      initialItems: [],
+    );
     context.read<ServiceController>().init();
     WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ServiceController>().load());
     super.initState();
@@ -105,20 +110,23 @@ class _ServiceViewState extends State<ServiceView> {
                 );
               }
 
-              _listServicesByCategories = CustomSliverAnimatedList<ServicesByCategory>(
-                  listKey: _animatedListKey,
-                  removedItemBuilder: _buildRemovedItem,
-                  initialItems: (serviceCategoryController.state as ServiceLoaded).servicesByCategories);
+              _listServicesByCategories
+                  .removeAndInsertAll((serviceCategoryController.state as ServiceLoaded).servicesByCategories);
 
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 6,
-                ),
-                sliver: SliverAnimatedList(
-                  key: _animatedListKey,
-                  initialItemCount: _listServicesByCategories.length + 1,
-                  itemBuilder: _itemBuilder,
-                ),
+              return ListenableBuilder(
+                listenable: refreshList,
+                builder: (context, _) {
+                  return SliverPadding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 6,
+                    ),
+                    sliver: SliverAnimatedList(
+                      key: _animatedListKey,
+                      initialItemCount: _listServicesByCategories.length + 1,
+                      itemBuilder: _itemBuilder,
+                    ),
+                  );
+                }
               );
             },
           ),
@@ -145,22 +153,16 @@ class _ServiceViewState extends State<ServiceView> {
   ) {
     if (index == _listServicesByCategories.length) {
       return const SizedBox(
+        key: ValueKey('last item key'),
         height: 220,
       );
     }
-    return Column(
-      children: [
-        ServiceCategoryCard(
-          servicesByCategory: _listServicesByCategories[index],
-          onDelete: _onDeleteServiceCategory,
-          index: index,
-          animation: animation,
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Divider(color: Theme.of(context).colorScheme.shadow, height: 2),
-        ),
-      ],
+    return ServiceCategoryCard(
+      key: ValueKey(_listServicesByCategories[index].serviceCategory.id),
+      servicesByCategory: _listServicesByCategories[index],
+      onDelete: _onDeleteServiceCategory,
+      index: index,
+      animation: animation,
     );
   }
 
@@ -169,16 +171,12 @@ class _ServiceViewState extends State<ServiceView> {
     BuildContext context,
     Animation<double> animation,
   ) {
-    return Column(
-      children: [
-        ServiceCategoryCard(
-          servicesByCategory: servicesByCategory,
-          onDelete: ({required ServiceCategory serviceCategory, required int index}) {},
-          index: 0,
-          animation: animation,
-        ),
-        Divider(color: Theme.of(context).colorScheme.shadow),
-      ],
+    return ServiceCategoryCard(
+      key: ValueKey(servicesByCategory.serviceCategory.id),
+      servicesByCategory: servicesByCategory,
+      onDelete: ({required ServiceCategory serviceCategory, required int index}) {},
+      index: 0,
+      animation: animation,
     );
   }
 
@@ -208,8 +206,9 @@ class _ServiceViewState extends State<ServiceView> {
       title: 'Excluir categoria de serviço',
       content: 'Tem certeza que deseja excluir a categoria de serviço?',
       confirmCallback: () {
-        _listServicesByCategories.removeAt(index);
         context.read<ServiceController>().deleteCategory(serviceCategory: serviceCategory);
+        _listServicesByCategories.removeAt(index);
+        refreshList.value = !refreshList.value;
       },
     );
   }

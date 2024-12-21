@@ -5,7 +5,6 @@ import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/helpers/custom_animated_list.dart';
-import 'package:prestador_de_servico/app/shared/helpers/custom_sliver_animated_list.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_card.dart';
 import 'package:provider/provider.dart';
@@ -62,94 +61,96 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       initialItems: _serviceByCategory.services,
     );
 
-    return Container(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: SizeTransition(
-        sizeFactor: widget.animation,
-        child: FadeTransition(
-          opacity: widget.animation,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 26),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: AnimatedBuilder(
-                          animation: _controller,
-                          builder: (context, _) {
-                            return Opacity(
-                              opacity: _controller.value,
-                              child: Text(
-                                _serviceByCategory.serviceCategory.name,
-                                style: const TextStyle(fontSize: 18),
-                              ),
-                            );
-                          }),
+    return SizeTransition(
+      sizeFactor: widget.animation,
+      child: FadeTransition(
+        opacity: widget.animation,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 26),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: AnimatedBuilder(
+                        animation: _controller,
+                        builder: (context, _) {
+                          return Opacity(
+                            opacity: _controller.value,
+                            child: Text(
+                              _serviceByCategory.serviceCategory.name,
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          );
+                        }),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      widget.onDelete(serviceCategory: _serviceByCategory.serviceCategory, index: widget.index);
+                    },
+                    icon: Icon(
+                      Icons.delete,
+                      color: Theme.of(context).colorScheme.error,
                     ),
-                    IconButton(
-                      onPressed: () {
-                        widget.onDelete(serviceCategory: _serviceByCategory.serviceCategory, index: widget.index);
-                      },
-                      icon: Icon(
-                        Icons.delete,
-                        color: Theme.of(context).colorScheme.error,
-                      ),
+                  ),
+                  IconButton(
+                    onPressed: () {
+                      _onEdit();
+                    },
+                    icon: Icon(
+                      Icons.edit,
+                      color: Theme.of(context).colorScheme.secondary,
                     ),
-                    IconButton(
-                      onPressed: () {
-                        _onEdit();
-                      },
-                      icon: Icon(
-                        Icons.edit,
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              hasService
-                  ? const SizedBox(height: 6)
-                  : Container(
-                      padding: const EdgeInsets.only(left: 38, bottom: 8),
-                      child: const Text(
-                        'Sem serviços cadastrados',
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
+            ),
+            hasService
+                ? const SizedBox(height: 6)
+                : Container(
+                    padding: const EdgeInsets.only(left: 38, bottom: 8),
+                    child: const Text(
+                      'Sem serviços cadastrados',
+                      style: TextStyle(
+                        fontSize: 16,
                       ),
                     ),
-              hasService
-                  ? SizedBox(
-                      height: 190,
-                      child: AnimatedList(
-                        key: _animatedListKey,
-                        controller: _scrollController,
-                        scrollDirection: Axis.horizontal,
-                        initialItemCount: _serviceByCategory.services.length + 1,
-                        itemBuilder: _itemBuilder,
-                      ),
-                    )
-                  : Container(),
-              const SizedBox(height: 6),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 26),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: CustomLink(
-                      label: 'Adicionar novo',
-                      onTap: () {
-                        _onAddService(serviceCategory: _serviceByCategory.serviceCategory);
-                      },
-                    )),
-                    CustomLink(label: 'Mostrar tudo', onTap: () {})
-                  ],
-                ),
-              )
-            ],
-          ),
+                  ),
+            hasService
+                ? SizedBox(
+                    height: 190,
+                    child: AnimatedList(
+                      key: _animatedListKey,
+                      controller: _scrollController,
+                      scrollDirection: Axis.horizontal,
+                      initialItemCount: _serviceByCategory.services.length + 1,
+                      itemBuilder: _itemBuilder,
+                    ),
+                  )
+                : Container(),
+            const SizedBox(height: 6),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 26),
+              child: Row(
+                children: [
+                  Expanded(
+                      child: CustomLink(
+                    label: 'Adicionar novo',
+                    onTap: () {
+                      _onAddService(serviceCategory: _serviceByCategory.serviceCategory);
+                    },
+                  )),
+                  CustomLink(label: 'Mostrar tudo', onTap: () {})
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Divider(color: Theme.of(context).colorScheme.shadow, height: 2),
+            ),
+          ],
         ),
       ),
     );
@@ -163,7 +164,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       await _changeCategory(serviceCategoryUpdate);
     }
   }
-  
+
   Future<void> _onAddService({required ServiceCategory serviceCategory}) async {
     context.read<ServiceEditController>().initInsert(serviceCategory: serviceCategory);
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
