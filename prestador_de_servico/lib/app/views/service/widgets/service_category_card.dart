@@ -28,10 +28,11 @@ class ServiceCategoryCard extends StatefulWidget {
 }
 
 class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerProviderStateMixin {
-  late ServicesByCategory _serviceByCategory;
-  late final AnimationController _controller = AnimationController(
+  late ServicesByCategory serviceByCategory;
+  late final AnimationController controller = AnimationController(
     duration: const Duration(milliseconds: 500),
     vsync: this,
+    value: 1.0,
   );
   final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey<AnimatedListState>();
   late CustomAnimatedList<Service> _listServices;
@@ -39,26 +40,25 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   @override
   void initState() {
-    _serviceByCategory = widget.servicesByCategory;
-    _controller.animateTo(1, curve: Curves.easeIn);
+    serviceByCategory = widget.servicesByCategory;
     super.initState();
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    controller.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
   @override
   build(BuildContext context) {
-    final hasService = _serviceByCategory.services.isNotEmpty;
+    final hasService = serviceByCategory.services.isNotEmpty;
 
     _listServices = CustomAnimatedList<Service>(
       listKey: _animatedListKey,
       removedItemBuilder: _buildRemovedItem,
-      initialItems: _serviceByCategory.services,
+      initialItems: serviceByCategory.services,
     );
 
     return SizeTransition(
@@ -74,12 +74,12 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                 children: [
                   Expanded(
                     child: AnimatedBuilder(
-                        animation: _controller,
+                        animation: controller,
                         builder: (context, _) {
                           return Opacity(
-                            opacity: _controller.value,
+                            opacity: controller.value,
                             child: Text(
-                              _serviceByCategory.serviceCategory.name,
+                              serviceByCategory.serviceCategory.name,
                               style: const TextStyle(fontSize: 18),
                             ),
                           );
@@ -87,7 +87,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                   ),
                   IconButton(
                     onPressed: () {
-                      widget.onDelete(serviceCategory: _serviceByCategory.serviceCategory, index: widget.index);
+                      widget.onDelete(serviceCategory: serviceByCategory.serviceCategory, index: widget.index);
                     },
                     icon: Icon(
                       Icons.delete,
@@ -124,7 +124,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       key: _animatedListKey,
                       controller: _scrollController,
                       scrollDirection: Axis.horizontal,
-                      initialItemCount: _serviceByCategory.services.length + 1,
+                      initialItemCount: serviceByCategory.services.length + 1,
                       itemBuilder: _itemBuilder,
                     ),
                   )
@@ -138,14 +138,14 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       child: CustomLink(
                     label: 'Adicionar novo',
                     onTap: () {
-                      _onAddService(serviceCategory: _serviceByCategory.serviceCategory);
+                      _onAddService(serviceCategory: serviceByCategory.serviceCategory);
                     },
                   )),
                   CustomLink(label: 'Mostrar tudo', onTap: () {})
                 ],
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Divider(color: Theme.of(context).colorScheme.shadow, height: 2),
@@ -157,7 +157,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   }
 
   Future<void> _onEdit() async {
-    context.read<ServiceCategoryEditController>().initUpdate(serviceCategory: _serviceByCategory.serviceCategory);
+    context.read<ServiceCategoryEditController>().initUpdate(serviceCategory: serviceByCategory.serviceCategory);
     final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
     if (result != null) {
       final serviceCategoryUpdate = result as ServiceCategory;
@@ -169,17 +169,25 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     context.read<ServiceEditController>().initInsert(serviceCategory: serviceCategory);
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
     if (result != null) {
-      await _scrollToEnd();
+      final hasService = _listServices.length > 0;
+      
+      if (hasService) await _scrollToEnd();
+      
       final serviceInsert = result as Service;
-      _serviceByCategory.services.add(serviceInsert);
-      _listServices.insert(serviceInsert);
+      serviceByCategory.services.add(serviceInsert);
+
+      if (hasService) {
+        _listServices.insert(serviceInsert);
+      } else {
+        setState(() {});
+      }
     }
   }
 
   Future<void> _changeCategory(ServiceCategory serviceCategory) async {
-    await _controller.animateTo(0, curve: Curves.easeIn);
-    _serviceByCategory = _serviceByCategory.copyWith(serviceCategory: serviceCategory);
-    await _controller.animateTo(1, curve: Curves.easeIn);
+    await controller.animateTo(0, curve: Curves.easeIn);
+    serviceByCategory = serviceByCategory.copyWith(serviceCategory: serviceCategory);
+    await controller.animateTo(1, curve: Curves.easeIn);
   }
 
   Widget _buildRemovedItem(

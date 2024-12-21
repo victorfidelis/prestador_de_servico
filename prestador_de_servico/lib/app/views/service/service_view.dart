@@ -28,7 +28,6 @@ class _ServiceViewState extends State<ServiceView> {
   final GlobalKey<SliverAnimatedListState> _animatedListKey = GlobalKey<SliverAnimatedListState>();
   late CustomSliverAnimatedList<ServicesByCategory> _listServicesByCategories;
   final _scrollController = ScrollController();
-  ValueNotifier refreshList = ValueNotifier(true);
 
   @override
   void initState() {
@@ -113,20 +112,15 @@ class _ServiceViewState extends State<ServiceView> {
               _listServicesByCategories
                   .removeAndInsertAll((serviceCategoryController.state as ServiceLoaded).servicesByCategories);
 
-              return ListenableBuilder(
-                listenable: refreshList,
-                builder: (context, _) {
-                  return SliverPadding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 6,
-                    ),
-                    sliver: SliverAnimatedList(
-                      key: _animatedListKey,
-                      initialItemCount: _listServicesByCategories.length + 1,
-                      itemBuilder: _itemBuilder,
-                    ),
-                  );
-                }
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 6,
+                ),
+                sliver: SliverAnimatedList(
+                  key: _animatedListKey,
+                  initialItemCount: _listServicesByCategories.length + 1,
+                  itemBuilder: _itemBuilder,
+                ),
               );
             },
           ),
@@ -208,7 +202,6 @@ class _ServiceViewState extends State<ServiceView> {
       confirmCallback: () {
         context.read<ServiceController>().deleteCategory(serviceCategory: serviceCategory);
         _listServicesByCategories.removeAt(index);
-        refreshList.value = !refreshList.value;
       },
     );
   }

@@ -39,6 +39,11 @@ class CustomSliverAnimatedList<E> {
         duration: const Duration(milliseconds: 500),
       );
     }
+
+    // Future.delayed(const Duration(milliseconds: 500), () {
+    //   _items.removeAt(index); 
+    // });
+
     return removedItem;
   }
 
