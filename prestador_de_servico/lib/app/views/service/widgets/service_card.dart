@@ -16,10 +16,14 @@ class ServiceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Image image;
+    Widget image;
 
     if (service.imageUrl.isNotEmpty) {
-      image = Image.network(service.imageUrl, fit: BoxFit.cover);
+      image = FadeInImage.assetNetwork(
+        placeholder: 'assets/images/tres_pontos_transparente.png',
+        image: service.imageUrl,
+        fit: BoxFit.cover,
+      );
     } else {
       image = Image.asset('assets/images/sem_imagem.jpg', fit: BoxFit.cover);
     }

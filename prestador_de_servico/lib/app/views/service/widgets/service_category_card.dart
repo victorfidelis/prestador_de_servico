@@ -85,15 +85,17 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                           );
                         }),
                   ),
-                  IconButton(
-                    onPressed: () {
-                      widget.onDelete(serviceCategory: serviceByCategory.serviceCategory, index: widget.index);
-                    },
-                    icon: Icon(
-                      Icons.delete,
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
+                  hasService
+                      ? Container()
+                      : IconButton(
+                          onPressed: () {
+                            widget.onDelete(serviceCategory: serviceByCategory.serviceCategory, index: widget.index);
+                          },
+                          icon: Icon(
+                            Icons.delete,
+                            color: Theme.of(context).colorScheme.error,
+                          ),
+                        ),
                   IconButton(
                     onPressed: () {
                       _onEdit();
@@ -170,9 +172,9 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
     if (result != null) {
       final hasService = _listServices.length > 0;
-      
+
       if (hasService) await _scrollToEnd();
-      
+
       final serviceInsert = result as Service;
       serviceByCategory.services.add(serviceInsert);
 
