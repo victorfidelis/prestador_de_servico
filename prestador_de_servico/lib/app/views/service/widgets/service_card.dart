@@ -4,12 +4,14 @@ import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
 
 class ServiceCard extends StatelessWidget {
   final Function() onTap;
+  final Function() onLongPress;
   final Service service;
   final Animation<double> animation;
 
   const ServiceCard({
     super.key,
     required this.onTap,
+    required this.onLongPress,
     required this.service,
     required this.animation,
   });
@@ -32,6 +34,7 @@ class ServiceCard extends StatelessWidget {
       sizeFactor: animation,
       child: GestureDetector(
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Container(
           width: 180,
           margin: const EdgeInsets.symmetric(horizontal: 6),

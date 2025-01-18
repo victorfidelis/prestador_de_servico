@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
@@ -77,39 +78,28 @@ class ServiceController extends ChangeNotifier {
     );
   }
 
-  void addOnList({required ServiceCategory serviceCategory}) {
-    if (state is! ServiceLoaded) {
+  Future<void> deleteService({required Service service}) async {
+    final deleteEither = await serviceService.delete(service: service);
+
+    if (deleteEither.isRight) {
       return;
     }
 
-    // ServiceCategoryLoaded currentState = state as ServiceCategoryLoaded;
-    // currentState.cards.insert(0, serviceCategory);
+    _changeState(ServiceLoading());
 
-    // _changeState(currentState);
-  }
+    final message = deleteEither.left!.message;
 
-  void updateOnList({required ServiceCategory serviceCategory}) {
-    if (state is! ServiceLoaded) {
+    final getAllEither = await servicesByCategoryService.getAll();
+    if (getAllEither.isLeft) {
+      _changeState(ServiceError(getAllEither.left!.message));
       return;
     }
 
-    // ServiceCategoryLoaded currentState = state as ServiceCategoryLoaded;
-    // int index = currentState.cards.indexWhere((element) => element.id == serviceCategory.id);
-    // currentState.cards[index] = serviceCategory;
-
-    // _changeState(currentState: currentState);
-  }
-
-  void deleteOnList({required ServiceCategory serviceCategory}) {
-    if (state is! ServiceLoaded) {
-      return;
-    }
-
-    ServiceLoaded currentState = state as ServiceLoaded;
-    currentState.servicesByCategories.removeWhere(
-      (element) => element.serviceCategory.id == serviceCategory.id,
+    _changeState(
+      ServiceLoaded(
+        servicesByCategories: getAllEither.right!,
+        message: message,
+      ),
     );
-
-    _changeState(currentState);
   }
 }

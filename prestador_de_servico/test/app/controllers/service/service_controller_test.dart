@@ -318,11 +318,6 @@ void main() {
           const failureMessage = 'Teste de falha';
           final servicesByCategories = <ServicesByCategory>[];
 
-          when(onlineMockServiceRepository.deleteByCategoryId(serviceCategory1.id))
-              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
-          when(offlineMockServiceRepository.deleteByCategoryId(serviceCategory1.id))
-              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
-
           when(onlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
           when(offlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
@@ -348,11 +343,6 @@ void main() {
             servicesByCategory3,
           ];
 
-          when(onlineMockServiceRepository.deleteByCategoryId(serviceCategory1.id))
-              .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.deleteByCategoryId(serviceCategory1.id))
-              .thenAnswer((_) async => Either.right(unit));
-
           when(onlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
               .thenAnswer((_) async => Either.right(unit));
           when(offlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
@@ -364,6 +354,85 @@ void main() {
           final state = serviceController.state;
 
           await serviceController.deleteCategory(serviceCategory: serviceCategory1);
+
+          expect(serviceController.state, equals(state));
+        },
+      );
+    },
+  );
+
+  group(
+    'deleteService',
+    () {
+      test(
+        '''Deve alterar o estado para ServiceLoaded e definir uma mensagem de erro no campo 
+        "message" quando um erro ocorrer ao excluir a imagem.''',
+        () async {
+          const failureMessage = 'Teste de falha';
+          final servicesByCategories = <ServicesByCategory>[];
+
+          when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl))
+              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
+
+          when(offlineMockServicesByCategoryRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesByCategories));
+
+          await serviceController.deleteService(service: service1);
+
+          expect(serviceController.state is ServiceLoaded, isTrue);
+          final serviceState = serviceController.state as ServiceLoaded;
+          expect(serviceState.message, equals(failureMessage));
+          expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
+        },
+      );
+
+      test(
+        '''Deve alterar o estado para ServiceLoaded e definir uma mensagem de erro no campo 
+        "message" quando um erro ocorrer ao excluir o serviço.''',
+        () async {
+          const failureMessage = 'Teste de falha';
+          final servicesByCategories = <ServicesByCategory>[];
+
+          when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl))
+              .thenAnswer((_) async => Either.right(unit));
+          when(onlineMockServiceRepository.deleteById(id: service1.id))
+              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
+          when(offlineMockServiceRepository.deleteById(id: service1.id))
+              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
+
+          when(offlineMockServicesByCategoryRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesByCategories));
+
+          await serviceController.deleteService(service: service1);
+
+          expect(serviceController.state is ServiceLoaded, isTrue);
+          final serviceState = serviceController.state as ServiceLoaded;
+          expect(serviceState.message, equals(failureMessage));
+          expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
+        },
+      );
+
+      test(
+        '''Deve manter o estado quando a exclusão ocorrer normalmente''',
+        () async {
+          final servicesByCategories = <ServicesByCategory>[
+            servicesByCategory2,
+            servicesByCategory3,
+          ];
+
+          when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl))
+              .thenAnswer((_) async => Either.right(unit));
+          when(onlineMockServiceRepository.deleteById(id: service1.id))
+              .thenAnswer((_) async => Either.right(unit));
+          when(offlineMockServiceRepository.deleteById(id: service1.id))
+              .thenAnswer((_) async => Either.right(unit));
+
+          when(offlineMockServicesByCategoryRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesByCategories));
+
+          final state = serviceController.state;
+
+          await serviceController.deleteService(service: service1);
 
           expect(serviceController.state, equals(state));
         },

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/helpers/custom_animated_list.dart';
+import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_card.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +41,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey<AnimatedListState>();
   late CustomAnimatedList<Service> _listServices;
   final _scrollController = ScrollController();
+  final _customNotifications = CustomNotifications();
 
   @override
   void initState() {
@@ -209,6 +212,26 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     }
   }
 
+  Future<void> _onRemoveService({required Service service, required int index}) async {
+    _customNotifications.showQuestionAlert(
+      context: context,
+      title: 'Excluir serviço',
+      content: 'Tem certeza que deseja excluir serviço?',
+      confirmCallback: () {
+        _removeService(service: service, index: index);
+      },
+    );
+  }
+
+  Future<void> _removeService({required Service service, required int index}) async {
+    widget.removeFocusOfWidgets();
+    context.read<ServiceController>().deleteService(service: service);
+    serviceByCategory.services.removeAt(index);
+    _listServices.removeAt(index);
+    if (_listServices.length == 0) {
+      setState(() {});
+    } 
+  }
 
   Future<void> _changeCategory(ServiceCategory serviceCategory) async {
     await controller.animateTo(0, curve: Curves.easeIn);
@@ -221,7 +244,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     BuildContext context,
     Animation<double> animation,
   ) {
-    return ServiceCard(onTap: () {}, service: service, animation: animation);
+    return ServiceCard(onTap: () {}, onLongPress: () {}, service: service, animation: animation);
   }
 
   Widget _itemBuilder(
@@ -250,6 +273,9 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
           service: _listServices[index],
           index: index,
         );
+      },
+      onLongPress: () {
+        _onRemoveService(service: _listServices[index], index: index);
       },
       service: _listServices[index],
       animation: animation,
