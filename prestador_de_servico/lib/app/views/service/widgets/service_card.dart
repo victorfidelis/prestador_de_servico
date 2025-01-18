@@ -31,7 +31,7 @@ class ServiceCard extends StatelessWidget {
     return SizeTransition(
       sizeFactor: animation,
       child: GestureDetector(
-        onTap: () {},
+        onTap: onTap,
         child: Container(
           width: 180,
           margin: const EdgeInsets.symmetric(horizontal: 6),

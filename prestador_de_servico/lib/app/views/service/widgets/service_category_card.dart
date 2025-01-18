@@ -14,6 +14,7 @@ class ServiceCategoryCard extends StatefulWidget {
   final Function({required ServiceCategory serviceCategory, required int index}) onDelete;
   final int index;
   final Animation<double> animation;
+  final void Function() removeFocusOfWidgets;
 
   const ServiceCategoryCard({
     super.key,
@@ -21,6 +22,7 @@ class ServiceCategoryCard extends StatefulWidget {
     required this.onDelete,
     required this.index,
     required this.animation,
+    required this.removeFocusOfWidgets,
   });
 
   @override
@@ -126,7 +128,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       key: _animatedListKey,
                       controller: _scrollController,
                       scrollDirection: Axis.horizontal,
-                      initialItemCount: serviceByCategory.services.length + 1,
+                      initialItemCount: _listServices.length + 2,
                       itemBuilder: _itemBuilder,
                     ),
                   )
@@ -168,6 +170,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   }
 
   Future<void> _onAddService({required ServiceCategory serviceCategory}) async {
+    widget.removeFocusOfWidgets();
     context.read<ServiceEditController>().initInsert(serviceCategory: serviceCategory);
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
     if (result != null) {
@@ -185,6 +188,27 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       }
     }
   }
+
+  Future<void> _onEditService({
+    required ServiceCategory serviceCategory,
+    required Service service,
+    required int index,
+  }) async {
+    widget.removeFocusOfWidgets();
+    context.read<ServiceEditController>().initUpdate(
+          serviceCategory: serviceCategory,
+          service: service,
+        );
+    final result = await Navigator.of(context).pushNamed('/serviceEdit');
+    if (result != null) {
+      final serviceEdited = result as Service;
+      serviceByCategory.services[index] = serviceEdited;
+
+      _listServices.removeAt(index, 0);
+      _listServices.insertAt(index, serviceEdited);
+    }
+  }
+
 
   Future<void> _changeCategory(ServiceCategory serviceCategory) async {
     await controller.animateTo(0, curve: Curves.easeIn);
@@ -205,18 +229,30 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     int index,
     Animation<double> animation,
   ) {
-    if (index == _listServices.length) {
+    index--;
+    if (index == -1) {
       return const SizedBox(
-        width: 180,
+        key: ValueKey('first space'),
+        width: 16,
       );
     }
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        index == 0 ? const SizedBox(width: 16) : Container(),
-        ServiceCard(onTap: () {}, service: _listServices[index], animation: animation),
-        index == _listServices.length - 1 ? const SizedBox(width: 16) : Container(),
-      ],
+    if (index == _listServices.length) {
+      return const SizedBox(
+        key: ValueKey('last space'),
+        width: 190,
+      );
+    }
+    return ServiceCard(
+      key: ValueKey(_listServices[index].id),
+      onTap: () {
+        _onEditService(
+          serviceCategory: serviceByCategory.serviceCategory,
+          service: _listServices[index],
+          index: index,
+        );
+      },
+      service: _listServices[index],
+      animation: animation,
     );
   }
 

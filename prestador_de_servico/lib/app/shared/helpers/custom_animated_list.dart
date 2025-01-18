@@ -10,6 +10,8 @@ class CustomAnimatedList<E> {
   final GlobalKey<AnimatedListState> listKey;
   final Function(E item, BuildContext context, Animation<double> animation) removedItemBuilder;
   final List<E> _items;
+  final durationInsertAnimation = 500;
+  final durationRemoveAnimation = 500;
 
   AnimatedListState get _animatedList => listKey.currentState!;
 
@@ -18,7 +20,7 @@ class CustomAnimatedList<E> {
     _items.insert(index, item);
     _animatedList.insertItem(
       index,
-      duration: const Duration(milliseconds: 500),
+      duration: Duration(milliseconds: durationInsertAnimation),
     );
   }
 
@@ -26,17 +28,17 @@ class CustomAnimatedList<E> {
     _items.insert(index, item);
     _animatedList.insertItem(
       index,
-      duration: const Duration(milliseconds: 500),
+      duration: Duration(milliseconds: durationInsertAnimation),
     );
   }
 
-  E removeAt(int index) {
+  E removeAt(int index, [int? durationMiliseconds]) {
     final E removedItem = _items.removeAt(index);
     if (removedItem != null) {
       _animatedList.removeItem(
         index,
         (BuildContext context, Animation<double> animation) => removedItemBuilder(removedItem, context, animation),
-        duration: const Duration(milliseconds: 500),
+        duration: Duration(milliseconds: durationMiliseconds ?? durationRemoveAnimation),
       );
     }
     return removedItem;

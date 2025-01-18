@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class SearchTextField extends StatelessWidget {
   final String hintText;
   final Function(String value) onChanged;
+  final FocusNode? focusNode;
 
   const SearchTextField({
     super.key,
     required this.hintText,
     required this.onChanged,
+    this.focusNode,
   });
 
   @override
@@ -36,6 +38,7 @@ class SearchTextField extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: TextField(
+              focusNode: focusNode,
               onChanged: onChanged,
               decoration: InputDecoration(
                 hintText: hintText,

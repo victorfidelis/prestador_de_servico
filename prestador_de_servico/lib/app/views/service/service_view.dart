@@ -28,6 +28,7 @@ class _ServiceViewState extends State<ServiceView> {
   final GlobalKey<SliverAnimatedListState> _animatedListKey = GlobalKey<SliverAnimatedListState>();
   late CustomSliverAnimatedList<ServicesByCategory> _listServicesByCategories;
   final _scrollController = ScrollController();
+  final focusNodeSearchText = FocusNode();
 
   @override
   void initState() {
@@ -81,6 +82,7 @@ class _ServiceViewState extends State<ServiceView> {
                     child: SearchTextField(
                       hintText: 'Pesquise por um serviço ou categoria',
                       onChanged: (String value) {},
+                      focusNode: focusNodeSearchText,
                     ),
                   ),
                 ],
@@ -157,6 +159,7 @@ class _ServiceViewState extends State<ServiceView> {
       onDelete: _onDeleteServiceCategory,
       index: index,
       animation: animation,
+      removeFocusOfWidgets: removeFocusOfWidgets,
     );
   }
 
@@ -171,6 +174,7 @@ class _ServiceViewState extends State<ServiceView> {
       onDelete: ({required ServiceCategory serviceCategory, required int index}) {},
       index: 0,
       animation: animation,
+      removeFocusOfWidgets: () {},
     );
   }
 
@@ -207,6 +211,7 @@ class _ServiceViewState extends State<ServiceView> {
   }
 
   Future<void> _scrollToEnd() async {
+    removeFocusOfWidgets();
     await _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 300),
@@ -217,5 +222,9 @@ class _ServiceViewState extends State<ServiceView> {
       duration: const Duration(milliseconds: 100),
       curve: Curves.linear,
     );
+  } 
+
+  void removeFocusOfWidgets() {
+    focusNodeSearchText.unfocus();
   }
 }

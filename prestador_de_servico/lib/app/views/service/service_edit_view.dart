@@ -54,7 +54,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
       final updateState = (context.read<ServiceEditController>().state as ServiceEditUpdate);
       serviceCategory = updateState.serviceCategory;
       service = updateState.service;
-      nameController.text = service!.name;
+      _loadFieldsWithService(service: service!);
     } else {
       final insertState = (context.read<ServiceEditController>().state as ServiceEditAdd);
       serviceCategory = insertState.serviceCategory;
@@ -234,6 +234,25 @@ class _ServiceEditViewState extends State<ServiceEditView> {
         },
       ),
     );
+  }
+
+  void _loadFieldsWithService({required Service service}) {
+      nameController.text = service.name;
+      priceController.text = service.price.toString().replaceAll('.', ',');
+      if (service.hours == 0) {
+        hoursController.text = '';
+      }
+      else {
+        hoursController.text = service.hours.toString();
+      }
+      if (service.minutes == 0) {
+        minutesController.text = '';
+      } else {
+        minutesController.text = service.minutes.toString();
+      }
+      if (service.imageUrl.isNotEmpty) {
+        imageUrl = service.imageUrl;
+      }
   }
 
   void save() {
