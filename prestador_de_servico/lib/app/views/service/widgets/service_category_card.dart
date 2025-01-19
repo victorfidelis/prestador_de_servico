@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/show_all_services_controller.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
@@ -148,7 +149,12 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       _onAddService(serviceCategory: serviceByCategory.serviceCategory);
                     },
                   )),
-                  CustomLink(label: 'Mostrar tudo', onTap: () {})
+                  CustomLink(
+                    label: 'Mostrar tudo',
+                    onTap: () {
+                      _onShowAll(servicesByCategory: serviceByCategory);
+                    },
+                  ),
                 ],
               ),
             ),
@@ -161,6 +167,11 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
         ),
       ),
     );
+  }
+
+  void _onShowAll({required ServicesByCategory servicesByCategory}) {
+    context.read<ShowAllServicesController>().setServicesByCategory(servicesByCategory: servicesByCategory);
+    Navigator.of(context).pushNamed('/showAllServices');
   }
 
   Future<void> _onEdit() async {
@@ -230,7 +241,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     _listServices.removeAt(index);
     if (_listServices.length == 0) {
       setState(() {});
-    } 
+    }
   }
 
   Future<void> _changeCategory(ServiceCategory serviceCategory) async {

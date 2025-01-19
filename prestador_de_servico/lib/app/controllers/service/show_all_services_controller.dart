@@ -26,6 +26,10 @@ class ShowAllServicesController extends ChangeNotifier {
     _state = ShowAllServicesInitial();
   }
 
+  void exit() {
+    _state = ShowAllServicesInitial();
+  }
+
   Future<void> delete({required Service service}) async {
     final deleteEither = await serviceService.delete(service: service);
 

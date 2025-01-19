@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/show_all_services_controller.dart';
 import 'package:prestador_de_servico/app/controllers/sync/sync_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
 import 'package:prestador_de_servico/app/controllers/auth/sign_in_controller.dart';
@@ -30,6 +31,7 @@ import 'package:prestador_de_servico/app/views/navigation/navigation_view.dart';
 import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
+import 'package:prestador_de_servico/app/views/service/show_all_services_view.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatelessWidget {
@@ -113,6 +115,15 @@ class App extends StatelessWidget {
             offlineImageService: OfflineImageService.create(),
           ),
         ),
+        ChangeNotifierProvider<ShowAllServicesController>(
+          create: (context) => ShowAllServicesController(
+            serviceService: ServiceService(
+              offlineRepository: ServiceRepository.createOffline(),
+              onlineRepository: ServiceRepository.createOnline(),
+              imageRepository: ImageRepository.create(),
+            ),
+          ),
+        ),
       ],
       child: MaterialApp(
         theme: mainTheme,
@@ -125,6 +136,7 @@ class App extends StatelessWidget {
           '/service': (context) => const ServiceView(),
           '/serviceCategoryEdit': (context) => const ServiceCategoryEditView(),
           '/serviceEdit': (context) => const ServiceEditView(),
+          '/showAllServices': (context) => const ShowAllServicesView(),
         },
       ),
     );
