@@ -10,7 +10,7 @@ class ServicesByCategory {
   ServicesByCategory({
     required this.serviceCategory,
     required this.services,
-  }); 
+  });
 
   ServicesByCategory copyWith({
     ServiceCategory? serviceCategory,
@@ -20,5 +20,12 @@ class ServicesByCategory {
       serviceCategory: serviceCategory ?? this.serviceCategory,
       services: services ?? this.services,
     );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is ServicesByCategory &&
+        other.serviceCategory == serviceCategory &&
+        other.services.length == services.length;
   }
 }
