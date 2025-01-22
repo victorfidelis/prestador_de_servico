@@ -33,7 +33,7 @@ class ServiceCategoryCard extends StatefulWidget {
 }
 
 class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerProviderStateMixin {
-  late ServicesByCategory serviceByCategory;
+  late ServicesByCategory servicesByCategory;
   late final AnimationController controller = AnimationController(
     duration: const Duration(milliseconds: 500),
     vsync: this,
@@ -46,7 +46,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   @override
   void initState() {
-    serviceByCategory = widget.servicesByCategory;
+    servicesByCategory = widget.servicesByCategory;
     super.initState();
   }
 
@@ -59,12 +59,12 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   @override
   build(BuildContext context) {
-    final hasService = serviceByCategory.services.isNotEmpty;
+    final hasService = servicesByCategory.services.isNotEmpty;
 
     _listServices = CustomAnimatedList<Service>(
       listKey: _animatedListKey,
       removedItemBuilder: _buildRemovedItem,
-      initialItems: serviceByCategory.services,
+      initialItems: servicesByCategory.services,
     );
 
     return SizeTransition(
@@ -85,7 +85,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                           return Opacity(
                             opacity: controller.value,
                             child: Text(
-                              serviceByCategory.serviceCategory.name,
+                              servicesByCategory.serviceCategory.name,
                               style: const TextStyle(fontSize: 18),
                             ),
                           );
@@ -95,7 +95,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       ? Container()
                       : IconButton(
                           onPressed: () {
-                            widget.onDelete(serviceCategory: serviceByCategory.serviceCategory, index: widget.index);
+                            widget.onDelete(serviceCategory: servicesByCategory.serviceCategory, index: widget.index);
                           },
                           icon: Icon(
                             Icons.delete,
@@ -146,13 +146,13 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       child: CustomLink(
                     label: 'Adicionar novo',
                     onTap: () {
-                      _onAddService(serviceCategory: serviceByCategory.serviceCategory);
+                      _onAddService(serviceCategory: servicesByCategory.serviceCategory);
                     },
                   )),
                   CustomLink(
                     label: 'Mostrar tudo',
                     onTap: () {
-                      _onShowAll(servicesByCategory: serviceByCategory);
+                      _onShowAll(servicesByCategory: servicesByCategory);
                     },
                   ),
                 ],
@@ -175,7 +175,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   }
 
   Future<void> _onEdit() async {
-    context.read<ServiceCategoryEditController>().initUpdate(serviceCategory: serviceByCategory.serviceCategory);
+    context.read<ServiceCategoryEditController>().initUpdate(serviceCategory: servicesByCategory.serviceCategory);
     final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
     if (result != null) {
       final serviceCategoryUpdate = result as ServiceCategory;
@@ -193,7 +193,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       if (hasService) await _scrollToEnd();
 
       final serviceInsert = result as Service;
-      serviceByCategory.services.add(serviceInsert);
+      servicesByCategory.services.add(serviceInsert);
 
       if (hasService) {
         _listServices.insert(serviceInsert);
@@ -216,7 +216,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
     if (result != null) {
       final serviceEdited = result as Service;
-      serviceByCategory.services[index] = serviceEdited;
+      servicesByCategory.services[index] = serviceEdited;
 
       _listServices.removeAt(index, 0);
       _listServices.insertAt(index, serviceEdited);
@@ -237,7 +237,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   Future<void> _removeService({required Service service, required int index}) async {
     widget.removeFocusOfWidgets();
     context.read<ServiceController>().deleteService(service: service);
-    serviceByCategory.services.removeAt(index);
+    servicesByCategory.services.removeAt(index);
     _listServices.removeAt(index);
     if (_listServices.length == 0) {
       setState(() {});
@@ -246,7 +246,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   Future<void> _changeCategory(ServiceCategory serviceCategory) async {
     await controller.animateTo(0, curve: Curves.easeIn);
-    serviceByCategory = serviceByCategory.copyWith(serviceCategory: serviceCategory);
+    servicesByCategory = servicesByCategory.copyWith(serviceCategory: serviceCategory);
     await controller.animateTo(1, curve: Curves.easeIn);
   }
 
@@ -280,7 +280,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       key: ValueKey(_listServices[index].id),
       onTap: () {
         _onEditService(
-          serviceCategory: serviceByCategory.serviceCategory,
+          serviceCategory: servicesByCategory.serviceCategory,
           service: _listServices[index],
           index: index,
         );

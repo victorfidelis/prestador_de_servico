@@ -19,7 +19,7 @@ class ShowAllServicesController extends ChangeNotifier {
   ShowAllServicesController({required this.serviceService});
 
   void setServicesByCategory({required ServicesByCategory servicesByCategory}) {
-    _changeState(ShowAllServicesLoaded(servicesByCategories: servicesByCategory));
+    _changeState(ShowAllServicesLoaded(servicesByCategory: servicesByCategory));
   }
 
   void init() {
@@ -44,7 +44,7 @@ class ShowAllServicesController extends ChangeNotifier {
 
       _changeState(
         ShowAllServicesLoaded(
-          servicesByCategories: currentState.servicesByCategories,
+          servicesByCategory: currentState.servicesByCategory,
           message: message,
         ),
       );
@@ -61,7 +61,7 @@ class ShowAllServicesController extends ChangeNotifier {
     final currentState = (state as ShowAllServicesLoaded);
 
     final textFilterWithoutDiacricts = replaceDiacritic(textFilter);
-    final List<Service> servicesFiltered = currentState.servicesByCategories.services
+    final List<Service> servicesFiltered = currentState.servicesByCategory.services
         .where(
           (service) => service.nameWithoutDiacritics.toLowerCase().contains(
                 textFilterWithoutDiacricts.toLowerCase(),
@@ -70,8 +70,8 @@ class ShowAllServicesController extends ChangeNotifier {
         .toList();
 
     final nextState = ShowAllServicesFiltered(
-      servicesByCategories: currentState.servicesByCategories,
-      servicesByCategoriesFiltered: currentState.servicesByCategories.copyWith(services: servicesFiltered),
+      servicesByCategory: currentState.servicesByCategory,
+      servicesByCategoriesFiltered: currentState.servicesByCategory.copyWith(services: servicesFiltered),
     );
 
     _changeState(nextState);

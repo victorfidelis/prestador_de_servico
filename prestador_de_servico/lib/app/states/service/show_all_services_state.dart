@@ -12,14 +12,14 @@ class ShowAllServicesError extends ShowAllServicesState {
 }
 
 class ShowAllServicesLoaded extends ShowAllServicesState {
-  final ServicesByCategory servicesByCategories;
+  final ServicesByCategory servicesByCategory;
   final String message;
 
-  ShowAllServicesLoaded({required this.servicesByCategories, this.message = ''});
+  ShowAllServicesLoaded({required this.servicesByCategory, this.message = ''});
 }
 
 class ShowAllServicesFiltered extends ShowAllServicesLoaded {
   final ServicesByCategory servicesByCategoriesFiltered;
 
-  ShowAllServicesFiltered({required super.servicesByCategories, required this.servicesByCategoriesFiltered, super.message});
+  ShowAllServicesFiltered({required super.servicesByCategory, required this.servicesByCategoriesFiltered, super.message});
 }

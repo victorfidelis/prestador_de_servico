@@ -92,7 +92,7 @@ void main() {
 
           expect(showAllServicesController.state is ShowAllServicesLoaded, isTrue);
           final state = (showAllServicesController.state as ShowAllServicesLoaded);
-          expect(state.servicesByCategories, equals(servicesByCategory1));
+          expect(state.servicesByCategory, equals(servicesByCategory1));
         },
       );
     },
@@ -152,7 +152,7 @@ void main() {
 
           expect(showAllServicesController.state is ShowAllServicesLoaded, isTrue);
           final state = (showAllServicesController.state as ShowAllServicesLoaded);
-          expect(state.servicesByCategories, equals(servicesByCategory1));
+          expect(state.servicesByCategory, equals(servicesByCategory1));
           expect(state.message, equals(failureMessage));
         },
       );
@@ -174,7 +174,7 @@ void main() {
 
           expect(showAllServicesController.state is ShowAllServicesLoaded, isTrue);
           final state = (showAllServicesController.state as ShowAllServicesLoaded);
-          expect(state.servicesByCategories, equals(servicesByCategory1));
+          expect(state.servicesByCategory, equals(servicesByCategory1));
           expect(state.message, equals(failureMessage));
         },
       );
@@ -197,7 +197,7 @@ void main() {
 
           expect(showAllServicesController.state is ShowAllServicesLoaded, isTrue);
           final state = (showAllServicesController.state as ShowAllServicesLoaded);
-          expect(state.servicesByCategories, equals(servicesByCategory1));
+          expect(state.servicesByCategory, equals(servicesByCategory1));
         },
       );
     },

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
+import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/show_all_services_controller.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-import 'package:prestador_de_servico/app/shared/helpers/custom_sliver_animated_list.dart';
+import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
+import 'package:prestador_de_servico/app/shared/helpers/custom_sliver_animated_grid.dart';
+import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/search_text_field.dart';
@@ -22,15 +25,17 @@ class ShowAllServicesView extends StatefulWidget {
 }
 
 class _ShowAllServicesViewState extends State<ShowAllServicesView> {
-  final GlobalKey<SliverAnimatedListState> _animatedListKey = GlobalKey<SliverAnimatedListState>();
-  late CustomSliverAnimatedList<Service> _listServices;
+  late ServicesByCategory servicesByCategory;
+  final GlobalKey<SliverAnimatedGridState> _animatedGridKey = GlobalKey<SliverAnimatedGridState>();
+  late CustomSliverAnimatedGrid<Service> _listServices;
   final _scrollController = ScrollController();
   final focusNodeSearchText = FocusNode();
+  final _customNotifications = CustomNotifications();
 
   @override
   void initState() {
-    _listServices = CustomSliverAnimatedList<Service>(
-      listKey: _animatedListKey,
+    _listServices = CustomSliverAnimatedGrid<Service>(
+      gridKey: _animatedGridKey,
       removedItemBuilder: _buildRemovedItem,
       initialItems: [],
     );
@@ -92,8 +97,9 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
                 return const SliverToBoxAdapter();
               }
 
-              final serviceCategory =
-                  (showAllServicesController.state as ShowAllServicesLoaded).servicesByCategories.serviceCategory;
+              servicesByCategory =
+                  (showAllServicesController.state as ShowAllServicesLoaded).servicesByCategory;
+              final serviceCategory = servicesByCategory.serviceCategory;
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(
@@ -136,18 +142,15 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
                     (showAllServicesController.state as ShowAllServicesFiltered).servicesByCategoriesFiltered.services);
               } else {
                 _listServices.removeAndInsertAll(
-                    (showAllServicesController.state as ShowAllServicesLoaded).servicesByCategories.services);
+                    (showAllServicesController.state as ShowAllServicesLoaded).servicesByCategory.services);
               }
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
                 sliver: SliverAnimatedGrid(
-                  key: _animatedListKey,
+                  key: _animatedGridKey,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 16,
-                    crossAxisSpacing: 2
-                  ),
+                      crossAxisCount: 2, mainAxisSpacing: 16, crossAxisSpacing: 2),
                   initialItemCount: _listServices.length + 2,
                   itemBuilder: _itemBuilder,
                 ),
@@ -156,7 +159,70 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
           ),
         ],
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 44,
+          vertical: 10,
+        ),
+        child: CustomButton(
+          label: 'Novo serviço',
+          onTap: _onAddService,
+        ),
+      ),
     );
+  }
+
+  Future<void> _onAddService() async {
+    removeFocusOfWidgets();
+    context.read<ServiceEditController>().initInsert(serviceCategory: servicesByCategory.serviceCategory);
+    final result = await Navigator.of(context).pushNamed('/serviceEdit');
+    if (result != null) {
+      final hasService = _listServices.length > 0;
+
+      if (hasService) await _scrollToEnd();
+
+      final serviceInsert = result as Service;
+
+      _listServices.insert(serviceInsert);
+    }
+  }
+
+  Future<void> _onEditService({
+    required Service service,
+    required int index,
+  }) async {
+    removeFocusOfWidgets();
+    context.read<ServiceEditController>().initUpdate(
+          serviceCategory: servicesByCategory.serviceCategory,
+          service: service,
+        );
+    final result = await Navigator.of(context).pushNamed('/serviceEdit');
+    if (result != null) {
+      final serviceEdited = result as Service;
+      servicesByCategory.services[index] = serviceEdited;
+
+      _listServices.removeAt(index, 0);
+      _listServices.insertAt(index, serviceEdited);
+    }
+  }
+
+  Future<void> _onRemoveService({required Service service, required int index}) async {
+    _customNotifications.showQuestionAlert(
+      context: context,
+      title: 'Excluir serviço',
+      content: 'Tem certeza que deseja excluir serviço?',
+      confirmCallback: () {
+        _removeService(service: service, index: index);
+      },
+    );
+  }
+
+  Future<void> _removeService({required Service service, required int index}) async {
+    removeFocusOfWidgets();
+    context.read<ServiceController>().deleteService(service: service);
+    servicesByCategory.services.removeAt(index);
+    _listServices.removeAt(index);
   }
 
   Widget _itemBuilder(
@@ -178,8 +244,15 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
     }
     return ServiceCard(
       key: ValueKey(_listServices[index].id),
-      onTap: () {},
-      onLongPress: () {},
+      onTap: () {
+        _onEditService(
+          service: _listServices[index],
+          index: index,
+        );
+      },
+      onLongPress: () {
+        _onRemoveService(service: _listServices[index], index: index);
+      },
       service: _listServices[index],
       animation: animation,
     );
@@ -197,5 +270,23 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
       service: service,
       animation: animation,
     );
+  }
+
+  Future<void> _scrollToEnd() async {
+    removeFocusOfWidgets();
+    await _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeIn,
+    );
+    await _scrollController.animateTo(
+      _scrollController.position.maxScrollExtent,
+      duration: const Duration(milliseconds: 100),
+      curve: Curves.linear,
+    );
+  }
+
+  void removeFocusOfWidgets() {
+    focusNodeSearchText.unfocus();
   }
 }
