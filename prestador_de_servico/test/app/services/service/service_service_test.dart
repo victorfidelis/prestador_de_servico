@@ -269,6 +269,23 @@ void main() {
       );
 
       test(
+        '''Deve retornar um Unit quando ao excluir a imagem ocorra um erro informando que 
+        a mesma não existe''',
+        () async {
+          const failureMessage = 'Falha de teste';
+          when(mockImageRepository.deleteImage(imageUrl: serviceWithImageUrl.imageUrl))
+              .thenAnswer((_) async => Either.left(ImageNotFoundFailure(failureMessage)));
+          when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
+          when(offlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
+
+          final insertEither = await serviceService.delete(service: serviceWithImageUrl);
+
+          expect(insertEither.isRight, isTrue);
+          expect(insertEither.right is Unit, isTrue);
+        },
+      );
+
+      test(
         '''Deve retornar um Unit quando a gravação do Service for feita com sucesso''',
         () async {
           when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));

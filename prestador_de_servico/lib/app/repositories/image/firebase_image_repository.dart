@@ -17,16 +17,16 @@ class FirebaseImageRepository implements ImageRepository {
       await imageRef.delete();
       return Either.right(unit);
     } on FirebaseException catch (e) {
-      if (e.code == 'storage/invalid-url' || e.code == 'storage/object-not-found') {
-        return Either.left(UploadImageFailure('Imagem não encontrada'));
+      if (e.code == 'storage/invalid-url' || e.code == 'storage/object-not-found' || e.code == 'object-not-found') {
+        return Either.left(ImageNotFoundFailure('Imagem não encontrada'));
       } else if (e.code == 'storage/unauthorized') {
-        return Either.left(UploadImageFailure('Usuário não autorizado a deletar imagem'));
+        return Either.left(DeleteImageFailure('Usuário não autorizado a deletar imagem'));
       } else if (e.code == 'storage/canceled') {
-        return Either.left(UploadImageFailure('Exclusão de imagem cancelada'));
+        return Either.left(DeleteImageFailure('Exclusão de imagem cancelada'));
       } else {
-        return Either.left(UploadImageFailure('Falha ao deletar imagem'));
+        return Either.left(DeleteImageFailure('Falha ao deletar imagem'));
       }
-    }
+    } 
   }
 
   @override

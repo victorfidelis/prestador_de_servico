@@ -6,7 +6,7 @@ import 'package:prestador_de_servico/app/controllers/service/show_all_services_c
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
-import 'package:prestador_de_servico/app/shared/helpers/custom_animated_list.dart';
+import 'package:prestador_de_servico/app/shared/animated_list/custom_animated_list.dart';
 import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_card.dart';
@@ -40,7 +40,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     value: 1.0,
   );
   final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey<AnimatedListState>();
-  late CustomAnimatedList<Service> _listServices;
+  late CustomAnimatedList<Service> _listServicesCategoryCard;
   final _scrollController = ScrollController();
   final _customNotifications = CustomNotifications();
 
@@ -61,7 +61,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   build(BuildContext context) {
     final hasService = servicesByCategory.services.isNotEmpty;
 
-    _listServices = CustomAnimatedList<Service>(
+    _listServicesCategoryCard = CustomAnimatedList<Service>(
       listKey: _animatedListKey,
       removedItemBuilder: _buildRemovedItem,
       initialItems: servicesByCategory.services,
@@ -132,7 +132,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       key: _animatedListKey,
                       controller: _scrollController,
                       scrollDirection: Axis.horizontal,
-                      initialItemCount: _listServices.length + 2,
+                      initialItemCount: _listServicesCategoryCard.length + 2,
                       itemBuilder: _itemBuilder,
                     ),
                   )
@@ -151,9 +151,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                   )),
                   CustomLink(
                     label: 'Mostrar tudo',
-                    onTap: () {
-                      _onShowAll(servicesByCategory: servicesByCategory);
-                    },
+                    onTap: _onShowAll,
                   ),
                 ],
               ),
@@ -169,9 +167,10 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     );
   }
 
-  void _onShowAll({required ServicesByCategory servicesByCategory}) {
-    context.read<ShowAllServicesController>().setServicesByCategory(servicesByCategory: servicesByCategory);
-    Navigator.of(context).pushNamed('/showAllServices');
+  void _onShowAll() {
+    final servicesByCategoryToShowAll = servicesByCategory.copyWith(services: List.from(servicesByCategory.services));
+    context.read<ShowAllServicesController>().setServicesByCategory(servicesByCategory: servicesByCategoryToShowAll);
+    Navigator.of(context).pushNamed('/showAllServices', arguments: _removeServiceOfScreen);
   }
 
   Future<void> _onEdit() async {
@@ -188,7 +187,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     context.read<ServiceEditController>().initInsert(serviceCategory: serviceCategory);
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
     if (result != null) {
-      final hasService = _listServices.length > 0;
+      final hasService = _listServicesCategoryCard.length > 0;
 
       if (hasService) await _scrollToEnd();
 
@@ -196,7 +195,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       servicesByCategory.services.add(serviceInsert);
 
       if (hasService) {
-        _listServices.insert(serviceInsert);
+        _listServicesCategoryCard.insert(serviceInsert);
       } else {
         setState(() {});
       }
@@ -206,8 +205,8 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   Future<void> _onEditService({
     required ServiceCategory serviceCategory,
     required Service service,
-    required int index,
   }) async {
+    final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
     widget.removeFocusOfWidgets();
     context.read<ServiceEditController>().initUpdate(
           serviceCategory: serviceCategory,
@@ -218,30 +217,41 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       final serviceEdited = result as Service;
       servicesByCategory.services[index] = serviceEdited;
 
-      _listServices.removeAt(index, 0);
-      _listServices.insertAt(index, serviceEdited);
+      _listServicesCategoryCard.removeAt(index, 0);
+      _listServicesCategoryCard.insertAt(index, serviceEdited);
     }
   }
 
-  Future<void> _onRemoveService({required Service service, required int index}) async {
+  void _onRemoveService({required Service service}) {
     _customNotifications.showQuestionAlert(
       context: context,
       title: 'Excluir serviço',
       content: 'Tem certeza que deseja excluir serviço?',
       confirmCallback: () {
-        _removeService(service: service, index: index);
+        context.read<ServiceController>().deleteService(service: service);
+        _removeServiceOfDatabase(service: service);
+        _removeServiceOfScreen(service: service);
       },
     );
   }
 
-  Future<void> _removeService({required Service service, required int index}) async {
+  void _removeServiceOfScreen({required Service service}) {
+    final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
+
+    if (index < 0) {
+      return;
+    }
+
     widget.removeFocusOfWidgets();
-    context.read<ServiceController>().deleteService(service: service);
     servicesByCategory.services.removeAt(index);
-    _listServices.removeAt(index);
-    if (_listServices.length == 0) {
+    _listServicesCategoryCard.removeAt(index);
+    if (_listServicesCategoryCard.length == 0) {
       setState(() {});
     }
+  }
+
+  void _removeServiceOfDatabase({required Service service}) {
+    context.read<ServiceController>().deleteService(service: service);
   }
 
   Future<void> _changeCategory(ServiceCategory serviceCategory) async {
@@ -270,25 +280,24 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
         width: 16,
       );
     }
-    if (index == _listServices.length) {
+    if (index == _listServicesCategoryCard.length) {
       return const SizedBox(
         key: ValueKey('last space'),
         width: 190,
       );
     }
     return ServiceCard(
-      key: ValueKey(_listServices[index].id),
+      key: ValueKey(_listServicesCategoryCard[index].id),
       onTap: () {
         _onEditService(
           serviceCategory: servicesByCategory.serviceCategory,
-          service: _listServices[index],
-          index: index,
+          service: _listServicesCategoryCard[index],
         );
       },
       onLongPress: () {
-        _onRemoveService(service: _listServices[index], index: index);
+        _onRemoveService(service: _listServicesCategoryCard[index]);
       },
-      service: _listServices[index],
+      service: _listServicesCategoryCard[index],
       animation: animation,
     );
   }

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/network/network_helpers.dart';
 
-class ServiceCard extends StatelessWidget {
+class ServiceCard extends StatefulWidget {
   final Function() onTap;
   final Function() onLongPress;
   final Service service;
@@ -17,24 +18,33 @@ class ServiceCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    Widget image;
+  State<ServiceCard> createState() => _ServiceCardState();
+}
 
-    if (service.imageUrl.isNotEmpty) {
-      image = FadeInImage.assetNetwork(
-        placeholder: 'assets/images/tres_pontos_transparente.png',
-        image: service.imageUrl,
+class _ServiceCardState extends State<ServiceCard> {
+  final NetworkHelpers networkHelpers = NetworkHelpers();
+
+  ValueNotifier<Widget> image = ValueNotifier(
+    Image.asset('assets/images/sem_imagem.jpg', fit: BoxFit.cover),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.service.imageUrl.isNotEmpty) {
+      image.value = Image.asset(
+        'assets/images/tres_pontos_transparente.png',
         fit: BoxFit.cover,
       );
+      getImageFromNetwotk();
     } else {
-      image = Image.asset('assets/images/sem_imagem.jpg', fit: BoxFit.cover);
+      image.value = Image.asset('assets/images/sem_imagem.jpg', fit: BoxFit.cover);
     }
 
     return SizeTransition(
-      sizeFactor: animation,
+      sizeFactor: widget.animation,
       child: GestureDetector(
-        onTap: onTap,
-        onLongPress: onLongPress,
+        onTap: widget.onTap,
+        onLongPress: widget.onLongPress,
         child: Container(
           width: 180,
           margin: const EdgeInsets.symmetric(horizontal: 6),
@@ -57,7 +67,12 @@ class ServiceCard extends StatelessWidget {
                 ),
                 child: ClipRRect(
                   borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  child: image,
+                  child: ListenableBuilder(
+                    listenable: image,
+                    builder: (context, _) {
+                      return image.value;
+                    },
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -67,7 +82,7 @@ class ServiceCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      service.name,
+                      widget.service.name,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -78,7 +93,7 @@ class ServiceCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            Formatters.formatHoursAndMinutes(service.hours, service.minutes),
+                            Formatters.formatHoursAndMinutes(widget.service.hours, widget.service.minutes),
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -86,7 +101,7 @@ class ServiceCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          Formatters.formatPrice(service.price),
+                          Formatters.formatPrice(widget.service.price),
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -103,5 +118,17 @@ class ServiceCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> getImageFromNetwotk() async {
+    if (await networkHelpers.isImageLinkOnline(widget.service.imageUrl)) {
+      image.value = FadeInImage.assetNetwork(
+        placeholder: 'assets/images/tres_pontos_transparente.png',
+        image: widget.service.imageUrl,
+        fit: BoxFit.cover,
+      );
+    } else  {
+      image.value = Image.asset('assets/images/imagem_indisponivel.jpg', fit: BoxFit.cover);
+    }
   }
 }

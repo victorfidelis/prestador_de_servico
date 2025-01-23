@@ -4,11 +4,13 @@ import 'package:prestador_de_servico/app/repositories/service/service/service_re
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/network/network_helpers.dart';
 
 class ServiceService {
   ServiceRepository offlineRepository;
   ServiceRepository onlineRepository;
   ImageRepository imageRepository;
+  final NetworkHelpers networkHelpers = NetworkHelpers();
 
   ServiceService({
     required this.offlineRepository,
@@ -79,7 +81,7 @@ class ServiceService {
   Future<Either<Failure, Unit>> delete({required Service service}) async {
     if (service.imageUrl.isNotEmpty) {
       final deleteImageEither = await imageRepository.deleteImage(imageUrl: service.imageUrl);
-      if (deleteImageEither.isLeft) {
+      if (deleteImageEither.isLeft && deleteImageEither.left is! ImageNotFoundFailure ) {
         return Either.left(deleteImageEither.left!);
       }
     }

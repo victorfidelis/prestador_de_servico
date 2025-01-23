@@ -47,7 +47,7 @@ class CustomSliverAnimatedGrid<E> {
 
   void removeAndInsertAll(List<E> items) {
     _items = [];
-    _items = items;
+    _items = List.from(items);
   }
 
   int get length => _items.length;

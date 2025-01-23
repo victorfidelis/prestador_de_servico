@@ -24,14 +24,7 @@ import 'package:prestador_de_servico/app/services/service/services_by_category_s
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
-import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
-import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
-import 'package:prestador_de_servico/app/views/service/service_view.dart';
-import 'package:prestador_de_servico/app/views/navigation/navigation_view.dart';
-import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
-import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
-import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
-import 'package:prestador_de_servico/app/views/service/show_all_services_view.dart';
+import 'package:prestador_de_servico/app/views/routes.dart';
 import 'package:provider/provider.dart';
 
 class App extends StatelessWidget {
@@ -128,16 +121,7 @@ class App extends StatelessWidget {
       child: MaterialApp(
         theme: mainTheme,
         initialRoute: '/signIn',
-        routes: {
-          '/signIn': (context) => const SignInView(),
-          '/createAccount': (context) => const CreateUserView(),
-          '/passwordReset': (context) => const PasswordResetView(),
-          '/navigation': (context) => NavigationView(),
-          '/service': (context) => const ServiceView(),
-          '/serviceCategoryEdit': (context) => const ServiceCategoryEditView(),
-          '/serviceEdit': (context) => const ServiceEditView(),
-          '/showAllServices': (context) => const ShowAllServicesView(),
-        },
+        onGenerateRoute: getRoute,
       ),
     );
   }

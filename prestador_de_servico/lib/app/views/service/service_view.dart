@@ -14,7 +14,7 @@ import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.
 import 'package:prestador_de_servico/app/states/service/service_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_category_card.dart';
 import 'package:provider/provider.dart';
-import 'package:prestador_de_servico/app/shared/helpers/custom_sliver_animated_list.dart';
+import 'package:prestador_de_servico/app/shared/animated_list/custom_sliver_animated_list.dart';
 
 class ServiceView extends StatefulWidget {
   const ServiceView({super.key});

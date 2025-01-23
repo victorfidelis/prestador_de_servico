@@ -57,3 +57,7 @@ class UploadImageFailure extends Failure {
 class DeleteImageFailure extends Failure {
   DeleteImageFailure(super.message);
 }
+
+class ImageNotFoundFailure extends Failure {
+  ImageNotFoundFailure(super.message);
+}
