@@ -170,7 +170,10 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   void _onShowAll() {
     final servicesByCategoryToShowAll = servicesByCategory.copyWith(services: List.from(servicesByCategory.services));
     context.read<ShowAllServicesController>().setServicesByCategory(servicesByCategory: servicesByCategoryToShowAll);
-    Navigator.of(context).pushNamed('/showAllServices', arguments: _removeServiceOfScreen);
+    Navigator.of(context).pushNamed('/showAllServices', arguments: {
+      'removeServiceOfOtherScreen': _removeServiceOfScreen,
+      'addServiceOfOtherScreen': _addServiceOfScreen,
+    });
   }
 
   Future<void> _onEdit() async {
@@ -187,18 +190,23 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     context.read<ServiceEditController>().initInsert(serviceCategory: serviceCategory);
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
     if (result != null) {
-      final hasService = _listServicesCategoryCard.length > 0;
+      _addServiceOfScreen(service: result as Service);
+    }
+  }
 
-      if (hasService) await _scrollToEnd();
+  Future<void> _addServiceOfScreen({
+    required Service service,
+  }) async {
+    final hasService = _listServicesCategoryCard.length > 0;
 
-      final serviceInsert = result as Service;
-      servicesByCategory.services.add(serviceInsert);
+    if (hasService) await _scrollToEnd();
 
-      if (hasService) {
-        _listServicesCategoryCard.insert(serviceInsert);
-      } else {
-        setState(() {});
-      }
+    servicesByCategory.services.add(service);
+
+    if (hasService) {
+      _listServicesCategoryCard.insert(service);
+    } else {
+      setState(() {});
     }
   }
 

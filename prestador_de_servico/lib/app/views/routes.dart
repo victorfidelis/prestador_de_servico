@@ -10,46 +10,44 @@ import 'package:prestador_de_servico/app/views/service/service_view.dart';
 import 'package:prestador_de_servico/app/views/service/show_all_services_view.dart';
 
 Route<dynamic>? getRoute(RouteSettings settings) {
-    if (settings.name == '/signIn') {
-        // FooRoute constructor expects SomeObject
-        return _buildRoute(settings, const SignInView());
-    } 
-    if (settings.name == '/createAccount') {
-        // FooRoute constructor expects SomeObject
-        return _buildRoute(settings, const CreateUserView());
-    } 
-    if (settings.name == '/passwordReset') {
-        // FooRoute constructor expects SomeObject
-        return _buildRoute(settings, const PasswordResetView());
-    } 
-    if (settings.name == '/navigation') {
-        // FooRoute constructor expects SomeObject
-        return _buildRoute(settings, NavigationView());
-    } 
-    if (settings.name == '/service') {
-        // FooRoute constructor expects SomeObject
-        return _buildRoute(settings, const ServiceView());
-    } 
-    if (settings.name == '/serviceCategoryEdit') {
-        // FooRoute constructor expects SomeObject
-        return _buildRoute(settings, const ServiceCategoryEditView());
-    } 
-    if (settings.name == '/serviceEdit') {
-        // FooRoute constructor expects SomeObject
-        return _buildRoute(settings, const ServiceEditView());
-    } 
-    if (settings.name == '/showAllServices') {
-        // FooRoute constructor expects SomeObject
-        return _buildRoute(settings, ShowAllServicesView(removeServiceOfOtherScreen: (settings.arguments as Function({required Service service}))));
-    } 
-    
+  if (settings.name == '/signIn') {
+    return _buildRoute(settings, const SignInView());
+  }
+  if (settings.name == '/createAccount') {
+    return _buildRoute(settings, const CreateUserView());
+  }
+  if (settings.name == '/passwordReset') {
+    return _buildRoute(settings, const PasswordResetView());
+  }
+  if (settings.name == '/navigation') {
+    return _buildRoute(settings, NavigationView());
+  }
+  if (settings.name == '/service') {
+    return _buildRoute(settings, const ServiceView());
+  }
+  if (settings.name == '/serviceCategoryEdit') {
+    return _buildRoute(settings, const ServiceCategoryEditView());
+  }
+  if (settings.name == '/serviceEdit') {
+    return _buildRoute(settings, const ServiceEditView());
+  }
+  if (settings.name == '/showAllServices') {
+    final argmuments = (settings.arguments as Map);
+    return _buildRoute(
+      settings,
+      ShowAllServicesView(
+        removeServiceOfOtherScreen: (argmuments['removeServiceOfOtherScreen'] as Function({required Service service})),
+        addServiceOfOtherScreen: (argmuments['addServiceOfOtherScreen'] as Function({required Service service})),
+      ),
+    );
+  }
 
-    return null;
+  return null;
 }
 
 MaterialPageRoute _buildRoute(RouteSettings settings, Widget builder) {
-    return MaterialPageRoute(
-        settings: settings,
-        builder: (ctx) => builder,
-    );
+  return MaterialPageRoute(
+    settings: settings,
+    builder: (ctx) => builder,
+  );
 }

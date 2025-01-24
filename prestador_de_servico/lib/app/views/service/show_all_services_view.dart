@@ -19,8 +19,13 @@ import 'package:provider/provider.dart';
 
 class ShowAllServicesView extends StatefulWidget {
   final Function({required Service service}) removeServiceOfOtherScreen;
+  final Function({required Service service}) addServiceOfOtherScreen;
 
-  const ShowAllServicesView({super.key, required this.removeServiceOfOtherScreen});
+  const ShowAllServicesView({
+    super.key,
+    required this.removeServiceOfOtherScreen,
+    required this.addServiceOfOtherScreen,
+  });
 
   @override
   State<ShowAllServicesView> createState() => _ShowAllServicesViewState();
