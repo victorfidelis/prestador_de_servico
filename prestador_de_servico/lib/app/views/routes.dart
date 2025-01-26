@@ -38,6 +38,7 @@ Route<dynamic>? getRoute(RouteSettings settings) {
       ShowAllServicesView(
         removeServiceOfOtherScreen: (argmuments['removeServiceOfOtherScreen'] as Function({required Service service})),
         addServiceOfOtherScreen: (argmuments['addServiceOfOtherScreen'] as Function({required Service service})),
+        editServiceOfOtherScreen: (argmuments['editServiceOfOtherScreen'] as Function({required Service service})),
       ),
     );
   }

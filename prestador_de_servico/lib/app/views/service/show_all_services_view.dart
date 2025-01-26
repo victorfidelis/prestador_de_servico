@@ -20,11 +20,13 @@ import 'package:provider/provider.dart';
 class ShowAllServicesView extends StatefulWidget {
   final Function({required Service service}) removeServiceOfOtherScreen;
   final Function({required Service service}) addServiceOfOtherScreen;
+  final Function({required Service service}) editServiceOfOtherScreen;
 
   const ShowAllServicesView({
     super.key,
     required this.removeServiceOfOtherScreen,
     required this.addServiceOfOtherScreen,
+    required this.editServiceOfOtherScreen,
   });
 
   @override
@@ -33,6 +35,7 @@ class ShowAllServicesView extends StatefulWidget {
 
 class _ShowAllServicesViewState extends State<ShowAllServicesView> {
   late ServicesByCategory servicesByCategory;
+  late ServicesByCategory servicesByCategoryInScreen;
   final GlobalKey<SliverAnimatedGridState> _animatedGridKey = GlobalKey<SliverAnimatedGridState>();
   late CustomSliverAnimatedGrid<Service> _listServicesShowAll;
   final _scrollController = ScrollController();
@@ -90,7 +93,7 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
                     padding: const EdgeInsets.only(top: 94),
                     child: SearchTextField(
                       hintText: 'Pesquise por um serviço',
-                      onChanged: (String value) {},
+                      onChanged: _onFilter,
                       focusNode: focusNodeSearchText,
                     ),
                   ),
@@ -104,8 +107,8 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
                 return const SliverToBoxAdapter();
               }
 
-              servicesByCategory = (showAllServicesController.state as ShowAllServicesLoaded).servicesByCategory;
-              final serviceCategory = servicesByCategory.serviceCategory;
+              final serviceCategory =
+                  (showAllServicesController.state as ShowAllServicesLoaded).servicesByCategory.serviceCategory;
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(
@@ -143,13 +146,21 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
                 );
               }
 
+              final loadedState = (showAllServicesController.state as ShowAllServicesLoaded);
+              final services = loadedState.servicesByCategory.services;
+              servicesByCategory = loadedState.servicesByCategory.copyWith(services: List.from(services));
+
               if (showAllServicesController.state is ShowAllServicesFiltered) {
-                _listServicesShowAll.removeAndInsertAll(
-                    (showAllServicesController.state as ShowAllServicesFiltered).servicesByCategoriesFiltered.services);
+                final filteredState = (showAllServicesController.state as ShowAllServicesFiltered);
+                final servicesFiltered = filteredState.servicesByCategoryFiltered.services;
+                servicesByCategoryInScreen =
+                    filteredState.servicesByCategoryFiltered.copyWith(services: List.from(servicesFiltered));
               } else {
-                _listServicesShowAll.removeAndInsertAll(
-                    (showAllServicesController.state as ShowAllServicesLoaded).servicesByCategory.services);
+                servicesByCategoryInScreen =
+                    servicesByCategory.copyWith(services: List.from(servicesByCategory.services));
               }
+
+              _listServicesShowAll.removeAndInsertAll(servicesByCategoryInScreen.services);
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
@@ -184,31 +195,45 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
     context.read<ServiceEditController>().initInsert(serviceCategory: servicesByCategory.serviceCategory);
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
     if (result != null) {
-      final hasService = _listServicesShowAll.length > 0;
-
-      if (hasService) await _scrollToEnd();
-
-      final serviceInsert = result as Service;
-
-      _listServicesShowAll.insert(serviceInsert);
+      final serviceAdd = result as Service;
+      widget.addServiceOfOtherScreen(service: serviceAdd);
+      _addServiceOfScreen(service: serviceAdd);
     }
   }
 
+  Future<void> _addServiceOfScreen({required Service service}) async {
+    final hasService = _listServicesShowAll.length > 0;
+    if (hasService) await _scrollToEnd();
+    servicesByCategory.services.add(service);
+    servicesByCategoryInScreen.services.add(service);
+    _listServicesShowAll.insert(service);
+  }
+
   Future<void> _onEditService({required Service service}) async {
-    final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
     removeFocusOfWidgets();
     context.read<ServiceEditController>().initUpdate(
           serviceCategory: servicesByCategory.serviceCategory,
           service: service,
         );
+
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
+
     if (result != null) {
       final serviceEdited = result as Service;
-      servicesByCategory.services[index] = serviceEdited;
-
-      _listServicesShowAll.removeAt(index, 0);
-      _listServicesShowAll.insertAt(index, serviceEdited);
+      widget.editServiceOfOtherScreen(service: serviceEdited);
+      _editServiceOfScreen(service: serviceEdited);
     }
+  }
+
+  void _editServiceOfScreen({required Service service}) {
+    final indexOfCompleteList = servicesByCategory.services.indexWhere((s) => s.id == service.id);
+    servicesByCategory.services[indexOfCompleteList] = service;
+
+    final indexOfListInScreen = servicesByCategoryInScreen.services.indexWhere((s) => s.id == service.id);
+    servicesByCategoryInScreen.services[indexOfListInScreen] = service;
+
+    _listServicesShowAll.removeAt(indexOfListInScreen, 0);
+    _listServicesShowAll.insertAt(indexOfListInScreen, service);
   }
 
   void _onRemoveService({required Service service}) {
@@ -218,16 +243,18 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
       content: 'Tem certeza que deseja excluir serviço?',
       confirmCallback: () {
         _removeServiceOfDatabase(service: service);
-        _removeServiceOfScreen(service: service);
         widget.removeServiceOfOtherScreen(service: service);
+        _removeServiceOfScreen(service: service);
       },
     );
   }
 
   void _removeServiceOfScreen({required Service service}) {
-    final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
+    servicesByCategory.services.removeWhere((s) => s.id == service.id);
+
+    final index = servicesByCategoryInScreen.services.indexWhere((s) => s.id == service.id);
     removeFocusOfWidgets();
-    servicesByCategory.services.removeAt(index);
+    servicesByCategoryInScreen.services.removeAt(index);
     _listServicesShowAll.removeAt(index);
   }
 
@@ -240,6 +267,9 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
     int index,
     Animation<double> animation,
   ) {
+    if (_listServicesShowAll.length == 0) {
+      return Container();
+    }
     if (index == _listServicesShowAll.length) {
       return const SizedBox(
         key: ValueKey('penultimate item key'),
@@ -251,6 +281,9 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
         key: ValueKey('last item key'),
         height: 200,
       );
+    }
+    if (index > _listServicesShowAll.length + 1) {
+      return Container();
     }
     return ServiceCard(
       key: ValueKey(_listServicesShowAll[index].id),
@@ -277,6 +310,14 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
       service: service,
       animation: animation,
     );
+  }
+
+  void _onFilter(String textValue) {
+    context.read<ShowAllServicesController>().refreshValuesOfState(
+          servicesByCategory: servicesByCategory,
+          servicesByCategoryFiltered: servicesByCategoryInScreen,
+        );
+    context.read<ShowAllServicesController>().filter(textFilter: textValue);
   }
 
   Future<void> _scrollToEnd() async {

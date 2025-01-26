@@ -215,10 +215,24 @@ void main() {
           expect((showAllServicesController.state is ShowAllServicesInitial), isTrue);
         },
       );
+
+      test(
+        'Deve manter o estado de ShowAllServicesLoaded quando o valor filtrado for vazio',
+        () async { 
+          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+
+          showAllServicesController.filter(textFilter: '');
+
+          expect((showAllServicesController.state is ShowAllServicesLoaded), isTrue);
+          expect((showAllServicesController.state is! ShowAllServicesFiltered), isTrue);
+          final showAllServicesState = (showAllServicesController.state as ShowAllServicesLoaded);
+          expect(showAllServicesState.servicesByCategory, equals(servicesByCategory1));
+        },
+      );
       
       test(
-        '''Deve alterar o estado quando o estado para ShowAllServicesFiltered com os dados 
-        filtrados''',
+        '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
+        filtrados quando filtrar "h"''',
         () { 
           showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
@@ -226,13 +240,13 @@ void main() {
 
           expect((showAllServicesController.state is ShowAllServicesFiltered), isTrue);
           final state = (showAllServicesController.state as ShowAllServicesFiltered);
-          expect(state.servicesByCategoriesFiltered.services.length, equals(2));
+          expect(state.servicesByCategoryFiltered.services.length, equals(2));
         },
       );
       
       test(
-        '''Deve alterar o estado quando o estado para ShowAllServicesFiltered com os dados 
-        filtrados''',
+        '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
+        filtrados quando filtrar "chapinHA"''',
         () { 
           showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
@@ -240,13 +254,13 @@ void main() {
 
           expect((showAllServicesController.state is ShowAllServicesFiltered), isTrue);
           final state = (showAllServicesController.state as ShowAllServicesFiltered);
-          expect(state.servicesByCategoriesFiltered.services.length, equals(1));
+          expect(state.servicesByCategoryFiltered.services.length, equals(1));
         },
       );
       
       test(
-        '''Deve alterar o estado quando o estado para ShowAllServicesFiltered com os dados 
-        filtrados''',
+        '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
+        filtrados quando filtrar "hidratação"''',
         () { 
           showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
@@ -254,13 +268,13 @@ void main() {
 
           expect((showAllServicesController.state is ShowAllServicesFiltered), isTrue);
           final state = (showAllServicesController.state as ShowAllServicesFiltered);
-          expect(state.servicesByCategoriesFiltered.services.length, equals(1));
+          expect(state.servicesByCategoryFiltered.services.length, equals(1));
         },
       );
       
       test(
-        '''Deve alterar o estado quando o estado para ShowAllServicesFiltered com os dados 
-        filtrados''',
+        '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
+        filtrados quando filtrar "hidratacao"''',
         () { 
           showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
@@ -268,7 +282,27 @@ void main() {
 
           expect((showAllServicesController.state is ShowAllServicesFiltered), isTrue);
           final state = (showAllServicesController.state as ShowAllServicesFiltered);
-          expect(state.servicesByCategoriesFiltered.services.length, equals(1));
+          expect(state.servicesByCategoryFiltered.services.length, equals(1));
+        },
+      );
+      
+      test(
+        '''Deve alterar o estado para ShowAllServicesLoaded quando filtrar com um valor 
+        vazio''',
+        () { 
+          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+          
+          showAllServicesController.filter(textFilter: 'hidratacao');
+          expect((showAllServicesController.state is ShowAllServicesFiltered), isTrue);
+          final state = (showAllServicesController.state as ShowAllServicesFiltered);
+          expect(state.servicesByCategoryFiltered.services.length, equals(1));
+
+          showAllServicesController.filter(textFilter: '');
+
+          expect((showAllServicesController.state is ShowAllServicesLoaded), isTrue);
+          expect((showAllServicesController.state is! ShowAllServicesFiltered), isTrue);
+          final showAllServicesState = (showAllServicesController.state as ShowAllServicesLoaded);
+          expect(showAllServicesState.servicesByCategory, equals(servicesByCategory1));
         },
       );
     },

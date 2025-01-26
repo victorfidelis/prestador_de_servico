@@ -11,15 +11,19 @@ class ShowAllServicesController extends ChangeNotifier {
 
   ShowAllServicesState _state = ShowAllServicesInitial();
   ShowAllServicesState get state => _state;
-  void _changeState(ShowAllServicesState currentState) {
+  void _emitState(ShowAllServicesState currentState) {
     _state = currentState;
     notifyListeners();
+  }
+
+  void _changeState(ShowAllServicesState currentState) {
+    _state = currentState;
   }
 
   ShowAllServicesController({required this.serviceService});
 
   void setServicesByCategory({required ServicesByCategory servicesByCategory}) {
-    _changeState(ShowAllServicesLoaded(servicesByCategory: servicesByCategory));
+    _emitState(ShowAllServicesLoaded(servicesByCategory: servicesByCategory));
   }
 
   void init() {
@@ -42,14 +46,14 @@ class ShowAllServicesController extends ChangeNotifier {
     if (state is ShowAllServicesLoaded) {
       final currentState = (state as ShowAllServicesLoaded);
 
-      _changeState(
+      _emitState(
         ShowAllServicesLoaded(
           servicesByCategory: currentState.servicesByCategory,
           message: message,
         ),
       );
     } else {
-      _changeState(ShowAllServicesError(message));
+      _emitState(ShowAllServicesError(message));
     }
   }
 
@@ -58,10 +62,17 @@ class ShowAllServicesController extends ChangeNotifier {
       return;
     }
 
-    final currentState = (state as ShowAllServicesLoaded);
+    final stateToBack = ShowAllServicesLoaded(
+      servicesByCategory: (state as ShowAllServicesLoaded).servicesByCategory,
+    );
+
+    if (textFilter.isEmpty) {
+      _emitState(stateToBack);
+      return;
+    }
 
     final textFilterWithoutDiacricts = replaceDiacritic(textFilter);
-    final List<Service> servicesFiltered = currentState.servicesByCategory.services
+    final List<Service> servicesFiltered = stateToBack.servicesByCategory.services
         .where(
           (service) => service.nameWithoutDiacritics.toLowerCase().contains(
                 textFilterWithoutDiacricts.toLowerCase(),
@@ -70,10 +81,30 @@ class ShowAllServicesController extends ChangeNotifier {
         .toList();
 
     final nextState = ShowAllServicesFiltered(
-      servicesByCategory: currentState.servicesByCategory,
-      servicesByCategoriesFiltered: currentState.servicesByCategory.copyWith(services: servicesFiltered),
+      servicesByCategory: stateToBack.servicesByCategory,
+      servicesByCategoryFiltered: stateToBack.servicesByCategory.copyWith(services: servicesFiltered),
     );
 
-    _changeState(nextState);
+    _emitState(nextState);
+  }
+
+  void refreshValuesOfState({
+    required ServicesByCategory servicesByCategory,
+    required ServicesByCategory servicesByCategoryFiltered,
+  }) {
+    if (state is! ShowAllServicesLoaded) {
+      return;
+    }
+
+    if (state is ShowAllServicesFiltered) {
+      _changeState(
+        ShowAllServicesFiltered(
+          servicesByCategory: servicesByCategory,
+          servicesByCategoryFiltered: servicesByCategoryFiltered,
+        ),
+      );
+    } else  {
+      _changeState(ShowAllServicesLoaded(servicesByCategory: servicesByCategory));
+    }
   }
 }

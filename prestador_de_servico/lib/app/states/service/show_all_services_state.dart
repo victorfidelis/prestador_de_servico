@@ -19,7 +19,7 @@ class ShowAllServicesLoaded extends ShowAllServicesState {
 }
 
 class ShowAllServicesFiltered extends ShowAllServicesLoaded {
-  final ServicesByCategory servicesByCategoriesFiltered;
+  final ServicesByCategory servicesByCategoryFiltered;
 
-  ShowAllServicesFiltered({required super.servicesByCategory, required this.servicesByCategoriesFiltered, super.message});
+  ShowAllServicesFiltered({required super.servicesByCategory, required this.servicesByCategoryFiltered, super.message});
 }

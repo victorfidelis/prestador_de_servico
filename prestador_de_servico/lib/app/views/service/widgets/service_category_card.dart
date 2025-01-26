@@ -172,7 +172,8 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     context.read<ShowAllServicesController>().setServicesByCategory(servicesByCategory: servicesByCategoryToShowAll);
     Navigator.of(context).pushNamed('/showAllServices', arguments: {
       'removeServiceOfOtherScreen': _removeServiceOfScreen,
-      'addServiceOfOtherScreen': _addServiceOfScreen,
+      'addServiceOfOtherScreen': _addServiceOfScreenWithoutScrool,
+      'editServiceOfOtherScreen': _editServiceOfScreen
     });
   }
 
@@ -210,11 +211,24 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     }
   }
 
+  void _addServiceOfScreenWithoutScrool({
+    required Service service,
+  }) async {
+    final hasService = _listServicesCategoryCard.length > 0;
+
+    servicesByCategory.services.add(service);
+
+    if (hasService) {
+      _listServicesCategoryCard.insert(service);
+    } else {
+      setState(() {});
+    }
+  }
+
   Future<void> _onEditService({
     required ServiceCategory serviceCategory,
     required Service service,
   }) async {
-    final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
     widget.removeFocusOfWidgets();
     context.read<ServiceEditController>().initUpdate(
           serviceCategory: serviceCategory,
@@ -222,12 +236,16 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
         );
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
     if (result != null) {
-      final serviceEdited = result as Service;
-      servicesByCategory.services[index] = serviceEdited;
-
-      _listServicesCategoryCard.removeAt(index, 0);
-      _listServicesCategoryCard.insertAt(index, serviceEdited);
+      _editServiceOfScreen(service: result as Service);
     }
+  }
+
+  void _editServiceOfScreen({required Service service}) {
+    final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
+    servicesByCategory.services[index] = service;
+
+    _listServicesCategoryCard.removeAt(index, 0);
+    _listServicesCategoryCard.insertAt(index, service);
   }
 
   void _onRemoveService({required Service service}) {
