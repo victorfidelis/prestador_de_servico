@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
+import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/services/service/services_by_category_service.dart';
 import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
 import 'package:prestador_de_servico/app/states/service/service_state.dart';
+import 'package:replace_diacritic/replace_diacritic.dart';
 
 class ServiceController extends ChangeNotifier {
   final ServiceCategoryService serviceCategoryService;
@@ -14,9 +16,13 @@ class ServiceController extends ChangeNotifier {
 
   ServiceState _state = ServiceInitial();
   ServiceState get state => _state;
-  void _changeState(ServiceState currentState) {
+  void _emitState(ServiceState currentState) {
     _state = currentState;
     notifyListeners();
+  }
+
+  void _changeState(ServiceState currentState) {
+    _state = currentState;
   }
 
   ServiceController({
@@ -30,27 +36,46 @@ class ServiceController extends ChangeNotifier {
   }
 
   Future<void> load() async {
-    _changeState(ServiceLoading());
+    _emitState(ServiceLoading());
 
     final getAllEither = await servicesByCategoryService.getAll();
     if (getAllEither.isLeft) {
-      _changeState(ServiceError(getAllEither.left!.message));
+      _emitState(ServiceError(getAllEither.left!.message));
       return;
     }
 
-    _changeState(ServiceLoaded(servicesByCategories: getAllEither.right!));
+    _emitState(ServiceLoaded(servicesByCategories: getAllEither.right!));
   }
 
-  Future<void> filter(String name) async {
-    _changeState(ServiceLoading());
-
-    final getByEither = await servicesByCategoryService.getByContainedName(name);
-    if (getByEither.isLeft) {
-      _changeState(ServiceError(getByEither.left!.message));
+  void filter({required String textFilter}) {
+    if (state is! ServiceLoaded) {
       return;
     }
 
-    _changeState(ServiceFiltered(getByEither.right!));
+    final stateToBack = ServiceLoaded(
+      servicesByCategories: (state as ServiceLoaded).servicesByCategories,
+    );
+
+    if (textFilter.isEmpty) {
+      _emitState(stateToBack);
+      return;
+    }
+
+    final textFilterWithoutDiacricts = replaceDiacritic(textFilter);
+    final List<ServicesByCategory> servicesByCategoriesFiltered = stateToBack.servicesByCategories
+        .where(
+          (s) => s.serviceCategory.nameWithoutDiacritics.toLowerCase().contains(
+                textFilterWithoutDiacricts.toLowerCase(),
+              ),
+        )
+        .toList();
+
+    final nextState = ServiceFiltered(
+      servicesByCategories: stateToBack.servicesByCategories,
+      servicesByCategoriesFiltered: servicesByCategoriesFiltered,
+    );
+
+    _emitState(nextState);
   }
 
   Future<void> deleteCategory({required ServiceCategory serviceCategory}) async {
@@ -60,17 +85,17 @@ class ServiceController extends ChangeNotifier {
       return;
     }
 
-    _changeState(ServiceLoading());
+    _emitState(ServiceLoading());
 
     final message = deleteEither.left!.message;
 
     final getAllEither = await servicesByCategoryService.getAll();
     if (getAllEither.isLeft) {
-      _changeState(ServiceError(getAllEither.left!.message));
+      _emitState(ServiceError(getAllEither.left!.message));
       return;
     }
 
-    _changeState(
+    _emitState(
       ServiceLoaded(
         servicesByCategories: getAllEither.right!,
         message: message,
@@ -85,21 +110,41 @@ class ServiceController extends ChangeNotifier {
       return;
     }
 
-    _changeState(ServiceLoading());
+    _emitState(ServiceLoading());
 
     final message = deleteEither.left!.message;
 
     final getAllEither = await servicesByCategoryService.getAll();
     if (getAllEither.isLeft) {
-      _changeState(ServiceError(getAllEither.left!.message));
+      _emitState(ServiceError(getAllEither.left!.message));
       return;
     }
 
-    _changeState(
+    _emitState(
       ServiceLoaded(
         servicesByCategories: getAllEither.right!,
         message: message,
       ),
     );
+  }
+
+  void refreshValuesOfState({
+    required List<ServicesByCategory> servicesByCategories,
+    required List<ServicesByCategory> servicesByCategoriesFiltered,
+  }) {
+    if (state is! ServiceLoaded) {
+      return;
+    }
+
+    if (state is ServiceFiltered) {
+      _changeState(
+        ServiceFiltered(
+          servicesByCategories: servicesByCategories,
+          servicesByCategoriesFiltered: servicesByCategoriesFiltered,
+        ),
+      );
+    } else  {
+      _changeState(ServiceLoaded(servicesByCategories: servicesByCategories));
+    }
   }
 }

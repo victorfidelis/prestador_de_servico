@@ -24,6 +24,8 @@ class ServiceView extends StatefulWidget {
 }
 
 class _ServiceViewState extends State<ServiceView> {
+  late List<ServicesByCategory> servicesByCategories;
+  late List<ServicesByCategory> servicesByCategoriesInScreen;
   final CustomNotifications _notifications = CustomNotifications();
   final GlobalKey<SliverAnimatedListState> _animatedListKey = GlobalKey<SliverAnimatedListState>();
   late CustomSliverAnimatedList<ServicesByCategory> _listServicesByCategories;
@@ -80,8 +82,8 @@ class _ServiceViewState extends State<ServiceView> {
                   Padding(
                     padding: const EdgeInsets.only(top: 94),
                     child: SearchTextField(
-                      hintText: 'Pesquise por um serviço ou categoria',
-                      onChanged: (String value) {},
+                      hintText: 'Pesquise por uma categoria',
+                      onChanged: _onFilter,
                       focusNode: focusNodeSearchText,
                     ),
                   ),
@@ -111,8 +113,18 @@ class _ServiceViewState extends State<ServiceView> {
                 );
               }
 
-              _listServicesByCategories
-                  .removeAndInsertAll((serviceCategoryController.state as ServiceLoaded).servicesByCategories);
+              final categories = (serviceCategoryController.state as ServiceLoaded).servicesByCategories;
+              servicesByCategories = List.from(categories);
+
+              if (serviceCategoryController.state is ServiceFiltered) {
+                final categoriesFiltered =
+                    (serviceCategoryController.state as ServiceFiltered).servicesByCategoriesFiltered;
+                servicesByCategoriesInScreen = List.from(categoriesFiltered);
+              } else {
+                servicesByCategoriesInScreen = List.from(servicesByCategories);
+              }
+
+              _listServicesByCategories.removeAndInsertAll(servicesByCategoriesInScreen);
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(
@@ -147,16 +159,23 @@ class _ServiceViewState extends State<ServiceView> {
     int index,
     Animation<double> animation,
   ) {
+    if (_listServicesByCategories.length == 0) {
+      return Container();
+    }
     if (index == _listServicesByCategories.length) {
       return const SizedBox(
         key: ValueKey('last item key'),
         height: 220,
       );
     }
+    if (index > _listServicesByCategories.length) {
+      return Container();
+    }
     return ServiceCategoryCard(
       key: ValueKey(_listServicesByCategories[index].serviceCategory.id),
       servicesByCategory: _listServicesByCategories[index],
-      onDelete: _onDeleteServiceCategory,
+      onDelete: _onRemoveServiceCategory,
+      editServiceCategory: _editServiceOfScreen,
       index: index,
       animation: animation,
       removeFocusOfWidgets: removeFocusOfWidgets,
@@ -172,6 +191,7 @@ class _ServiceViewState extends State<ServiceView> {
       key: ValueKey(servicesByCategory.serviceCategory.id),
       servicesByCategory: servicesByCategory,
       onDelete: ({required ServiceCategory serviceCategory, required int index}) {},
+      editServiceCategory: ({required ServiceCategory serviceCategory}) {},
       index: 0,
       animation: animation,
       removeFocusOfWidgets: () {},
@@ -182,20 +202,30 @@ class _ServiceViewState extends State<ServiceView> {
     context.read<ServiceCategoryEditController>().initInsert();
     final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
     if (result != null) {
-      await _scrollToEnd();
-      final serviceCategoryInsert = result as ServiceCategory;
-      _onInsertServiceCategory(serviceCategory: serviceCategoryInsert);
+      _addServiceCategoryInScreen(serviceCategory: result as ServiceCategory);
     }
   }
 
-  void _onInsertServiceCategory({
+  void _addServiceCategoryInScreen({
     required ServiceCategory serviceCategory,
-  }) {
+  }) async {
     final serviceByCategory = ServicesByCategory(serviceCategory: serviceCategory, services: []);
+    await _scrollToEnd();
+    servicesByCategories.add(serviceByCategory);
+    servicesByCategoriesInScreen.add(serviceByCategory);
     _listServicesByCategories.insert(serviceByCategory);
   }
+  
 
-  void _onDeleteServiceCategory({
+  void _editServiceOfScreen({required ServiceCategory serviceCategory}) {
+    final indexOfCompleteList = servicesByCategories.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
+    servicesByCategories[indexOfCompleteList].serviceCategory = serviceCategory;
+
+    final indexOfListInScreen = servicesByCategoriesInScreen.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
+    servicesByCategoriesInScreen[indexOfListInScreen].serviceCategory = serviceCategory;
+  }
+
+  void _onRemoveServiceCategory({
     required ServiceCategory serviceCategory,
     required int index,
   }) {
@@ -204,10 +234,31 @@ class _ServiceViewState extends State<ServiceView> {
       title: 'Excluir categoria de serviço',
       content: 'Tem certeza que deseja excluir a categoria de serviço?',
       confirmCallback: () {
-        context.read<ServiceController>().deleteCategory(serviceCategory: serviceCategory);
-        _listServicesByCategories.removeAt(index);
+        _removeServiceCategoryOfDatabase(serviceCategory: serviceCategory);
+        _removeServiceCategoryOfScreen(serviceCategory: serviceCategory);
       },
     );
+  }
+
+  void _removeServiceCategoryOfScreen({required ServiceCategory serviceCategory}) {
+    servicesByCategories.removeWhere((s) => s.serviceCategory.id == serviceCategory.id);
+
+    final index = servicesByCategoriesInScreen.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
+    removeFocusOfWidgets();
+    servicesByCategoriesInScreen.removeAt(index);
+    _listServicesByCategories.removeAt(index);
+  }
+
+  void _removeServiceCategoryOfDatabase({required ServiceCategory serviceCategory}) {
+    context.read<ServiceController>().deleteCategory(serviceCategory: serviceCategory);
+  }
+
+  void _onFilter(String textValue) {
+    context.read<ServiceController>().refreshValuesOfState(
+          servicesByCategories: servicesByCategories,
+          servicesByCategoriesFiltered: servicesByCategoriesInScreen,
+        );
+    context.read<ServiceController>().filter(textFilter: textValue);
   }
 
   Future<void> _scrollToEnd() async {
@@ -222,7 +273,7 @@ class _ServiceViewState extends State<ServiceView> {
       duration: const Duration(milliseconds: 100),
       curve: Curves.linear,
     );
-  } 
+  }
 
   void removeFocusOfWidgets() {
     focusNodeSearchText.unfocus();

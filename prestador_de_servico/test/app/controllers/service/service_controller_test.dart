@@ -34,9 +34,6 @@ void main() {
   late ServicesByCategory servicesByCategory2;
   late ServicesByCategory servicesByCategory3;
 
-  late ServicesByCategory servicesByCategoryFiltered1;
-  late ServicesByCategory servicesByCategoryFiltered2;
-
   setUpValues() {
     serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
     serviceCategory2 = ServiceCategory(id: '2', name: 'Manicure');
@@ -114,16 +111,6 @@ void main() {
     servicesByCategory3 = ServicesByCategory(
       serviceCategory: serviceCategory3,
       services: [service5, service6],
-    );
-
-    servicesByCategoryFiltered1 = ServicesByCategory(
-      serviceCategory: serviceCategory1,
-      services: [service2],
-    );
-
-    servicesByCategoryFiltered2 = ServicesByCategory(
-      serviceCategory: serviceCategory2,
-      services: [service3, service4],
     );
   }
 
@@ -243,66 +230,149 @@ void main() {
     'filter',
     () {
       test(
-        '''Deve alterar o estado para ServiceError e definir uma mensagem de erro no campo 
-        "message" quando um erro ocorrer no Service/Repository.''',
+        'Deve manter o estado quando o estado atual for diferente de ServiceLoaded',
         () async {
-          const nameFilter = 'teste sem resultado';
-          const failureMessage = 'Teste de falha';
+          serviceController.filter(textFilter: 'Cabelo');
 
-          when(offlineMockServicesByCategoryRepository.getByContainedName(nameFilter))
-              .thenAnswer((_) async => Either.left(Failure(failureMessage)));
-
-          await serviceController.filter(nameFilter);
-
-          expect(serviceController.state is ServiceError, isTrue);
-          final servicesState = serviceController.state as ServiceError;
-          expect(servicesState.message, equals(failureMessage));
+          expect((serviceController.state is ServiceInitial), isTrue);
         },
       );
 
       test(
-        '''Deve alterar o estado para ServiceFiltered com uma lista de ServicesbyCategories vazia
-        quando a filtragem não corresponder a nenhum ServiceCategory ou Service.''',
+        'Deve manter o estado de ServiceLoaded quando o valor filtrado for vazio',
         () async {
-          const nameFilter = 'teste sem resultado';
-          final servicesByCategories = <ServicesByCategory>[];
-
-          when(offlineMockServicesByCategoryRepository.getByContainedName(nameFilter))
-              .thenAnswer((_) async => Either.right(servicesByCategories));
-
-          await serviceController.filter(nameFilter);
-
-          expect(serviceController.state is ServiceFiltered, isTrue);
-          final serviceState = serviceController.state as ServiceFiltered;
-          expect(serviceState.servicesByCategories.isEmpty, isTrue);
-        },
-      );
-
-      test(
-        '''Deve alterar o estado para ServiceFiltered com uma lista de ServicesByCategory preenchida
-        quando a filtragem corresponder a cadastrados de ServiceCategory ou Service.''',
-        () async {
-          const nameFilter = 'teste com resultado';
           final servicesByCategories = <ServicesByCategory>[
-            servicesByCategoryFiltered1,
-            servicesByCategoryFiltered2,
+            servicesByCategory1,
+            servicesByCategory2,
+            servicesByCategory3,
           ];
 
-          when(offlineMockServicesByCategoryRepository.getByContainedName(nameFilter))
+          when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
+          await serviceController.load();
 
-          await serviceController.filter(nameFilter);
+          serviceController.filter(textFilter: '');
 
-          expect(serviceController.state is ServiceFiltered, isTrue);
-          final serviceState = serviceController.state as ServiceFiltered;
-
+          expect((serviceController.state is ServiceLoaded), isTrue);
+          expect((serviceController.state is! ServiceFiltered), isTrue);
+          final serviceState = (serviceController.state as ServiceLoaded);
           expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
+        },
+      );
 
-          expect(serviceState.servicesByCategories[0].serviceCategory, equals(servicesByCategories[0].serviceCategory));
-          expect(serviceState.servicesByCategories[0].services.length, equals(servicesByCategories[0].services.length));
+      test(
+        '''Deve alterar o estado para ServiceFiltered com os dados 
+        filtrados quando filtrar "u"''',
+        () async {
+          final servicesByCategories = <ServicesByCategory>[
+            servicesByCategory1,
+            servicesByCategory2,
+            servicesByCategory3,
+          ];
 
-          expect(serviceState.servicesByCategories[1].serviceCategory, equals(servicesByCategories[1].serviceCategory));
-          expect(serviceState.servicesByCategories[1].services.length, equals(servicesByCategories[1].services.length));
+          when(offlineMockServicesByCategoryRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesByCategories));
+          await serviceController.load();
+
+          serviceController.filter(textFilter: 'u');
+
+          expect((serviceController.state is ServiceFiltered), isTrue);
+          final state = (serviceController.state as ServiceFiltered);
+          expect(state.servicesByCategoriesFiltered.length, equals(2));
+        },
+      );
+
+      test(
+        '''Deve alterar o estado para ServiceFiltered com os dados 
+        filtrados quando filtrar "cabeLo"''',
+        () async {
+          final servicesByCategories = <ServicesByCategory>[
+            servicesByCategory1,
+            servicesByCategory2,
+            servicesByCategory3,
+          ];
+
+          when(offlineMockServicesByCategoryRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesByCategories));
+          await serviceController.load();
+
+          serviceController.filter(textFilter: 'cabeLo');
+
+          expect((serviceController.state is ServiceFiltered), isTrue);
+          final state = (serviceController.state as ServiceFiltered);
+          expect(state.servicesByCategoriesFiltered.length, equals(1));
+        },
+      );
+
+      test(
+        '''Deve alterar o estado para ServiceFiltered com os dados 
+        filtrados quando filtrar "Manicure"''',
+        () async {
+          final servicesByCategories = <ServicesByCategory>[
+            servicesByCategory1,
+            servicesByCategory2,
+            servicesByCategory3,
+          ];
+
+          when(offlineMockServicesByCategoryRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesByCategories));
+          await serviceController.load();
+
+          serviceController.filter(textFilter: 'Manicure');
+
+          expect((serviceController.state is ServiceFiltered), isTrue);
+          final state = (serviceController.state as ServiceFiltered);
+          expect(state.servicesByCategoriesFiltered.length, equals(1));
+        },
+      );
+
+      test(
+        '''Deve alterar o estado para ServiceFiltered com os dados 
+        filtrados quando filtrar "pedicure"''',
+        () async {
+          final servicesByCategories = <ServicesByCategory>[
+            servicesByCategory1,
+            servicesByCategory2,
+            servicesByCategory3,
+          ];
+
+          when(offlineMockServicesByCategoryRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesByCategories));
+          await serviceController.load();
+
+          serviceController.filter(textFilter: 'pedicure');
+
+          expect((serviceController.state is ServiceFiltered), isTrue);
+          final state = (serviceController.state as ServiceFiltered);
+          expect(state.servicesByCategoriesFiltered.length, equals(1));
+        },
+      );
+
+      test(
+        '''Deve alterar o estado para ServiceLoaded quando filtrar com um valor 
+        vazio''',
+        () async {
+          final servicesByCategories = <ServicesByCategory>[
+            servicesByCategory1,
+            servicesByCategory2,
+            servicesByCategory3,
+          ];
+
+          when(offlineMockServicesByCategoryRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesByCategories));
+          await serviceController.load();
+
+          serviceController.filter(textFilter: 'u');
+          expect((serviceController.state is ServiceFiltered), isTrue);
+          final state = (serviceController.state as ServiceFiltered);
+          expect(state.servicesByCategoriesFiltered.length, equals(2));
+
+          serviceController.filter(textFilter: '');
+
+          expect((serviceController.state is ServiceLoaded), isTrue);
+          expect((serviceController.state is! ServiceFiltered), isTrue);
+          final showAllServicesState = (serviceController.state as ServiceLoaded);
+          expect(showAllServicesState.servicesByCategories.length, equals(servicesByCategories.length));
         },
       );
     },
@@ -422,10 +492,8 @@ void main() {
 
           when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl))
               .thenAnswer((_) async => Either.right(unit));
-          when(onlineMockServiceRepository.deleteById(id: service1.id))
-              .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.deleteById(id: service1.id))
-              .thenAnswer((_) async => Either.right(unit));
+          when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
+          when(offlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
 
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));

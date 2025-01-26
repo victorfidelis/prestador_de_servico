@@ -18,8 +18,11 @@ class ServiceLoaded extends ServiceState {
   ServiceLoaded({required this.servicesByCategories, this.message = ''});
 }
 
-class ServiceFiltered extends ServiceState {
-  final List<ServicesByCategory> servicesByCategories;
+class ServiceFiltered extends ServiceLoaded {
+  final List<ServicesByCategory> servicesByCategoriesFiltered;
 
-  ServiceFiltered(this.servicesByCategories);
+  ServiceFiltered({
+    required super.servicesByCategories,
+    required this.servicesByCategoriesFiltered,
+  });
 }

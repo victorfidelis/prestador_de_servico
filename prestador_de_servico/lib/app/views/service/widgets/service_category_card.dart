@@ -15,6 +15,7 @@ import 'package:provider/provider.dart';
 class ServiceCategoryCard extends StatefulWidget {
   final ServicesByCategory servicesByCategory;
   final Function({required ServiceCategory serviceCategory, required int index}) onDelete;
+  final Function({required ServiceCategory serviceCategory}) editServiceCategory;
   final int index;
   final Animation<double> animation;
   final void Function() removeFocusOfWidgets;
@@ -23,6 +24,7 @@ class ServiceCategoryCard extends StatefulWidget {
     super.key,
     required this.servicesByCategory,
     required this.onDelete,
+    required this.editServiceCategory,
     required this.index,
     required this.animation,
     required this.removeFocusOfWidgets,
@@ -182,6 +184,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
     if (result != null) {
       final serviceCategoryUpdate = result as ServiceCategory;
+      widget.editServiceCategory(serviceCategory: serviceCategoryUpdate);
       await _changeCategory(serviceCategoryUpdate);
     }
   }
