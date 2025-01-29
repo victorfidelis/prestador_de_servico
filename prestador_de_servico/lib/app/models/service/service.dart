@@ -50,8 +50,8 @@ class Service {
     double? price,
     int? hours,
     int? minutes,
-    String? urlImage,
-    File? fileImage,
+    String? imageUrl,
+    File? imageFile,
     DateTime? syncDate,
     bool? isDeleted,
   }) {
@@ -62,8 +62,8 @@ class Service {
       price: price ?? this.price,
       hours: hours ?? this.hours,
       minutes: minutes ?? this.minutes,
-      imageUrl: urlImage ?? this.imageUrl,
-      imageFile: fileImage ?? this.imageFile,
+      imageUrl: imageUrl ?? this.imageUrl,
+      imageFile: imageFile ?? this.imageFile,
       syncDate: syncDate ?? this.syncDate,
       isDeleted: isDeleted ?? this.isDeleted,
     );

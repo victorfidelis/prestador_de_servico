@@ -1,0 +1,60 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+
+import 'package:replace_diacritic/replace_diacritic.dart';
+
+enum PaymentType {
+  money,
+  pix,
+  debitCard,
+  creditCard,
+  ticket,
+  other,
+}
+
+class Payment {
+  final String id;
+  final PaymentType paymentType;
+  final String name;
+  final String urlIcon;
+  final bool isActive;
+  final DateTime? syncDate;
+
+  String get nameWithoutDiacritics => replaceDiacritic(name);
+  
+  Payment({
+    required this.id,
+    required this.paymentType,
+    required this.name,
+    required this.urlIcon,
+    required this.isActive,
+    this.syncDate,
+  });
+
+  Payment copyWith({
+    String? id,
+    PaymentType? paymentType,
+    String? name,
+    String? urlIcon,
+    bool? isActive,
+    DateTime? syncDate,
+    bool? isDeleted,
+  }) {
+    return Payment(
+      id: id ?? this.id,
+      paymentType: paymentType ?? this.paymentType,
+      name: name ?? this.name,
+      urlIcon: urlIcon ?? this.urlIcon,
+      isActive: isActive ?? this.isActive,
+      syncDate: syncDate ?? this.syncDate,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return (other is Payment) &&
+        other.id == id &&
+        other.paymentType == paymentType &&
+        other.name == name &&
+        other.isActive == isActive;
+  }
+}

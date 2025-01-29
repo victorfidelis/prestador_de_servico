@@ -5,6 +5,7 @@ class SqfliteConfig {
   final String syncControl = 'syncControl';
   final String serviceCategories = 'serviceCategories';
   final String services = 'services';
+  final String payments = 'payments';
   Database? mainDatabase;
 
 
@@ -39,6 +40,7 @@ class SqfliteConfig {
     await _createSyncControl(database: database);
     await _createServiceCategories(database: database);
     await _createServices(database: database);
+    await _createPayments(database: database);
   }
 
   Future<void> _createSyncControl({required Database database}) async {
@@ -93,6 +95,27 @@ class SqfliteConfig {
         'hours INT, '
         'minutes INT, '
         'urlImage TEXT, '
+        'nameWithoutDiacritic TEXT'
+        ')',
+      );
+    }
+  }
+
+  Future<void> _createPayments({required Database database}) async {
+    int? paymentQuantity = Sqflite.firstIntValue(
+      await database.rawQuery(
+        'SELECT COUNT(*) FROM sqlite_master WHERE name = ?',
+        [payments],
+      ),
+    );
+    if (paymentQuantity == 0) {
+      await database.execute(
+        'CREATE TABLE $payments ('
+        'id TEXT, '
+        'paymentType INT, '
+        'name TEXT, '
+        'urlIcon TEXT, '
+        'isActive INT, '
         'nameWithoutDiacritic TEXT'
         ')',
       );

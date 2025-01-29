@@ -62,7 +62,7 @@ class ServiceService {
       if (uploadImageEither.isLeft) {
         return Either.left(uploadImageEither.left);
       }
-      service = service.copyWith(urlImage: uploadImageEither.right);
+      service = service.copyWith(imageUrl: uploadImageEither.right);
     }
 
     final insertOnlineEither = await onlineRepository.update(service: service);
