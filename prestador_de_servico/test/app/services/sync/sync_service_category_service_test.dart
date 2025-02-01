@@ -32,7 +32,7 @@ void main() {
 
   setUpValues() {
     syncEmpty = Sync();
-    syncServiceCategory = Sync(dateSyncServiceCategories: DateTime(2024, 10, 10));
+    syncServiceCategory = Sync(dateSyncServiceCategory: DateTime(2024, 10, 10));
 
     serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
     serviceCategory2 = ServiceCategory(id: '2', name: 'Manicure');
@@ -105,7 +105,7 @@ void main() {
 
           expect(loadEither.isRight, isTrue);
           expect(loadEither.right is Unit, isTrue);
-          expect(syncServiceCategoryService.sync.dateSyncServiceCategories, isNull);
+          expect(syncServiceCategoryService.sync.dateSyncServiceCategory, isNull);
         },
       );
 
@@ -119,8 +119,8 @@ void main() {
 
           expect(loadEither.isRight, isTrue);
           expect(loadEither.right is Unit, isTrue);
-          expect(syncServiceCategoryService.sync.dateSyncServiceCategories,
-              equals(syncServiceCategory.dateSyncServiceCategories));
+          expect(syncServiceCategoryService.sync.dateSyncServiceCategory,
+              equals(syncServiceCategory.dateSyncServiceCategory));
         },
       );
     },
@@ -154,7 +154,7 @@ void main() {
           const failureMessage = 'Teste de falha';
           syncServiceCategoryService.sync = syncServiceCategory;
           when(onlineMockServiceCategoryRepository.getUnsync(
-                  dateLastSync: syncServiceCategory.dateSyncServiceCategories))
+                  dateLastSync: syncServiceCategory.dateSyncServiceCategory))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceCategoryService.loadUnsynced();
@@ -193,7 +193,7 @@ void main() {
         () async {
           syncServiceCategoryService.sync = syncServiceCategory;
           when(onlineMockServiceCategoryRepository.getUnsync(
-                  dateLastSync: syncServiceCategory.dateSyncServiceCategories))
+                  dateLastSync: syncServiceCategory.dateSyncServiceCategory))
               .thenAnswer((_) async => Either.right(serviceCategoriesGetSync));
 
           final loadUnsyncedEither = await syncServiceCategoryService.loadUnsynced();

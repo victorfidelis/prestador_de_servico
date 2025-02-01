@@ -158,5 +158,37 @@ class SqflitePaymentRepository implements PaymentRepository {
       return Either.left(GetDatabaseFailure('Falha ao inserir dados locais: ${e.message})'));
     }
   }
+  
+  @override
+  Future<Either<Failure, List<Payment>>> getUnsync({required DateTime dateLastSync}) {
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<Either<Failure, bool>> existsById({required String id}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
+
+    String selectCommand = ""
+        "SELECT "
+        "pay.id "
+        "FROM "
+        "$paymentsTable pay "
+        "WHERE "
+        "pay.id = ?";
+
+    final params = [id];
+
+    try {
+      final paymentMap = await database!.rawQuery(selectCommand, params);
+      return Either.right(paymentMap.isNotEmpty);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+    }
+  }
 }
 

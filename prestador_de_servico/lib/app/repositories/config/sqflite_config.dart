@@ -53,8 +53,9 @@ class SqfliteConfig {
     if (integrationControlQuantity == 0) {
       await database.execute(
         'CREATE TABLE $syncControl ('
-        'dateSyncServiceCategories int, '
-        'dateSyncService int'
+        'dateSyncServiceCategory int, '
+        'dateSyncService int,'
+        'dateSyncPayment int'
         ')',
       );
     }

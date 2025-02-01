@@ -1,29 +1,35 @@
 class Sync {
-  final DateTime? dateSyncServiceCategories;
-  final DateTime? dateSyncServices;
+  final DateTime? dateSyncServiceCategory;
+  final DateTime? dateSyncService;
+  final DateTime? dateSyncPayment;
 
-  bool get existsSyncDateServiceCategories => dateSyncServiceCategories != null;
-  bool get existsSyncDateServices => dateSyncServices != null;
+  bool get existsSyncDateServiceCategories => dateSyncServiceCategory != null;
+  bool get existsSyncDateServices => dateSyncService != null;
+  bool get existsSyncDatePayments => dateSyncPayment != null;
 
   Sync({
-    this.dateSyncServiceCategories,
-    this.dateSyncServices,
+    this.dateSyncServiceCategory,
+    this.dateSyncService,
+    this.dateSyncPayment,
   });
 
   Sync copyWith({
-    DateTime? dateSyncServiceCategories,
-    DateTime? dateSyncServices,
+    DateTime? dateSyncServiceCategory,
+    DateTime? dateSyncService,
+    DateTime? dateSyncPayment,
   }) {
     return Sync(
-      dateSyncServiceCategories: dateSyncServiceCategories ?? this.dateSyncServiceCategories,
-      dateSyncServices: dateSyncServices ?? this.dateSyncServices,
+      dateSyncServiceCategory: dateSyncServiceCategory ?? this.dateSyncServiceCategory,
+      dateSyncService: dateSyncService ?? this.dateSyncService,
+      dateSyncPayment: dateSyncPayment ?? this.dateSyncPayment,
     );
   }
 
   @override
   bool operator ==(Object other) {
     return (other is Sync) && 
-    other.dateSyncServiceCategories == dateSyncServiceCategories && 
-    other.dateSyncServices == dateSyncServices;
+    other.dateSyncServiceCategory == dateSyncServiceCategory && 
+    other.dateSyncService == dateSyncService &&
+    other.dateSyncPayment == dateSyncPayment;
   }
 }

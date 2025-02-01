@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/network/network_service.dart';
+import 'package:prestador_de_servico/app/services/sync/sync_payment_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
@@ -9,11 +10,13 @@ class SyncController extends ChangeNotifier {
   final NetworkService networkService;
   final SyncServiceCategoryService syncServiceCategoryService;
   final SyncServiceService syncServiceService;
+  final SyncPaymentService syncPaymentService;
 
   SyncController({
     required this.networkService,
     required this.syncServiceCategoryService,
     required this.syncServiceService,
+    required this.syncPaymentService,
   });
 
   SyncState _state = Syncing();
@@ -41,6 +44,11 @@ class SyncController extends ChangeNotifier {
     final syncServiceEither = await syncServiceService.synchronize();
     if (syncServiceEither.isLeft) {
       return SyncError(syncServiceEither.left!.message);
+    }
+
+    final syncPaymentEither = await syncPaymentService.synchronize();
+    if (syncPaymentEither.isLeft) {
+      return SyncError(syncPaymentEither.left!.message);
     }
 
     return Synchronized();

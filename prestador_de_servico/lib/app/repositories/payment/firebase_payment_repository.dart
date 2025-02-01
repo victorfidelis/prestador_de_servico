@@ -60,4 +60,31 @@ class FirebasePaymentRepository implements PaymentRepository {
   Future<Either<Failure, String>> insert({required Payment payment}) {
     throw UnimplementedError();
   }
+  
+  @override
+  Future<Either<Failure, List<Payment>>> getUnsync({required DateTime dateLastSync}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    try {
+      final paymentsCollection = FirebaseFirestore.instance.collection('payments');
+      final timestampLastSync = Timestamp.fromDate(dateLastSync);
+      final snapPayment = await paymentsCollection.where('dateSync', isGreaterThan: timestampLastSync).get();
+      final services = snapPayment.docs.map((doc) => PaymentAdapter.fromDocumentSnapshot(doc: doc)).toList();
+      return Either.right(services);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
+  }
+  
+  @override
+  Future<Either<Failure, bool>> existsById({required String id}) {
+    throw UnimplementedError();
+  }
 }

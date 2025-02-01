@@ -67,6 +67,37 @@ class MockPaymentRepository extends _i1.Mock implements _i3.PaymentRepository {
       ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.Payment>>>);
 
   @override
+  _i4.Future<_i2.Either<_i5.Failure, List<_i6.Payment>>> getUnsync(
+          {required DateTime? dateLastSync}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getUnsync,
+          [],
+          {#dateLastSync: dateLastSync},
+        ),
+        returnValue:
+            _i4.Future<_i2.Either<_i5.Failure, List<_i6.Payment>>>.value(
+                _FakeEither_0<_i5.Failure, List<_i6.Payment>>(
+          this,
+          Invocation.method(
+            #getUnsync,
+            [],
+            {#dateLastSync: dateLastSync},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, List<_i6.Payment>>>.value(
+                _FakeEither_0<_i5.Failure, List<_i6.Payment>>(
+          this,
+          Invocation.method(
+            #getUnsync,
+            [],
+            {#dateLastSync: dateLastSync},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.Payment>>>);
+
+  @override
   _i4.Future<_i2.Either<_i5.Failure, String>> insert(
           {required _i6.Payment? payment}) =>
       (super.noSuchMethod(
@@ -155,4 +186,33 @@ class MockPaymentRepository extends _i1.Mock implements _i3.PaymentRepository {
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, bool>> existsById({required String? id}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #existsById,
+          [],
+          {#id: id},
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, bool>>.value(
+            _FakeEither_0<_i5.Failure, bool>(
+          this,
+          Invocation.method(
+            #existsById,
+            [],
+            {#id: id},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, bool>>.value(
+                _FakeEither_0<_i5.Failure, bool>(
+          this,
+          Invocation.method(
+            #existsById,
+            [],
+            {#id: id},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, bool>>);
 }

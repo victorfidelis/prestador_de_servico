@@ -14,4 +14,5 @@ abstract class SyncRepository {
   Future<Either<Failure, Unit>> insert({required Sync sync}); 
   Future<Either<Failure, Unit>> updateServiceCategory({required DateTime syncDate}); 
   Future<Either<Failure, Unit>> updateService({required DateTime syncDate}); 
+  Future<Either<Failure, Unit>> updatePayment({required DateTime syncDate});
 }

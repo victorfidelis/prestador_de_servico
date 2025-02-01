@@ -18,6 +18,7 @@ class Payment {
   final String urlIcon;
   final bool isActive;
   final DateTime? syncDate;
+  final bool isDeleted;
 
   String get nameWithoutDiacritics => replaceDiacritic(name);
   
@@ -28,6 +29,7 @@ class Payment {
     required this.urlIcon,
     required this.isActive,
     this.syncDate,
+    this.isDeleted = false,
   });
 
   Payment copyWith({
@@ -46,6 +48,7 @@ class Payment {
       urlIcon: urlIcon ?? this.urlIcon,
       isActive: isActive ?? this.isActive,
       syncDate: syncDate ?? this.syncDate,
+      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
 

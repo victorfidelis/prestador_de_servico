@@ -178,4 +178,34 @@ class MockSyncRepository extends _i1.Mock implements _i3.SyncRepository {
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> updatePayment(
+          {required DateTime? syncDate}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updatePayment,
+          [],
+          {#syncDate: syncDate},
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #updatePayment,
+            [],
+            {#syncDate: syncDate},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #updatePayment,
+            [],
+            {#syncDate: syncDate},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
 }

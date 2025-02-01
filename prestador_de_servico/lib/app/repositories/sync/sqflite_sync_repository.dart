@@ -38,8 +38,9 @@ class SqfliteSyncRepository implements SyncRepository {
 
     String selectCommand = ""
         "SELECT "
-        "syn_con.dateSyncServiceCategories, "
-        "syn_con.dateSyncService "
+        "syn_con.dateSyncServiceCategory, "
+        "syn_con.dateSyncService, "
+        "syn_con.dateSyncPayment "
         "FROM "
         "$syncControlTable syn_con";
 
@@ -89,20 +90,21 @@ class SqfliteSyncRepository implements SyncRepository {
 
     String insert = ''
         'INSERT INTO $syncControlTable '
-        '(dateSyncServiceCategories, dateSyncService) '
-        'VALUES (?, ?)';
+        '(dateSyncServiceCategory, dateSyncService, dateSyncPayment) '
+        'VALUES (?, ?, ?)';
     List params = [
-      sync.dateSyncServiceCategories?.millisecondsSinceEpoch ?? 0,
-      sync.dateSyncServices?.millisecondsSinceEpoch ?? 0,
+      sync.dateSyncServiceCategory?.millisecondsSinceEpoch ?? 0,
+      sync.dateSyncService?.millisecondsSinceEpoch ?? 0,
+      sync.dateSyncPayment?.millisecondsSinceEpoch ?? 0,
     ];
 
     try {
       await database!.rawInsert(insert, params);
       return Either.right(unit);
     } on DatabaseException catch (e) {
-      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+      return Either.left(GetDatabaseFailure('Falha ao gravar dados locais: $e'));
     } on FileSystemException catch (e) {
-      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+      return Either.left(GetDatabaseFailure('Falha ao gravar dados locais: ${e.message})'));
     }
   }
 
@@ -116,16 +118,16 @@ class SqfliteSyncRepository implements SyncRepository {
     String updateText = ''
         'UPDATE $syncControlTable '
         'SET '
-        'dateSyncServiceCategories = ?';
+        'dateSyncServiceCategory = ?';
     List params = [syncDate.millisecondsSinceEpoch];
 
     try {
       await database!.rawUpdate(updateText, params);
       return Either.right(unit);
     } on DatabaseException catch (e) {
-      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+      return Either.left(GetDatabaseFailure('Falha ao atualizar dados locais: $e'));
     } on FileSystemException catch (e) {
-      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+      return Either.left(GetDatabaseFailure('Falha ao atualizar dados locais: ${e.message})'));
     }
   }
 
@@ -146,9 +148,32 @@ class SqfliteSyncRepository implements SyncRepository {
       await database!.rawUpdate(updateText, params);
       return Either.right(unit);
     } on DatabaseException catch (e) {
-      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+      return Either.left(GetDatabaseFailure('Falha ao atualizar dados locais: $e'));
     } on FileSystemException catch (e) {
-      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+      return Either.left(GetDatabaseFailure('Falha ao atualizar dados locais: ${e.message})'));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, Unit>> updatePayment({required DateTime syncDate}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
+
+    String updateText = ''
+        'UPDATE $syncControlTable '
+        'SET '
+        'dateSyncPayment = ?';
+    List params = [syncDate.millisecondsSinceEpoch];
+
+    try {
+      await database!.rawUpdate(updateText, params);
+      return Either.right(unit);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao atualizar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao atualizar dados locais: ${e.message})'));
     }
   }
 }

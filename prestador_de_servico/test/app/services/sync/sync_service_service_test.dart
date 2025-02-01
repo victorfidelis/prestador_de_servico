@@ -32,7 +32,7 @@ void main() {
 
   void setUpValues() {
     syncEmpty = Sync();
-    syncService = Sync(dateSyncServices: DateTime(2024, 10, 10));
+    syncService = Sync(dateSyncService: DateTime(2024, 10, 10));
 
     service1 = Service(id: '1', serviceCategoryId: '1', name: 'Luzes', price: 80, hours: 1, minutes: 15, imageUrl: 'imageurlluzes.jpg');
     service2 = Service(id: '2', serviceCategoryId: '1', name: 'Chapinha', price: 40, hours: 0, minutes: 35, imageUrl: 'imageurlchapinha.jpg');
@@ -104,7 +104,7 @@ void main() {
 
           expect(loadEither.isRight, isTrue);
           expect(loadEither.right is Unit, isTrue);
-          expect(syncServiceService.sync.dateSyncServices, isNull);
+          expect(syncServiceService.sync.dateSyncService, isNull);
         },
       );
 
@@ -118,8 +118,8 @@ void main() {
 
           expect(loadEither.isRight, isTrue);
           expect(loadEither.right is Unit, isTrue);
-          expect(syncServiceService.sync.dateSyncServices,
-              equals(syncService.dateSyncServices));
+          expect(syncServiceService.sync.dateSyncService,
+              equals(syncService.dateSyncService));
         },
       );
     },
@@ -153,7 +153,7 @@ void main() {
           const failureMessage = 'Teste de falha';
           syncServiceService.sync = syncService;
           when(onlineMockServiceRepository.getUnsync(
-                  dateLastSync: syncService.dateSyncServices))
+                  dateLastSync: syncService.dateSyncService))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceService.loadUnsynced();
@@ -191,7 +191,7 @@ void main() {
         () async {
           syncServiceService.sync = syncService;
           when(onlineMockServiceRepository.getUnsync(
-                  dateLastSync: syncService.dateSyncServices))
+                  dateLastSync: syncService.dateSyncService))
               .thenAnswer((_) async => Either.right(servicesGetSync));
 
           final loadUnsyncedEither = await syncServiceService.loadUnsynced();

@@ -1,24 +1,24 @@
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
+import 'package:prestador_de_servico/app/models/payment/payment.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
-import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
+import 'package:prestador_de_servico/app/repositories/payment/payment_repository.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
-class SyncServiceCategoryService {
+class SyncPaymentService {
   final SyncRepository syncRepository;
-  final ServiceCategoryRepository offlineRepository;
-  final ServiceCategoryRepository onlineRepository;
+  final PaymentRepository offlineRepository;
+  final PaymentRepository onlineRepository;
   late Sync sync;
 
-  SyncServiceCategoryService({
+  SyncPaymentService({
     required this.syncRepository,
     required this.offlineRepository,
     required this.onlineRepository,
   });
-
-  List<ServiceCategory> serviceCategoriesToSync = [];
+  
+  List<Payment> paymentsToSync = [];
 
   Future<Either<Failure, Unit>> synchronize() async {
     final loadInfoSyncEither = await loadSyncInfo();
@@ -52,11 +52,11 @@ class SyncServiceCategoryService {
     sync = getSyncEither.right!;
     return Either.right(unit);
   }
-
+  
   Future<Either<Failure, Unit>> loadUnsynced() async {
     Either getEither;
-    if (sync.existsSyncDateServiceCategories) {
-      getEither = await onlineRepository.getUnsync(dateLastSync: sync.dateSyncServiceCategory!);
+    if (sync.existsSyncDateServices) {
+      getEither = await onlineRepository.getUnsync(dateLastSync: sync.dateSyncService!);
     } else {
       getEither = await onlineRepository.getAll();
     }
@@ -64,14 +64,14 @@ class SyncServiceCategoryService {
       return Either.left(getEither.left);
     }
 
-    serviceCategoriesToSync = getEither.right!;
+    paymentsToSync = getEither.right!;
 
     return Either.right(unit);
   }
 
   Future<Either<Failure, Unit>> syncUnsynced() async {
-    for (ServiceCategory serviceCategory in serviceCategoriesToSync) {
-      final syncEither = await syncServiceCategory(serviceCategory);
+    for (Payment payment in paymentsToSync) {
+      final syncEither = await syncPayment(payment);
       if (syncEither.isLeft) {
         return Either.left(syncEither.left);
       }
@@ -79,20 +79,20 @@ class SyncServiceCategoryService {
     return Either.right(unit);
   } 
 
-  Future<Either<Failure, Unit>> syncServiceCategory(ServiceCategory serviceCategory) async {
-    if (serviceCategory.isDeleted) {
-      return await offlineRepository.deleteById(id: serviceCategory.id);
+  Future<Either<Failure, Unit>> syncPayment(Payment payment) async {
+    if (payment.isDeleted) {
+      return await offlineRepository.deleteById(id: payment.id);
     } 
     
-    final existsEither = await offlineRepository.existsById(id: serviceCategory.id);
+    final existsEither = await offlineRepository.existsById(id: payment.id);
     if (existsEither.isLeft) {
       return Either.left(existsEither.left); 
     }
 
     if (existsEither.right!) {
-      return await offlineRepository.update(serviceCategory: serviceCategory);
+      return await offlineRepository.update(payment: payment);
     } else {
-      final insertEither = await offlineRepository.insert(serviceCategory: serviceCategory);
+      final insertEither = await offlineRepository.insert(payment: payment);
       if (insertEither.isLeft) {
         return Either.left(insertEither.left);
       }
@@ -101,7 +101,7 @@ class SyncServiceCategoryService {
   }
 
   Future<Either<Failure, Unit>> updateSyncDate() async {
-    if (serviceCategoriesToSync.isEmpty) {
+    if (paymentsToSync.isEmpty) {
       return Either.right(unit);
     }
 
@@ -112,7 +112,7 @@ class SyncServiceCategoryService {
     }
 
     if (existsEither.right!) {
-      return await syncRepository.updateServiceCategory(syncDate: syncDate);
+      return await syncRepository.updateService(syncDate: syncDate);
     } else {
       sync = sync.copyWith(dateSyncServiceCategory: syncDate);
       return await syncRepository.insert(sync: sync);
@@ -120,7 +120,7 @@ class SyncServiceCategoryService {
   }
 
   DateTime getMaxSyncDate() {
-    ServiceCategory serviceCategory = serviceCategoriesToSync.reduce(
+    Payment payment = paymentsToSync.reduce(
       (value, element) {
         // Todo objeto vindo da nuvem necessariamente deve ter o syncDate
         // Por esse motivo o operador "!" em "syncDate"
@@ -131,6 +131,6 @@ class SyncServiceCategoryService {
         }
       },
     );
-    return serviceCategory.syncDate!;
+    return payment.syncDate!;
   }
 }

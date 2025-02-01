@@ -38,6 +38,7 @@ void main() {
           expect(syncEither.isRight, isTrue);
           expect(syncEither.right!.existsSyncDateServiceCategories, isFalse);
           expect(syncEither.right!.existsSyncDateServices, isFalse);
+          expect(syncEither.right!.existsSyncDatePayments, isFalse);
         },
       );
 
@@ -45,14 +46,15 @@ void main() {
         '''Ao inserir a sincronização de categoria de serviço o mesmo deve ser 
           retornado na consulta de sincronização''',
         () async {
-          sync = sync.copyWith(dateSyncServiceCategories: DateTime(2024, 10, 5));
+          sync = sync.copyWith(dateSyncServiceCategory: DateTime(2024, 10, 5));
           await syncRepository.insert(sync: sync);
 
           final syncEither = await syncRepository.get();
 
           expect(syncEither.isRight, isTrue);
-          expect(syncEither.right!.dateSyncServiceCategories, equals(sync.dateSyncServiceCategories));
+          expect(syncEither.right!.dateSyncServiceCategory, equals(sync.dateSyncServiceCategory));
           expect(syncEither.right!.existsSyncDateServices, isFalse);
+          expect(syncEither.right!.existsSyncDatePayments, isFalse);
         },
       );
 
@@ -60,13 +62,13 @@ void main() {
         '''Ao atualizar a sincronização de serviço o mesmo deve ser 
           retornado na consulta de sincronização''',
         () async {
-          sync = sync.copyWith(dateSyncServices: DateTime(2024, 10, 6));
-          await syncRepository.updateService(syncDate: sync.dateSyncServices!);
+          sync = sync.copyWith(dateSyncService: DateTime(2024, 10, 6));
+          await syncRepository.updateService(syncDate: sync.dateSyncService!);
 
           final syncEither = await syncRepository.get();
 
           expect(syncEither.isRight, isTrue);
-          expect(syncEither.right!.dateSyncServices, equals(sync.dateSyncServices));
+          expect(syncEither.right!.dateSyncService, equals(sync.dateSyncService));
         },
       );
 
@@ -74,13 +76,27 @@ void main() {
         '''Ao atualizar a sincronização de categoria de serviço o mesmo deve ser 
           retornado na consulta de sincronização''',
         () async {
-          sync = sync.copyWith(dateSyncServiceCategories: DateTime(2024, 10, 7));
-          await syncRepository.updateServiceCategory(syncDate: sync.dateSyncServiceCategories!);
+          sync = sync.copyWith(dateSyncServiceCategory: DateTime(2024, 10, 7));
+          await syncRepository.updateServiceCategory(syncDate: sync.dateSyncServiceCategory!);
 
           final syncEither = await syncRepository.get();
 
           expect(syncEither.isRight, isTrue);
-          expect(syncEither.right!.dateSyncServiceCategories, equals(sync.dateSyncServiceCategories));
+          expect(syncEither.right!.dateSyncServiceCategory, equals(sync.dateSyncServiceCategory));
+        },
+      );
+
+      test(
+        '''Ao atualizar a sincronização de pagamento o mesmo deve ser 
+          retornado na consulta de sincronização''',
+        () async {
+          sync = sync.copyWith(dateSyncPayment: DateTime(2024, 10, 15));
+          await syncRepository.updatePayment(syncDate: sync.dateSyncPayment!);
+
+          final syncEither = await syncRepository.get();
+
+          expect(syncEither.isRight, isTrue);
+          expect(syncEither.right!.dateSyncPayment, equals(sync.dateSyncPayment));
         },
       );
     },

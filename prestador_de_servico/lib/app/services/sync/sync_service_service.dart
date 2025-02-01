@@ -56,7 +56,7 @@ class SyncServiceService {
   Future<Either<Failure, Unit>> loadUnsynced() async {
     Either getEither;
     if (sync.existsSyncDateServices) {
-      getEither = await onlineRepository.getUnsync(dateLastSync: sync.dateSyncServices!);
+      getEither = await onlineRepository.getUnsync(dateLastSync: sync.dateSyncService!);
     } else {
       getEither = await onlineRepository.getAll();
     }
@@ -114,7 +114,7 @@ class SyncServiceService {
     if (existsEither.right!) {
       return await syncRepository.updateService(syncDate: syncDate);
     } else {
-      sync = sync.copyWith(dateSyncServiceCategories: syncDate);
+      sync = sync.copyWith(dateSyncServiceCategory: syncDate);
       return await syncRepository.insert(sync: sync);
     }
   }

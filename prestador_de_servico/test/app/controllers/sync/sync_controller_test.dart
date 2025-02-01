@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/controllers/sync/sync_controller.dart';
+import 'package:prestador_de_servico/app/services/sync/sync_payment_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
@@ -8,6 +9,7 @@ import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:prestador_de_servico/app/states/sync/sync_state.dart';
 
 import '../../../helpers/network/mock_network_service.dart';
+import '../../../helpers/payment/mock_payment_repository.dart';
 import '../../../helpers/service/service/mock_service_repository.dart';
 import '../../../helpers/service/service_category/mock_service_category_repository.dart';
 import '../../../helpers/sync/mock_sync_repository.dart';
@@ -17,12 +19,29 @@ void main() {
 
   late SyncServiceCategoryService syncServiceCategoryService;
   late SyncServiceService syncServiceService;
+  late SyncPaymentService syncPaymentService;
 
   setUpValues() {
+    syncServiceCategoryService = SyncServiceCategoryService(
+      syncRepository: mockSyncRepository,
+      offlineRepository: offlineMockServiceCategoryRepository,
+      onlineRepository: onlineMockServiceCategoryRepository,
+    );
+    syncServiceService = SyncServiceService(
+      syncRepository: mockSyncRepository,
+      offlineRepository: offlineMockServiceRepository,
+      onlineRepository: onlineMockServiceRepository,
+    );
+    syncPaymentService = SyncPaymentService(
+      syncRepository: mockSyncRepository,
+      offlineRepository: offlineMockPaymentRepository,
+      onlineRepository: onlineMockPaymentRepository,
+    );
     syncController = SyncController(
       networkService: mockNetworkService,
       syncServiceCategoryService: syncServiceCategoryService,
       syncServiceService: syncServiceService,
+      syncPaymentService: syncPaymentService,
     );
   }
 
@@ -31,17 +50,8 @@ void main() {
       setUpMockSyncRepository();
       setUpMockServiceCategoryRepository();
       setUpMockServiceRepository();
+      setUpMockPaymentRepository();
       setUpNetworkService();
-      syncServiceCategoryService = SyncServiceCategoryService(
-        syncRepository: mockSyncRepository,
-        offlineRepository: offlineMockServiceCategoryRepository,
-        onlineRepository: onlineMockServiceCategoryRepository,
-      );
-      syncServiceService = SyncServiceService(
-        syncRepository: mockSyncRepository,
-        offlineRepository: offlineMockServiceRepository,
-        onlineRepository: onlineMockServiceRepository,
-      );
       setUpValues();
     },
   );
