@@ -25,7 +25,9 @@ class MenuView extends StatelessWidget {
             CustomMenuItem(
               label: 'Formas de pagamento',
               icon: Icons.payments,
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pushNamed('/payment');
+              },
             ),
             Divider(
               color: Theme.of(context).colorScheme.shadow,

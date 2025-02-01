@@ -12,7 +12,7 @@ class PaymentAdapter {
       'urlIcon': payment.urlIcon,
       'isActive': payment.isActive,
       'dateSync': FieldValue.serverTimestamp(), // Todo envio para o firebase deve conter a data atual do servidor
-      'isDeleted': true,
+      'isDeleted': false,
     };
   }
 
@@ -21,7 +21,8 @@ class PaymentAdapter {
 
     Payment payment = Payment(
       id: doc.id,
-      paymentType: PaymentType.values[map['paymentType']],
+      paymentType: PaymentType.values[map
+      ['paymentType']],
       name: map['name'],
       urlIcon: map['urlIcon'],
       isActive: map['isActive'],

@@ -21,7 +21,7 @@ class SqflitePaymentRepository implements PaymentRepository {
     try {
       database ??= await sqfliteConfig.getDatabase();
       if (paymentsTable.isEmpty) {
-        paymentsTable = sqfliteConfig.services;
+        paymentsTable = sqfliteConfig.payments;
       }
       return Either.right(unit);
     } on DatabaseException catch (e) {
@@ -51,7 +51,7 @@ class SqflitePaymentRepository implements PaymentRepository {
 
     try {
       final paymentsMap = await database!.rawQuery(selectCommand);
-      final payments = paymentsMap.map((service) => PaymentAdapter.fromSqflite(map: service)).toList();
+      final payments = paymentsMap.map((payment) => PaymentAdapter.fromSqflite(map: payment)).toList();
       return Either.right(payments);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
@@ -142,7 +142,7 @@ class SqflitePaymentRepository implements PaymentRepository {
 
     final params = [
       payment.id,
-      payment.paymentType,
+      payment.paymentType.index,
       payment.name.trim(),
       payment.urlIcon.trim(),
       payment.isActive,

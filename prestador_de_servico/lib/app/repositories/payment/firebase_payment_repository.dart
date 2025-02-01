@@ -72,8 +72,8 @@ class FirebasePaymentRepository implements PaymentRepository {
       final paymentsCollection = FirebaseFirestore.instance.collection('payments');
       final timestampLastSync = Timestamp.fromDate(dateLastSync);
       final snapPayment = await paymentsCollection.where('dateSync', isGreaterThan: timestampLastSync).get();
-      final services = snapPayment.docs.map((doc) => PaymentAdapter.fromDocumentSnapshot(doc: doc)).toList();
-      return Either.right(services);
+      final payments = snapPayment.docs.map((doc) => PaymentAdapter.fromDocumentSnapshot(doc: doc)).toList();
+      return Either.right(payments);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
         return Either.left(NetworkFailure('Sem conexão com a internet'));

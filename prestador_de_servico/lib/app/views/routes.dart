@@ -4,6 +4,7 @@ import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
 import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
 import 'package:prestador_de_servico/app/views/navigation/navigation_view.dart';
+import 'package:prestador_de_servico/app/views/payment/payment_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_view.dart';
@@ -41,6 +42,9 @@ Route<dynamic>? getRoute(RouteSettings settings) {
         editServiceOfOtherScreen: (argmuments['editServiceOfOtherScreen'] as Function({required Service service})),
       ),
     );
+  }
+  if (settings.name == '/payment') {
+    return _buildRoute(settings, const PaymentView());
   }
 
   return null;
