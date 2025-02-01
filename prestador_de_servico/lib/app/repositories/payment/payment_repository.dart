@@ -5,6 +5,7 @@ import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
 abstract class PaymentRepository {
   Future<Either<Failure, List<Payment>>> getAll();
+  Future<Either<Failure, String>> insert({required Payment payment});
   Future<Either<Failure, Unit>> update({required Payment payment});
   Future<Either<Failure, Unit>> deleteById({required String id});
 }

@@ -17,17 +17,17 @@ class ServiceEditController extends ChangeNotifier {
 
   ServiceEditState _state = ServiceEditInitial();
   ServiceEditState get state => _state;
-  void _changeState(ServiceEditState currentState) {
+  void _emitState(ServiceEditState currentState) {
     _state = currentState;
     notifyListeners();
   }
 
   void initInsert({required ServiceCategory serviceCategory}) {
-    _changeState(ServiceEditAdd(serviceCategory: serviceCategory));
+    _emitState(ServiceEditAdd(serviceCategory: serviceCategory));
   }
 
   void initUpdate({required ServiceCategory serviceCategory, required Service service}) {
-    _changeState(ServiceEditUpdate(serviceCategory: serviceCategory, service: service));
+    _emitState(ServiceEditUpdate(serviceCategory: serviceCategory, service: service));
   }
 
   Future<void> validateAndInsert({required Service service}) async {
@@ -35,21 +35,21 @@ class ServiceEditController extends ChangeNotifier {
       return;
     }
 
-    _changeState(ServiceEditLoading());
+    _emitState(ServiceEditLoading());
 
     final validation = _validade(service: service);
     if (validation is ServiceEditError) {
-      _changeState(validation);
+      _emitState(validation);
       return;
     }
 
     final insertEither = await serviceService.insert(service: service);
     if (insertEither.isLeft) {
-      _changeState(ServiceEditError(genericMessage: insertEither.left!.message));
+      _emitState(ServiceEditError(genericMessage: insertEither.left!.message));
       return;
     }
 
-    _changeState(ServiceEditSuccess(service: insertEither.right!));
+    _emitState(ServiceEditSuccess(service: insertEither.right!));
   }
 
   Future<void> validateAndUpdate({required Service service}) async {
@@ -57,21 +57,21 @@ class ServiceEditController extends ChangeNotifier {
       return;
     }
 
-    _changeState(ServiceEditLoading());
+    _emitState(ServiceEditLoading());
 
     final validation = _validade(service: service);
     if (validation is ServiceEditError) {
-      _changeState(validation);
+      _emitState(validation);
       return;
     }
 
     final updateEither = await serviceService.update(service: service);
     if (updateEither.isLeft) {
-      _changeState(ServiceEditError(genericMessage: updateEither.left!.message));
+      _emitState(ServiceEditError(genericMessage: updateEither.left!.message));
       return;
     }
 
-    _changeState(ServiceEditSuccess(service: updateEither.right!));
+    _emitState(ServiceEditSuccess(service: updateEither.right!));
   }
 
   ServiceEditState _validade({required Service service}) {
@@ -90,9 +90,9 @@ class ServiceEditController extends ChangeNotifier {
   Future<void> pickImageFromGallery() async {
     final eitherPickImage = await offlineImageService.pickImageFromGallery();
     if (eitherPickImage.isLeft) {
-      _changeState(PickImageError(eitherPickImage.left!.message));
+      _emitState(PickImageError(eitherPickImage.left!.message));
     } else {
-      _changeState(PickImageSuccess(eitherPickImage.right!));
+      _emitState(PickImageSuccess(eitherPickImage.right!));
     }
   }
 }

@@ -12,7 +12,7 @@ class SignInController extends ChangeNotifier {
   SignInState _state = PendingSignIn();
   SignInState get state => _state;
 
-  void _changeState(SignInState currentState) {
+  void _emitState(SignInState currentState) {
     _state = currentState;
     notifyListeners();
   }
@@ -22,14 +22,14 @@ class SignInController extends ChangeNotifier {
     required String password,
   }) async {
     
-    _changeState(LoadingSignInEmailPassword(
+    _emitState(LoadingSignInEmailPassword(
       email: email,
       password: password,
     ));
 
     final signInState = _validateSignInEmailPassword(email: email, password: password); 
     if (signInState is SignInError) {
-      _changeState(signInState);
+      _emitState(signInState);
       return;
     } 
     
@@ -39,8 +39,8 @@ class SignInController extends ChangeNotifier {
     );
 
     signInEither.fold(
-      (error) => _changeState(SignInError(genericMessage: error.message)),
-      (value) => _changeState(SignInSuccess(user: value)),
+      (error) => _emitState(SignInError(genericMessage: error.message)),
+      (value) => _emitState(SignInSuccess(user: value)),
     );
   }
 

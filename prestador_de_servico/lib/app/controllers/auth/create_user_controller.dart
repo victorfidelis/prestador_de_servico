@@ -10,7 +10,7 @@ class CreateUserController extends ChangeNotifier {
 
   CreateUserState _state = WaitingUserCreation();
   CreateUserState get state => _state;
-  void _changeState(currentState) {
+  void _emitState(currentState) {
     _state = currentState;
     notifyListeners();
   }
@@ -18,15 +18,15 @@ class CreateUserController extends ChangeNotifier {
   CreateUserController({required this.authService});
 
   void init() {
-    _changeState(WaitingUserCreation());
+    _emitState(WaitingUserCreation());
   }
 
   Future<void> createUserEmailPassword({required User user}) async {
-    _changeState(LoadingUserCreation());
+    _emitState(LoadingUserCreation());
 
     CreateUserState createUserState = _validate(user: user);
     if (createUserState is ErrorUserCreation) {
-      _changeState(createUserState);
+      _emitState(createUserState);
       return;
     }
 
@@ -34,12 +34,12 @@ class CreateUserController extends ChangeNotifier {
     createUserEither.fold(
       (error) {
         if (error is EmailAlreadyInUseFailure) {
-          _changeState(ErrorUserCreation(emailMessage: createUserEither.left!.message));
+          _emitState(ErrorUserCreation(emailMessage: createUserEither.left!.message));
         } else {
-          _changeState(ErrorUserCreation(genericMessage: createUserEither.left!.message));
+          _emitState(ErrorUserCreation(genericMessage: createUserEither.left!.message));
         }
       },
-      (value) => _changeState(UserCreated(user: user)),
+      (value) => _emitState(UserCreated(user: user)),
     );
   }
 

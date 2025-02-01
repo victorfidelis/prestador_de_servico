@@ -55,4 +55,9 @@ class FirebasePaymentRepository implements PaymentRepository {
   Future<Either<Failure, Unit>> deleteById({required String id}) {
     throw UnimplementedError();
   }
+  
+  @override
+  Future<Either<Failure, String>> insert({required Payment payment}) {
+    throw UnimplementedError();
+  }
 }

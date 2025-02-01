@@ -120,5 +120,43 @@ class SqflitePaymentRepository implements PaymentRepository {
       return Either.left(GetDatabaseFailure('Falha ao apagar dados locais: ${e.message})'));
     }
   }
+  
+  @override
+  Future<Either<Failure, String>> insert({required Payment payment}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
+
+    String insert = ""
+        "INSERT INTO $paymentsTable "
+        "("
+        "id, "
+        "paymentType, "
+        "name, "
+        "urlIcon, "
+        "isActive, "
+        "nameWithoutDiacritic "
+        ") "
+        "VALUES (?, ?, ?, ?, ?, ?)";
+
+    final params = [
+      payment.id,
+      payment.paymentType,
+      payment.name.trim(),
+      payment.urlIcon.trim(),
+      payment.isActive,
+      payment.nameWithoutDiacritics.trim(),
+    ];
+
+    try {
+      await database!.rawInsert(insert, params);
+      return Either.right(payment.id);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao inserir dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao inserir dados locais: ${e.message})'));
+    }
+  }
 }
 

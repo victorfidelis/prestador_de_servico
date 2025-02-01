@@ -5,12 +5,12 @@ class NavigationController extends ChangeNotifier{
 
   NavigationState _state = HomeNavigationPage();
   NavigationState get state => _state;
-  void _changeState({required NavigationState currentState}) {
+  void _emitState({required NavigationState currentState}) {
     _state = currentState;
     notifyListeners();
   }
 
   void changePage({required NavigationState navigationState}) {
-    _changeState(currentState: navigationState);
+    _emitState(currentState: navigationState);
   }
 }

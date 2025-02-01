@@ -8,7 +8,7 @@ class PasswordResetController extends ChangeNotifier {
 
   PasswordResetState _state = WaitingUserSentEmail();
   PasswordResetState get state => _state;
-  void _changeState(PasswordResetState currentState) {
+  void _emitState(PasswordResetState currentState) {
     _state = currentState;
     notifyListeners();
   }
@@ -16,18 +16,18 @@ class PasswordResetController extends ChangeNotifier {
   PasswordResetController({required this.authService});
 
   void init() {
-    _changeState(WaitingUserSentEmail());
+    _emitState(WaitingUserSentEmail());
   }
 
   Future<void> sendPasswordResetEmail({required String email}) async {
-    _changeState(LoadingSentEmail());
+    _emitState(LoadingSentEmail());
 
     final passwordResetEither =
         await authService.sendPasswordResetEmail(email: email);
 
     passwordResetEither.fold(
-      (error) => _changeState(ErrorPasswordResetEmail(message: error.message)),
-      (value) => _changeState(PasswordResetEmailSentSuccess()),
+      (error) => _emitState(ErrorPasswordResetEmail(message: error.message)),
+      (value) => _emitState(PasswordResetEmailSentSuccess()),
     );
   }
 }

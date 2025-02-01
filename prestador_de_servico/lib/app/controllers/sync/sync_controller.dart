@@ -19,16 +19,16 @@ class SyncController extends ChangeNotifier {
   SyncState _state = Syncing();
   SyncState get state => _state;
 
-  void _changeState(currentState) {
+  void _emitState(currentState) {
     _state = currentState;
     notifyListeners();
   }
 
   Future<void> syncData() async {
     if (await networkService.isConnectedToInternet()) {
-      _changeState(await _syncData());
+      _emitState(await _syncData());
     } else {
-      _changeState(NoNetworkToSync());
+      _emitState(NoNetworkToSync());
     }
   }
 

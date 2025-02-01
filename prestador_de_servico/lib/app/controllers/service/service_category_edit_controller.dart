@@ -9,7 +9,7 @@ class ServiceCategoryEditController extends ChangeNotifier {
 
   ServiceCategoryEditState _state = ServiceCategoryEditInitial();
   ServiceCategoryEditState get state => _state;
-  void _changeState(ServiceCategoryEditState currentState) {
+  void _emitState(ServiceCategoryEditState currentState) {
     _state = currentState;
     notifyListeners();
   }
@@ -17,11 +17,11 @@ class ServiceCategoryEditController extends ChangeNotifier {
   ServiceCategoryEditController({required this.serviceCategoryService});
 
   void initInsert() {
-    _changeState(ServiceCategoryEditAdd());
+    _emitState(ServiceCategoryEditAdd());
   }
 
   void initUpdate({required ServiceCategory serviceCategory}) {
-    _changeState(ServiceCategoryEditUpdate(serviceCategory: serviceCategory));
+    _emitState(ServiceCategoryEditUpdate(serviceCategory: serviceCategory));
   }
 
   Future<void> validateAndInsert({required ServiceCategory serviceCategory}) async {
@@ -29,21 +29,21 @@ class ServiceCategoryEditController extends ChangeNotifier {
       return;
     }
 
-    _changeState(ServiceCategoryEditLoading());
+    _emitState(ServiceCategoryEditLoading());
 
     final validEither = _validade(serviceCategory: serviceCategory);
     if (validEither is ServiceCategoryEditError) {
-      _changeState(validEither);
+      _emitState(validEither);
       return;
     }
 
     final insertEither = await serviceCategoryService.insert(serviceCategory: serviceCategory);
     if (insertEither.isLeft) {
-      _changeState(ServiceCategoryEditError(genericMessage: insertEither.left!.message));
+      _emitState(ServiceCategoryEditError(genericMessage: insertEither.left!.message));
       return;
     }
 
-    _changeState(ServiceCategoryEditSuccess(serviceCategory: insertEither.right!));
+    _emitState(ServiceCategoryEditSuccess(serviceCategory: insertEither.right!));
   }
 
   Future<void> validateAndUpdate({required ServiceCategory serviceCategory}) async {
@@ -51,21 +51,21 @@ class ServiceCategoryEditController extends ChangeNotifier {
       return;
     }
 
-    _changeState(ServiceCategoryEditLoading());
+    _emitState(ServiceCategoryEditLoading());
 
     final validEither = _validade(serviceCategory: serviceCategory);
     if (validEither is ServiceCategoryEditError) {
-      _changeState(validEither);
+      _emitState(validEither);
       return;
     }
 
     final updateEither = await serviceCategoryService.update(serviceCategory: serviceCategory);
     if (updateEither.isLeft) {
-      _changeState(ServiceCategoryEditError(genericMessage: updateEither.left!.message));
+      _emitState(ServiceCategoryEditError(genericMessage: updateEither.left!.message));
       return;
     }
 
-    _changeState(ServiceCategoryEditSuccess(serviceCategory: serviceCategory));
+    _emitState(ServiceCategoryEditSuccess(serviceCategory: serviceCategory));
   }
 
   ServiceCategoryEditState _validade({required ServiceCategory serviceCategory}) {
