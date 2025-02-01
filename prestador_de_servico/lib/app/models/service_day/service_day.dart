@@ -1,62 +1,45 @@
-
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:replace_diacritic/replace_diacritic.dart';
 
-enum PaymentType {
-  money,
-  pix,
-  debitCard,
-  creditCard,
-  ticket,
-  other,
-}
-
-class Payment {
+class ServiceDay {
   final String id;
-  final PaymentType paymentType;
   final String name;
-  final String urlIcon;
+  final int dayOfWeek;
   final bool isActive;
   final DateTime? syncDate;
-  final bool isDeleted;
 
   String get nameWithoutDiacritics => replaceDiacritic(name);
   
-  Payment({
+  ServiceDay({
     required this.id,
-    required this.paymentType,
     required this.name,
-    required this.urlIcon,
+    required this.dayOfWeek,
     required this.isActive,
     this.syncDate,
-    this.isDeleted = false,
   });
 
-  Payment copyWith({
+  ServiceDay copyWith({
     String? id,
-    PaymentType? paymentType,
     String? name,
-    String? urlIcon,
+    int? dayOfWeek,
     bool? isActive,
     DateTime? syncDate,
-    bool? isDeleted,
   }) {
-    return Payment(
+    return ServiceDay(
       id: id ?? this.id,
-      paymentType: paymentType ?? this.paymentType,
       name: name ?? this.name,
-      urlIcon: urlIcon ?? this.urlIcon,
+      dayOfWeek: dayOfWeek ?? this.dayOfWeek,
       isActive: isActive ?? this.isActive,
       syncDate: syncDate ?? this.syncDate,
-      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
 
   @override
   bool operator ==(Object other) {
-    return (other is Payment) &&
+    return (other is ServiceDay) &&
         other.id == id &&
-        other.paymentType == paymentType &&
         other.name == name &&
+        other.dayOfWeek == dayOfWeek &&
         other.isActive == isActive;
   }
 }

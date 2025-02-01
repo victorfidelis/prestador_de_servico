@@ -25,7 +25,7 @@ class PaymentAdapter {
       ['paymentType']],
       name: map['name'],
       urlIcon: map['urlIcon'],
-      isActive: map['isActive'],
+      isActive: map['isActive'] == 1,
       syncDate: (map['dateSync'] as Timestamp).toDate(),
     );
 

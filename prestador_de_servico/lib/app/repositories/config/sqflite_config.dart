@@ -6,6 +6,7 @@ class SqfliteConfig {
   final String serviceCategories = 'serviceCategories';
   final String services = 'services';
   final String payments = 'payments';
+  final String serviceDays = 'serviceDays';
   Database? mainDatabase;
 
 
@@ -41,6 +42,7 @@ class SqfliteConfig {
     await _createServiceCategories(database: database);
     await _createServices(database: database);
     await _createPayments(database: database);
+    await _createServiceDay(database: database);
   }
 
   Future<void> _createSyncControl({required Database database}) async {
@@ -55,7 +57,8 @@ class SqfliteConfig {
         'CREATE TABLE $syncControl ('
         'dateSyncServiceCategory int, '
         'dateSyncService int,'
-        'dateSyncPayment int'
+        'dateSyncPayment int,'
+        'dateSyncServiceDay int'
         ')',
       );
     }
@@ -116,6 +119,26 @@ class SqfliteConfig {
         'paymentType INT, '
         'name TEXT, '
         'urlIcon TEXT, '
+        'isActive INT, '
+        'nameWithoutDiacritic TEXT'
+        ')',
+      );
+    }
+  }
+
+  Future<void> _createServiceDay({required Database database}) async {
+    int? serviceDayQuantity = Sqflite.firstIntValue(
+      await database.rawQuery(
+        'SELECT COUNT(*) FROM sqlite_master WHERE name = ?',
+        [serviceDays],
+      ),
+    );
+    if (serviceDayQuantity == 0) {
+      await database.execute(
+        'CREATE TABLE $serviceDays ('
+        'id TEXT, '
+        'name TEXT, '
+        'dayOfWeek INT, '
         'isActive INT, '
         'nameWithoutDiacritic TEXT'
         ')',
