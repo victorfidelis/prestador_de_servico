@@ -140,6 +140,10 @@ class SqfliteConfig {
         'name TEXT, '
         'dayOfWeek INT, '
         'isActive INT, '
+        'openingHour INT, '
+        'openingMinute INT, '
+        'closingHour INT, '
+        'closingMinute INT, '
         'nameWithoutDiacritic TEXT'
         ')',
       );

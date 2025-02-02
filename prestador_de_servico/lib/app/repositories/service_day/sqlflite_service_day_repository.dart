@@ -43,6 +43,10 @@ class SqfliteServiceDayRepository implements ServiceDayRepository {
         "day.name, "
         "day.dayOfWeek, "
         "day.isActive, "
+        "day.openingHour, "
+        "day.openingMinute, "
+        "day.closingHour, "
+        "day.closingMinute, "
         "day.nameWithoutDiacritic "
         "FROM "
         "$serviceDaysTable day";
@@ -71,6 +75,10 @@ class SqfliteServiceDayRepository implements ServiceDayRepository {
         'name = ?, '
         'dayOfWeek = ?, '
         'isActive = ?, '
+        'openingHour = ?, '
+        'openingMinute = ?, '
+        'closingHour = ?, '
+        'closingMinute = ?, '
         'nameWithoutDiacritic = ? '
         'WHERE '
         'id = ?';
@@ -79,6 +87,10 @@ class SqfliteServiceDayRepository implements ServiceDayRepository {
       serviceDay.name.trim(),
       serviceDay.dayOfWeek,
       serviceDay.isActive ? 1 : 0,
+      serviceDay.openingHour,
+      serviceDay.openingMinute,
+      serviceDay.closingHour,
+      serviceDay.closingMinute,
       serviceDay.nameWithoutDiacritics,
       serviceDay.id,
     ];
@@ -131,15 +143,23 @@ class SqfliteServiceDayRepository implements ServiceDayRepository {
         "name, "
         "dayOfWeek, "
         "isActive, "
+        "openingHour, "
+        "openingMinute, "
+        "closingHour, "
+        "closingMinute, "
         "nameWithoutDiacritic "
         ") "
-        "VALUES (?, ?, ?, ?, ?)";
+        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     final params = [
       serviceDay.id,
       serviceDay.name.trim(),
       serviceDay.dayOfWeek,
       serviceDay.isActive,
+      serviceDay.openingHour,
+      serviceDay.openingMinute,
+      serviceDay.closingHour,
+      serviceDay.closingMinute,
       serviceDay.nameWithoutDiacritics.trim(),
     ];
 

@@ -98,8 +98,11 @@ class _ServiceDayViewState extends State<ServiceDayView> {
                   horizontal: 18,
                 ),
                 sliver: SliverList.builder(
-                  itemCount: serviceDays.length,
+                  itemCount: serviceDays.length + 1,
                   itemBuilder: (context, index) {
+                    if (index == serviceDays.length) {
+                      return const SizedBox(height: 80);
+                    }
                     return CustomServiceDayCard(
                       serviceDay: serviceDays[index],
                       changeStateOfServiceDay: _changeStateOfServiceDay,

@@ -38,19 +38,19 @@ void main() {
     syncEmpty = Sync();
     syncServiceDay = Sync(dateSyncServiceDay: DateTime(2024, 10, 10));
 
-    serviceDay1 = ServiceDay(id: '1', dayOfWeek: 1, name: 'Domingo', isActive: true);
-    serviceDay2 = ServiceDay(id: '2', dayOfWeek: 2, name: 'Segunda-feira', isActive: true);
-    serviceDay3 = ServiceDay(id: '3', dayOfWeek: 3, name: 'Terça-feira', isActive: true);
-    serviceDay4 = ServiceDay(id: '4', dayOfWeek: 4, name: 'Quarta-feira', isActive: true);
-    serviceDay5 = ServiceDay(id: '5', dayOfWeek: 5, name: 'Quinta-feira', isActive: true);
-    serviceDay6 = ServiceDay(id: '6', dayOfWeek: 6, name: 'Sexta-feira', isActive: true);
-    serviceDay7 = ServiceDay(id: '7', dayOfWeek: 7, name: 'Sábado', isActive: true);
+    serviceDay1 = ServiceDay(id: '1', dayOfWeek: 1, name: 'Domingo', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
+    serviceDay2 = ServiceDay(id: '2', dayOfWeek: 2, name: 'Segunda-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
+    serviceDay3 = ServiceDay(id: '3', dayOfWeek: 3, name: 'Terça-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
+    serviceDay4 = ServiceDay(id: '4', dayOfWeek: 4, name: 'Quarta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
+    serviceDay5 = ServiceDay(id: '5', dayOfWeek: 5, name: 'Quinta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
+    serviceDay6 = ServiceDay(id: '6', dayOfWeek: 6, name: 'Sexta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
+    serviceDay7 = ServiceDay(id: '7', dayOfWeek: 7, name: 'Sábado', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
     
-    serviceDay5Deleted = ServiceDay(id: '5', dayOfWeek: 5, name: 'Quinta-feira', isActive: true, isDeleted: true);
+    serviceDay5Deleted = ServiceDay(id: '5', dayOfWeek: 5, name: 'Quinta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0, isDeleted: true);
   
-    serviceDayLowestDate = ServiceDay(id: '3', dayOfWeek: 3, name: 'Terça-feira', isActive: true, syncDate: DateTime(2024, 11, 5));
-    serviceDayIntermediateDate = ServiceDay(id: '4', dayOfWeek: 4, name: 'Quarta-feira', isActive: true, syncDate: DateTime(2024, 11, 10));
-    serviceDayBiggestDate = ServiceDay(id: '5', dayOfWeek: 5, name: 'Quinta-feira', isActive: true, syncDate: DateTime(2024, 11, 15));
+    serviceDayLowestDate = ServiceDay(id: '3', dayOfWeek: 3, name: 'Terça-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0, syncDate: DateTime(2024, 11, 5));
+    serviceDayIntermediateDate = ServiceDay(id: '4', dayOfWeek: 4, name: 'Quarta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0, syncDate: DateTime(2024, 11, 10));
+    serviceDayBiggestDate = ServiceDay(id: '5', dayOfWeek: 5, name: 'Quinta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0, syncDate: DateTime(2024, 11, 15));
 
     serviceDaysGetAll = [
       serviceDay1,

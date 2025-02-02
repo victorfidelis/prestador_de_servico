@@ -29,42 +29,70 @@ void main() {
       name: 'Domingo',
       dayOfWeek: 1,
       isActive: true,
+      openingHour: 0,
+      openingMinute: 0,
+      closingHour: 0,
+      closingMinute: 0,
     );
     serviceDay2 = ServiceDay(
       id: '2',
       name: 'Segunda-feira',
       dayOfWeek: 2,
       isActive: true,
+      openingHour: 0,
+      openingMinute: 0,
+      closingHour: 0,
+      closingMinute: 0,
     );
     serviceDay3 = ServiceDay(
       id: '3',
       name: 'Terça-feira',
       dayOfWeek: 3,
       isActive: true,
+      openingHour: 0,
+      openingMinute: 0,
+      closingHour: 0,
+      closingMinute: 0,
     );
     serviceDay4 = ServiceDay(
       id: '4',
       name: 'Quarta-feira',
       dayOfWeek: 4,
       isActive: true,
+      openingHour: 0,
+      openingMinute: 0,
+      closingHour: 0,
+      closingMinute: 0,
     );
     serviceDay5 = ServiceDay(
       id: '5',
       name: 'Quinta-feira',
       dayOfWeek: 5,
       isActive: true,
+      openingHour: 0,
+      openingMinute: 0,
+      closingHour: 0,
+      closingMinute: 0,
     );
     serviceDay6 = ServiceDay(
       id: '6',
       name: 'Sexta-feira',
       dayOfWeek: 6,
       isActive: true,
+      openingHour: 0,
+      openingMinute: 0,
+      closingHour: 0,
+      closingMinute: 0,
     );
     serviceDay7 = ServiceDay(
       id: '7',
       name: 'Sábado',
       dayOfWeek: 7,
       isActive: true,
+      openingHour: 0,
+      openingMinute: 0,
+      closingHour: 0,
+      closingMinute: 0,
     );
     
     serviceDay1Disable = ServiceDay(
@@ -72,6 +100,10 @@ void main() {
       name: 'Dinheiro',
       dayOfWeek: 1,
       isActive: false,
+      openingHour: 0,
+      openingMinute: 0,
+      closingHour: 0,
+      closingMinute: 0,
     );
   }
 

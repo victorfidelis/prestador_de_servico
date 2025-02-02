@@ -20,6 +20,10 @@ void main() {
       name: 'Dinheiro',
       dayOfWeek: 1,
       isActive: true,
+      openingHour: 0, 
+      openingMinute: 0, 
+      closingHour: 0, 
+      closingMinute: 0, 
     );
   }
 

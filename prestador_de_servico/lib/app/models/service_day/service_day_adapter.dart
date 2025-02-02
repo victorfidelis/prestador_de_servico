@@ -10,6 +10,10 @@ class ServiceDayAdapter {
       'name': serviceDay.name,
       'dayOfWeek': serviceDay.dayOfWeek,
       'isActive': serviceDay.isActive,
+      'openingHour': serviceDay.openingHour,
+      'openingMinute': serviceDay.openingMinute,
+      'closingHour': serviceDay.closingHour,
+      'closingMinute': serviceDay.closingMinute,
       'dateSync': FieldValue.serverTimestamp(), // Todo envio para o firebase deve conter a data atual do servidor
       'isDeleted': false,
     };
@@ -23,6 +27,10 @@ class ServiceDayAdapter {
       name: map['name'],
       dayOfWeek: map['dayOfWeek'],
       isActive: map['isActive'],
+      openingHour: map['openingHour'],
+      openingMinute: map['openingMinute'],
+      closingHour: map['closingHour'],
+      closingMinute: map['closingMinute'],
       syncDate: (map['dateSync'] as Timestamp).toDate(),
     );
 
@@ -35,6 +43,10 @@ class ServiceDayAdapter {
       name: map['name'],
       dayOfWeek: map['dayOfWeek'],
       isActive: map['isActive'] == 1,
+      openingHour: map['openingHour'],
+      openingMinute: map['openingMinute'],
+      closingHour: map['closingHour'],
+      closingMinute: map['closingMinute'],
     );
   }
 }
