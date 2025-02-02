@@ -6,7 +6,8 @@ import 'package:prestador_de_servico/app/services/service_day/service_day_servic
 import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
 import 'package:prestador_de_servico/app/states/service_day/service_day_state.dart';
 
-class ServiceDayController extends ChangeNotifier {
+class 
+ServiceDayController extends ChangeNotifier {
   final ServiceDayService serviceDayService;
 
   ServiceDayState _state = ServiceDayInitial();

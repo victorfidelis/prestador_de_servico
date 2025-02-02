@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/network/network_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_payment_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
+import 'package:prestador_de_servico/app/services/sync/sync_service_day_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
 import 'package:prestador_de_servico/app/states/sync/sync_state.dart';
@@ -11,12 +12,14 @@ class SyncController extends ChangeNotifier {
   final SyncServiceCategoryService syncServiceCategoryService;
   final SyncServiceService syncServiceService;
   final SyncPaymentService syncPaymentService;
+  final SyncServiceDayService syncServiceDayService;
 
   SyncController({
     required this.networkService,
     required this.syncServiceCategoryService,
     required this.syncServiceService,
     required this.syncPaymentService,
+    required this.syncServiceDayService,
   });
 
   SyncState _state = Syncing();
@@ -49,6 +52,11 @@ class SyncController extends ChangeNotifier {
     final syncPaymentEither = await syncPaymentService.synchronize();
     if (syncPaymentEither.isLeft) {
       return SyncError(syncPaymentEither.left!.message);
+    }
+
+    final syncServiceDayEither = await syncServiceDayService.synchronize();
+    if (syncServiceDayEither.isLeft) {
+      return SyncError(syncServiceDayEither.left!.message);
     }
 
     return Synchronized();

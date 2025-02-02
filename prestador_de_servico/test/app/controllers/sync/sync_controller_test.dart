@@ -3,6 +3,7 @@ import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/controllers/sync/sync_controller.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_payment_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
+import 'package:prestador_de_servico/app/services/sync/sync_service_day_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
@@ -12,6 +13,7 @@ import '../../../helpers/network/mock_network_service.dart';
 import '../../../helpers/payment/mock_payment_repository.dart';
 import '../../../helpers/service/service/mock_service_repository.dart';
 import '../../../helpers/service/service_category/mock_service_category_repository.dart';
+import '../../../helpers/service_day/mock_service_day_repository.dart';
 import '../../../helpers/sync/mock_sync_repository.dart';
 
 void main() {
@@ -20,6 +22,7 @@ void main() {
   late SyncServiceCategoryService syncServiceCategoryService;
   late SyncServiceService syncServiceService;
   late SyncPaymentService syncPaymentService;
+  late SyncServiceDayService syncServiceDayService;
 
   setUpValues() {
     syncServiceCategoryService = SyncServiceCategoryService(
@@ -37,11 +40,17 @@ void main() {
       offlineRepository: offlineMockPaymentRepository,
       onlineRepository: onlineMockPaymentRepository,
     );
+    syncServiceDayService = SyncServiceDayService(
+      syncRepository: mockSyncRepository,
+      offlineRepository: offlineMockServiceDayRepository,
+      onlineRepository: onlineMockServiceDayRepository,
+    );
     syncController = SyncController(
       networkService: mockNetworkService,
       syncServiceCategoryService: syncServiceCategoryService,
       syncServiceService: syncServiceService,
-      syncPaymentService: syncPaymentService,
+      syncPaymentService: syncPaymentService, 
+      syncServiceDayService: syncServiceDayService,
     );
   }
 
@@ -51,6 +60,7 @@ void main() {
       setUpMockServiceCategoryRepository();
       setUpMockServiceRepository();
       setUpMockPaymentRepository();
+      setUpMockServiceDayRepository();
       setUpNetworkService();
       setUpValues();
     },

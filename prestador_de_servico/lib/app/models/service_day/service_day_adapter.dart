@@ -22,7 +22,7 @@ class ServiceDayAdapter {
       id: doc.id,
       name: map['name'],
       dayOfWeek: map['dayOfWeek'],
-      isActive: map['isActive'] == 1,
+      isActive: map['isActive'],
       syncDate: (map['dateSync'] as Timestamp).toDate(),
     );
 

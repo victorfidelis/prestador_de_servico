@@ -9,6 +9,7 @@ import 'package:prestador_de_servico/app/views/service/service_category_edit_vie
 import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_view.dart';
 import 'package:prestador_de_servico/app/views/service/show_all_services_view.dart';
+import 'package:prestador_de_servico/app/views/service_day/service_day_view.dart';
 
 Route<dynamic>? getRoute(RouteSettings settings) {
   if (settings.name == '/signIn') {
@@ -45,6 +46,9 @@ Route<dynamic>? getRoute(RouteSettings settings) {
   }
   if (settings.name == '/payment') {
     return _buildRoute(settings, const PaymentView());
+  }
+  if (settings.name == '/serviceDay') {
+    return _buildRoute(settings, const ServiceDayView());
   }
 
   return null;

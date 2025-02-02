@@ -31,7 +31,7 @@ class _CustomPaymentCardState extends State<CustomPaymentCard> {
     return Column(
       children: [
         Container(
-          height: 80,
+          height: 60,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
@@ -49,23 +49,29 @@ class _CustomPaymentCardState extends State<CustomPaymentCard> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                Image.network(payment.urlIcon),
+                Image.network(payment.urlIcon, height: 30),
                 const SizedBox(width: 20),
                 Expanded(
                   child: Text(
                     payment.name,
-                    style: const TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 18),
                   ),
                 ),
-                CustomSwitch(
-                  initialValue: payment.isActive,
-                  onChanged: onChanged,
+                SizedBox(
+                  height: 36,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: CustomSwitch(
+                      initialValue: payment.isActive,
+                      onChanged: onChanged,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 12),
       ],
     );
   }

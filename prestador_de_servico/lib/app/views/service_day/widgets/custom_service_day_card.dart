@@ -32,7 +32,7 @@ class _CustomServiceDayCardState extends State<CustomServiceDayCard> {
     return Column(
       children: [
         Container(
-          height: 80,
+          height: 60,
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
@@ -53,18 +53,24 @@ class _CustomServiceDayCardState extends State<CustomServiceDayCard> {
                 Expanded(
                   child: Text(
                     serviceDay.name,
-                    style: const TextStyle(fontSize: 20),
+                    style: const TextStyle(fontSize: 18),
                   ),
                 ),
-                CustomSwitch(
-                  initialValue: serviceDay.isActive,
-                  onChanged: onChanged,
+                SizedBox(
+                  height: 36,
+                  child: FittedBox(
+                    fit: BoxFit.contain,
+                    child: CustomSwitch(
+                      initialValue: serviceDay.isActive,
+                      onChanged: onChanged,
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 12),
       ],
     );
   }

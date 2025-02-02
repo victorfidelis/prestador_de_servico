@@ -23,6 +23,16 @@ class MenuView extends StatelessWidget {
               color: Theme.of(context).colorScheme.shadow,
             ),
             CustomMenuItem(
+              label: 'Dias de atendimento',
+              icon: Icons.view_week_outlined,
+              onTap: () {
+                Navigator.of(context).pushNamed('/serviceDay');
+              },
+            ),
+            Divider(
+              color: Theme.of(context).colorScheme.shadow,
+            ),
+            CustomMenuItem(
               label: 'Formas de pagamento',
               icon: Icons.payments,
               onTap: () {

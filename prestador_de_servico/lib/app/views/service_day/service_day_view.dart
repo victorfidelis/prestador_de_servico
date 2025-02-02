@@ -91,7 +91,7 @@ class _ServiceDayViewState extends State<ServiceDayView> {
                 }
                 return 0;
               });
-
+              
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 6,

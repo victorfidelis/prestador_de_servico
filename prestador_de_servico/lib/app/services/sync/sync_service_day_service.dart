@@ -1,24 +1,25 @@
-import 'package:prestador_de_servico/app/models/service/service.dart';
+
+import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
-import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service_day/service_day_repository.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
 import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
-class SyncServiceService {
+class SyncServiceDayService {
   final SyncRepository syncRepository;
-  final ServiceRepository offlineRepository;
-  final ServiceRepository onlineRepository;
+  final ServiceDayRepository offlineRepository;
+  final ServiceDayRepository onlineRepository;
   late Sync sync;
 
-  SyncServiceService({
+  SyncServiceDayService({
     required this.syncRepository,
     required this.offlineRepository,
     required this.onlineRepository,
   });
   
-  List<Service> servicesToSync = [];
+  List<ServiceDay> serviceDaysToSync = [];
 
   Future<Either<Failure, Unit>> synchronize() async {
     final loadInfoSyncEither = await loadSyncInfo();
@@ -55,8 +56,8 @@ class SyncServiceService {
   
   Future<Either<Failure, Unit>> loadUnsynced() async {
     Either getEither;
-    if (sync.existsSyncDateServices) {
-      getEither = await onlineRepository.getUnsync(dateLastSync: sync.dateSyncService!);
+    if (sync.existsSyncDateServiceDays) {
+      getEither = await onlineRepository.getUnsync(dateLastSync: sync.dateSyncServiceDay!);
     } else {
       getEither = await onlineRepository.getAll();
     }
@@ -64,14 +65,14 @@ class SyncServiceService {
       return Either.left(getEither.left);
     }
 
-    servicesToSync = getEither.right!;
+    serviceDaysToSync = getEither.right!;
 
     return Either.right(unit);
   }
 
   Future<Either<Failure, Unit>> syncUnsynced() async {
-    for (Service service in servicesToSync) {
-      final syncEither = await syncService(service);
+    for (ServiceDay serviceDay in serviceDaysToSync) {
+      final syncEither = await syncServiceDay(serviceDay);
       if (syncEither.isLeft) {
         return Either.left(syncEither.left);
       }
@@ -79,21 +80,20 @@ class SyncServiceService {
     return Either.right(unit);
   } 
 
-  Future<Either<Failure, Unit>> syncService(Service service) async {
-    if (service.isDeleted) {
-      return await offlineRepository.deleteById(id: service.id);
+  Future<Either<Failure, Unit>> syncServiceDay(ServiceDay serviceDay) async {
+    if (serviceDay.isDeleted) {
+      return await offlineRepository.deleteById(id: serviceDay.id);
     } 
     
-    final existsEither = await 
-    offlineRepository.existsById(id: service.id);
+    final existsEither = await offlineRepository.existsById(id: serviceDay.id);
     if (existsEither.isLeft) {
       return Either.left(existsEither.left); 
     }
 
     if (existsEither.right!) {
-      return await offlineRepository.update(service: service);
+      return await offlineRepository.update(serviceDay: serviceDay);
     } else {
-      final insertEither = await offlineRepository.insert(service: service);
+      final insertEither = await offlineRepository.insert(serviceDay: serviceDay);
       if (insertEither.isLeft) {
         return Either.left(insertEither.left);
       }
@@ -102,7 +102,7 @@ class SyncServiceService {
   }
 
   Future<Either<Failure, Unit>> updateSyncDate() async {
-    if (servicesToSync.isEmpty) {
+    if (serviceDaysToSync.isEmpty) {
       return Either.right(unit);
     }
 
@@ -113,15 +113,15 @@ class SyncServiceService {
     }
 
     if (existsEither.right!) {
-      return await syncRepository.updateService(syncDate: syncDate);
+      return await syncRepository.updateServiceDay(syncDate: syncDate);
     } else {
-      sync = sync.copyWith(dateSyncServiceCategory: syncDate);
+      sync = sync.copyWith(dateSyncServiceDay: syncDate);
       return await syncRepository.insert(sync: sync);
     }
   }
 
   DateTime getMaxSyncDate() {
-    Service service = servicesToSync.reduce(
+    ServiceDay serviceDay = serviceDaysToSync.reduce(
       (value, element) {
         // Todo objeto vindo da nuvem necessariamente deve ter o syncDate
         // Por esse motivo o operador "!" em "syncDate"
@@ -132,6 +132,6 @@ class SyncServiceService {
         }
       },
     );
-    return service.syncDate!;
+    return serviceDay.syncDate!;
   }
 }
