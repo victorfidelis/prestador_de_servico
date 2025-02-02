@@ -16,11 +16,17 @@ class SyncAdapter {
     if (map['dateSyncPayment'] > 0) {
       dateSyncPayment = DateTime.fromMillisecondsSinceEpoch(map['dateSyncPayment']);
     }
+    
+    DateTime? dateSyncServiceDay;
+    if (map['dateSyncServiceDay'] > 0) {
+      dateSyncServiceDay = DateTime.fromMillisecondsSinceEpoch(map['dateSyncServiceDay']);
+    }
 
     return Sync(
       dateSyncServiceCategory: dateSyncServiceCategory,
       dateSyncService: dateSyncService,
       dateSyncPayment: dateSyncPayment,
+      dateSyncServiceDay: dateSyncServiceDay,
     );
   }
   
@@ -39,11 +45,17 @@ class SyncAdapter {
     if (sync.dateSyncPayment != null) {
       dateSyncPayment = sync.dateSyncPayment!.millisecondsSinceEpoch;
     }
+    
+    int dateSyncServiceDay = 0;
+    if (sync.dateSyncServiceDay != null) {
+      dateSyncServiceDay = sync.dateSyncServiceDay!.millisecondsSinceEpoch;
+    }
 
     return {
       'dateSyncServiceCategory': dateSyncServiceCategory,
       'dateSyncService': dateSyncService,
       'dateSyncPayment': dateSyncPayment,
+      'dateSyncServiceDay': dateSyncServiceDay,
     };
   }
 }

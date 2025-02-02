@@ -39,6 +39,7 @@ void main() {
           expect(syncEither.right!.existsSyncDateServiceCategories, isFalse);
           expect(syncEither.right!.existsSyncDateServices, isFalse);
           expect(syncEither.right!.existsSyncDatePayments, isFalse);
+          expect(syncEither.right!.existsSyncDateServiceDays, isFalse);
         },
       );
 
@@ -55,6 +56,7 @@ void main() {
           expect(syncEither.right!.dateSyncServiceCategory, equals(sync.dateSyncServiceCategory));
           expect(syncEither.right!.existsSyncDateServices, isFalse);
           expect(syncEither.right!.existsSyncDatePayments, isFalse);
+          expect(syncEither.right!.existsSyncDateServiceDays, isFalse);
         },
       );
 
@@ -97,6 +99,20 @@ void main() {
 
           expect(syncEither.isRight, isTrue);
           expect(syncEither.right!.dateSyncPayment, equals(sync.dateSyncPayment));
+        },
+      );
+
+      test(
+        '''Ao atualizar a sincronização de dias de atendimento o mesmo deve ser 
+          retornado na consulta de sincronização''',
+        () async {
+          sync = sync.copyWith(dateSyncServiceDay: DateTime(2024, 10, 20));
+          await syncRepository.updateServiceDay(syncDate: sync.dateSyncServiceDay!);
+
+          final syncEither = await syncRepository.get();
+
+          expect(syncEither.isRight, isTrue);
+          expect(syncEither.right!.dateSyncServiceDay, equals(sync.dateSyncServiceDay));
         },
       );
     },

@@ -11,6 +11,7 @@ class ServiceDayAdapter {
       'dayOfWeek': serviceDay.dayOfWeek,
       'isActive': serviceDay.isActive,
       'dateSync': FieldValue.serverTimestamp(), // Todo envio para o firebase deve conter a data atual do servidor
+      'isDeleted': false,
     };
   }
 

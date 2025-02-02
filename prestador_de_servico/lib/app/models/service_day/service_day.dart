@@ -7,6 +7,7 @@ class ServiceDay {
   final int dayOfWeek;
   final bool isActive;
   final DateTime? syncDate;
+  final bool isDeleted;
 
   String get nameWithoutDiacritics => replaceDiacritic(name);
   
@@ -16,6 +17,7 @@ class ServiceDay {
     required this.dayOfWeek,
     required this.isActive,
     this.syncDate,
+    this.isDeleted = false,
   });
 
   ServiceDay copyWith({
@@ -24,6 +26,7 @@ class ServiceDay {
     int? dayOfWeek,
     bool? isActive,
     DateTime? syncDate,
+    bool? isDeleted,
   }) {
     return ServiceDay(
       id: id ?? this.id,
@@ -31,6 +34,7 @@ class ServiceDay {
       dayOfWeek: dayOfWeek ?? this.dayOfWeek,
       isActive: isActive ?? this.isActive,
       syncDate: syncDate ?? this.syncDate,
+      isDeleted: isDeleted ?? this.isDeleted,
     );
   }
 

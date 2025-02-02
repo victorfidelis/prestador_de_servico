@@ -40,7 +40,8 @@ class SqfliteSyncRepository implements SyncRepository {
         "SELECT "
         "syn_con.dateSyncServiceCategory, "
         "syn_con.dateSyncService, "
-        "syn_con.dateSyncPayment "
+        "syn_con.dateSyncPayment, "
+        "syn_con.dateSyncServiceDay "
         "FROM "
         "$syncControlTable syn_con";
 
@@ -90,12 +91,13 @@ class SqfliteSyncRepository implements SyncRepository {
 
     String insert = ''
         'INSERT INTO $syncControlTable '
-        '(dateSyncServiceCategory, dateSyncService, dateSyncPayment) '
-        'VALUES (?, ?, ?)';
+        '(dateSyncServiceCategory, dateSyncService, dateSyncPayment, dateSyncServiceDay) '
+        'VALUES (?, ?, ?, ?)';
     List params = [
       sync.dateSyncServiceCategory?.millisecondsSinceEpoch ?? 0,
       sync.dateSyncService?.millisecondsSinceEpoch ?? 0,
       sync.dateSyncPayment?.millisecondsSinceEpoch ?? 0,
+      sync.dateSyncServiceDay?.millisecondsSinceEpoch ?? 0,
     ];
 
     try {
@@ -165,6 +167,29 @@ class SqfliteSyncRepository implements SyncRepository {
         'UPDATE $syncControlTable '
         'SET '
         'dateSyncPayment = ?';
+    List params = [syncDate.millisecondsSinceEpoch];
+
+    try {
+      await database!.rawUpdate(updateText, params);
+      return Either.right(unit);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao atualizar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao atualizar dados locais: ${e.message})'));
+    }
+  }
+  
+  @override
+  Future<Either<Failure, Unit>> updateServiceDay({required DateTime syncDate}) async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
+
+    String updateText = ''
+        'UPDATE $syncControlTable '
+        'SET '
+        'dateSyncServiceDay = ?';
     List params = [syncDate.millisecondsSinceEpoch];
 
     try {

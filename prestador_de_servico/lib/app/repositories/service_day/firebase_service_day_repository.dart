@@ -19,7 +19,7 @@ class FirebaseServiceDayRepository implements ServiceDayRepository {
 
     try {
       final serviceDaysCollection = FirebaseFirestore.instance.collection('serviceDays');
-      QuerySnapshot snapServiceDays = await serviceDaysCollection.get();
+      QuerySnapshot snapServiceDays = await serviceDaysCollection.where('isDeleted', isEqualTo: false).get();
       List<ServiceDay> serviceDays = snapServiceDays.docs.map((doc) => ServiceDayAdapter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(serviceDays);
     } on FirebaseException catch (e) {
