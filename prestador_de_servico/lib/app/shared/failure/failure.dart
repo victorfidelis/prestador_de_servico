@@ -61,3 +61,7 @@ class DeleteImageFailure extends Failure {
 class ImageNotFoundFailure extends Failure {
   ImageNotFoundFailure(super.message);
 }
+
+class NoServiceFailure extends Failure {
+  NoServiceFailure(super.message);
+}

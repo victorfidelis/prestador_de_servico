@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 
 class ServiceAdapter {
   static Map<String, dynamic> toMap({required Service service}) {
@@ -82,6 +83,18 @@ class ServiceAdapter {
       hours: map['serviceHours'],
       minutes: map['serviceMinutes'],
       imageUrl: map['serviceUrlImage'],
+    );
+  }
+
+  static Service fromServiceSchedulingMap({required Map map}) {
+    return Service(
+      id: map['id'],
+      serviceCategoryId: '',
+      name: map['name'],
+      price: map['price'],
+      hours: map['hours'],
+      minutes: map['minutes'],
+      imageUrl: '',
     );
   }
 }

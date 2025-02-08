@@ -12,7 +12,7 @@ class User {
   User({
     this.id = '',
     this.isAdmin = false,
-    required this.email,
+    this.email = '',
     required this.name,
     required this.surname,
     this.phone = '',

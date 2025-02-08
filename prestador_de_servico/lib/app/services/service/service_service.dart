@@ -7,9 +7,9 @@ import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:prestador_de_servico/app/shared/network/network_helpers.dart';
 
 class ServiceService {
-  ServiceRepository offlineRepository;
-  ServiceRepository onlineRepository;
-  ImageRepository imageRepository;
+  final ServiceRepository offlineRepository;
+  final ServiceRepository onlineRepository;
+  final ImageRepository imageRepository;
   final NetworkHelpers networkHelpers = NetworkHelpers();
 
   ServiceService({

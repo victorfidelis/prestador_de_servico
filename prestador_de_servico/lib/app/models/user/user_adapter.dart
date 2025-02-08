@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 
 class UserAdapter {
-
   static Map<String, dynamic> toMap({required User user}) {
     return {
       'id': user.id,
@@ -27,7 +26,7 @@ class UserAdapter {
       password: map.containsKey('password') ? map['password'] : '',
       confirmPassword: map.containsKey('confirmPassword') ? map['confirmPassword'] : '',
     );
-  } 
+  }
 
   static Map<String, dynamic> toFirebaseMap({required User user}) {
     return {
@@ -42,7 +41,7 @@ class UserAdapter {
   static User fromDocumentSnapshot({required DocumentSnapshot doc}) {
     Map<String, dynamic> map = (doc.data() as Map<String, dynamic>);
     map['id'] = doc.id;
-    
+
     return User(
       id: map['id'],
       isAdmin: map['isAdmin'],
@@ -52,5 +51,12 @@ class UserAdapter {
       email: map['email'],
     );
   }
-}
 
+  static User fromServiceSchedulingMap({required Map<String, dynamic> map}) {
+    return User(
+      id: map['id'],
+      name: map['name'],
+      surname: map['surname'],
+    );
+  }
+}
