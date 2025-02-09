@@ -32,17 +32,6 @@ class Service {
     this.isDeleted = false,
   });
 
-  @override
-  bool operator ==(Object other) {
-    return (other is Service) &&
-        other.id == id &&
-        other.serviceCategoryId == serviceCategoryId &&
-        other.name == name &&
-        other.price == price &&
-        other.hours == hours && 
-        other.minutes == minutes; 
-  }
-
   Service copyWith({
     String? id,
     String? serviceCategoryId,
@@ -67,5 +56,15 @@ class Service {
       syncDate: syncDate ?? this.syncDate,
       isDeleted: isDeleted ?? this.isDeleted,
     );
+  }
+
+  @override
+  bool operator ==(covariant Service other) {
+    return other.id == id &&
+        other.serviceCategoryId == serviceCategoryId &&
+        other.name == name &&
+        other.price == price &&
+        other.hours == hours &&
+        other.minutes == minutes;
   }
 }

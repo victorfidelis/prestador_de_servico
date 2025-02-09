@@ -8,7 +8,7 @@ import 'package:prestador_de_servico/app/models/user/user_adapter.dart';
 class ServiceSchedulingAdapter {
   static ServiceScheduling fromDocumentSnapshot({required DocumentSnapshot doc}) {
     Map<String, dynamic> map = (doc.data() as Map<String, dynamic>);
-    map['id'] = doc.id;
+    
     final List<Map<String, dynamic>> servicesMap = (map['services'] as List<Map<String, dynamic>>);
     final List<Service> services = servicesMap.map((e) => ServiceAdapter.fromServiceSchedulingMap(map: e)).toList();
 

@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 
 class ServiceAdapter {
   static Map<String, dynamic> toMap({required Service service}) {
