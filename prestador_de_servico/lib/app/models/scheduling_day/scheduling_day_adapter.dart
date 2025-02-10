@@ -10,6 +10,7 @@ class SchedulingDayAdapter {
       date: day,
       isSelected: false,
       hasService: map['hasService'],
+      isToday: false,
       numberOfServices: map['numberOfServices'],
     );
   }

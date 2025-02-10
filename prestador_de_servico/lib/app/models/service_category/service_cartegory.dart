@@ -29,11 +29,12 @@ class ServiceCategory {
       isDeleted: isDeleted ?? this.isDeleted,
     );
   }
-  
+
   @override
-  bool operator ==(Object other) {
-    return (other is ServiceCategory) &&
-        other.id == id &&
-        other.name == name;
+  bool operator ==(covariant ServiceCategory other) {
+    return other.id == id && other.name == name;
   }
+
+  @override
+  int get hashCode => id.hashCode ^ name.hashCode;
 }

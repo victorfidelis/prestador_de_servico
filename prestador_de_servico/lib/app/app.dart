@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/payment/payment_controller.dart';
+import 'package:prestador_de_servico/app/controllers/scheduling/days_controller.dart';
+import 'package:prestador_de_servico/app/controllers/scheduling/service_scheduling_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/show_all_services_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service_day/service_day_controller.dart';
@@ -13,6 +15,7 @@ import 'package:prestador_de_servico/app/controllers/navigation/navigation_contr
 import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
 import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/repositories/payment/payment_repository.dart';
+import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
 import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
 import 'package:prestador_de_servico/app/repositories/service/services_by_category/services_by_category_repository.dart';
@@ -23,6 +26,7 @@ import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/services/network/network_service.dart';
 import 'package:prestador_de_servico/app/services/payments/payment_service.dart';
+import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/services/service/services_by_category_service.dart';
@@ -148,6 +152,20 @@ class App extends StatelessWidget {
             serviceDayService: ServiceDayService(
               offlineRepository: ServiceDayRepository.createOffline(),
               onlineRepository: ServiceDayRepository.createOnline(),
+            ),
+          ),
+        ),
+        ChangeNotifierProvider<DaysController>(
+          create: (context) => DaysController(
+            schedulingService: SchedulingService(
+              onlineRepository: SchedulingRepository.createOnline(),
+            ),
+          ),
+        ),
+        ChangeNotifierProvider<ServiceSchedulingController>(
+          create: (context) => ServiceSchedulingController(
+            schedulingService: SchedulingService(
+              onlineRepository: SchedulingRepository.createOnline(),
             ),
           ),
         ),

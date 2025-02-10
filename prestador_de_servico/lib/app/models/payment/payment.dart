@@ -1,4 +1,3 @@
-
 import 'package:replace_diacritic/replace_diacritic.dart';
 
 enum PaymentType {
@@ -20,7 +19,7 @@ class Payment {
   final bool isDeleted;
 
   String get nameWithoutDiacritics => replaceDiacritic(name);
-  
+
   Payment({
     required this.id,
     required this.paymentType,
@@ -52,11 +51,12 @@ class Payment {
   }
 
   @override
-  bool operator ==(Object other) {
-    return (other is Payment) &&
-        other.id == id &&
-        other.paymentType == paymentType &&
-        other.name == name &&
-        other.isActive == isActive;
+  bool operator ==(covariant Payment other) {
+    return other.id == id && other.paymentType == paymentType && other.name == name && other.isActive == isActive;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^ paymentType.hashCode ^ name.hashCode ^ isActive.hashCode;
   }
 }

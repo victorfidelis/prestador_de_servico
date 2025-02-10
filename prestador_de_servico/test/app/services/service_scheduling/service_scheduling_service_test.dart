@@ -27,18 +27,21 @@ void main() {
       date: actualDate.add(const Duration(days: -10)),
       isSelected: false,
       hasService: true,
+      isToday: false,
       numberOfServices: 1,
     );
     schedulingDayAfter10Days = SchedulingDay(
       date: actualDate.add(const Duration(days: 10)),
       isSelected: false,
       hasService: true,
+      isToday: false,
       numberOfServices: 1,
     );
     schedulingDayAfter100Days = SchedulingDay(
       date: actualDate.add(const Duration(days: 100)),
       isSelected: false,
       hasService: true,
+      isToday: false,
       numberOfServices: 1,
     );
   }

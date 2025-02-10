@@ -45,7 +45,9 @@ class MenuView extends StatelessWidget {
             CustomMenuItem(
               label: 'Agenda',
               icon: Icons.view_agenda_outlined,
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pushNamed('/scheduling');
+              },
             ),
           ],
         ),

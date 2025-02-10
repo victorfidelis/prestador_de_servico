@@ -3,12 +3,14 @@ class SchedulingDay {
   final DateTime date;
   final bool isSelected;
   final bool hasService;
+  final bool isToday;
   final int numberOfServices;
   
   SchedulingDay({
     required this.date,
     required this.isSelected,
     required this.hasService,
+    required this.isToday,
     required this.numberOfServices,
   });
 
@@ -16,12 +18,14 @@ class SchedulingDay {
     DateTime? date,
     bool? isSelected,
     bool? hasService,
+    bool? isToday,
     int? numberOfServices,
   }) {
     return SchedulingDay(
       date: date ?? this.date,
       isSelected: isSelected ?? this.isSelected,
       hasService: hasService ?? this.hasService,
+      isToday: isToday ?? this.isToday,
       numberOfServices: numberOfServices ?? this.numberOfServices,
     );
   } 

@@ -14,15 +14,15 @@ class ServiceDay {
   final int closingMinute;
 
   String get nameWithoutDiacritics => replaceDiacritic(name);
-  
+
   ServiceDay({
     required this.id,
     required this.name,
     required this.dayOfWeek,
     required this.isActive,
-    required this.openingHour, 
-    required this.openingMinute, 
-    required this.closingHour, 
+    required this.openingHour,
+    required this.openingMinute,
+    required this.closingHour,
     required this.closingMinute,
     this.syncDate,
     this.isDeleted = false,
@@ -65,5 +65,17 @@ class ServiceDay {
         other.closingHour == closingHour &&
         other.closingMinute == closingMinute &&
         other.isActive == isActive;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+    name.hashCode ^ 
+    dayOfWeek.hashCode ^ 
+    openingHour.hashCode ^ 
+    openingMinute.hashCode ^ 
+    closingHour.hashCode ^ 
+    closingMinute.hashCode ^ 
+    isActive.hashCode;
   }
 }

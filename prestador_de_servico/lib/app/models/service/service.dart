@@ -67,4 +67,14 @@ class Service {
         other.hours == hours &&
         other.minutes == minutes;
   }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        serviceCategoryId.hashCode ^
+        name.hashCode ^
+        price.hashCode ^
+        hours.hashCode ^
+        minutes.hashCode;
+  }
 }

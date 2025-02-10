@@ -23,9 +23,12 @@ class ServicesByCategory {
   }
 
   @override
-  bool operator ==(Object other) {
-    return other is ServicesByCategory &&
-        other.serviceCategory == serviceCategory &&
-        other.services.length == services.length;
+  bool operator ==(covariant ServicesByCategory other) {
+    return other.serviceCategory == serviceCategory && other.services.length == services.length;
+  }
+
+  @override
+  int get hashCode {
+    return serviceCategory.hashCode ^ services.length.hashCode;
   }
 }

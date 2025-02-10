@@ -20,15 +20,6 @@ class User {
     this.confirmPassword = '',
   });
 
-  @override
-  bool operator ==(Object other) {
-    return other is User &&
-        id == other.id &&
-        email == other.email &&
-        name == other.name && 
-        surname == other.surname;
-  }    
-
   User copyWith({
     String? id,
     bool? isAdmin,
@@ -49,5 +40,15 @@ class User {
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
     );
+  }
+
+  @override
+  bool operator ==(covariant User other) {
+    return id == other.id && email == other.email && name == other.name && surname == other.surname;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^ email.hashCode ^ name.hashCode ^ surname.hashCode;
   }
 }

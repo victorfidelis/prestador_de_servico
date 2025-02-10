@@ -31,11 +31,18 @@ class Sync {
   }
 
   @override
-  bool operator ==(Object other) {
-    return (other is Sync) && 
-    other.dateSyncServiceCategory == dateSyncServiceCategory && 
-    other.dateSyncService == dateSyncService &&
-    other.dateSyncPayment == dateSyncPayment &&
-    other.dateSyncServiceDay == dateSyncServiceDay;
+  bool operator ==(covariant Sync other) {
+    return other.dateSyncServiceCategory == dateSyncServiceCategory &&
+        other.dateSyncService == dateSyncService &&
+        other.dateSyncPayment == dateSyncPayment &&
+        other.dateSyncServiceDay == dateSyncServiceDay;
+  }
+
+  @override
+  int get hashCode {
+    return dateSyncServiceCategory.hashCode ^
+        dateSyncService.hashCode ^
+        dateSyncPayment.hashCode ^
+        dateSyncServiceDay.hashCode;
   }
 }

@@ -83,6 +83,7 @@ class SchedulingService {
     required DateTime lastDate,
   }) {
     List<SchedulingDay> dates = [];
+    DateTime actualDate = DateTime.now();
 
     final daysDifference = lastDate.difference(firstDate).inDays;
     for (int i = 0; i <= daysDifference; i++) {
@@ -95,10 +96,15 @@ class SchedulingService {
           date: date,
           isSelected: false,
           hasService: false,
+          isToday: false,
           numberOfServices: 0,
         );
       } else {
         schedulingDay = daysWithService[index];
+      }
+
+      if (date.year == actualDate.year && date.month == actualDate.month && date.day == actualDate.day) {
+        schedulingDay = schedulingDay.copyWith(isSelected: true, isToday: true);
       }
 
       dates.add(schedulingDay);
