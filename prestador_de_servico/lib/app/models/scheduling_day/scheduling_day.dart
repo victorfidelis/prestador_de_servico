@@ -5,7 +5,7 @@ class SchedulingDay {
   final bool hasService;
   final bool isToday;
   final int numberOfServices;
-  
+
   SchedulingDay({
     required this.date,
     required this.isSelected,
@@ -28,7 +28,7 @@ class SchedulingDay {
       isToday: isToday ?? this.isToday,
       numberOfServices: numberOfServices ?? this.numberOfServices,
     );
-  } 
+  }
 
   @override
   bool operator ==(covariant SchedulingDay other) {
@@ -36,9 +36,9 @@ class SchedulingDay {
 
     return other.hashCode == hashCode;
   }
-  
+
   @override
   int get hashCode {
-    return date.hashCode;
+    return date.hashCode ^ isSelected.hashCode ^ isToday.hashCode ^ hasService.hashCode ^ numberOfServices.hashCode;
   }
 }

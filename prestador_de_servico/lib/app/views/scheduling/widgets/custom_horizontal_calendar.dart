@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
+import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_list.dart';
 import 'package:prestador_de_servico/app/shared/date/date_functions.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_horizontal_calendar_card.dart';
 
@@ -13,21 +14,19 @@ class CustomHorizontalCalendar extends StatefulWidget {
 }
 
 class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
-  late List<SchedulingDay> schedulesPerDay;
-  late DateTime selectedDay;
+  final ScrollController _scrollController = ScrollController();
+  late SchedulingDayList schedulingDayList;
+  final ValueNotifier<String> selectedMonth = ValueNotifier('');
+  final ValueNotifier<String> selectedYear = ValueNotifier('');
 
   @override
   void initState() {
-    schedulesPerDay = widget.schedulesPerDay;
-    setSelectedDay();
+    schedulingDayList = SchedulingDayList(value: widget.schedulesPerDay);
+    selectedMonth.value = DateFunctions.getMonthName(schedulingDayList.value[0].date.month);
+    selectedYear.value = schedulingDayList.value[0].date.year.toString();
+    _scrollController.addListener(_onScroll);
     super.initState();
   }
-
-  void setSelectedDay() {
-    selectedDay = schedulesPerDay.firstWhere((d) => d.isSelected).date;
-  }
-
-  String get selectedMonth => DateFunctions.getMonthName(selectedDay.month);
 
   @override
   Widget build(BuildContext context) {
@@ -40,38 +39,63 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Expanded(
-                child: Text(
-                  selectedMonth,
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w700,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                ),
+                child: ListenableBuilder(
+                    listenable: selectedMonth,
+                    builder: (context, _) {
+                      return Text(
+                        selectedMonth.value,
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      );
+                    }),
               ),
-              Text(
-                selectedDay.year.toString(),
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w400,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ),
+              ListenableBuilder(
+                  listenable: selectedYear,
+                  builder: (context, _) {
+                    return Text(
+                      selectedYear.value,
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.w400,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    );
+                  }),
             ],
           ),
         ),
         const SizedBox(height: 12),
         SizedBox(
           height: 120,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: schedulesPerDay.length,
-            itemBuilder: (context, index) {
-              return CustomHorizontalCalendarCard(schedulingDay: schedulesPerDay[index]);
+          child: ListenableBuilder(
+            listenable: schedulingDayList,
+            builder: (context, _) {
+              return ListView.builder(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                itemCount: schedulingDayList.value.length,
+                itemBuilder: (context, index) {
+                  return CustomHorizontalCalendarCard(
+                    key: ValueKey(schedulingDayList.value[index].hashCode.toString()),
+                    schedulingDay: schedulingDayList.value[index],
+                    onSelectedDay: schedulingDayList.changeSelectedDay,
+                  );
+                },
+              );
             },
           ),
         ),
       ],
     );
+  }
+
+  void _onScroll() {
+    const double cardWidth = 88;
+    final int index = (_scrollController.offset / cardWidth).floor();
+    selectedMonth.value = DateFunctions.getMonthName(schedulingDayList.value[index].date.month);
+    selectedYear.value = schedulingDayList.value[index].date.year.toString();
   }
 }
