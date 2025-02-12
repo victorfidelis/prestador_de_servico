@@ -51,12 +51,4 @@ class UserAdapter {
       email: map['email'],
     );
   }
-
-  static User fromServiceSchedulingMap({required Map<String, dynamic> map}) {
-    return User(
-      id: map['id'],
-      name: map['name'],
-      surname: map['surname'],
-    );
-  }
 }

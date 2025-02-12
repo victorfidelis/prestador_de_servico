@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
-import 'package:prestador_de_servico/app/shared/date/date_functions.dart';
+import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
 
 class CustomHorizontalCalendarCard extends StatefulWidget {
   final SchedulingDay schedulingDay;
@@ -19,7 +19,7 @@ class CustomHorizontalCalendarCard extends StatefulWidget {
 class _CustomHorizontalCalendarCardState extends State<CustomHorizontalCalendarCard> {
 
   String get formatDay => widget.schedulingDay.date.day.toString();
-  String get formatWeekDay => DateFunctions.getWeekDayNameWithDoubleLine(widget.schedulingDay.date.weekday);
+  String get formatWeekDay => Formatters.getWeekDayNameWithDoubleLine(widget.schedulingDay.date.weekday);
 
   Color get textColor {
     if (widget.schedulingDay.isSelected) {

@@ -90,7 +90,7 @@ class ServiceAdapter {
       id: map['id'],
       serviceCategoryId: '',
       name: map['name'],
-      price: map['price'],
+      price: (map['price'] * 1.0),
       hours: map['hours'],
       minutes: map['minutes'],
       imageUrl: '',

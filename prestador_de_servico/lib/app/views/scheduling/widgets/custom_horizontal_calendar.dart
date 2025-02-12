@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_list.dart';
-import 'package:prestador_de_servico/app/shared/date/date_functions.dart';
+import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_horizontal_calendar_card.dart';
 
 class CustomHorizontalCalendar extends StatefulWidget {
   final List<SchedulingDay> schedulesPerDay;
+  final Function(DateTime) onChangeSelectedDay;
 
-  const CustomHorizontalCalendar({super.key, required this.schedulesPerDay});
+  const CustomHorizontalCalendar({
+    super.key,
+    required this.schedulesPerDay,
+    required this.onChangeSelectedDay,
+  });
 
   @override
   State<CustomHorizontalCalendar> createState() => _CustomHorizontalCalendarState();
@@ -22,7 +27,7 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
   @override
   void initState() {
     schedulingDayList = SchedulingDayList(value: widget.schedulesPerDay);
-    selectedMonth.value = DateFunctions.getMonthName(schedulingDayList.value[0].date.month);
+    selectedMonth.value = Formatters.getMonthName(schedulingDayList.value[0].date.month);
     selectedYear.value = schedulingDayList.value[0].date.year.toString();
     _scrollController.addListener(_onScroll);
     super.initState();
@@ -81,7 +86,7 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
                   return CustomHorizontalCalendarCard(
                     key: ValueKey(schedulingDayList.value[index].hashCode.toString()),
                     schedulingDay: schedulingDayList.value[index],
-                    onSelectedDay: schedulingDayList.changeSelectedDay,
+                    onSelectedDay: _onChangeSelectedDay,
                   );
                 },
               );
@@ -95,7 +100,12 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
   void _onScroll() {
     const double cardWidth = 88;
     final int index = (_scrollController.offset / cardWidth).floor();
-    selectedMonth.value = DateFunctions.getMonthName(schedulingDayList.value[index].date.month);
+    selectedMonth.value = Formatters.getMonthName(schedulingDayList.value[index].date.month);
     selectedYear.value = schedulingDayList.value[index].date.year.toString();
+  } 
+
+  void _onChangeSelectedDay(DateTime date) {
+    schedulingDayList.changeSelectedDay(date);
+    widget.onChangeSelectedDay(date);
   }
 }
