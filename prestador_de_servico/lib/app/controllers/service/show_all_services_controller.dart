@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
-import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/states/service/show_all_services_state.dart';
 import 'package:replace_diacritic/replace_diacritic.dart';
 

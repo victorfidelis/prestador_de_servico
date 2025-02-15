@@ -6,7 +6,7 @@ import 'package:prestador_de_servico/app/models/payment/payment_adapter.dart';
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/repositories/payment/payment_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:sqflite/sqlite_api.dart';
 

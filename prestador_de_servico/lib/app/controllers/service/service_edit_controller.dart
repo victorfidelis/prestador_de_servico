@@ -3,7 +3,7 @@ import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
-import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/states/service/service_edit_state.dart';
 
 class ServiceEditController extends ChangeNotifier {

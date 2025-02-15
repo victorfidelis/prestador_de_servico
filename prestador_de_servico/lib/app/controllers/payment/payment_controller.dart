@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:prestador_de_servico/app/models/payment/payment.dart';
 import 'package:prestador_de_servico/app/services/payments/payment_service.dart';
-import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/states/payment/payment_state.dart';
 
 class PaymentController extends ChangeNotifier {

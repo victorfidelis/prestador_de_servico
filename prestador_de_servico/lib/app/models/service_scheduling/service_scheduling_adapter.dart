@@ -17,6 +17,7 @@ class ServiceSchedulingAdapter {
     final serviceStatus = ServiceStatus(code: map['serviceStatusCode'], name: map['serviceStatusName']);
 
     return ServiceScheduling(
+      id: doc.id,
       user: user,
       services: services,
       serviceStatus: serviceStatus,

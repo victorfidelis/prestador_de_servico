@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 

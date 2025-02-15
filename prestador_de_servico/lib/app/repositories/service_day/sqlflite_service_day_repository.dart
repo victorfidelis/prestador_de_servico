@@ -5,7 +5,7 @@ import 'package:prestador_de_servico/app/models/service_day/service_day_adapter.
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/repositories/service_day/service_day_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:sqflite/sqlite_api.dart';
 

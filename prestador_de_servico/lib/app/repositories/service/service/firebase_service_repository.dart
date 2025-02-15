@@ -4,7 +4,7 @@ import 'package:prestador_de_servico/app/models/service/service_adapter.dart';
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
 class FirebaseServiceRepository implements ServiceRepository {

@@ -135,7 +135,7 @@ class _SchedulingViewState extends State<SchedulingView> {
               if (serviceSchedulingController.state is ServiceSchedulingLoading) {
                 return Container(
                   padding: const EdgeInsets.only(top: 28),
-                  child: const CustomLoading(),
+                  child: const Center(child: CustomLoading()),
                 );
               }
 

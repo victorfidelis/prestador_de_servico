@@ -4,7 +4,7 @@ import 'package:prestador_de_servico/app/models/service_category/service_cartego
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:replace_diacritic/replace_diacritic.dart';
 import 'package:sqflite/sqflite.dart';

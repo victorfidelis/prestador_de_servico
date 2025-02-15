@@ -3,7 +3,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
 import 'package:prestador_de_servico/app/services/service_day/service_day_service.dart';
-import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/states/service_day/service_day_state.dart';
 
 class 

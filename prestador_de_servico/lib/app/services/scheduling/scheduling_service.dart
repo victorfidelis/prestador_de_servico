@@ -1,8 +1,9 @@
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 
 class SchedulingService {
@@ -12,7 +13,43 @@ class SchedulingService {
   SchedulingService({required this.onlineRepository});
 
   Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay({required DateTime dateTime}) async {
-    return await onlineRepository.getAllServicesByDay(dateTime: dateTime);
+    final getEither = await onlineRepository.getAllServicesByDay(dateTime: dateTime);
+    if (getEither.isLeft) {
+      return Either.left(getEither.left);
+    }
+
+    return Either.right(flagServicesWithConflictAndUnavailability(getEither.right!));
+  }
+
+  List<ServiceScheduling> flagServicesWithConflictAndUnavailability(List<ServiceScheduling> servicesSchedules) {
+    for (int i = 0; i < servicesSchedules.length; i++) {
+      final scheduling = servicesSchedules[i];
+      if (!scheduling.serviceStatus.isPendingStatus()) {
+        continue;
+      }
+
+      final listOfConflicts = servicesSchedules.where(
+        (s) => (s.id != scheduling.id &&
+            s.serviceStatus.causesConflict() &&
+            s.startDateAndTime.compareTo(scheduling.endDateAndTime) <= 0 &&
+            s.endDateAndTime.compareTo(scheduling.startDateAndTime) >= 0),
+      ).toList();
+      final conflictScheduing = listOfConflicts.isNotEmpty;
+
+      final listOfUnavailable = servicesSchedules.where(
+        (s) => (s.id != scheduling.id &&
+            s.serviceStatus.isAcceptStatus() &&
+            s.startDateAndTime.compareTo(scheduling.endDateAndTime) <= 0 &&
+            s.endDateAndTime.compareTo(scheduling.startDateAndTime) >= 0),
+      ).toList();
+      final schedulingUnavailable = listOfUnavailable.isNotEmpty;
+      servicesSchedules[i] = servicesSchedules[i].copyWith(
+        conflictScheduing: conflictScheduing,
+        schedulingUnavailable: schedulingUnavailable,
+      );
+    }
+
+    return servicesSchedules;
   }
 
   Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId({required String userId}) async {

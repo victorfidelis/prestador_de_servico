@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/shared/extensions/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/failure/failure.dart';
 import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
 

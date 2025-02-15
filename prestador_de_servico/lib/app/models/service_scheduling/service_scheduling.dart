@@ -4,7 +4,7 @@ import 'package:prestador_de_servico/app/models/service_status/service_status.da
 import 'package:prestador_de_servico/app/models/user/user.dart';
 
 class ServiceScheduling {
-  int id; 
+  String id; 
   User user;
   List<Service> services;
   ServiceStatus serviceStatus; 
@@ -13,9 +13,14 @@ class ServiceScheduling {
   double totalDiscount;
   double totalPrice;
   double totalPaid;
+  bool schedulingUnavailable;
+  bool conflictScheduing;
+
+  bool get isPaid => (totalPrice - totalDiscount - totalPaid) <= 0;
+  double get needToPay => totalPrice - totalDiscount - totalPaid;
 
   ServiceScheduling({
-    this.id = 0,
+    this.id = '',
     required this.user,
     required this.services,
     required this.serviceStatus,
@@ -24,10 +29,12 @@ class ServiceScheduling {
     required this.totalDiscount,
     required this.totalPrice,
     required this.totalPaid,
+    this.schedulingUnavailable = false,
+    this.conflictScheduing = false,
   });
 
   ServiceScheduling copyWith({
-    int? id,
+    String? id,
     User? user,
     List<Service>? services,
     ServiceStatus? serviceStatus,
@@ -36,6 +43,8 @@ class ServiceScheduling {
     double? totalDiscount,
     double? totalPrice,
     double? totalPaid,
+    bool? schedulingUnavailable,
+    bool? conflictScheduing,
   }) {
     return ServiceScheduling(
       id: id ?? this.id,
@@ -47,6 +56,8 @@ class ServiceScheduling {
       totalDiscount: totalDiscount ?? this.totalDiscount,
       totalPrice: totalPrice ?? this.totalPrice,
       totalPaid: totalPaid ?? this.totalPaid,
+      schedulingUnavailable: schedulingUnavailable ?? this.schedulingUnavailable,
+      conflictScheduing: conflictScheduing ?? this.conflictScheduing,
     );
   }
 }
