@@ -23,6 +23,7 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
   late SchedulingDayList schedulingDayList;
   final ValueNotifier<String> selectedMonth = ValueNotifier('');
   final ValueNotifier<String> selectedYear = ValueNotifier('');
+  final double cardWidth = 88;
 
   @override
   void initState() {
@@ -30,6 +31,7 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
     selectedMonth.value = Formatters.getMonthName(schedulingDayList.value[0].date.month);
     selectedYear.value = schedulingDayList.value[0].date.year.toString();
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _positionScroll(DateTime.now()));
     super.initState();
   }
 
@@ -98,7 +100,6 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
   }
 
   void _onScroll() {
-    const double cardWidth = 88;
     final int index = (_scrollController.offset / cardWidth).floor();
     selectedMonth.value = Formatters.getMonthName(schedulingDayList.value[index].date.month);
     selectedYear.value = schedulingDayList.value[index].date.year.toString();
@@ -107,5 +108,16 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
   void _onChangeSelectedDay(DateTime date) {
     schedulingDayList.changeSelectedDay(date);
     widget.onChangeSelectedDay(date);
+  }
+
+  void _positionScroll(DateTime date) {
+    final minDate = schedulingDayList.value[0].date;
+    // final maxDate = schedulingDayList.value[schedulingDayList.value.length - 1].date; 
+
+    final int numberOfDaysUntilDate = date.difference(minDate).inDays;
+
+    final double pixelsToScroll = numberOfDaysUntilDate * cardWidth;
+
+    _scrollController.jumpTo(pixelsToScroll);
   }
 }

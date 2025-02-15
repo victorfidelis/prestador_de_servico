@@ -10,14 +10,16 @@ class ServiceScheduling {
   ServiceStatus serviceStatus; 
   DateTime startDateAndTime;
   DateTime endDateAndTime;
+  double totalRate;
   double totalDiscount;
   double totalPrice;
   double totalPaid;
   bool schedulingUnavailable;
   bool conflictScheduing;
 
-  bool get isPaid => (totalPrice - totalDiscount - totalPaid) <= 0;
-  double get needToPay => totalPrice - totalDiscount - totalPaid;
+  bool get isPaid => (totalPrice + totalRate - totalDiscount - totalPaid) <= 0;
+  double get needToPay => totalPrice + totalRate - totalDiscount - totalPaid;
+  double get totalPriceToPay => totalPrice + totalRate - totalDiscount;
 
   ServiceScheduling({
     this.id = '',
@@ -26,6 +28,7 @@ class ServiceScheduling {
     required this.serviceStatus,
     required this.startDateAndTime,
     required this.endDateAndTime,
+    required this.totalRate,
     required this.totalDiscount,
     required this.totalPrice,
     required this.totalPaid,
@@ -40,6 +43,7 @@ class ServiceScheduling {
     ServiceStatus? serviceStatus,
     DateTime? startDateAndTime,
     DateTime? endDateAndTime,
+    double? totalRate,
     double? totalDiscount,
     double? totalPrice,
     double? totalPaid,
@@ -53,6 +57,7 @@ class ServiceScheduling {
       serviceStatus: serviceStatus ?? this.serviceStatus,
       startDateAndTime: startDateAndTime ?? this.startDateAndTime,
       endDateAndTime: endDateAndTime ?? this.endDateAndTime,
+      totalRate: totalRate ?? this.totalRate,
       totalDiscount: totalDiscount ?? this.totalDiscount,
       totalPrice: totalPrice ?? this.totalPrice,
       totalPaid: totalPaid ?? this.totalPaid,

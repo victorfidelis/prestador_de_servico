@@ -23,9 +23,14 @@ class CustomServiceSchedulingCard extends StatelessWidget {
       serviceScheduling.endDateAndTime.minute,
     );
     final completeName = '${serviceScheduling.user.name} ${serviceScheduling.user.surname}';
-    final formatPrice = Formatters.formatPrice(serviceScheduling.totalPrice);
+    final formatPriceToPay = Formatters.formatPrice(serviceScheduling.totalPriceToPay);
+    final textColor = getTextColor();
+    final finishedSealIcon = getFinishedSealIcon();
+    final othersValues = getOtherValues();
+    final message = messageWidget();
 
     return Container(
+      margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
@@ -48,9 +53,15 @@ class CustomServiceSchedulingCard extends StatelessWidget {
               children: [
                 Text(
                   startHour,
+                  style: const TextStyle(fontSize: 16),
+                ),
+                const Text(
+                  'às',
+                  style: TextStyle(fontSize: 14),
                 ),
                 Text(
                   endHour,
+                  style: const TextStyle(fontSize: 16),
                 ),
               ],
             ),
@@ -62,25 +73,40 @@ class CustomServiceSchedulingCard extends StatelessWidget {
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    completeName,
-                    style: TextStyle(
-                      color: Colors.orange,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 16,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      serviceScheduling.serviceStatus.name,
-                      style: TextStyle(
-                        color: Colors.orange,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 14,
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              completeName,
+                              style: TextStyle(
+                                color: textColor,
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0),
+                              child: Text(
+                                serviceScheduling.serviceStatus.name,
+                                style: TextStyle(
+                                  color: textColor,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                      finishedSealIcon,
+                    ],
                   ),
                   const SizedBox(height: 6),
                   Padding(
@@ -91,18 +117,23 @@ class CustomServiceSchedulingCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 6),
+                  othersValues,
+                  const SizedBox(height: 6),
                   Row(
                     children: [
-                      Expanded(child: messageWidget()),
+                      Expanded(child: Container()),
                       Text(
-                        formatPrice,
+                        formatPriceToPay,
                         style: const TextStyle(
                           fontStyle: FontStyle.italic,
                           fontWeight: FontWeight.w700,
+                          fontSize: 16,
                         ),
                       )
                     ],
                   ),
+                  const SizedBox(height: 6),
+                  message,
                 ],
               ),
             ),
@@ -123,13 +154,14 @@ class CustomServiceSchedulingCard extends StatelessWidget {
         Expanded(
           child: Text(
             service.name,
-            style: const TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: 16),
           ),
         ),
         Text(
           formatPrice,
           style: const TextStyle(
             fontStyle: FontStyle.italic,
+            fontSize: 16,
           ),
         ),
       ],
@@ -174,5 +206,112 @@ class CustomServiceSchedulingCard extends StatelessWidget {
       );
     }
     return widgetReturn;
+  }
+
+  Color getTextColor() {
+    Color color = Colors.black;
+    if (serviceScheduling.serviceStatus.isPendingStatus()) {
+      color = const Color(0xffEC942C);
+    } else if (serviceScheduling.serviceStatus.isAcceptStatus()) {
+      color = const Color(0xff1976D2);
+    } else if (serviceScheduling.serviceStatus.isServicePerformStatus()) {
+      color = const Color(0xff00891E);
+    } else if (serviceScheduling.serviceStatus.isCancellationStatus()) {
+      color = const Color(0xffE70000);
+    }
+    return color;
+  }
+
+  Widget getFinishedSealIcon() {
+    Widget finishedSealIcon = Container();
+
+    if (serviceScheduling.serviceStatus.isCancellationStatus()) {
+      finishedSealIcon = ClipOval(
+        child: Container(
+          color: const Color(0xffE70000),
+          padding: const EdgeInsets.all(2),
+          child: const Icon(
+            Icons.close,
+            color: Colors.white,
+            size: 20,
+          ),
+        ),
+      );
+    } else if (serviceScheduling.serviceStatus.isServicePerformStatus() && serviceScheduling.isPaid) {
+      finishedSealIcon = ClipOval(
+        child: Container(
+          color: const Color(0xff00891E),
+          padding: const EdgeInsets.all(2),
+          child: const Icon(
+            Icons.check,
+            color: Colors.white,
+            size: 20,
+          ),
+        ),
+      );
+    }
+
+    return finishedSealIcon;
+  }
+
+  Widget getOtherValues() {
+    final prices = serviceScheduling.services.map((s) => s.price).toList();
+    final totalServicesPrice = prices.reduce((s1, s2) => s1 + s2);
+    final formatServicesPrice = Formatters.formatPrice(totalServicesPrice);
+    Widget subTotalWidget = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Expanded(child: Container()),
+        const Expanded(child: Text('- Subtotal')),
+        Text(
+          formatServicesPrice,
+          style: const TextStyle(fontStyle: FontStyle.italic),
+        ),
+      ],
+    );
+
+    Widget totalRateWidget = Container();
+    if (serviceScheduling.totalRate > 0) {
+      final formatRate = Formatters.formatPrice(serviceScheduling.totalRate);
+      totalRateWidget = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(child: Container()),
+          const Expanded(child: Text('- Taxa')),
+          Text(
+            formatRate,
+            style: const TextStyle(fontStyle: FontStyle.italic),
+          ),
+        ],
+      );
+    }
+
+    Widget totalDiscountWidget = Container();
+    if (serviceScheduling.totalDiscount > 0) {
+      final formatDiscount = Formatters.formatPrice(serviceScheduling.totalDiscount);
+      totalDiscountWidget = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Expanded(child: Container()),
+          const Expanded(child: Text('- Desconto')),
+          Text(
+            formatDiscount,
+            style: const TextStyle(
+              fontStyle: FontStyle.italic,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        subTotalWidget,
+        totalRateWidget,
+        totalDiscountWidget,
+      ],
+    );
   }
 }

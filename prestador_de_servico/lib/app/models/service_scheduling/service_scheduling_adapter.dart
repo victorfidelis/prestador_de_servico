@@ -23,6 +23,7 @@ class ServiceSchedulingAdapter {
       serviceStatus: serviceStatus,
       startDateAndTime: (map['startDateAndTime'] as Timestamp).toDate(),
       endDateAndTime: (map['endDateAndTime'] as Timestamp).toDate(),
+      totalRate: (map['totalRate'] * 1.0),
       totalDiscount: (map['totalDiscount'] * 1.0),
       totalPrice: (map['totalPrice'] * 1.0),
       totalPaid: (map['totalPaid'] * 1.0),
