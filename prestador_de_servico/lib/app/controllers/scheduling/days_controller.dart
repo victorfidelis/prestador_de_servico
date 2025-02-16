@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
@@ -17,7 +18,7 @@ class DaysController extends ChangeNotifier {
     _state = currentState;
   }
 
-  DaysController({required this.schedulingService}); 
+  DaysController({required this.schedulingService});
 
   Future<void> load() async {
     _emitState(DaysLoading());
@@ -27,9 +28,36 @@ class DaysController extends ChangeNotifier {
     } else {
       _emitState(DaysLoaded(dates: daysEither.right!));
     }
-  } 
+  }
 
   void exit() {
     _changeState(DaysInitial());
+  }
+
+  void changeTypeView(TypeView typeView) {
+    if (state is! DaysLoaded) {
+      return;
+    }
+
+    final newState = (state as DaysLoaded).copyWith(typeView: typeView);
+
+    _emitState(newState);
+  }
+
+  void changeSelectedDay(DateTime date) {
+    if (state is! DaysLoaded) {
+      return;
+    }
+
+    final dates = (state as DaysLoaded).dates;
+
+    final int indexForCurrentDate = dates.indexWhere((d) => d.date == date);
+    final int indexForOldDate = dates.indexWhere((d) => d.isSelected);
+
+    dates[indexForCurrentDate] = dates[indexForCurrentDate].copyWith(isSelected: true);
+
+    if (indexForCurrentDate != indexForOldDate && indexForOldDate >= 0) {
+      dates[indexForOldDate] = dates[indexForOldDate].copyWith(isSelected: false);
+    }
   }
 }

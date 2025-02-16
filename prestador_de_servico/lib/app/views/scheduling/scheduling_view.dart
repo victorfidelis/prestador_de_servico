@@ -9,6 +9,8 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/states/service_scheduling/days_state.dart';
 import 'package:prestador_de_servico/app/states/service_scheduling/service_scheduling_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_horizontal_calendar.dart';
+import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_menu_calendar_type.dart';
+import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_month_calendar.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_service_scheduling_card.dart';
 import 'package:provider/provider.dart';
 
@@ -51,7 +53,10 @@ class _SchedulingViewState extends State<SchedulingView> {
                       const Expanded(
                         child: CustomAppBarTitle(title: 'Agenda'),
                       ),
-                      const SizedBox(width: 60),
+                      SizedBox(
+                        width: 60,
+                        child: CustomMenuCalendarType(),
+                      )
                     ],
                   ),
                 ),
@@ -74,16 +79,24 @@ class _SchedulingViewState extends State<SchedulingView> {
               if (daysController.state is DaysLoading) {
                 return Container(
                   padding: const EdgeInsets.only(top: 28),
-                  child: const CustomLoading(),
+                  child: const Center(child: CustomLoading()),
                 );
               }
 
-              final schedulesPerDay = (daysController.state as DaysLoaded).dates;
+              final loadedState = (daysController.state as DaysLoaded);
+              final schedulesPerDay = loadedState.dates;
 
-              return CustomHorizontalCalendar(
-                schedulesPerDay: schedulesPerDay,
-                onChangeSelectedDay: _onChangeSelectedDay,
-              );
+              if (loadedState.typeView == TypeView.main) {
+                return CustomHorizontalCalendar(
+                  schedulesPerDay: schedulesPerDay,
+                  onChangeSelectedDay: _onChangeSelectedDay,
+                );
+              } else {
+                return CustomMonthCalendar(
+                  schedulesPerDay: schedulesPerDay,
+                  onChangeSelectedDay: _onChangeSelectedDay,
+                );
+              }
             },
           ),
           const SizedBox(height: 6),
@@ -146,8 +159,12 @@ class _SchedulingViewState extends State<SchedulingView> {
                   padding: const EdgeInsets.symmetric(horizontal: 18),
                   child: ListView.builder(
                     padding: EdgeInsets.zero,
-                    itemCount: serviceSchedules.length,
+                    itemCount: serviceSchedules.length + 1,
                     itemBuilder: (context, index) {
+                      if (index == serviceSchedules.length) {
+                        return const SizedBox(height: 150);
+                      }
+
                       return CustomServiceSchedulingCard(
                         serviceScheduling: serviceSchedules[index],
                       );
@@ -171,5 +188,6 @@ class _SchedulingViewState extends State<SchedulingView> {
   void _onChangeSelectedDay(DateTime date) {
     selectedDay.value = date;
     context.read<ServiceSchedulingController>().load(dateTime: selectedDay.value);
+    context.read<DaysController>().changeSelectedDay(date);
   }
 }

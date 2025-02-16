@@ -78,6 +78,7 @@ void main() {
       totalDiscount: 0,
       totalPrice: service1.price,
       totalPaid: 0,
+      totalRate: 0,
     );
 
     serviceScheduling09as11 = ServiceScheduling(
@@ -90,6 +91,7 @@ void main() {
       totalDiscount: 0,
       totalPrice: service1.price + service2.price,
       totalPaid: 0,
+      totalRate: 0,
     );
 
     serviceScheduling10as12 = ServiceScheduling(
@@ -102,6 +104,7 @@ void main() {
       totalDiscount: 0,
       totalPrice: service1.price + service2.price,
       totalPaid: 0,
+      totalRate: 0,
     );
 
     serviceScheduling13as15confirm = ServiceScheduling(
@@ -114,6 +117,7 @@ void main() {
       totalDiscount: 0,
       totalPrice: service1.price + service3.price,
       totalPaid: 0,
+      totalRate: 0,
     );
 
     serviceScheduling14as16 = ServiceScheduling(
@@ -126,6 +130,7 @@ void main() {
       totalDiscount: 0,
       totalPrice: service1.price + service3.price,
       totalPaid: 0,
+      totalRate: 0,
     );
 
     schedulingDayBefore10Days = SchedulingDay(

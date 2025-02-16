@@ -19,8 +19,9 @@ class CustomHorizontalCalendar extends StatefulWidget {
 }
 
 class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
-  final ScrollController _scrollController = ScrollController();
+  late final ScrollController _scrollController;
   late SchedulingDayList schedulingDayList;
+  late DateTime selectedDay;
   final ValueNotifier<String> selectedMonth = ValueNotifier('');
   final ValueNotifier<String> selectedYear = ValueNotifier('');
   final double cardWidth = 88;
@@ -28,10 +29,12 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
   @override
   void initState() {
     schedulingDayList = SchedulingDayList(value: widget.schedulesPerDay);
-    selectedMonth.value = Formatters.getMonthName(schedulingDayList.value[0].date.month);
-    selectedYear.value = schedulingDayList.value[0].date.year.toString();
+    loadSelectedDay();
+    selectedMonth.value = Formatters.getMonthName(selectedDay.month);
+    selectedYear.value = selectedDay.year.toString();
+    _scrollController = ScrollController(initialScrollOffset: _getPositionScroll(selectedDay));
     _scrollController.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _positionScroll(DateTime.now()));
+
     super.initState();
   }
 
@@ -60,17 +63,18 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
                     }),
               ),
               ListenableBuilder(
-                  listenable: selectedYear,
-                  builder: (context, _) {
-                    return Text(
-                      selectedYear.value,
-                      style: TextStyle(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w400,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    );
-                  }),
+                listenable: selectedYear,
+                builder: (context, _) {
+                  return Text(
+                    selectedYear.value,
+                    style: TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w400,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),
@@ -103,21 +107,25 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
     final int index = (_scrollController.offset / cardWidth).floor();
     selectedMonth.value = Formatters.getMonthName(schedulingDayList.value[index].date.month);
     selectedYear.value = schedulingDayList.value[index].date.year.toString();
-  } 
+  }
 
   void _onChangeSelectedDay(DateTime date) {
     schedulingDayList.changeSelectedDay(date);
     widget.onChangeSelectedDay(date);
   }
 
-  void _positionScroll(DateTime date) {
+  double _getPositionScroll(DateTime date) {
     final minDate = schedulingDayList.value[0].date;
-    // final maxDate = schedulingDayList.value[schedulingDayList.value.length - 1].date; 
 
     final int numberOfDaysUntilDate = date.difference(minDate).inDays;
 
     final double pixelsToScroll = numberOfDaysUntilDate * cardWidth;
 
-    _scrollController.jumpTo(pixelsToScroll);
+    return pixelsToScroll;
   }
+
+  void loadSelectedDay() {
+    final int indexForSelectedDay = schedulingDayList.value.indexWhere((s) => s.isSelected);
+    selectedDay = schedulingDayList.value[indexForSelectedDay].date;
+  } 
 }
