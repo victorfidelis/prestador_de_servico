@@ -44,9 +44,19 @@ class MenuView extends StatelessWidget {
             ),
             CustomMenuItem(
               label: 'Agenda',
-              icon: Icons.view_agenda_outlined,
+              icon: Icons.calendar_month,
               onTap: () {
                 Navigator.of(context).pushNamed('/scheduling');
+              },
+            ),
+            Divider(
+              color: Theme.of(context).colorScheme.shadow,
+            ),
+            CustomMenuItem(
+              label: 'Agendamentos pendentes',
+              icon: Icons.pending_actions,
+              onTap: () {
+                Navigator.of(context).pushNamed('/pendingProviderSchedules');
               },
             ),
           ],

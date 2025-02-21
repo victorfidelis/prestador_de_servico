@@ -13,4 +13,5 @@ abstract class SchedulingRepository {
   Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay({required DateTime dateTime});
   Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId({required String userId});
   Future<Either<Failure, List<SchedulingDay>>> getDaysWithService();
+  Future<Either<Failure, List<ServiceScheduling>>> getPendingProviderSchedules();
 }

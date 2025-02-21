@@ -149,4 +149,8 @@ class SchedulingService {
 
     return dates;
   }
+  
+  Future<Either<Failure, List<ServiceScheduling>>> getPendingProviderSchedules() async {
+    return await onlineRepository.getPendingProviderSchedules();
+  }
 }

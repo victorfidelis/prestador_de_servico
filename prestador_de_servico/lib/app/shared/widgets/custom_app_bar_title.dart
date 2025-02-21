@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 
 class CustomAppBarTitle extends StatelessWidget {
   final String title;
+  final double fontSize;
   const CustomAppBarTitle({
     super.key,
     required this.title,
+    this.fontSize = 28
   });
 
   @override
@@ -14,10 +16,11 @@ class CustomAppBarTitle extends StatelessWidget {
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 28,
+          fontSize: fontSize,
           color: Theme.of(context).colorScheme.primary,
           fontWeight: FontWeight.w700,
         ),
+        textAlign: TextAlign.center,
       ),
     );
   }

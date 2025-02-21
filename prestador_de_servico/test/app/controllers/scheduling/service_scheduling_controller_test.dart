@@ -66,7 +66,7 @@ void main() {
     'exit',
     () {
       test(
-        '''Deve alterar o estado para DaysInitial''',
+        '''Deve alterar o estado para ServiceSchedulingInitial''',
         () {
           serviceSchedulingController.exit();
 

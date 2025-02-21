@@ -5,6 +5,7 @@ import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
 import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
 import 'package:prestador_de_servico/app/views/navigation/navigation_view.dart';
 import 'package:prestador_de_servico/app/views/payment/payment_view.dart';
+import 'package:prestador_de_servico/app/views/pending_provider_schedules/pending_provider_schedules_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling/scheduling_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
@@ -54,6 +55,10 @@ Route<dynamic>? getRoute(RouteSettings settings) {
   if (settings.name == '/scheduling') {
     return _buildRoute(settings, const SchedulingView());
   }
+  if (settings.name == '/pendingProviderSchedules') {
+    return _buildRoute(settings, const PendingProviderSchedulesView());
+  }
+
 
   return null;
 }

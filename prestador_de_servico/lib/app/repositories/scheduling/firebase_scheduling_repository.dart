@@ -84,4 +84,26 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       }
     }
   }
+  
+  @override
+  Future<Either<Failure, List<ServiceScheduling>>> getPendingProviderSchedules() async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    try {
+      final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
+      QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection.where('serviceStatusCode', isEqualTo: 1).get();
+      List<ServiceScheduling> serviceSchedules =
+          snapServiceSchedules.docs.map((doc) => ServiceSchedulingAdapter.fromDocumentSnapshot(doc: doc)).toList();
+      return Either.right(serviceSchedules);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
+  }
 }

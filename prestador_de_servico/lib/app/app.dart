@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/controllers/payment/payment_controller.dart';
 import 'package:prestador_de_servico/app/controllers/scheduling/days_controller.dart';
+import 'package:prestador_de_servico/app/controllers/scheduling/pending_provider_schedules_controller.dart';
 import 'package:prestador_de_servico/app/controllers/scheduling/service_scheduling_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
 import 'package:prestador_de_servico/app/controllers/service/show_all_services_controller.dart';
@@ -164,6 +165,13 @@ class App extends StatelessWidget {
         ),
         ChangeNotifierProvider<ServiceSchedulingController>(
           create: (context) => ServiceSchedulingController(
+            schedulingService: SchedulingService(
+              onlineRepository: SchedulingRepository.createOnline(),
+            ),
+          ),
+        ),
+        ChangeNotifierProvider<PendingProviderSchedulesController>(
+          create: (context) => PendingProviderSchedulesController(
             schedulingService: SchedulingService(
               onlineRepository: SchedulingRepository.createOnline(),
             ),
