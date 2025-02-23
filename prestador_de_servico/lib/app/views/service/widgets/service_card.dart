@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
-import 'package:prestador_de_servico/app/shared/network/network_helpers.dart';
+import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/network/network_helpers.dart';
 
 class ServiceCard extends StatefulWidget {
   final Function() onTap;

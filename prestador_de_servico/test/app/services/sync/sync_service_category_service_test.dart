@@ -3,9 +3,9 @@ import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
 import '../../../helpers/service/service_category/mock_service_category_repository.dart';
 import '../../../helpers/sync/mock_sync_repository.dart';

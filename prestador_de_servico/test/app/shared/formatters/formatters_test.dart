@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 
 void main() {
   group(

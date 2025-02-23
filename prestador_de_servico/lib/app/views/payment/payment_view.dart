@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/payment/payment_controller.dart';
+import 'package:prestador_de_servico/app/views/payment/viewmodels/payment_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/payment/payment.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
-import 'package:prestador_de_servico/app/states/payment/payment_state.dart';
+import 'package:prestador_de_servico/app/views/payment/states/payment_state.dart';
 import 'package:prestador_de_servico/app/views/payment/widgets/custom_payment_card.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +21,7 @@ class _PaymentViewState extends State<PaymentView> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<PaymentController>().load());
+    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<PaymentViewModel>().load());
     super.initState();
   }
 
@@ -57,7 +57,7 @@ class _PaymentViewState extends State<PaymentView> {
               ),
             ),
           ),
-          Consumer<PaymentController>(
+          Consumer<PaymentViewModel>(
             builder: (context, paymentController, _) {
               if (paymentController.state is PaymentInitial) {
                 return const SliverFillRemaining();
@@ -114,6 +114,6 @@ class _PaymentViewState extends State<PaymentView> {
   }
 
   void _changeStateOfPayment({required Payment payment}) {
-    context.read<PaymentController>().update(payment: payment);
+    context.read<PaymentViewModel>().update(payment: payment);
   }
 }

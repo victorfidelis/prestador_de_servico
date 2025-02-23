@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sqflite_sync_repository.dart';
-import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 void main() {

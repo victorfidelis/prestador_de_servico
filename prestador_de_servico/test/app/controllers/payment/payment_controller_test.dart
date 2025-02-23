@@ -1,16 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/payment/payment_controller.dart';
+import 'package:prestador_de_servico/app/views/payment/viewmodels/payment_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/payment/payment.dart';
 import 'package:prestador_de_servico/app/services/payments/payment_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/payment/payment_state.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/views/payment/states/payment_state.dart';
 
 import '../../../helpers/payment/mock_payment_repository.dart';
 
 void main() {
-  late PaymentController paymentController;
+  late PaymentViewModel paymentController;
 
   late Payment payment1;
   late Payment payment2;
@@ -81,7 +81,7 @@ void main() {
         offlineRepository: offlineMockPaymentRepository,
         onlineRepository: onlineMockPaymentRepository,
       );
-      paymentController = PaymentController(paymentService: paymentService);
+      paymentController = PaymentViewModel(paymentService: paymentService);
       setUpValues();
     },
   );

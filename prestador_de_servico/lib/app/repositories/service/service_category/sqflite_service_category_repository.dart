@@ -3,9 +3,9 @@ import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory_adapter.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:replace_diacritic/replace_diacritic.dart';
 import 'package:sqflite/sqflite.dart';
 

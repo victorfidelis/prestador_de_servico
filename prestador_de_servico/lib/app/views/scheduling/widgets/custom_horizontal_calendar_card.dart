@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
-import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 
 class CustomHorizontalCalendarCard extends StatefulWidget {
   final SchedulingDay schedulingDay;

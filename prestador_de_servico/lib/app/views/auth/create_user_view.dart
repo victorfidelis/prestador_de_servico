@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/create_user_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
-import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
+import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/states/auth/create_user_state.dart';
+import 'package:prestador_de_servico/app/views/auth/states/create_user_state.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_sign_in_header.dart';
 import 'package:provider/provider.dart';
 
@@ -63,7 +63,7 @@ class _CreateUserViewState extends State<CreateUserView> {
                 const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 38),
-                  child: Consumer<CreateUserController>(
+                  child: Consumer<CreateUserViewModel>(
                       builder: (context, createAccountController, _) {
                     bool createUserLoading =
                         createAccountController.state is LoadingUserCreation;
@@ -188,6 +188,6 @@ class _CreateUserViewState extends State<CreateUserView> {
       confirmPassword: _confirmPasswordController.text.trim(),
     );
 
-    context.read<CreateUserController>().createUserEmailPassword(user: user);
+    context.read<CreateUserViewModel>().createUserEmailPassword(user: user);
   }
 }

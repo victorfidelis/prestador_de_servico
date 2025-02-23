@@ -17,4 +17,9 @@ class ServiceStatus {
       name: name ?? this.name,
     );
   }
+  
+  static List<int> get pendingStatusCodes => [1, 2];
+  static List<int> get acceptStatusCodes => [3, 4, 5];
+  static List<int> get cancellationStatusCodes => [6, 7, 8, 9];
+  static List<int> get servicePerformStatusCodes => [5];
 }

@@ -2,9 +2,9 @@ import 'package:prestador_de_servico/app/models/payment/payment.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
 import 'package:prestador_de_servico/app/repositories/payment/payment_repository.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
 class SyncPaymentService {
   final SyncRepository syncRepository;

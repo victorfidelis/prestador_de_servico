@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/show_all_services_controller.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/show_all_services_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
-import 'package:prestador_de_servico/app/shared/animated_list/custom_sliver_animated_grid.dart';
-import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
+import 'package:prestador_de_servico/app/shared/animated_collections_helpers/sliver_animated_grid_helper.dart';
+import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
@@ -13,7 +13,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/search_text_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
-import 'package:prestador_de_servico/app/states/service/show_all_services_state.dart';
+import 'package:prestador_de_servico/app/views/service/states/show_all_services_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_card.dart';
 import 'package:provider/provider.dart';
 
@@ -37,20 +37,20 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
   late ServicesByCategory servicesByCategory;
   late ServicesByCategory servicesByCategoryInScreen;
   final GlobalKey<SliverAnimatedGridState> _animatedGridKey = GlobalKey<SliverAnimatedGridState>();
-  late CustomSliverAnimatedGrid<Service> _listServicesShowAll;
+  late SliverAnimatedGridHelper<Service> _listServicesShowAll;
   final _scrollController = ScrollController();
   final focusNodeSearchText = FocusNode();
   final _customNotifications = CustomNotifications();
 
   @override
   void initState() {
-    _listServicesShowAll = CustomSliverAnimatedGrid<Service>(
+    _listServicesShowAll = SliverAnimatedGridHelper<Service>(
       gridKey: _animatedGridKey,
       removedItemBuilder: _buildRemovedItem,
       initialItems: [],
     );
-    context.read<ServiceController>().init();
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ServiceController>().load());
+    context.read<ServiceViewModel>().init();
+    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ServiceViewModel>().load());
     super.initState();
   }
 
@@ -101,7 +101,7 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
               ),
             ),
           ),
-          Consumer<ShowAllServicesController>(
+          Consumer<ShowAllServicesViewModel>(
             builder: (context, showAllServicesController, _) {
               if (showAllServicesController.state is! ShowAllServicesLoaded) {
                 return const SliverToBoxAdapter();
@@ -124,9 +124,9 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
               );
             },
           ),
-          Consumer<ShowAllServicesController>(
+          Consumer<ShowAllServicesViewModel>(
             builder: (context, showAllServicesController, _) {
-              if (showAllServicesController.state is ShowAllServicesController) {
+              if (showAllServicesController.state is ShowAllServicesViewModel) {
                 return const SliverFillRemaining();
               }
 
@@ -192,7 +192,7 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
 
   Future<void> _onAddService() async {
     removeFocusOfWidgets();
-    context.read<ServiceEditController>().initInsert(serviceCategory: servicesByCategory.serviceCategory);
+    context.read<ServiceEditViewModel>().initInsert(serviceCategory: servicesByCategory.serviceCategory);
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
     if (result != null) {
       final serviceAdd = result as Service;
@@ -211,7 +211,7 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
 
   Future<void> _onEditService({required Service service}) async {
     removeFocusOfWidgets();
-    context.read<ServiceEditController>().initUpdate(
+    context.read<ServiceEditViewModel>().initUpdate(
           serviceCategory: servicesByCategory.serviceCategory,
           service: service,
         );
@@ -259,7 +259,7 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
   }
 
   void _removeServiceOfDatabase({required Service service}) {
-    context.read<ShowAllServicesController>().delete(service: service);
+    context.read<ShowAllServicesViewModel>().delete(service: service);
   }
 
   Widget _itemBuilder(
@@ -313,11 +313,11 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
   }
 
   void _onFilter(String textValue) {
-    context.read<ShowAllServicesController>().refreshValuesOfState(
+    context.read<ShowAllServicesViewModel>().refreshValuesOfState(
           servicesByCategory: servicesByCategory,
           servicesByCategoryFiltered: servicesByCategoryInScreen,
         );
-    context.read<ShowAllServicesController>().filter(textFilter: textValue);
+    context.read<ShowAllServicesViewModel>().filter(textFilter: textValue);
   }
 
   Future<void> _scrollToEnd() async {

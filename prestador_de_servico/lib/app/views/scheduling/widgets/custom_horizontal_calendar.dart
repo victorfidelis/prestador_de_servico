@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_list.dart';
-import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_horizontal_calendar_card.dart';
 
 class CustomHorizontalCalendar extends StatefulWidget {

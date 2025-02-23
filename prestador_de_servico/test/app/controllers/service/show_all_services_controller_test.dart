@@ -1,20 +1,20 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/service/show_all_services_controller.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/show_all_services_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/service/show_all_services_state.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/views/service/states/show_all_services_state.dart';
 
 import '../../../helpers/image/mock_image_repository.dart';
 import '../../../helpers/service/service/mock_service_repository.dart';
 
 void main() {
-  late ShowAllServicesController showAllServicesController;
+  late ShowAllServicesViewModel showAllServicesController;
 
   late ServiceCategory serviceCategory1;
 
@@ -74,7 +74,7 @@ void main() {
         onlineRepository: onlineMockServiceRepository,
         imageRepository: mockImageRepository,
       );
-      showAllServicesController = ShowAllServicesController(serviceService: serviceService);
+      showAllServicesController = ShowAllServicesViewModel(serviceService: serviceService);
       setUpValues();
       showAllServicesController.init();
     },

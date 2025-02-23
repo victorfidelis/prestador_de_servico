@@ -1,17 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/auth/sign_in_controller.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/sign_in_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/auth/sign_in_state.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/views/auth/states/sign_in_state.dart';
 
 import '../../../helpers/auth/mock_auth_repository.dart';
 import '../../../helpers/user/mock_user_repository.dart';
 
 void main() {
-  late SignInController signInController;
+  late SignInViewModel signInController;
 
   late User user1;
 
@@ -33,7 +33,7 @@ void main() {
         authRepository: mockAuthRepository,
         userRepository: mockUserRepository,
       );
-      signInController = SignInController(authService: authService);
+      signInController = SignInViewModel(authService: authService);
       setUpValues();
     },
   );

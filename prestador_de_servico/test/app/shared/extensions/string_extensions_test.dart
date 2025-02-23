@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prestador_de_servico/app/shared/extensions/string_extensions.dart';
+import 'package:prestador_de_servico/app/shared/utils/extensions/string_extensions.dart';
 
 void main() {
   

@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/payment/payment_controller.dart';
-import 'package:prestador_de_servico/app/controllers/scheduling/days_controller.dart';
-import 'package:prestador_de_servico/app/controllers/scheduling/pending_provider_schedules_controller.dart';
-import 'package:prestador_de_servico/app/controllers/scheduling/service_scheduling_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/show_all_services_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service_day/service_day_controller.dart';
-import 'package:prestador_de_servico/app/controllers/sync/sync_controller.dart';
-import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
-import 'package:prestador_de_servico/app/controllers/auth/sign_in_controller.dart';
-import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
-import 'package:prestador_de_servico/app/controllers/navigation/navigation_controller.dart';
+import 'package:prestador_de_servico/app/views/payment/viewmodels/payment_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/pending_provider_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/scheduling/viewmodels/service_scheduling_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/show_all_services_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/service_day/viewmodels/service_day_viewmodel.dart';
+import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/create_user_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/sign_in_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/password_reset_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_category_edit_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/navigation/viewmodels/navigation_viewmodel.dart';
 import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
 import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/repositories/payment/payment_repository.dart';
@@ -72,33 +72,33 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-        ChangeNotifierProvider<SignInController>(
-          create: (context) => SignInController(
+        ChangeNotifierProvider<SignInViewModel>(
+          create: (context) => SignInViewModel(
             authService: AuthService(
               authRepository: AuthRepository.create(),
               userRepository: UserRepository.create(),
             ),
           ),
         ),
-        ChangeNotifierProvider<CreateUserController>(
-          create: (context) => CreateUserController(
+        ChangeNotifierProvider<CreateUserViewModel>(
+          create: (context) => CreateUserViewModel(
             authService: AuthService(
               authRepository: AuthRepository.create(),
               userRepository: UserRepository.create(),
             ),
           ),
         ),
-        ChangeNotifierProvider<PasswordResetController>(
-          create: (context) => PasswordResetController(
+        ChangeNotifierProvider<PasswordResetViewModel>(
+          create: (context) => PasswordResetViewModel(
             authService: AuthService(
               authRepository: AuthRepository.create(),
               userRepository: UserRepository.create(),
             ),
           ),
         ),
-        ChangeNotifierProvider<NavigationController>(create: (context) => NavigationController()),
-        ChangeNotifierProvider<ServiceController>(
-          create: (context) => ServiceController(
+        ChangeNotifierProvider<NavigationViewModel>(create: (context) => NavigationViewModel()),
+        ChangeNotifierProvider<ServiceViewModel>(
+          create: (context) => ServiceViewModel(
             serviceCategoryService: ServiceCategoryService(
               offlineRepository: ServiceCategoryRepository.createOffline(),
               onlineRepository: ServiceCategoryRepository.createOnline(),
@@ -113,16 +113,16 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-        ChangeNotifierProvider<ServiceCategoryEditController>(
-          create: (context) => ServiceCategoryEditController(
+        ChangeNotifierProvider<ServiceCategoryEditViewModel>(
+          create: (context) => ServiceCategoryEditViewModel(
             serviceCategoryService: ServiceCategoryService(
               onlineRepository: ServiceCategoryRepository.createOnline(),
               offlineRepository: ServiceCategoryRepository.createOffline(),
             ),
           ),
         ),
-        ChangeNotifierProvider<ServiceEditController>(
-          create: (context) => ServiceEditController(
+        ChangeNotifierProvider<ServiceEditViewModel>(
+          create: (context) => ServiceEditViewModel(
             serviceService: ServiceService(
               offlineRepository: ServiceRepository.createOffline(),
               onlineRepository: ServiceRepository.createOnline(),
@@ -131,8 +131,8 @@ class App extends StatelessWidget {
             offlineImageService: OfflineImageService.create(),
           ),
         ),
-        ChangeNotifierProvider<ShowAllServicesController>(
-          create: (context) => ShowAllServicesController(
+        ChangeNotifierProvider<ShowAllServicesViewModel>(
+          create: (context) => ShowAllServicesViewModel(
             serviceService: ServiceService(
               offlineRepository: ServiceRepository.createOffline(),
               onlineRepository: ServiceRepository.createOnline(),
@@ -140,38 +140,38 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-        ChangeNotifierProvider<PaymentController>(
-          create: (context) => PaymentController(
+        ChangeNotifierProvider<PaymentViewModel>(
+          create: (context) => PaymentViewModel(
             paymentService: PaymentService(
               offlineRepository: PaymentRepository.createOffline(),
               onlineRepository: PaymentRepository.createOnline(),
             ),
           ),
         ),
-        ChangeNotifierProvider<ServiceDayController>(
-          create: (context) => ServiceDayController(
+        ChangeNotifierProvider<ServiceDayViewModel>(
+          create: (context) => ServiceDayViewModel(
             serviceDayService: ServiceDayService(
               offlineRepository: ServiceDayRepository.createOffline(),
               onlineRepository: ServiceDayRepository.createOnline(),
             ),
           ),
         ),
-        ChangeNotifierProvider<DaysController>(
-          create: (context) => DaysController(
+        ChangeNotifierProvider<DaysViewModel>(
+          create: (context) => DaysViewModel(
             schedulingService: SchedulingService(
               onlineRepository: SchedulingRepository.createOnline(),
             ),
           ),
         ),
-        ChangeNotifierProvider<ServiceSchedulingController>(
-          create: (context) => ServiceSchedulingController(
+        ChangeNotifierProvider<ServiceSchedulingViewModel>(
+          create: (context) => ServiceSchedulingViewModel(
             schedulingService: SchedulingService(
               onlineRepository: SchedulingRepository.createOnline(),
             ),
           ),
         ),
-        ChangeNotifierProvider<PendingProviderSchedulesController>(
-          create: (context) => PendingProviderSchedulesController(
+        ChangeNotifierProvider<PendingProviderSchedulesViewModel>(
+          create: (context) => PendingProviderSchedulesViewModel(
             schedulingService: SchedulingService(
               onlineRepository: SchedulingRepository.createOnline(),
             ),

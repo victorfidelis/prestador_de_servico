@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/shared/text_input_fomatters/time_text_input_formatter.dart';
+import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/time_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_filed_underline.dart';
 
 class OpeningHoursCard extends StatelessWidget {

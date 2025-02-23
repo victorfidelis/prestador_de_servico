@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/show_all_services_controller.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_category_edit_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/show_all_services_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
-import 'package:prestador_de_servico/app/shared/animated_list/custom_animated_list.dart';
-import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
+import 'package:prestador_de_servico/app/shared/animated_collections_helpers/animated_list_helper.dart';
+import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_card.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +42,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     value: 1.0,
   );
   final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey<AnimatedListState>();
-  late CustomAnimatedList<Service> _listServicesCategoryCard;
+  late AnimatedListHelper<Service> _listServicesCategoryCard;
   final _scrollController = ScrollController();
   final _customNotifications = CustomNotifications();
 
@@ -63,7 +63,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   build(BuildContext context) {
     final hasService = servicesByCategory.services.isNotEmpty;
 
-    _listServicesCategoryCard = CustomAnimatedList<Service>(
+    _listServicesCategoryCard = AnimatedListHelper<Service>(
       listKey: _animatedListKey,
       removedItemBuilder: _buildRemovedItem,
       initialItems: servicesByCategory.services,
@@ -171,7 +171,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   void _onShowAll() {
     final servicesByCategoryToShowAll = servicesByCategory.copyWith(services: List.from(servicesByCategory.services));
-    context.read<ShowAllServicesController>().setServicesByCategory(servicesByCategory: servicesByCategoryToShowAll);
+    context.read<ShowAllServicesViewModel>().setServicesByCategory(servicesByCategory: servicesByCategoryToShowAll);
     Navigator.of(context).pushNamed('/showAllServices', arguments: {
       'removeServiceOfOtherScreen': _removeServiceOfScreen,
       'addServiceOfOtherScreen': _addServiceOfScreenWithoutScrool,
@@ -180,7 +180,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   }
 
   Future<void> _onEdit() async {
-    context.read<ServiceCategoryEditController>().initUpdate(serviceCategory: servicesByCategory.serviceCategory);
+    context.read<ServiceCategoryEditViewModel>().initUpdate(serviceCategory: servicesByCategory.serviceCategory);
     final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
     if (result != null) {
       final serviceCategoryUpdate = result as ServiceCategory;
@@ -191,7 +191,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   Future<void> _onAddService({required ServiceCategory serviceCategory}) async {
     widget.removeFocusOfWidgets();
-    context.read<ServiceEditController>().initInsert(serviceCategory: serviceCategory);
+    context.read<ServiceEditViewModel>().initInsert(serviceCategory: serviceCategory);
     final result = await Navigator.of(context).pushNamed('/serviceEdit');
     if (result != null) {
       _addServiceOfScreen(service: result as Service);
@@ -233,7 +233,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     required Service service,
   }) async {
     widget.removeFocusOfWidgets();
-    context.read<ServiceEditController>().initUpdate(
+    context.read<ServiceEditViewModel>().initUpdate(
           serviceCategory: serviceCategory,
           service: service,
         );
@@ -257,7 +257,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       title: 'Excluir serviço',
       content: 'Tem certeza que deseja excluir serviço?',
       confirmCallback: () {
-        context.read<ServiceController>().deleteService(service: service);
+        context.read<ServiceViewModel>().deleteService(service: service);
         _removeServiceOfDatabase(service: service);
         _removeServiceOfScreen(service: service);
       },
@@ -280,7 +280,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   }
 
   void _removeServiceOfDatabase({required Service service}) {
-    context.read<ServiceController>().deleteService(service: service);
+    context.read<ServiceViewModel>().deleteService(service: service);
   }
 
   Future<void> _changeCategory(ServiceCategory serviceCategory) async {

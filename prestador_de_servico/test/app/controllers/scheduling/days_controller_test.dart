@@ -1,19 +1,19 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/scheduling/days_controller.dart';
+import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/service_scheduling/days_state.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/views/scheduling/states/days_state.dart';
 
 import '../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
 
 void main() {
-  late DaysController daysController;
+  late DaysViewModel daysController;
 
   void setUpValues() {
-    daysController = DaysController(
+    daysController = DaysViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
       ),

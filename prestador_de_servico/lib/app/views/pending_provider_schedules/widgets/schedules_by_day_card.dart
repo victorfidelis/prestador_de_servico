@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
-import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_service_scheduling_card.dart';
 
 class SchedulesByDayCard extends StatefulWidget {

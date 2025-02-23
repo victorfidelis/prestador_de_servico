@@ -3,7 +3,7 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'mock_sync_repository.mocks.dart';
 
 @GenerateNiceMocks([MockSpec<SyncRepository>()])

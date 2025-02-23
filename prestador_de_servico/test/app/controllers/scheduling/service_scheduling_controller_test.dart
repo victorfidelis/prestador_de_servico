@@ -1,20 +1,20 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/scheduling/service_scheduling_controller.dart';
+import 'package:prestador_de_servico/app/views/scheduling/viewmodels/service_scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/service_scheduling/service_scheduling_state.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/views/scheduling/states/service_scheduling_state.dart';
 
 import '../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
 
 void main() {
   
-  late ServiceSchedulingController serviceSchedulingController;
+  late ServiceSchedulingViewModel serviceSchedulingController;
 
   void setUpValues() {
-    serviceSchedulingController = ServiceSchedulingController(
+    serviceSchedulingController = ServiceSchedulingViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
       ),

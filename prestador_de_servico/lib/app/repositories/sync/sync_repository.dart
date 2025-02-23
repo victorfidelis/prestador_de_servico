@@ -1,7 +1,7 @@
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sqflite_sync_repository.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
 abstract class SyncRepository {
 

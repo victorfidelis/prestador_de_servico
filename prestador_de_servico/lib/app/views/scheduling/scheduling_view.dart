@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/scheduling/days_controller.dart';
-import 'package:prestador_de_servico/app/controllers/scheduling/service_scheduling_controller.dart';
-import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/scheduling/viewmodels/service_scheduling_viewmodel.dart';
+import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
-import 'package:prestador_de_servico/app/states/service_scheduling/days_state.dart';
-import 'package:prestador_de_servico/app/states/service_scheduling/service_scheduling_state.dart';
+import 'package:prestador_de_servico/app/views/scheduling/states/days_state.dart';
+import 'package:prestador_de_servico/app/views/scheduling/states/service_scheduling_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_horizontal_calendar.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_menu_calendar_type.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_month_calendar.dart';
@@ -27,7 +27,7 @@ class _SchedulingViewState extends State<SchedulingView> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DaysController>().load();
+      context.read<DaysViewModel>().load();
       _loadToday();
     });
     super.initState();
@@ -64,7 +64,7 @@ class _SchedulingViewState extends State<SchedulingView> {
             ],
           ),
           const SizedBox(height: 10),
-          Consumer<DaysController>(
+          Consumer<DaysViewModel>(
             builder: (context, daysController, _) {
               if (daysController.state is DaysInitial) {
                 return Container();
@@ -133,7 +133,7 @@ class _SchedulingViewState extends State<SchedulingView> {
             ),
           ),
           const SizedBox(height: 6),
-          Consumer<ServiceSchedulingController>(
+          Consumer<ServiceSchedulingViewModel>(
             builder: (context, serviceSchedulingController, _) {
               if (serviceSchedulingController.state is ServiceSchedulingInitial) {
                 return Container();
@@ -182,12 +182,12 @@ class _SchedulingViewState extends State<SchedulingView> {
   void _loadToday() {
     final actualDateTime = DateTime.now();
     selectedDay.value = DateTime(actualDateTime.year, actualDateTime.month, actualDateTime.day);
-    context.read<ServiceSchedulingController>().load(dateTime: selectedDay.value);
+    context.read<ServiceSchedulingViewModel>().load(dateTime: selectedDay.value);
   }
 
   void _onChangeSelectedDay(DateTime date) {
     selectedDay.value = date;
-    context.read<ServiceSchedulingController>().load(dateTime: selectedDay.value);
-    context.read<DaysController>().changeSelectedDay(date);
+    context.read<ServiceSchedulingViewModel>().load(dateTime: selectedDay.value);
+    context.read<DaysViewModel>().changeSelectedDay(date);
   }
 }

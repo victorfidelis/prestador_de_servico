@@ -16,8 +16,8 @@ class ServiceScheduling {
   double totalPaid;
   bool schedulingUnavailable;
   bool conflictScheduing;
+  bool isPaid;
 
-  bool get isPaid => (totalPrice + totalRate - totalDiscount - totalPaid) <= 0;
   double get needToPay => totalPrice + totalRate - totalDiscount - totalPaid;
   double get totalPriceToPay => totalPrice + totalRate - totalDiscount;
 
@@ -34,6 +34,7 @@ class ServiceScheduling {
     required this.totalPaid,
     this.schedulingUnavailable = false,
     this.conflictScheduing = false,
+    this.isPaid = false,
   });
 
   ServiceScheduling copyWith({

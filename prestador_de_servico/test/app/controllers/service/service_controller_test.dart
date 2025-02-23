@@ -1,15 +1,15 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/services/service/services_by_category_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/service/service_state.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/views/service/states/service_state.dart';
 
 import '../../../helpers/image/mock_image_repository.dart';
 import '../../../helpers/service/service/mock_service_repository.dart';
@@ -17,7 +17,7 @@ import '../../../helpers/service/service_category/mock_service_category_reposito
 import '../../../helpers/service/services_by_category/mock_services_by_category_repository.dart';
 
 void main() {
-  late ServiceController serviceController;
+  late ServiceViewModel serviceController;
 
   late ServiceCategory serviceCategory1;
   late ServiceCategory serviceCategory2;
@@ -132,7 +132,7 @@ void main() {
       final servicesByCategoryService = ServicesByCategoryService(
         offlineRepository: offlineMockServicesByCategoryRepository,
       );
-      serviceController = ServiceController(
+      serviceController = ServiceViewModel(
         serviceCategoryService: serviceCategoryService,
         serviceService: serviceService,
         servicesByCategoryService: servicesByCategoryService,

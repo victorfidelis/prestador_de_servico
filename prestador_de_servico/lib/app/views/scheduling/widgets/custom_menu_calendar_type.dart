@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/scheduling/days_controller.dart';
-import 'package:prestador_de_servico/app/states/service_scheduling/days_state.dart';
+import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/scheduling/states/days_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_type_calendar.dart';
 import 'package:provider/provider.dart';
 
@@ -29,7 +29,7 @@ class CustomMenuCalendarType extends StatelessWidget {
         CustomTypeCalendar(
           onPressed: () {
             _menuController.close();
-            context.read<DaysController>().changeTypeView(TypeView.main);
+            context.read<DaysViewModel>().changeTypeView(TypeView.main);
           },
           iconData: Icons.view_agenda_outlined,
           label: 'Principal',
@@ -37,7 +37,7 @@ class CustomMenuCalendarType extends StatelessWidget {
         CustomTypeCalendar(
           onPressed: () {
             _menuController.close();
-            context.read<DaysController>().changeTypeView(TypeView.mount);
+            context.read<DaysViewModel>().changeTypeView(TypeView.mount);
           },
           iconData: Icons.calendar_month,
           label: 'Mês',

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
-import 'package:prestador_de_servico/app/shared/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 
 class CustomServiceSchedulingCard extends StatelessWidget {
   final ServiceScheduling serviceScheduling;

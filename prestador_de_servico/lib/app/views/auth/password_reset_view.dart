@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/password_reset_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_sign_in_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/states/auth/password_reset_state.dart';
+import 'package:prestador_de_servico/app/views/auth/states/password_reset_state.dart';
 import 'package:provider/provider.dart';
 
 class PasswordResetView extends StatefulWidget {
@@ -46,7 +46,7 @@ class _PasswordResetViewState extends State<PasswordResetView> {
                 const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 38),
-                  child: Consumer<PasswordResetController>(
+                  child: Consumer<PasswordResetViewModel>(
                       builder: (context, passwordResetController, _) {
                     String? emailMessage;
 
@@ -110,7 +110,7 @@ class _PasswordResetViewState extends State<PasswordResetView> {
   }
 
   void sendPasswordResetEmail() {
-    context.read<PasswordResetController>().sendPasswordResetEmail(
+    context.read<PasswordResetViewModel>().sendPasswordResetEmail(
           email: _emailController.text.trim().toLowerCase(),
         );
   }

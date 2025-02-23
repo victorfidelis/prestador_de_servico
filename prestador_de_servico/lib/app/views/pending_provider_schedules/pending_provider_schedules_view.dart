@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/scheduling/pending_provider_schedules_controller.dart';
+import 'package:prestador_de_servico/app/views/pending_provider_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
-import 'package:prestador_de_servico/app/states/service_scheduling/pending_provider_schedules_state.dart';
+import 'package:prestador_de_servico/app/views/pending_provider_schedules/states/pending_provider_schedules_state.dart';
 import 'package:prestador_de_servico/app/views/pending_provider_schedules/widgets/schedules_by_day_card.dart';
 import 'package:provider/provider.dart';
 
@@ -20,7 +20,7 @@ class _PendingProviderSchedulesViewState extends State<PendingProviderSchedulesV
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PendingProviderSchedulesController>().load();
+      context.read<PendingProviderSchedulesViewModel>().load();
     });
     super.initState();
   }
@@ -60,7 +60,7 @@ class _PendingProviderSchedulesViewState extends State<PendingProviderSchedulesV
               ),
             ),
           ),
-          Consumer<PendingProviderSchedulesController>(
+          Consumer<PendingProviderSchedulesViewModel>(
             builder: (context, pendingProviderController, _) {
               
               if (pendingProviderController.state is PendingProviderInitial) {

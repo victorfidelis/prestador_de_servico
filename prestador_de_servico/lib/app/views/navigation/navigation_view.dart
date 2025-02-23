@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/navigation/navigation_controller.dart';
-import 'package:prestador_de_servico/app/states/navigation/navigation_state.dart';
+import 'package:prestador_de_servico/app/views/navigation/viewmodels/navigation_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/navigation/states/navigation_state.dart';
 import 'package:prestador_de_servico/app/views/agenda/agenda_view.dart';
 import 'package:prestador_de_servico/app/views/home/home_view.dart';
 import 'package:prestador_de_servico/app/views/menu/menu_view.dart';
@@ -26,7 +26,7 @@ class NavigationView extends StatelessWidget {
         ],
       ),
       bottomNavigationBar:
-          Consumer<NavigationController>(builder: (context, navigationController, _) {
+          Consumer<NavigationViewModel>(builder: (context, navigationController, _) {
           
         return BottomAppBar(
           color: Theme.of(context).colorScheme.secondary,

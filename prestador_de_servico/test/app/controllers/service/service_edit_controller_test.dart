@@ -2,20 +2,20 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/service/service_edit_state.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/views/service/states/service_edit_state.dart';
 
 import '../../../helpers/image/mock_image_repository.dart';
 import '../../../helpers/offline_image/mock_offline_image_service.dart';
 import '../../../helpers/service/service/mock_service_repository.dart';
 
 void main() {
-  late ServiceEditController serviceEditController;
+  late ServiceEditViewModel serviceEditController;
 
   late ServiceCategory serviceCategory1;
 
@@ -80,7 +80,7 @@ void main() {
 
       setUpMockOfflineImageService();
 
-      serviceEditController = ServiceEditController(
+      serviceEditController = ServiceEditViewModel(
         serviceService: serviceService,
         offlineImageService: mockOfflineImageService,
       );

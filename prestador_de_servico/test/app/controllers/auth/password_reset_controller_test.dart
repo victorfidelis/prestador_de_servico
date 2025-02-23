@@ -1,17 +1,17 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/password_reset_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/auth/password_reset_state.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/views/auth/states/password_reset_state.dart';
 
 import '../../../helpers/auth/mock_auth_repository.dart';
 import '../../../helpers/user/mock_user_repository.dart';
 
 void main() {
-  late PasswordResetController passwordResetController;
+  late PasswordResetViewModel passwordResetController;
 
   late User user1;
 
@@ -31,7 +31,7 @@ void main() {
         authRepository: mockAuthRepository,
         userRepository: mockUserRepository,
       );
-      passwordResetController = PasswordResetController(authService: authService);
+      passwordResetController = PasswordResetViewModel(authService: authService);
       setUpValues();
     },
   );

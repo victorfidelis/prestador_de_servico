@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/auth/create_user_controller.dart';
-import 'package:prestador_de_servico/app/controllers/auth/password_reset_controller.dart';
-import 'package:prestador_de_servico/app/controllers/auth/sign_in_controller.dart';
-import 'package:prestador_de_servico/app/controllers/sync/sync_controller.dart';
-import 'package:prestador_de_servico/app/states/auth/sign_in_state.dart';
-import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/create_user_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/password_reset_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/sign_in_viewmodel.dart';
+import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/auth/states/sign_in_state.dart';
+import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/sign_in_google_button.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/custom_sign_in_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
@@ -58,7 +58,7 @@ class _SignInViewState extends State<SignInView> {
                 Container(
                   height: 500,
                   padding: const EdgeInsets.symmetric(horizontal: 38),
-                  child: Consumer<SignInController>(builder: (context, signInController, _) {
+                  child: Consumer<SignInViewModel>(builder: (context, signInController, _) {
                     if (signInController.state is LoadingSignIn) {
                       return const Center(
                         child: CustomLoading(),
@@ -147,19 +147,19 @@ class _SignInViewState extends State<SignInView> {
   }
 
   void signInEmailPassword() {
-    context.read<SignInController>().signInEmailPassword(
+    context.read<SignInViewModel>().signInEmailPassword(
           email: _emailController.text.trim(),
           password: _passwordController.text.trim(),
         );
   }
 
   void doCreateAccount() {
-    context.read<CreateUserController>().init();
+    context.read<CreateUserViewModel>().init();
     Navigator.pushNamed(context, '/createAccount');
   }
 
   void doPasswordReset() {
-    context.read<PasswordResetController>().init();
+    context.read<PasswordResetViewModel>().init();
     Navigator.pushNamed(context, '/passwordReset');
   }
 

@@ -27,6 +27,7 @@ class ServiceSchedulingAdapter {
       totalDiscount: (map['totalDiscount'] * 1.0),
       totalPrice: (map['totalPrice'] * 1.0),
       totalPaid: (map['totalPaid'] * 1.0),
+      isPaid: map['isPaid'],
     );
   }
 }

@@ -3,11 +3,12 @@ import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.da
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_adapter.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling_adapter.dart';
+import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
 class FirebaseSchedulingRepository implements SchedulingRepository {
   final _firebaseInitializer = FirebaseInitializer();
@@ -95,6 +96,31 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     try {
       final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
       QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection.where('serviceStatusCode', isEqualTo: 1).get();
+      List<ServiceScheduling> serviceSchedules =
+          snapServiceSchedules.docs.map((doc) => ServiceSchedulingAdapter.fromDocumentSnapshot(doc: doc)).toList();
+      return Either.right(serviceSchedules);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
+  }
+  
+  @override
+  Future<Either<Failure, List<ServiceScheduling>>> getPendingPaymentSchedules() async{
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    try {
+      final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
+      QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection
+      .where('serviceStatusCode', whereIn: ServiceStatus.servicePerformStatusCodes)
+      .where('isPaid', isEqualTo: false)
+      .get();
       List<ServiceScheduling> serviceSchedules =
           snapServiceSchedules.docs.map((doc) => ServiceSchedulingAdapter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(serviceSchedules);

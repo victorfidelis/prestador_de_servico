@@ -1,13 +1,13 @@
 
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/service_day/service_day_controller.dart';
+import 'package:prestador_de_servico/app/views/service_day/viewmodels/service_day_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
-import 'package:prestador_de_servico/app/states/service_day/service_day_state.dart';
+import 'package:prestador_de_servico/app/views/service_day/states/service_day_state.dart';
 import 'package:prestador_de_servico/app/views/service_day/widgets/custom_service_day_card.dart';
 import 'package:provider/provider.dart';
 
@@ -22,7 +22,7 @@ class _ServiceDayViewState extends State<ServiceDayView> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ServiceDayController>().load());
+    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ServiceDayViewModel>().load());
     super.initState();
   }
 
@@ -58,7 +58,7 @@ class _ServiceDayViewState extends State<ServiceDayView> {
               ),
             ),
           ),
-          Consumer<ServiceDayController>(
+          Consumer<ServiceDayViewModel>(
             builder: (context, serviceDayController, _) {
               if (serviceDayController.state is ServiceDayInitial) {
                 return const SliverFillRemaining();
@@ -118,6 +118,6 @@ class _ServiceDayViewState extends State<ServiceDayView> {
   }
 
   void _changeStateOfServiceDay({required ServiceDay serviceDay}) {
-    context.read<ServiceDayController>().update(serviceDay: serviceDay);
+    context.read<ServiceDayViewModel>().update(serviceDay: serviceDay);
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_controller.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_category_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
-import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
+import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
@@ -11,10 +11,10 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/search_text_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
-import 'package:prestador_de_servico/app/states/service/service_state.dart';
+import 'package:prestador_de_servico/app/views/service/states/service_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_category_card.dart';
 import 'package:provider/provider.dart';
-import 'package:prestador_de_servico/app/shared/animated_list/custom_sliver_animated_list.dart';
+import 'package:prestador_de_servico/app/shared/animated_collections_helpers/sliver_animated_list_helper.dart';
 
 class ServiceView extends StatefulWidget {
   const ServiceView({super.key});
@@ -28,19 +28,19 @@ class _ServiceViewState extends State<ServiceView> {
   late List<ServicesByCategory> servicesByCategoriesInScreen;
   final CustomNotifications _notifications = CustomNotifications();
   final GlobalKey<SliverAnimatedListState> _animatedListKey = GlobalKey<SliverAnimatedListState>();
-  late CustomSliverAnimatedList<ServicesByCategory> _listServicesByCategories;
+  late SliverAnimatedListHelper<ServicesByCategory> _listServicesByCategories;
   final _scrollController = ScrollController();
   final focusNodeSearchText = FocusNode();
 
   @override
   void initState() {
-    _listServicesByCategories = CustomSliverAnimatedList<ServicesByCategory>(
+    _listServicesByCategories = SliverAnimatedListHelper<ServicesByCategory>(
       listKey: _animatedListKey,
       removedItemBuilder: _buildRemovedItem,
       initialItems: [],
     );
-    context.read<ServiceController>().init();
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ServiceController>().load());
+    context.read<ServiceViewModel>().init();
+    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ServiceViewModel>().load());
     super.initState();
   }
 
@@ -91,7 +91,7 @@ class _ServiceViewState extends State<ServiceView> {
               ),
             ),
           ),
-          Consumer<ServiceController>(
+          Consumer<ServiceViewModel>(
             builder: (context, serviceCategoryController, _) {
               if (serviceCategoryController.state is ServiceInitial) {
                 return const SliverFillRemaining();
@@ -199,7 +199,7 @@ class _ServiceViewState extends State<ServiceView> {
   }
 
   Future<void> _onAddServiceCategory() async {
-    context.read<ServiceCategoryEditController>().initInsert();
+    context.read<ServiceCategoryEditViewModel>().initInsert();
     final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
     if (result != null) {
       _addServiceCategoryInScreen(serviceCategory: result as ServiceCategory);
@@ -250,15 +250,15 @@ class _ServiceViewState extends State<ServiceView> {
   }
 
   void _removeServiceCategoryOfDatabase({required ServiceCategory serviceCategory}) {
-    context.read<ServiceController>().deleteCategory(serviceCategory: serviceCategory);
+    context.read<ServiceViewModel>().deleteCategory(serviceCategory: serviceCategory);
   }
 
   void _onFilter(String textValue) {
-    context.read<ServiceController>().refreshValuesOfState(
+    context.read<ServiceViewModel>().refreshValuesOfState(
           servicesByCategories: servicesByCategories,
           servicesByCategoriesFiltered: servicesByCategoriesInScreen,
         );
-    context.read<ServiceController>().filter(textFilter: textValue);
+    context.read<ServiceViewModel>().filter(textFilter: textValue);
   }
 
   Future<void> _scrollToEnd() async {

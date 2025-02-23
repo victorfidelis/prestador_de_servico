@@ -1,7 +1,7 @@
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/repositories/service/services_by_category/services_by_category_repository.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
 class ServicesByCategoryService {
   final ServicesByCategoryRepository offlineRepository;

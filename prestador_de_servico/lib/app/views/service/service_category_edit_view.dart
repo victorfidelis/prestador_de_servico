@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_category_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
@@ -9,7 +9,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/states/service/service_category_edit_state.dart';
+import 'package:prestador_de_servico/app/views/service/states/service_category_edit_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/custom_text_name.dart';
 import 'package:provider/provider.dart';
 
@@ -28,10 +28,10 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
 
   @override
   void initState() {
-    isUpdate = (context.read<ServiceCategoryEditController>().state is ServiceCategoryEditUpdate);
+    isUpdate = (context.read<ServiceCategoryEditViewModel>().state is ServiceCategoryEditUpdate);
     if (isUpdate) {
       serviceCategory =
-          (context.read<ServiceCategoryEditController>().state as ServiceCategoryEditUpdate).serviceCategory;
+          (context.read<ServiceCategoryEditViewModel>().state as ServiceCategoryEditUpdate).serviceCategory;
       nameController.text = serviceCategory!.name;
     }
     super.initState();
@@ -55,7 +55,7 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
               ),
             ),
           ),
-          Consumer<ServiceCategoryEditController>(builder: (context, serviceCategoryEditController, _) {
+          Consumer<ServiceCategoryEditViewModel>(builder: (context, serviceCategoryEditController, _) {
             if (serviceCategoryEditController.state is ServiceCategoryEditSuccess) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 ServiceCategory serviceCategory =
@@ -118,7 +118,7 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
         ],
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Consumer<ServiceCategoryEditController>(
+      floatingActionButton: Consumer<ServiceCategoryEditViewModel>(
         builder: (context, serviceCategoryEditController, _) {
           if (serviceCategoryEditController.state is ServiceCategoryEditLoading ||
               serviceCategoryEditController.state is ServiceCategoryEditSuccess) {
@@ -147,9 +147,9 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
     );
 
     if (isUpdate) {
-      context.read<ServiceCategoryEditController>().validateAndUpdate(serviceCategory: serviceCategoryEdit);
+      context.read<ServiceCategoryEditViewModel>().validateAndUpdate(serviceCategory: serviceCategoryEdit);
     } else {
-      context.read<ServiceCategoryEditController>().validateAndInsert(serviceCategory: serviceCategoryEdit);
+      context.read<ServiceCategoryEditViewModel>().validateAndInsert(serviceCategory: serviceCategoryEdit);
     }
   }
 }

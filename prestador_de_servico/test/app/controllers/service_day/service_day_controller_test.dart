@@ -1,17 +1,17 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/service_day/service_day_controller.dart';
+import 'package:prestador_de_servico/app/views/service_day/viewmodels/service_day_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
 import 'package:prestador_de_servico/app/services/service_day/service_day_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/service_day/service_day_state.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/views/service_day/states/service_day_state.dart';
 
 import '../../../helpers/service_day/mock_service_day_repository.dart';
 
 void main() {
-  late ServiceDayController serviceDayController;
+  late ServiceDayViewModel serviceDayController;
 
   late ServiceDay serviceDay1;
   late ServiceDay serviceDay2;
@@ -114,7 +114,7 @@ void main() {
         offlineRepository: offlineMockServiceDayRepository,
         onlineRepository: onlineMockServiceDayRepository,
       );
-      serviceDayController = ServiceDayController(serviceDayService: serviceDayService);
+      serviceDayController = ServiceDayViewModel(serviceDayService: serviceDayService);
       setUpValues();
     },
   );

@@ -1,12 +1,12 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_edit_controller.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-import 'package:prestador_de_servico/app/shared/text_input_fomatters/hours_text_input_formatter.dart';
-import 'package:prestador_de_servico/app/shared/text_input_fomatters/minutes_text_input_formatter.dart';
-import 'package:prestador_de_servico/app/shared/text_input_fomatters/money_text_input_formatter.dart';
-import 'package:prestador_de_servico/app/shared/notifications/custom_notifications.dart';
+import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/hours_text_input_formatter.dart';
+import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/minutes_text_input_formatter.dart';
+import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
+import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
@@ -16,7 +16,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/states/service/service_edit_state.dart';
+import 'package:prestador_de_servico/app/views/service/states/service_edit_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/custom_text_name.dart';
 import 'package:provider/provider.dart';
 
@@ -49,14 +49,14 @@ class _ServiceEditViewState extends State<ServiceEditView> {
 
   @override
   void initState() {
-    isUpdate = (context.read<ServiceEditController>().state is ServiceEditUpdate);
+    isUpdate = (context.read<ServiceEditViewModel>().state is ServiceEditUpdate);
     if (isUpdate) {
-      final updateState = (context.read<ServiceEditController>().state as ServiceEditUpdate);
+      final updateState = (context.read<ServiceEditViewModel>().state as ServiceEditUpdate);
       serviceCategory = updateState.serviceCategory;
       service = updateState.service;
       _loadFieldsWithService(service: service!);
     } else {
-      final insertState = (context.read<ServiceEditController>().state as ServiceEditAdd);
+      final insertState = (context.read<ServiceEditViewModel>().state as ServiceEditAdd);
       serviceCategory = insertState.serviceCategory;
     }
     super.initState();
@@ -82,7 +82,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                 ),
               ),
             ),
-            Consumer<ServiceEditController>(builder: (context, serviceEditController, _) {
+            Consumer<ServiceEditViewModel>(builder: (context, serviceEditController, _) {
               if (serviceEditController.state is ServiceEditSuccess) {
                 WidgetsBinding.instance.addPostFrameCallback(
                   (_) {
@@ -215,7 +215,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Consumer<ServiceEditController>(
+      floatingActionButton: Consumer<ServiceEditViewModel>(
         builder: (context, serviceEditController, _) {
           if (serviceEditController.state is ServiceEditLoading || serviceEditController.state is ServiceEditSuccess) {
             return Container();
@@ -259,9 +259,9 @@ class _ServiceEditViewState extends State<ServiceEditView> {
     Service serviceEdit = _createServiceObject();
 
     if (isUpdate) {
-      context.read<ServiceEditController>().validateAndUpdate(service: serviceEdit);
+      context.read<ServiceEditViewModel>().validateAndUpdate(service: serviceEdit);
     } else {
-      context.read<ServiceEditController>().validateAndInsert(service: serviceEdit);
+      context.read<ServiceEditViewModel>().validateAndInsert(service: serviceEdit);
     }
   } 
 
@@ -304,6 +304,6 @@ class _ServiceEditViewState extends State<ServiceEditView> {
   }
 
   void onSelectImage() {
-    context.read<ServiceEditController>().pickImageFromGallery();
+    context.read<ServiceEditViewModel>().pickImageFromGallery();
   }
 }

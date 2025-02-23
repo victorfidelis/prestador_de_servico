@@ -1,21 +1,21 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/scheduling/pending_provider_schedules_controller.dart';
+import 'package:prestador_de_servico/app/views/pending_provider_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/service_scheduling/pending_provider_schedules_state.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/views/pending_provider_schedules/states/pending_provider_schedules_state.dart';
 
 import '../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
 
 void main() {
   
-  late PendingProviderSchedulesController pendingProviderSchedulesController;
+  late PendingProviderSchedulesViewModel pendingProviderSchedulesController;
 
   void setUpValues() {
-    pendingProviderSchedulesController = PendingProviderSchedulesController(
+    pendingProviderSchedulesController = PendingProviderSchedulesViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
       ),

@@ -1,9 +1,9 @@
 import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
 import 'package:prestador_de_servico/app/repositories/service_day/service_day_repository.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/shared/network/network_helpers.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/network/network_helpers.dart';
 
 class ServiceDayService {
   ServiceDayRepository offlineRepository;

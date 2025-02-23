@@ -1,16 +1,16 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/controllers/service/service_category_edit_controller.dart';
+import 'package:prestador_de_servico/app/views/service/viewmodels/service_category_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
-import 'package:prestador_de_servico/app/states/service/service_category_edit_state.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/views/service/states/service_category_edit_state.dart';
 
 import '../../../helpers/service/service_category/mock_service_category_repository.dart';
 
 void main() {
-  late ServiceCategoryEditController serviceCategoryEditController;
+  late ServiceCategoryEditViewModel serviceCategoryEditController;
 
   late ServiceCategory serviceCategory1;
   late ServiceCategory serviceCategoryWithoutName;
@@ -28,7 +28,7 @@ void main() {
         offlineRepository: offlineMockServiceCategoryRepository,
       );
 
-      serviceCategoryEditController = ServiceCategoryEditController(
+      serviceCategoryEditController = ServiceCategoryEditViewModel(
         serviceCategoryService: serviceCategoryService,
       );
       setUpValues();

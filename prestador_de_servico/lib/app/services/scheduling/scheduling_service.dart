@@ -3,9 +3,9 @@ import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.da
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
 class SchedulingService {
   final SchedulingRepository onlineRepository;
@@ -162,6 +162,15 @@ class SchedulingService {
     }
 
     return Either.right(groupSchedulesByDay(pendingProviderEither.right!));
+  }
+
+  Future<Either<Failure, List<SchedulesByDay>>> getPendingPaymentSchedules() async {
+    final pendingPaymentEither = await onlineRepository.getPendingPaymentSchedules();
+    if (pendingPaymentEither.isLeft) {
+      return Either.left(pendingPaymentEither.left);
+    }
+
+    return Either.right(groupSchedulesByDay(pendingPaymentEither.right!));
   }
 
   List<SchedulesByDay> groupSchedulesByDay(List<ServiceScheduling> serviceSchedules) {

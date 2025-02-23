@@ -4,9 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
-import 'package:prestador_de_servico/app/shared/either/either.dart';
-import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
 import '../../../helpers/image/mock_image_repository.dart';
 import '../../../helpers/service/service/mock_service_repository.dart';
