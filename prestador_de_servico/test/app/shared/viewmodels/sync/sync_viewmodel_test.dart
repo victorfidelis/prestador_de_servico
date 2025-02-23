@@ -7,17 +7,17 @@ import 'package:prestador_de_servico/app/services/sync/sync_service_day_service.
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
-import 'package:prestador_de_servico/app/shared/sync/sync_state.dart';
+import 'package:prestador_de_servico/app/shared/states/sync/sync_state.dart';
 
-import '../../../helpers/network/mock_network_service.dart';
-import '../../../helpers/payment/mock_payment_repository.dart';
-import '../../../helpers/service/service/mock_service_repository.dart';
-import '../../../helpers/service/service_category/mock_service_category_repository.dart';
-import '../../../helpers/service_day/mock_service_day_repository.dart';
-import '../../../helpers/sync/mock_sync_repository.dart';
+import '../../../../helpers/network/mock_network_service.dart';
+import '../../../../helpers/payment/mock_payment_repository.dart';
+import '../../../../helpers/service/service/mock_service_repository.dart';
+import '../../../../helpers/service/service_category/mock_service_category_repository.dart';
+import '../../../../helpers/service_day/mock_service_day_repository.dart';
+import '../../../../helpers/sync/mock_sync_repository.dart';
 
 void main() {
-  late SyncController syncController;
+  late SyncViewModel syncViewModel;
 
   late SyncServiceCategoryService syncServiceCategoryService;
   late SyncServiceService syncServiceService;
@@ -45,7 +45,7 @@ void main() {
       offlineRepository: offlineMockServiceDayRepository,
       onlineRepository: onlineMockServiceDayRepository,
     );
-    syncController = SyncController(
+    syncViewModel = SyncViewModel(
       networkService: mockNetworkService,
       syncServiceCategoryService: syncServiceCategoryService,
       syncServiceService: syncServiceService,
@@ -75,9 +75,9 @@ void main() {
           const failureMessage = 'Falha loadSyncInfo';
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          syncController.syncData();
+          syncViewModel.syncData();
 
-          expect(syncController.state is Syncing, isTrue);
+          expect(syncViewModel.state is Syncing, isTrue);
         },
       );
 
@@ -88,11 +88,11 @@ void main() {
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
           when(mockNetworkService.isConnectedToInternet()).thenAnswer((_) async => true);
 
-          syncController.syncData();
+          syncViewModel.syncData();
 
           await Future.delayed(const Duration(seconds: 2));
 
-          expect(syncController.state is SyncError, isTrue);
+          expect(syncViewModel.state is SyncError, isTrue);
         },
       );
 
@@ -103,11 +103,11 @@ void main() {
           when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(Failure(failureMessage)));
           when(mockNetworkService.isConnectedToInternet()).thenAnswer((_) async => false);
 
-          syncController.syncData();
+          syncViewModel.syncData();
 
           await Future.delayed(const Duration(seconds: 2));
 
-          expect(syncController.state is NoNetworkToSync, isTrue);
+          expect(syncViewModel.state is NoNetworkToSync, isTrue);
         },
       );
     },

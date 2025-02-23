@@ -64,11 +64,11 @@ class _CreateUserViewState extends State<CreateUserView> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 38),
                   child: Consumer<CreateUserViewModel>(
-                      builder: (context, createAccountController, _) {
+                      builder: (context, createAccountViewModel, _) {
                     bool createUserLoading =
-                        createAccountController.state is LoadingUserCreation;
+                        createAccountViewModel.state is LoadingUserCreation;
 
-                    if (createAccountController.state is UserCreated) {
+                    if (createAccountViewModel.state is UserCreated) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         Navigator.pop(context);
                         _notifications.showSuccessAlert(
@@ -89,9 +89,9 @@ class _CreateUserViewState extends State<CreateUserView> {
                     String? confirmPasswordMessage;
                     String? genericMessage;
 
-                    if (createAccountController.state is ErrorUserCreation) {
+                    if (createAccountViewModel.state is ErrorUserCreation) {
                       final errorState =
-                          (createAccountController.state as ErrorUserCreation);
+                          (createAccountViewModel.state as ErrorUserCreation);
                       nameMessage = errorState.nameMessage;
                       surnameMessage = errorState.surnameMessage;
                       phoneMessage = errorState.phoneMessage;

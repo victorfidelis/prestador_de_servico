@@ -8,10 +8,10 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/service_day/states/service_day_state.dart';
 
-import '../../../helpers/service_day/mock_service_day_repository.dart';
+import '../../../../helpers/service_day/mock_service_day_repository.dart';
 
 void main() {
-  late ServiceDayViewModel serviceDayController;
+  late ServiceDayViewModel serviceDayViewModel;
 
   late ServiceDay serviceDay1;
   late ServiceDay serviceDay2;
@@ -114,7 +114,7 @@ void main() {
         offlineRepository: offlineMockServiceDayRepository,
         onlineRepository: onlineMockServiceDayRepository,
       );
-      serviceDayController = ServiceDayViewModel(serviceDayService: serviceDayService);
+      serviceDayViewModel = ServiceDayViewModel(serviceDayService: serviceDayService);
       setUpValues();
     },
   );
@@ -131,10 +131,10 @@ void main() {
           when(offlineMockServiceDayRepository.getAll())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          await serviceDayController.load();
+          await serviceDayViewModel.load();
 
-          expect(serviceDayController.state is ServiceDayError, isTrue);
-          final state = serviceDayController.state as ServiceDayError;
+          expect(serviceDayViewModel.state is ServiceDayError, isTrue);
+          final state = serviceDayViewModel.state as ServiceDayError;
           expect(state.message, equals(failureMessage));
         },
       );
@@ -148,10 +148,10 @@ void main() {
           when(offlineMockServiceDayRepository.getAll())
               .thenAnswer((_) async => Either.right(serviceDays));
 
-          await serviceDayController.load();
+          await serviceDayViewModel.load();
 
-          expect(serviceDayController.state is ServiceDayLoaded, isTrue);
-          final serviceDayState = serviceDayController.state as ServiceDayLoaded;
+          expect(serviceDayViewModel.state is ServiceDayLoaded, isTrue);
+          final serviceDayState = serviceDayViewModel.state as ServiceDayLoaded;
           expect(serviceDayState.serviceDays.isEmpty, isTrue);
         },
       );
@@ -173,10 +173,10 @@ void main() {
           when(offlineMockServiceDayRepository.getAll())
               .thenAnswer((_) async => Either.right(serviceDays));
 
-          await serviceDayController.load();
+          await serviceDayViewModel.load();
 
-          expect(serviceDayController.state is ServiceDayLoaded, isTrue);
-          final serviceState = serviceDayController.state as ServiceDayLoaded;
+          expect(serviceDayViewModel.state is ServiceDayLoaded, isTrue);
+          final serviceState = serviceDayViewModel.state as ServiceDayLoaded;
           expect(serviceState.serviceDays.length, equals(serviceDays.length));
         },
       );
@@ -189,9 +189,9 @@ void main() {
       test(
         '''Deve manter o estado atual caso o mesmo nao seja ServiceDayloaded''',
         () async {
-          await serviceDayController.update(serviceDay: serviceDay1);
+          await serviceDayViewModel.update(serviceDay: serviceDay1);
 
-          expect(serviceDayController.state is ServiceDayInitial, isTrue);
+          expect(serviceDayViewModel.state is ServiceDayInitial, isTrue);
         },
       );
 
@@ -212,17 +212,17 @@ void main() {
           ];
           when(offlineMockServiceDayRepository.getAll())
               .thenAnswer((_) async => Either.right(serviceDays));
-          await serviceDayController.load();
+          await serviceDayViewModel.load();
 
           when(onlineMockServiceDayRepository.update(serviceDay: serviceDay1))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
           when(offlineMockServiceDayRepository.update(serviceDay: serviceDay1))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
             
-          await serviceDayController.update(serviceDay: serviceDay1);
+          await serviceDayViewModel.update(serviceDay: serviceDay1);
 
-          expect(serviceDayController.state is ServiceDayLoaded, isTrue);
-          final state = serviceDayController.state as ServiceDayLoaded;
+          expect(serviceDayViewModel.state is ServiceDayLoaded, isTrue);
+          final state = serviceDayViewModel.state as ServiceDayLoaded;
           expect(state.serviceDays.length, equals(serviceDays.length));
           expect(state.message, equals(failureMessage));
         },
@@ -245,7 +245,7 @@ void main() {
           ];
           when(offlineMockServiceDayRepository.getAll())
               .thenAnswer((_) async => Either.right(serviceDays));
-          await serviceDayController.load();
+          await serviceDayViewModel.load();
 
           when(onlineMockServiceDayRepository.update(serviceDay: serviceDay1))
               .thenAnswer((_) async => Either.left(Failure(failureMessageUpdate)));
@@ -255,10 +255,10 @@ void main() {
           when(offlineMockServiceDayRepository.getAll())
               .thenAnswer((_) async => Either.left(Failure(failureMessageGetAll)));
             
-          await serviceDayController.update(serviceDay: serviceDay1);
+          await serviceDayViewModel.update(serviceDay: serviceDay1);
 
-          expect(serviceDayController.state is ServiceDayError, isTrue);
-          final state = serviceDayController.state as ServiceDayError;
+          expect(serviceDayViewModel.state is ServiceDayError, isTrue);
+          final state = serviceDayViewModel.state as ServiceDayError;
           expect(state.message, equals(failureMessageUpdate));
         },
       );
@@ -277,17 +277,17 @@ void main() {
           ];
           when(offlineMockServiceDayRepository.getAll())
               .thenAnswer((_) async => Either.right(serviceDays));
-          await serviceDayController.load();
+          await serviceDayViewModel.load();
 
           when(onlineMockServiceDayRepository.update(serviceDay: serviceDay1Disable))
               .thenAnswer((_) async => Either.right(unit));
           when(offlineMockServiceDayRepository.update(serviceDay: serviceDay1Disable))
               .thenAnswer((_) async => Either.right(unit));
             
-          await serviceDayController.update(serviceDay: serviceDay1Disable);
+          await serviceDayViewModel.update(serviceDay: serviceDay1Disable);
 
-          expect(serviceDayController.state is ServiceDayLoaded, isTrue);
-          final state = (serviceDayController.state as ServiceDayLoaded);
+          expect(serviceDayViewModel.state is ServiceDayLoaded, isTrue);
+          final state = (serviceDayViewModel.state as ServiceDayLoaded);
           expect(state.serviceDays[0] == serviceDay1, isFalse);
           expect(state.serviceDays[0] == serviceDay1Disable, isTrue);
         },

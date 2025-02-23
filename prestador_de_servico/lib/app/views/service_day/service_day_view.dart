@@ -59,20 +59,20 @@ class _ServiceDayViewState extends State<ServiceDayView> {
             ),
           ),
           Consumer<ServiceDayViewModel>(
-            builder: (context, serviceDayController, _) {
-              if (serviceDayController.state is ServiceDayInitial) {
+            builder: (context, serviceDayViewModel, _) {
+              if (serviceDayViewModel.state is ServiceDayInitial) {
                 return const SliverFillRemaining();
               }
 
-              if (serviceDayController.state is ServiceDayError) {
+              if (serviceDayViewModel.state is ServiceDayError) {
                 return SliverFillRemaining(
                   child: Center(
-                    child: Text((serviceDayController.state as ServiceDayError).message),
+                    child: Text((serviceDayViewModel.state as ServiceDayError).message),
                   ),
                 );
               }
 
-              if (serviceDayController.state is ServiceDayLoading) {
+              if (serviceDayViewModel.state is ServiceDayLoading) {
                 return const SliverFillRemaining(
                   child: Center(
                     child: CustomLoading(),
@@ -80,7 +80,7 @@ class _ServiceDayViewState extends State<ServiceDayView> {
                 );
               }
 
-              final serviceDays = (serviceDayController.state as ServiceDayLoaded).serviceDays;
+              final serviceDays = (serviceDayViewModel.state as ServiceDayLoaded).serviceDays;
 
               serviceDays.sort((s1, s2) {
                 if (s1.dayOfWeek > s2.dayOfWeek) {

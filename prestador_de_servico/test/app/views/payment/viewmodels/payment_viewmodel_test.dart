@@ -7,10 +7,10 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/payment/states/payment_state.dart';
 
-import '../../../helpers/payment/mock_payment_repository.dart';
+import '../../../../helpers/payment/mock_payment_repository.dart';
 
 void main() {
-  late PaymentViewModel paymentController;
+  late PaymentViewModel paymentViewModel;
 
   late Payment payment1;
   late Payment payment2;
@@ -81,7 +81,7 @@ void main() {
         offlineRepository: offlineMockPaymentRepository,
         onlineRepository: onlineMockPaymentRepository,
       );
-      paymentController = PaymentViewModel(paymentService: paymentService);
+      paymentViewModel = PaymentViewModel(paymentService: paymentService);
       setUpValues();
     },
   );
@@ -98,10 +98,10 @@ void main() {
           when(offlineMockPaymentRepository.getAll())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          await paymentController.load();
+          await paymentViewModel.load();
 
-          expect(paymentController.state is PaymentError, isTrue);
-          final state = paymentController.state as PaymentError;
+          expect(paymentViewModel.state is PaymentError, isTrue);
+          final state = paymentViewModel.state as PaymentError;
           expect(state.message, equals(failureMessage));
         },
       );
@@ -115,10 +115,10 @@ void main() {
           when(offlineMockPaymentRepository.getAll())
               .thenAnswer((_) async => Either.right(payments));
 
-          await paymentController.load();
+          await paymentViewModel.load();
 
-          expect(paymentController.state is PaymentLoaded, isTrue);
-          final paymentState = paymentController.state as PaymentLoaded;
+          expect(paymentViewModel.state is PaymentLoaded, isTrue);
+          final paymentState = paymentViewModel.state as PaymentLoaded;
           expect(paymentState.payments.isEmpty, isTrue);
         },
       );
@@ -139,10 +139,10 @@ void main() {
           when(offlineMockPaymentRepository.getAll())
               .thenAnswer((_) async => Either.right(payments));
 
-          await paymentController.load();
+          await paymentViewModel.load();
 
-          expect(paymentController.state is PaymentLoaded, isTrue);
-          final paymentState = paymentController.state as PaymentLoaded;
+          expect(paymentViewModel.state is PaymentLoaded, isTrue);
+          final paymentState = paymentViewModel.state as PaymentLoaded;
           expect(paymentState.payments.length, equals(payments.length));
         },
       );
@@ -155,9 +155,9 @@ void main() {
       test(
         '''Deve manter o estado atual caso o mesmo nao seja Paymentloaded''',
         () async {
-          await paymentController.update(payment: payment1);
+          await paymentViewModel.update(payment: payment1);
 
-          expect(paymentController.state is PaymentInitial, isTrue);
+          expect(paymentViewModel.state is PaymentInitial, isTrue);
         },
       );
 
@@ -177,17 +177,17 @@ void main() {
           ];
           when(offlineMockPaymentRepository.getAll())
               .thenAnswer((_) async => Either.right(payments));
-          await paymentController.load();
+          await paymentViewModel.load();
 
           when(onlineMockPaymentRepository.update(payment: payment1))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
           when(offlineMockPaymentRepository.update(payment: payment1))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
             
-          await paymentController.update(payment: payment1);
+          await paymentViewModel.update(payment: payment1);
 
-          expect(paymentController.state is PaymentLoaded, isTrue);
-          final state = paymentController.state as PaymentLoaded;
+          expect(paymentViewModel.state is PaymentLoaded, isTrue);
+          final state = paymentViewModel.state as PaymentLoaded;
           expect(state.payments.length, equals(payments.length));
           expect(state.message, equals(failureMessage));
         },
@@ -209,7 +209,7 @@ void main() {
           ];
           when(offlineMockPaymentRepository.getAll())
               .thenAnswer((_) async => Either.right(payments));
-          await paymentController.load();
+          await paymentViewModel.load();
 
           when(onlineMockPaymentRepository.update(payment: payment1))
               .thenAnswer((_) async => Either.left(Failure(failureMessageUpdate)));
@@ -219,10 +219,10 @@ void main() {
           when(offlineMockPaymentRepository.getAll())
               .thenAnswer((_) async => Either.left(Failure(failureMessageGetAll)));
             
-          await paymentController.update(payment: payment1);
+          await paymentViewModel.update(payment: payment1);
 
-          expect(paymentController.state is PaymentError, isTrue);
-          final state = paymentController.state as PaymentError;
+          expect(paymentViewModel.state is PaymentError, isTrue);
+          final state = paymentViewModel.state as PaymentError;
           expect(state.message, equals(failureMessageUpdate));
         },
       );
@@ -240,17 +240,17 @@ void main() {
           ];
           when(offlineMockPaymentRepository.getAll())
               .thenAnswer((_) async => Either.right(payments));
-          await paymentController.load();
+          await paymentViewModel.load();
 
           when(onlineMockPaymentRepository.update(payment: payment1Disable))
               .thenAnswer((_) async => Either.right(unit));
           when(offlineMockPaymentRepository.update(payment: payment1Disable))
               .thenAnswer((_) async => Either.right(unit));
             
-          await paymentController.update(payment: payment1Disable);
+          await paymentViewModel.update(payment: payment1Disable);
 
-          expect(paymentController.state is PaymentLoaded, isTrue);
-          final state = (paymentController.state as PaymentLoaded);
+          expect(paymentViewModel.state is PaymentLoaded, isTrue);
+          final state = (paymentViewModel.state as PaymentLoaded);
           expect(state.payments[0] == payment1, isFalse);
           expect(state.payments[0] == payment1Disable, isTrue);
         },

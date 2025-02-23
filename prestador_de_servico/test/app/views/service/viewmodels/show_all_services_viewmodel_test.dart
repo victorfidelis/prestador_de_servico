@@ -10,11 +10,11 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/service/states/show_all_services_state.dart';
 
-import '../../../helpers/image/mock_image_repository.dart';
-import '../../../helpers/service/service/mock_service_repository.dart';
+import '../../../../helpers/image/mock_image_repository.dart';
+import '../../../../helpers/service/service/mock_service_repository.dart';
 
 void main() {
-  late ShowAllServicesViewModel showAllServicesController;
+  late ShowAllServicesViewModel showAllServicesViewModel;
 
   late ServiceCategory serviceCategory1;
 
@@ -74,9 +74,9 @@ void main() {
         onlineRepository: onlineMockServiceRepository,
         imageRepository: mockImageRepository,
       );
-      showAllServicesController = ShowAllServicesViewModel(serviceService: serviceService);
+      showAllServicesViewModel = ShowAllServicesViewModel(serviceService: serviceService);
       setUpValues();
-      showAllServicesController.init();
+      showAllServicesViewModel.init();
     },
   );
 
@@ -87,10 +87,10 @@ void main() {
         '''Deve alterar o estado ShowAllServicesLoaded com o objeto ServicesByCategory correspondente 
         ao passado via parâmetro.''',
         () {
-          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
-          expect(showAllServicesController.state is ShowAllServicesLoaded, isTrue);
-          final state = (showAllServicesController.state as ShowAllServicesLoaded);
+          expect(showAllServicesViewModel.state is ShowAllServicesLoaded, isTrue);
+          final state = (showAllServicesViewModel.state as ShowAllServicesLoaded);
           expect(state.servicesByCategory, equals(servicesByCategory1));
         },
       );
@@ -109,10 +109,10 @@ void main() {
             (_) async => Either.left(Failure(failureMessage)),
           );
 
-          await showAllServicesController.delete(service: service1);
+          await showAllServicesViewModel.delete(service: service1);
 
-          expect(showAllServicesController.state is ShowAllServicesError, isTrue);
-          final state = (showAllServicesController.state as ShowAllServicesError);
+          expect(showAllServicesViewModel.state is ShowAllServicesError, isTrue);
+          final state = (showAllServicesViewModel.state as ShowAllServicesError);
           expect(state.message, equals(failureMessage));
         },
       );
@@ -129,10 +129,10 @@ void main() {
             (_) async => Either.left(Failure(failureMessage)),
           );
 
-          await showAllServicesController.delete(service: service1);
+          await showAllServicesViewModel.delete(service: service1);
 
-          expect(showAllServicesController.state is ShowAllServicesError, isTrue);
-          final state = (showAllServicesController.state as ShowAllServicesError);
+          expect(showAllServicesViewModel.state is ShowAllServicesError, isTrue);
+          final state = (showAllServicesViewModel.state as ShowAllServicesError);
           expect(state.message, equals(failureMessage));
         },
       );
@@ -145,12 +145,12 @@ void main() {
           when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl)).thenAnswer(
             (_) async => Either.left(Failure(failureMessage)),
           );
-          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
-          await showAllServicesController.delete(service: service1);
+          await showAllServicesViewModel.delete(service: service1);
 
-          expect(showAllServicesController.state is ShowAllServicesLoaded, isTrue);
-          final state = (showAllServicesController.state as ShowAllServicesLoaded);
+          expect(showAllServicesViewModel.state is ShowAllServicesLoaded, isTrue);
+          final state = (showAllServicesViewModel.state as ShowAllServicesLoaded);
           expect(state.servicesByCategory, equals(servicesByCategory1));
           expect(state.message, equals(failureMessage));
         },
@@ -167,12 +167,12 @@ void main() {
           when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer(
             (_) async => Either.left(Failure(failureMessage)),
           );
-          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
-          await showAllServicesController.delete(service: service1);
+          await showAllServicesViewModel.delete(service: service1);
 
-          expect(showAllServicesController.state is ShowAllServicesLoaded, isTrue);
-          final state = (showAllServicesController.state as ShowAllServicesLoaded);
+          expect(showAllServicesViewModel.state is ShowAllServicesLoaded, isTrue);
+          final state = (showAllServicesViewModel.state as ShowAllServicesLoaded);
           expect(state.servicesByCategory, equals(servicesByCategory1));
           expect(state.message, equals(failureMessage));
         },
@@ -190,12 +190,12 @@ void main() {
           when(offlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer(
             (_) async => Either.right(unit),
           );
-          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
-          await showAllServicesController.delete(service: service1);
+          await showAllServicesViewModel.delete(service: service1);
 
-          expect(showAllServicesController.state is ShowAllServicesLoaded, isTrue);
-          final state = (showAllServicesController.state as ShowAllServicesLoaded);
+          expect(showAllServicesViewModel.state is ShowAllServicesLoaded, isTrue);
+          final state = (showAllServicesViewModel.state as ShowAllServicesLoaded);
           expect(state.servicesByCategory, equals(servicesByCategory1));
         },
       );
@@ -209,22 +209,22 @@ void main() {
         'Deve manter o estado quando o estado atual for diferente de ShowAllServicesLoaded',
         () async { 
 
-          showAllServicesController.filter(textFilter: 'chapinha');
+          showAllServicesViewModel.filter(textFilter: 'chapinha');
 
-          expect((showAllServicesController.state is ShowAllServicesInitial), isTrue);
+          expect((showAllServicesViewModel.state is ShowAllServicesInitial), isTrue);
         },
       );
 
       test(
         'Deve manter o estado de ShowAllServicesLoaded quando o valor filtrado for vazio',
         () async { 
-          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
-          showAllServicesController.filter(textFilter: '');
+          showAllServicesViewModel.filter(textFilter: '');
 
-          expect((showAllServicesController.state is ShowAllServicesLoaded), isTrue);
-          expect((showAllServicesController.state is! ShowAllServicesFiltered), isTrue);
-          final showAllServicesState = (showAllServicesController.state as ShowAllServicesLoaded);
+          expect((showAllServicesViewModel.state is ShowAllServicesLoaded), isTrue);
+          expect((showAllServicesViewModel.state is! ShowAllServicesFiltered), isTrue);
+          final showAllServicesState = (showAllServicesViewModel.state as ShowAllServicesLoaded);
           expect(showAllServicesState.servicesByCategory, equals(servicesByCategory1));
         },
       );
@@ -233,12 +233,12 @@ void main() {
         '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
         filtrados quando filtrar "h"''',
         () { 
-          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
-          showAllServicesController.filter(textFilter: 'h');
+          showAllServicesViewModel.filter(textFilter: 'h');
 
-          expect((showAllServicesController.state is ShowAllServicesFiltered), isTrue);
-          final state = (showAllServicesController.state as ShowAllServicesFiltered);
+          expect((showAllServicesViewModel.state is ShowAllServicesFiltered), isTrue);
+          final state = (showAllServicesViewModel.state as ShowAllServicesFiltered);
           expect(state.servicesByCategoryFiltered.services.length, equals(2));
         },
       );
@@ -247,12 +247,12 @@ void main() {
         '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
         filtrados quando filtrar "chapinHA"''',
         () { 
-          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
-          showAllServicesController.filter(textFilter: 'chapinHA');
+          showAllServicesViewModel.filter(textFilter: 'chapinHA');
 
-          expect((showAllServicesController.state is ShowAllServicesFiltered), isTrue);
-          final state = (showAllServicesController.state as ShowAllServicesFiltered);
+          expect((showAllServicesViewModel.state is ShowAllServicesFiltered), isTrue);
+          final state = (showAllServicesViewModel.state as ShowAllServicesFiltered);
           expect(state.servicesByCategoryFiltered.services.length, equals(1));
         },
       );
@@ -261,12 +261,12 @@ void main() {
         '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
         filtrados quando filtrar "hidratação"''',
         () { 
-          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
-          showAllServicesController.filter(textFilter: 'hidratação');
+          showAllServicesViewModel.filter(textFilter: 'hidratação');
 
-          expect((showAllServicesController.state is ShowAllServicesFiltered), isTrue);
-          final state = (showAllServicesController.state as ShowAllServicesFiltered);
+          expect((showAllServicesViewModel.state is ShowAllServicesFiltered), isTrue);
+          final state = (showAllServicesViewModel.state as ShowAllServicesFiltered);
           expect(state.servicesByCategoryFiltered.services.length, equals(1));
         },
       );
@@ -275,12 +275,12 @@ void main() {
         '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
         filtrados quando filtrar "hidratacao"''',
         () { 
-          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
-          showAllServicesController.filter(textFilter: 'hidratacao');
+          showAllServicesViewModel.filter(textFilter: 'hidratacao');
 
-          expect((showAllServicesController.state is ShowAllServicesFiltered), isTrue);
-          final state = (showAllServicesController.state as ShowAllServicesFiltered);
+          expect((showAllServicesViewModel.state is ShowAllServicesFiltered), isTrue);
+          final state = (showAllServicesViewModel.state as ShowAllServicesFiltered);
           expect(state.servicesByCategoryFiltered.services.length, equals(1));
         },
       );
@@ -289,18 +289,18 @@ void main() {
         '''Deve alterar o estado para ShowAllServicesLoaded quando filtrar com um valor 
         vazio''',
         () { 
-          showAllServicesController.setServicesByCategory(servicesByCategory: servicesByCategory1);
+          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
           
-          showAllServicesController.filter(textFilter: 'hidratacao');
-          expect((showAllServicesController.state is ShowAllServicesFiltered), isTrue);
-          final state = (showAllServicesController.state as ShowAllServicesFiltered);
+          showAllServicesViewModel.filter(textFilter: 'hidratacao');
+          expect((showAllServicesViewModel.state is ShowAllServicesFiltered), isTrue);
+          final state = (showAllServicesViewModel.state as ShowAllServicesFiltered);
           expect(state.servicesByCategoryFiltered.services.length, equals(1));
 
-          showAllServicesController.filter(textFilter: '');
+          showAllServicesViewModel.filter(textFilter: '');
 
-          expect((showAllServicesController.state is ShowAllServicesLoaded), isTrue);
-          expect((showAllServicesController.state is! ShowAllServicesFiltered), isTrue);
-          final showAllServicesState = (showAllServicesController.state as ShowAllServicesLoaded);
+          expect((showAllServicesViewModel.state is ShowAllServicesLoaded), isTrue);
+          expect((showAllServicesViewModel.state is! ShowAllServicesFiltered), isTrue);
+          final showAllServicesState = (showAllServicesViewModel.state as ShowAllServicesLoaded);
           expect(showAllServicesState.servicesByCategory, equals(servicesByCategory1));
         },
       );

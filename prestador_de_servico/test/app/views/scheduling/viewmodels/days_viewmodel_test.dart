@@ -7,13 +7,13 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/scheduling/states/days_state.dart';
 
-import '../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
+import '../../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
 
 void main() {
-  late DaysViewModel daysController;
+  late DaysViewModel daysViewModel;
 
   void setUpValues() {
-    daysController = DaysViewModel(
+    daysViewModel = DaysViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
       ),
@@ -37,10 +37,10 @@ void main() {
           when(onlineMockSchedulingRepository.getDaysWithService())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          await daysController.load();
+          await daysViewModel.load();
 
-          expect(daysController.state is DaysError, isTrue);
-          final state = (daysController.state as DaysError);
+          expect(daysViewModel.state is DaysError, isTrue);
+          final state = (daysViewModel.state as DaysError);
           expect(state.message, equals(failureMessage));
         },
       );
@@ -53,9 +53,9 @@ void main() {
           when(onlineMockSchedulingRepository.getDaysWithService())
               .thenAnswer((_) async => Either.right(schedulesPerDay));
 
-          await daysController.load();
+          await daysViewModel.load();
 
-          expect(daysController.state is DaysLoaded, isTrue);
+          expect(daysViewModel.state is DaysLoaded, isTrue);
         },
       );
     },
@@ -67,9 +67,9 @@ void main() {
       test(
         '''Deve alterar o estado para DaysInitial''',
         () {
-          daysController.exit();
+          daysViewModel.exit();
 
-          expect(daysController.state is DaysInitial, isTrue);
+          expect(daysViewModel.state is DaysInitial, isTrue);
         },
       );
     },

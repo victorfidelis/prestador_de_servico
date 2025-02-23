@@ -7,11 +7,11 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/auth/states/create_user_state.dart';
 
-import '../../../helpers/auth/mock_auth_repository.dart';
-import '../../../helpers/user/mock_user_repository.dart';
+import '../../../../helpers/auth/mock_auth_repository.dart';
+import '../../../../helpers/user/mock_user_repository.dart';
 
 void main() {
-  late CreateUserViewModel createUserController;
+  late CreateUserViewModel createUserViewModel;
 
   late User user1;
   late User userWithoutEmail;
@@ -81,7 +81,7 @@ void main() {
         authRepository: mockAuthRepository,
         userRepository: mockUserRepository,
       );
-      createUserController = CreateUserViewModel(authService: authService);
+      createUserViewModel = CreateUserViewModel(authService: authService);
       setUpValues();
     },
   );
@@ -93,10 +93,10 @@ void main() {
         '''Deve definir o estado como ErrorUserCreation e denifir uma mensagem de erro no campo
         "emailMessage" quando o campo "email" estiver vazio.''',
         () async {
-          await createUserController.createUserEmailPassword(user: userWithoutEmail);
+          await createUserViewModel.createUserEmailPassword(user: userWithoutEmail);
 
-          expect(createUserController.state is ErrorUserCreation, isTrue);
-          final state = createUserController.state as ErrorUserCreation;
+          expect(createUserViewModel.state is ErrorUserCreation, isTrue);
+          final state = createUserViewModel.state as ErrorUserCreation;
           expect(state.emailMessage, isNotNull);
         },
       );
@@ -105,10 +105,10 @@ void main() {
         '''Deve definir o estado como ErrorUserCreation e definir uma mensagem de erro no campo
         "nameMessage" quando o campo "name" estiver vazio.''',
         () async {
-          await createUserController.createUserEmailPassword(user: userWithoutName);
+          await createUserViewModel.createUserEmailPassword(user: userWithoutName);
 
-          expect(createUserController.state is ErrorUserCreation, isTrue);
-          final state = createUserController.state as ErrorUserCreation;
+          expect(createUserViewModel.state is ErrorUserCreation, isTrue);
+          final state = createUserViewModel.state as ErrorUserCreation;
           expect(state.nameMessage, isNotNull);
         },
       );
@@ -117,10 +117,10 @@ void main() {
         '''Deve definir o estado como ErrorUserCreation e definir uma mensagem de erro no campo
         "surnameMessage" quando o campo "surname" estiver vazio.''',
         () async {
-          await createUserController.createUserEmailPassword(user: userWithoutSurname);
+          await createUserViewModel.createUserEmailPassword(user: userWithoutSurname);
 
-          expect(createUserController.state is ErrorUserCreation, isTrue);
-          final state = createUserController.state as ErrorUserCreation;
+          expect(createUserViewModel.state is ErrorUserCreation, isTrue);
+          final state = createUserViewModel.state as ErrorUserCreation;
           expect(state.surnameMessage, isNotNull);
         },
       );
@@ -129,10 +129,10 @@ void main() {
         '''Deve definir o estado como ErrorUserCreation e definir uma mensagem de erro no campo
         "passwordMessage" quando o campo "password" estiver vazio.''',
         () async {
-          await createUserController.createUserEmailPassword(user: userWithoutPassword);
+          await createUserViewModel.createUserEmailPassword(user: userWithoutPassword);
 
-          expect(createUserController.state is ErrorUserCreation, isTrue);
-          final state = createUserController.state as ErrorUserCreation;
+          expect(createUserViewModel.state is ErrorUserCreation, isTrue);
+          final state = createUserViewModel.state as ErrorUserCreation;
           expect(state.passwordMessage, isNotNull);
         },
       );
@@ -141,10 +141,10 @@ void main() {
         '''Deve definir o estado como ErrorUserCreation e definir uma mensagem de erro no campo
         "confirmPasswordMessage" quando o campo "confirmPassword" estiver vazio.''',
         () async {
-          await createUserController.createUserEmailPassword(user: userWithoutConfirmPassword);
+          await createUserViewModel.createUserEmailPassword(user: userWithoutConfirmPassword);
 
-          expect(createUserController.state is ErrorUserCreation, isTrue);
-          final state = createUserController.state as ErrorUserCreation;
+          expect(createUserViewModel.state is ErrorUserCreation, isTrue);
+          final state = createUserViewModel.state as ErrorUserCreation;
           expect(state.confirmPasswordMessage, isNotNull);
         },
       );
@@ -154,10 +154,10 @@ void main() {
         "confirmPasswordMessage" quando o campo "confirmPassword" estiver diferente do campo
         "password".''',
         () async {
-          await createUserController.createUserEmailPassword(user: userInvalidConfirmPassword);
+          await createUserViewModel.createUserEmailPassword(user: userInvalidConfirmPassword);
 
-          expect(createUserController.state is ErrorUserCreation, isTrue);
-          final state = createUserController.state as ErrorUserCreation;
+          expect(createUserViewModel.state is ErrorUserCreation, isTrue);
+          final state = createUserViewModel.state as ErrorUserCreation;
           expect(state.confirmPasswordMessage, isNotNull);
         },
       );
@@ -170,10 +170,10 @@ void main() {
           when(mockUserRepository.getByEmail(email: user1.email))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
-          await createUserController.createUserEmailPassword(user: user1);
+          await createUserViewModel.createUserEmailPassword(user: user1);
 
-          expect(createUserController.state is ErrorUserCreation, isTrue);
-          final state = createUserController.state as ErrorUserCreation;
+          expect(createUserViewModel.state is ErrorUserCreation, isTrue);
+          final state = createUserViewModel.state as ErrorUserCreation;
           expect(state.genericMessage, equals(failureMessage));
         },
       );
@@ -188,10 +188,10 @@ void main() {
           when(mockAuthRepository.createUserEmailPassword(email: user1.email, password: user1.password))
               .thenAnswer((_) async => Either.left(EmailAlreadyInUseFailure(failureMessage)));
 
-          await createUserController.createUserEmailPassword(user: user1);
+          await createUserViewModel.createUserEmailPassword(user: user1);
 
-          expect(createUserController.state is ErrorUserCreation, isTrue);
-          final state = createUserController.state as ErrorUserCreation;
+          expect(createUserViewModel.state is ErrorUserCreation, isTrue);
+          final state = createUserViewModel.state as ErrorUserCreation;
           expect(state.emailMessage, equals(failureMessage));
         },
       );
@@ -207,10 +207,10 @@ void main() {
           when(mockUserRepository.insert(user: user1)).thenAnswer((_) async => Either.right(user1.id));
           when(mockAuthRepository.sendEmailVerificationForCurrentUser()).thenAnswer((_) async => Either.right(unit));
 
-          await createUserController.createUserEmailPassword(user: user1);
+          await createUserViewModel.createUserEmailPassword(user: user1);
 
-          expect(createUserController.state is UserCreated, isTrue);
-          final state = createUserController.state as UserCreated;
+          expect(createUserViewModel.state is UserCreated, isTrue);
+          final state = createUserViewModel.state as UserCreated;
           expect(state.user, equals(user1));
         },
       );

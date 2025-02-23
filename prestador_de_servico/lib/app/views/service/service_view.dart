@@ -92,20 +92,20 @@ class _ServiceViewState extends State<ServiceView> {
             ),
           ),
           Consumer<ServiceViewModel>(
-            builder: (context, serviceCategoryController, _) {
-              if (serviceCategoryController.state is ServiceInitial) {
+            builder: (context, serviceCategoryViewModel, _) {
+              if (serviceCategoryViewModel.state is ServiceInitial) {
                 return const SliverFillRemaining();
               }
 
-              if (serviceCategoryController.state is ServiceError) {
+              if (serviceCategoryViewModel.state is ServiceError) {
                 return SliverFillRemaining(
                   child: Center(
-                    child: Text((serviceCategoryController.state as ServiceError).message),
+                    child: Text((serviceCategoryViewModel.state as ServiceError).message),
                   ),
                 );
               }
 
-              if (serviceCategoryController.state is ServiceLoading) {
+              if (serviceCategoryViewModel.state is ServiceLoading) {
                 return const SliverFillRemaining(
                   child: Center(
                     child: CustomLoading(),
@@ -113,12 +113,12 @@ class _ServiceViewState extends State<ServiceView> {
                 );
               }
 
-              final categories = (serviceCategoryController.state as ServiceLoaded).servicesByCategories;
+              final categories = (serviceCategoryViewModel.state as ServiceLoaded).servicesByCategories;
               servicesByCategories = List.from(categories);
 
-              if (serviceCategoryController.state is ServiceFiltered) {
+              if (serviceCategoryViewModel.state is ServiceFiltered) {
                 final categoriesFiltered =
-                    (serviceCategoryController.state as ServiceFiltered).servicesByCategoriesFiltered;
+                    (serviceCategoryViewModel.state as ServiceFiltered).servicesByCategoriesFiltered;
                 servicesByCategoriesInScreen = List.from(categoriesFiltered);
               } else {
                 servicesByCategoriesInScreen = List.from(servicesByCategories);

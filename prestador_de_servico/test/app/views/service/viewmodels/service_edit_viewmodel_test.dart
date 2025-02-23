@@ -10,12 +10,12 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/service/states/service_edit_state.dart';
 
-import '../../../helpers/image/mock_image_repository.dart';
-import '../../../helpers/offline_image/mock_offline_image_service.dart';
-import '../../../helpers/service/service/mock_service_repository.dart';
+import '../../../../helpers/image/mock_image_repository.dart';
+import '../../../../helpers/offline_image/mock_offline_image_service.dart';
+import '../../../../helpers/service/service/mock_service_repository.dart';
 
 void main() {
-  late ServiceEditViewModel serviceEditController;
+  late ServiceEditViewModel serviceEditViewModel;
 
   late ServiceCategory serviceCategory1;
 
@@ -80,7 +80,7 @@ void main() {
 
       setUpMockOfflineImageService();
 
-      serviceEditController = ServiceEditViewModel(
+      serviceEditViewModel = ServiceEditViewModel(
         serviceService: serviceService,
         offlineImageService: mockOfflineImageService,
       );
@@ -94,9 +94,9 @@ void main() {
       test(
         'Deve alterar o estado para ServiceEditAdd',
         () {
-          serviceEditController.initInsert(serviceCategory: serviceCategory1);
+          serviceEditViewModel.initInsert(serviceCategory: serviceCategory1);
 
-          expect(serviceEditController.state is ServiceEditAdd, isTrue);
+          expect(serviceEditViewModel.state is ServiceEditAdd, isTrue);
         },
       );
     },
@@ -108,10 +108,10 @@ void main() {
       test(
         '''Deve alterar o estado para ServiceEditUpdate e definir o Service a ser alterado''',
         () {
-          serviceEditController.initUpdate(serviceCategory: serviceCategory1, service: service1);
+          serviceEditViewModel.initUpdate(serviceCategory: serviceCategory1, service: service1);
 
-          expect(serviceEditController.state is ServiceEditUpdate, isTrue);
-          final state = (serviceEditController.state as ServiceEditUpdate);
+          expect(serviceEditViewModel.state is ServiceEditUpdate, isTrue);
+          final state = (serviceEditViewModel.state as ServiceEditUpdate);
           expect(state.service, equals(service1));
         },
       );
@@ -125,10 +125,10 @@ void main() {
         '''Deve alterar o estado para ServiceEditError e definir uma mensagem de erro 
         no campo "nameMessage" quando o campo "name" estiver vazio.''',
         () async {
-          await serviceEditController.validateAndInsert(service: serviceWithoutName);
+          await serviceEditViewModel.validateAndInsert(service: serviceWithoutName);
 
-          expect(serviceEditController.state is ServiceEditError, isTrue);
-          final state = (serviceEditController.state as ServiceEditError);
+          expect(serviceEditViewModel.state is ServiceEditError, isTrue);
+          final state = (serviceEditViewModel.state as ServiceEditError);
           expect(state.nameMessage, isNotNull);
         },
       );
@@ -137,10 +137,10 @@ void main() {
         '''Deve alterar o estado para ServiceEditError e definir uma mensagem de erro 
         no campo "priceMessage" quando o campo "price" estiver vazio.''',
         () async {
-          await serviceEditController.validateAndInsert(service: serviceWithoutPrice);
+          await serviceEditViewModel.validateAndInsert(service: serviceWithoutPrice);
 
-          expect(serviceEditController.state is ServiceEditError, isTrue);
-          final state = (serviceEditController.state as ServiceEditError);
+          expect(serviceEditViewModel.state is ServiceEditError, isTrue);
+          final state = (serviceEditViewModel.state as ServiceEditError);
           expect(state.priceMessage, isNotNull);
         },
       );
@@ -149,10 +149,10 @@ void main() {
         '''Deve alterar o estado para ServiceEditError e definir uma mensagem de erro no campo 
         "hoursAndMinutesMessage" quando os campos "hours" e "minutes" estiverem vazios.''',
         () async {
-          await serviceEditController.validateAndInsert(service: serviceWithoutHoursAndMinutes);
+          await serviceEditViewModel.validateAndInsert(service: serviceWithoutHoursAndMinutes);
 
-          expect(serviceEditController.state is ServiceEditError, isTrue);
-          final state = (serviceEditController.state as ServiceEditError);
+          expect(serviceEditViewModel.state is ServiceEditError, isTrue);
+          final state = (serviceEditViewModel.state as ServiceEditError);
           expect(state.hoursAndMinutesMessage, isNotNull);
         },
       );
@@ -165,10 +165,10 @@ void main() {
           when(onlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.left((NetworkFailure(failureMessage))));
 
-          await serviceEditController.validateAndInsert(service: service1);
+          await serviceEditViewModel.validateAndInsert(service: service1);
 
-          expect(serviceEditController.state is ServiceEditError, isTrue);
-          final state = (serviceEditController.state as ServiceEditError);
+          expect(serviceEditViewModel.state is ServiceEditError, isTrue);
+          final state = (serviceEditViewModel.state as ServiceEditError);
           expect(state.genericMessage, equals(failureMessage));
         },
       );
@@ -182,10 +182,10 @@ void main() {
           when(offlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.right(service1.id));
 
-          await serviceEditController.validateAndInsert(service: service1);
+          await serviceEditViewModel.validateAndInsert(service: service1);
 
-          expect(serviceEditController.state is ServiceEditSuccess, isTrue);
-          final state = (serviceEditController.state as ServiceEditSuccess);
+          expect(serviceEditViewModel.state is ServiceEditSuccess, isTrue);
+          final state = (serviceEditViewModel.state as ServiceEditSuccess);
           expect(state.service, equals(service1));
         },
       );
@@ -199,10 +199,10 @@ void main() {
         '''Deve alterar o estado para ServiceEditError e definir uma mensagem de erro no 
         campo "nameMessage" quando o campo "name" estiver vazio.''',
         () async {
-          await serviceEditController.validateAndUpdate(service: serviceWithoutName);
+          await serviceEditViewModel.validateAndUpdate(service: serviceWithoutName);
 
-          expect(serviceEditController.state is ServiceEditError, isTrue);
-          final state = (serviceEditController.state as ServiceEditError);
+          expect(serviceEditViewModel.state is ServiceEditError, isTrue);
+          final state = (serviceEditViewModel.state as ServiceEditError);
           expect(state.nameMessage, isNotNull);
         },
       );
@@ -211,10 +211,10 @@ void main() {
         '''Deve alterar o estado para ServiceEditError e definir uma mensagem de erro 
         no campo "priceMessage" quando o campo "price" estiver vazio.''',
         () async {
-          await serviceEditController.validateAndUpdate(service: serviceWithoutPrice);
+          await serviceEditViewModel.validateAndUpdate(service: serviceWithoutPrice);
 
-          expect(serviceEditController.state is ServiceEditError, isTrue);
-          final state = (serviceEditController.state as ServiceEditError);
+          expect(serviceEditViewModel.state is ServiceEditError, isTrue);
+          final state = (serviceEditViewModel.state as ServiceEditError);
           expect(state.priceMessage, isNotNull);
         },
       );
@@ -223,10 +223,10 @@ void main() {
         '''Deve alterar o estado para ServiceEditError e definir uma mensagem de erro no campo 
         "hoursAndMinutesMessage" quando os campos "hours" e "minutes" estiverem vazios.''',
         () async {
-          await serviceEditController.validateAndUpdate(service: serviceWithoutHoursAndMinutes);
+          await serviceEditViewModel.validateAndUpdate(service: serviceWithoutHoursAndMinutes);
 
-          expect(serviceEditController.state is ServiceEditError, isTrue);
-          final state = (serviceEditController.state as ServiceEditError);
+          expect(serviceEditViewModel.state is ServiceEditError, isTrue);
+          final state = (serviceEditViewModel.state as ServiceEditError);
           expect(state.hoursAndMinutesMessage, isNotNull);
         },
       );
@@ -239,10 +239,10 @@ void main() {
           when(onlineMockServiceRepository.update(service: service1))
               .thenAnswer((_) async => Either.left((NetworkFailure(failureMessage))));
 
-          await serviceEditController.validateAndUpdate(service: service1);
+          await serviceEditViewModel.validateAndUpdate(service: service1);
 
-          expect(serviceEditController.state is ServiceEditError, isTrue);
-          final state = (serviceEditController.state as ServiceEditError);
+          expect(serviceEditViewModel.state is ServiceEditError, isTrue);
+          final state = (serviceEditViewModel.state as ServiceEditError);
           expect(state.genericMessage, equals(failureMessage));
         },
       );
@@ -254,10 +254,10 @@ void main() {
           when(onlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
           when(offlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
 
-          await serviceEditController.validateAndUpdate(service: service1);
+          await serviceEditViewModel.validateAndUpdate(service: service1);
 
-          expect(serviceEditController.state is ServiceEditSuccess, isTrue);
-          final state = (serviceEditController.state as ServiceEditSuccess);
+          expect(serviceEditViewModel.state is ServiceEditSuccess, isTrue);
+          final state = (serviceEditViewModel.state as ServiceEditSuccess);
           expect(state.service, equals(service1));
         },
       );
@@ -276,10 +276,10 @@ void main() {
           when(mockOfflineImageService.pickImageFromGallery())
               .thenAnswer((_) async => Either.left(PickImageFailure(failureMessage)));
 
-          await serviceEditController.pickImageFromGallery();
+          await serviceEditViewModel.pickImageFromGallery();
 
-          expect(serviceEditController.state is PickImageError, isTrue);
-          final state = (serviceEditController.state as PickImageError);
+          expect(serviceEditViewModel.state is PickImageError, isTrue);
+          final state = (serviceEditViewModel.state as PickImageError);
           expect(state.message, equals(failureMessage));
         },
       );
@@ -292,10 +292,10 @@ void main() {
           when(mockOfflineImageService.pickImageFromGallery())
               .thenAnswer((_) async => Either.right(file));
 
-          await serviceEditController.pickImageFromGallery();
+          await serviceEditViewModel.pickImageFromGallery();
 
-          expect(serviceEditController.state is PickImageSuccess, isTrue);
-          final state = (serviceEditController.state as PickImageSuccess);
+          expect(serviceEditViewModel.state is PickImageSuccess, isTrue);
+          final state = (serviceEditViewModel.state as PickImageSuccess);
           expect(state.imageFile, equals(file));
         },
       );

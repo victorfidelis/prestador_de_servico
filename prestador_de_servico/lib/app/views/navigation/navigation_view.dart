@@ -26,7 +26,7 @@ class NavigationView extends StatelessWidget {
         ],
       ),
       bottomNavigationBar:
-          Consumer<NavigationViewModel>(builder: (context, navigationController, _) {
+          Consumer<NavigationViewModel>(builder: (context, navigationViewModel, _) {
           
         return BottomAppBar(
           color: Theme.of(context).colorScheme.secondary,
@@ -37,33 +37,33 @@ class NavigationView extends StatelessWidget {
                 child: CustomMenuButtom(
                   onTap: () {
                     _pageController.jumpToPage(HomeNavigationPage().numberPage);
-                    navigationController.changePage(navigationState: HomeNavigationPage());
+                    navigationViewModel.changePage(navigationState: HomeNavigationPage());
                   },
                   icon: Icons.home,
                   text: 'Home',
-                  isCurrent: (navigationController.state is HomeNavigationPage),
+                  isCurrent: (navigationViewModel.state is HomeNavigationPage),
                 ),
               ),
               Expanded(
                 child: CustomMenuButtom(
                   onTap: () {
                     _pageController.jumpToPage(AgendaNavigationPage().numberPage);
-                    navigationController.changePage(navigationState: AgendaNavigationPage());
+                    navigationViewModel.changePage(navigationState: AgendaNavigationPage());
                   },
                   icon: Icons.view_agenda_outlined,
                   text: 'Agenda',
-                  isCurrent: (navigationController.state is AgendaNavigationPage),
+                  isCurrent: (navigationViewModel.state is AgendaNavigationPage),
                 ),
               ),
               Expanded(
                 child: CustomMenuButtom(
                   onTap: () {
                     _pageController.jumpToPage(MenuNavigationPage().numberPage);
-                    navigationController.changePage(navigationState: MenuNavigationPage());
+                    navigationViewModel.changePage(navigationState: MenuNavigationPage());
                   },
                   icon: Icons.menu,
                   text: 'Menu',
-                  isCurrent: (navigationController.state is MenuNavigationPage),
+                  isCurrent: (navigationViewModel.state is MenuNavigationPage),
                 ),
               ),
             ],

@@ -55,17 +55,17 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
               ),
             ),
           ),
-          Consumer<ServiceCategoryEditViewModel>(builder: (context, serviceCategoryEditController, _) {
-            if (serviceCategoryEditController.state is ServiceCategoryEditSuccess) {
+          Consumer<ServiceCategoryEditViewModel>(builder: (context, serviceCategoryEditViewModel, _) {
+            if (serviceCategoryEditViewModel.state is ServiceCategoryEditSuccess) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 ServiceCategory serviceCategory =
-                    (serviceCategoryEditController.state as ServiceCategoryEditSuccess).serviceCategory;
+                    (serviceCategoryEditViewModel.state as ServiceCategoryEditSuccess).serviceCategory;
                 Navigator.pop(context, serviceCategory);
               });
               return Container();
             }
 
-            if (serviceCategoryEditController.state is ServiceCategoryEditLoading) {
+            if (serviceCategoryEditViewModel.state is ServiceCategoryEditLoading) {
               return const Expanded(
                 child: Center(
                   child: CustomLoading(),
@@ -77,9 +77,9 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
             String? genericErrorMessage;
             Widget genericErrorWidget = const SizedBox(height: 18);
 
-            if (serviceCategoryEditController.state is ServiceCategoryEditError) {
-              nameErrorMessage = (serviceCategoryEditController.state as ServiceCategoryEditError).nameMessage;
-              genericErrorMessage = (serviceCategoryEditController.state as ServiceCategoryEditError).genericMessage;
+            if (serviceCategoryEditViewModel.state is ServiceCategoryEditError) {
+              nameErrorMessage = (serviceCategoryEditViewModel.state as ServiceCategoryEditError).nameMessage;
+              genericErrorMessage = (serviceCategoryEditViewModel.state as ServiceCategoryEditError).genericMessage;
               if (genericErrorMessage != null) {
                 genericErrorWidget = CustomTextError(message: genericErrorMessage);
               }
@@ -119,9 +119,9 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Consumer<ServiceCategoryEditViewModel>(
-        builder: (context, serviceCategoryEditController, _) {
-          if (serviceCategoryEditController.state is ServiceCategoryEditLoading ||
-              serviceCategoryEditController.state is ServiceCategoryEditSuccess) {
+        builder: (context, serviceCategoryEditViewModel, _) {
+          if (serviceCategoryEditViewModel.state is ServiceCategoryEditLoading ||
+              serviceCategoryEditViewModel.state is ServiceCategoryEditSuccess) {
             return Container();
           }
 

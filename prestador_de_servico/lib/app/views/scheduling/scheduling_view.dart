@@ -65,25 +65,25 @@ class _SchedulingViewState extends State<SchedulingView> {
           ),
           const SizedBox(height: 10),
           Consumer<DaysViewModel>(
-            builder: (context, daysController, _) {
-              if (daysController.state is DaysInitial) {
+            builder: (context, daysViewModel, _) {
+              if (daysViewModel.state is DaysInitial) {
                 return Container();
               }
 
-              if (daysController.state is DaysError) {
+              if (daysViewModel.state is DaysError) {
                 return Center(
-                  child: Text((daysController.state as DaysError).message),
+                  child: Text((daysViewModel.state as DaysError).message),
                 );
               }
 
-              if (daysController.state is DaysLoading) {
+              if (daysViewModel.state is DaysLoading) {
                 return Container(
                   padding: const EdgeInsets.only(top: 28),
                   child: const Center(child: CustomLoading()),
                 );
               }
 
-              final loadedState = (daysController.state as DaysLoaded);
+              final loadedState = (daysViewModel.state as DaysLoaded);
               final schedulesPerDay = loadedState.dates;
 
               if (loadedState.typeView == TypeView.main) {
@@ -134,25 +134,25 @@ class _SchedulingViewState extends State<SchedulingView> {
           ),
           const SizedBox(height: 6),
           Consumer<ServiceSchedulingViewModel>(
-            builder: (context, serviceSchedulingController, _) {
-              if (serviceSchedulingController.state is ServiceSchedulingInitial) {
+            builder: (context, serviceSchedulingViewModel, _) {
+              if (serviceSchedulingViewModel.state is ServiceSchedulingInitial) {
                 return Container();
               }
 
-              if (serviceSchedulingController.state is ServiceSchedulingError) {
+              if (serviceSchedulingViewModel.state is ServiceSchedulingError) {
                 return Center(
-                  child: Text((serviceSchedulingController.state as ServiceSchedulingError).message),
+                  child: Text((serviceSchedulingViewModel.state as ServiceSchedulingError).message),
                 );
               }
 
-              if (serviceSchedulingController.state is ServiceSchedulingLoading) {
+              if (serviceSchedulingViewModel.state is ServiceSchedulingLoading) {
                 return Container(
                   padding: const EdgeInsets.only(top: 28),
                   child: const Center(child: CustomLoading()),
                 );
               }
 
-              final serviceSchedules = (serviceSchedulingController.state as ServiceSchedulingLoaded).serviceSchedules;
+              final serviceSchedules = (serviceSchedulingViewModel.state as ServiceSchedulingLoaded).serviceSchedules;
 
               return Expanded(
                 child: Container(

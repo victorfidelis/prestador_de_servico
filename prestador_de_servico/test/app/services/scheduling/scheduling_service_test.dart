@@ -469,4 +469,93 @@ void main() {
       );
     },
   );
+  
+
+  group(
+    'getPendingPaymentSchedules',
+    () {
+      test(
+        '''Deve retornar um Failure quando algum erro ocorrer no repository''',
+        () async {
+          const failureMessage = 'Falha de teste';
+
+          when(onlineMockSchedulingRepository.getPendingPaymentSchedules()).thenAnswer(
+            (_) async => Either.left(Failure(failureMessage)),
+          );
+
+          final pendingPaymentEither = await serviceSchedulingService.getPendingPaymentSchedules();
+
+          expect(pendingPaymentEither.isLeft, isTrue);
+          expect(pendingPaymentEither.left!.message, equals(failureMessage));
+        },
+      );
+      
+      test(
+        '''Deve retornar uma lista de SchedulesByDay vazia quando não houver pendências''',
+        () async {
+          final List<ServiceScheduling> servicesSchedules = [];
+
+          when(onlineMockSchedulingRepository.getPendingPaymentSchedules()).thenAnswer(
+            (_) async => Either.right(servicesSchedules),
+          );
+
+          final pendingPaymentEither = await serviceSchedulingService.getPendingPaymentSchedules();
+
+          expect(pendingPaymentEither.isRight, isTrue);
+          final schedulesByDaysReturns = pendingPaymentEither.right!;
+
+          expect(schedulesByDaysReturns.length, equals(0));
+        },
+      );
+
+      test(
+        '''Deve retornar uma lista de SchedulesByDay''',
+        () async {
+          final List<ServiceScheduling> servicesSchedules = [
+            serviceSchedulingDay1das08as09,
+            serviceSchedulingDay2das08as09,
+            serviceSchedulingDay2das09as11,
+            serviceSchedulingDay3das08as09,
+            serviceSchedulingDay3das09as11,
+          ];
+
+          DateTime day1 = DateTime(
+            actualDate.year,
+            actualDate.month,
+            actualDate.day,
+          );
+          DateTime day2 = day1.add(const Duration(days: 1));
+          DateTime day3 = day1.add(const Duration(days: 2));
+
+          final List<SchedulesByDay> schedulesByDays = [
+            SchedulesByDay(day: day1, serviceSchedules: [serviceSchedulingDay1das08as09]),
+            SchedulesByDay(
+              day: day2,
+              serviceSchedules: [serviceSchedulingDay2das08as09, serviceSchedulingDay2das09as11],
+            ),
+            SchedulesByDay(
+              day: day3,
+              serviceSchedules: [serviceSchedulingDay3das08as09, serviceSchedulingDay3das09as11],
+            ),
+          ];
+
+          when(onlineMockSchedulingRepository.getPendingPaymentSchedules()).thenAnswer(
+            (_) async => Either.right(servicesSchedules),
+          );
+
+          final pendingPaymentEither = await serviceSchedulingService.getPendingPaymentSchedules();
+
+          expect(pendingPaymentEither.isRight, isTrue);
+          final schedulesByDaysReturns = pendingPaymentEither.right!;
+
+          expect(schedulesByDaysReturns.length, equals(schedulesByDays.length));
+          expect(schedulesByDaysReturns[1].day, schedulesByDays[1].day);
+          expect(
+            schedulesByDaysReturns[1].serviceSchedules.length,
+            schedulesByDays[1].serviceSchedules.length,
+          );
+        },
+      );
+    },
+  );
 }

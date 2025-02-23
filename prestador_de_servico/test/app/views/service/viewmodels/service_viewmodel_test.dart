@@ -11,13 +11,13 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/service/states/service_state.dart';
 
-import '../../../helpers/image/mock_image_repository.dart';
-import '../../../helpers/service/service/mock_service_repository.dart';
-import '../../../helpers/service/service_category/mock_service_category_repository.dart';
-import '../../../helpers/service/services_by_category/mock_services_by_category_repository.dart';
+import '../../../../helpers/image/mock_image_repository.dart';
+import '../../../../helpers/service/service/mock_service_repository.dart';
+import '../../../../helpers/service/service_category/mock_service_category_repository.dart';
+import '../../../../helpers/service/services_by_category/mock_services_by_category_repository.dart';
 
 void main() {
-  late ServiceViewModel serviceController;
+  late ServiceViewModel serviceViewModel;
 
   late ServiceCategory serviceCategory1;
   late ServiceCategory serviceCategory2;
@@ -132,7 +132,7 @@ void main() {
       final servicesByCategoryService = ServicesByCategoryService(
         offlineRepository: offlineMockServicesByCategoryRepository,
       );
-      serviceController = ServiceViewModel(
+      serviceViewModel = ServiceViewModel(
         serviceCategoryService: serviceCategoryService,
         serviceService: serviceService,
         servicesByCategoryService: servicesByCategoryService,
@@ -152,10 +152,10 @@ void main() {
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          await serviceController.load();
+          await serviceViewModel.load();
 
-          expect(serviceController.state is ServiceError, isTrue);
-          final state = serviceController.state as ServiceError;
+          expect(serviceViewModel.state is ServiceError, isTrue);
+          final state = serviceViewModel.state as ServiceError;
           expect(state.message, equals(failureMessage));
         },
       );
@@ -169,10 +169,10 @@ void main() {
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
-          await serviceController.load();
+          await serviceViewModel.load();
 
-          expect(serviceController.state is ServiceLoaded, isTrue);
-          final serviceState = serviceController.state as ServiceLoaded;
+          expect(serviceViewModel.state is ServiceLoaded, isTrue);
+          final serviceState = serviceViewModel.state as ServiceLoaded;
           expect(serviceState.servicesByCategories.isEmpty, isTrue);
         },
       );
@@ -190,10 +190,10 @@ void main() {
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
-          await serviceController.load();
+          await serviceViewModel.load();
 
-          expect(serviceController.state is ServiceLoaded, isTrue);
-          final serviceState = serviceController.state as ServiceLoaded;
+          expect(serviceViewModel.state is ServiceLoaded, isTrue);
+          final serviceState = serviceViewModel.state as ServiceLoaded;
           expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
         },
       );
@@ -211,11 +211,11 @@ void main() {
 
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
-          await serviceController.load();
+          await serviceViewModel.load();
 
-          expect(serviceController.state is ServiceLoaded, isTrue);
+          expect(serviceViewModel.state is ServiceLoaded, isTrue);
 
-          final servicesByCategoriesActual = (serviceController.state as ServiceLoaded).servicesByCategories;
+          final servicesByCategoriesActual = (serviceViewModel.state as ServiceLoaded).servicesByCategories;
 
           expect(servicesByCategoriesActual.length, equals(servicesByCategories.length));
           expect(servicesByCategoriesActual[0].services.length, equals(servicesByCategories[0].services.length));
@@ -232,9 +232,9 @@ void main() {
       test(
         'Deve manter o estado quando o estado atual for diferente de ServiceLoaded',
         () async {
-          serviceController.filter(textFilter: 'Cabelo');
+          serviceViewModel.filter(textFilter: 'Cabelo');
 
-          expect((serviceController.state is ServiceInitial), isTrue);
+          expect((serviceViewModel.state is ServiceInitial), isTrue);
         },
       );
 
@@ -249,13 +249,13 @@ void main() {
 
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
-          await serviceController.load();
+          await serviceViewModel.load();
 
-          serviceController.filter(textFilter: '');
+          serviceViewModel.filter(textFilter: '');
 
-          expect((serviceController.state is ServiceLoaded), isTrue);
-          expect((serviceController.state is! ServiceFiltered), isTrue);
-          final serviceState = (serviceController.state as ServiceLoaded);
+          expect((serviceViewModel.state is ServiceLoaded), isTrue);
+          expect((serviceViewModel.state is! ServiceFiltered), isTrue);
+          final serviceState = (serviceViewModel.state as ServiceLoaded);
           expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
         },
       );
@@ -272,12 +272,12 @@ void main() {
 
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
-          await serviceController.load();
+          await serviceViewModel.load();
 
-          serviceController.filter(textFilter: 'u');
+          serviceViewModel.filter(textFilter: 'u');
 
-          expect((serviceController.state is ServiceFiltered), isTrue);
-          final state = (serviceController.state as ServiceFiltered);
+          expect((serviceViewModel.state is ServiceFiltered), isTrue);
+          final state = (serviceViewModel.state as ServiceFiltered);
           expect(state.servicesByCategoriesFiltered.length, equals(2));
         },
       );
@@ -294,12 +294,12 @@ void main() {
 
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
-          await serviceController.load();
+          await serviceViewModel.load();
 
-          serviceController.filter(textFilter: 'cabeLo');
+          serviceViewModel.filter(textFilter: 'cabeLo');
 
-          expect((serviceController.state is ServiceFiltered), isTrue);
-          final state = (serviceController.state as ServiceFiltered);
+          expect((serviceViewModel.state is ServiceFiltered), isTrue);
+          final state = (serviceViewModel.state as ServiceFiltered);
           expect(state.servicesByCategoriesFiltered.length, equals(1));
         },
       );
@@ -316,12 +316,12 @@ void main() {
 
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
-          await serviceController.load();
+          await serviceViewModel.load();
 
-          serviceController.filter(textFilter: 'Manicure');
+          serviceViewModel.filter(textFilter: 'Manicure');
 
-          expect((serviceController.state is ServiceFiltered), isTrue);
-          final state = (serviceController.state as ServiceFiltered);
+          expect((serviceViewModel.state is ServiceFiltered), isTrue);
+          final state = (serviceViewModel.state as ServiceFiltered);
           expect(state.servicesByCategoriesFiltered.length, equals(1));
         },
       );
@@ -338,12 +338,12 @@ void main() {
 
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
-          await serviceController.load();
+          await serviceViewModel.load();
 
-          serviceController.filter(textFilter: 'pedicure');
+          serviceViewModel.filter(textFilter: 'pedicure');
 
-          expect((serviceController.state is ServiceFiltered), isTrue);
-          final state = (serviceController.state as ServiceFiltered);
+          expect((serviceViewModel.state is ServiceFiltered), isTrue);
+          final state = (serviceViewModel.state as ServiceFiltered);
           expect(state.servicesByCategoriesFiltered.length, equals(1));
         },
       );
@@ -360,18 +360,18 @@ void main() {
 
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
-          await serviceController.load();
+          await serviceViewModel.load();
 
-          serviceController.filter(textFilter: 'u');
-          expect((serviceController.state is ServiceFiltered), isTrue);
-          final state = (serviceController.state as ServiceFiltered);
+          serviceViewModel.filter(textFilter: 'u');
+          expect((serviceViewModel.state is ServiceFiltered), isTrue);
+          final state = (serviceViewModel.state as ServiceFiltered);
           expect(state.servicesByCategoriesFiltered.length, equals(2));
 
-          serviceController.filter(textFilter: '');
+          serviceViewModel.filter(textFilter: '');
 
-          expect((serviceController.state is ServiceLoaded), isTrue);
-          expect((serviceController.state is! ServiceFiltered), isTrue);
-          final showAllServicesState = (serviceController.state as ServiceLoaded);
+          expect((serviceViewModel.state is ServiceLoaded), isTrue);
+          expect((serviceViewModel.state is! ServiceFiltered), isTrue);
+          final showAllServicesState = (serviceViewModel.state as ServiceLoaded);
           expect(showAllServicesState.servicesByCategories.length, equals(servicesByCategories.length));
         },
       );
@@ -396,10 +396,10 @@ void main() {
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
-          await serviceController.deleteCategory(serviceCategory: serviceCategory1);
+          await serviceViewModel.deleteCategory(serviceCategory: serviceCategory1);
 
-          expect(serviceController.state is ServiceLoaded, isTrue);
-          final serviceState = serviceController.state as ServiceLoaded;
+          expect(serviceViewModel.state is ServiceLoaded, isTrue);
+          final serviceState = serviceViewModel.state as ServiceLoaded;
           expect(serviceState.message, equals(failureMessage));
           expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
         },
@@ -421,11 +421,11 @@ void main() {
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
-          final state = serviceController.state;
+          final state = serviceViewModel.state;
 
-          await serviceController.deleteCategory(serviceCategory: serviceCategory1);
+          await serviceViewModel.deleteCategory(serviceCategory: serviceCategory1);
 
-          expect(serviceController.state, equals(state));
+          expect(serviceViewModel.state, equals(state));
         },
       );
     },
@@ -447,10 +447,10 @@ void main() {
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
-          await serviceController.deleteService(service: service1);
+          await serviceViewModel.deleteService(service: service1);
 
-          expect(serviceController.state is ServiceLoaded, isTrue);
-          final serviceState = serviceController.state as ServiceLoaded;
+          expect(serviceViewModel.state is ServiceLoaded, isTrue);
+          final serviceState = serviceViewModel.state as ServiceLoaded;
           expect(serviceState.message, equals(failureMessage));
           expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
         },
@@ -473,10 +473,10 @@ void main() {
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
-          await serviceController.deleteService(service: service1);
+          await serviceViewModel.deleteService(service: service1);
 
-          expect(serviceController.state is ServiceLoaded, isTrue);
-          final serviceState = serviceController.state as ServiceLoaded;
+          expect(serviceViewModel.state is ServiceLoaded, isTrue);
+          final serviceState = serviceViewModel.state as ServiceLoaded;
           expect(serviceState.message, equals(failureMessage));
           expect(serviceState.servicesByCategories.length, equals(servicesByCategories.length));
         },
@@ -498,11 +498,11 @@ void main() {
           when(offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
-          final state = serviceController.state;
+          final state = serviceViewModel.state;
 
-          await serviceController.deleteService(service: service1);
+          await serviceViewModel.deleteService(service: service1);
 
-          expect(serviceController.state, equals(state));
+          expect(serviceViewModel.state, equals(state));
         },
       );
     },

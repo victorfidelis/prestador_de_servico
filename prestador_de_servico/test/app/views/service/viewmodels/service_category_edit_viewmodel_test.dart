@@ -7,10 +7,10 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/service/states/service_category_edit_state.dart';
 
-import '../../../helpers/service/service_category/mock_service_category_repository.dart';
+import '../../../../helpers/service/service_category/mock_service_category_repository.dart';
 
 void main() {
-  late ServiceCategoryEditViewModel serviceCategoryEditController;
+  late ServiceCategoryEditViewModel serviceCategoryEditViewModel;
 
   late ServiceCategory serviceCategory1;
   late ServiceCategory serviceCategoryWithoutName;
@@ -28,7 +28,7 @@ void main() {
         offlineRepository: offlineMockServiceCategoryRepository,
       );
 
-      serviceCategoryEditController = ServiceCategoryEditViewModel(
+      serviceCategoryEditViewModel = ServiceCategoryEditViewModel(
         serviceCategoryService: serviceCategoryService,
       );
       setUpValues();
@@ -41,9 +41,9 @@ void main() {
       test(
         'Deve alterar o estado para ServiceCategoryEditAdd',
         () {
-          serviceCategoryEditController.initInsert();
+          serviceCategoryEditViewModel.initInsert();
 
-          expect(serviceCategoryEditController.state is ServiceCategoryEditAdd, isTrue);
+          expect(serviceCategoryEditViewModel.state is ServiceCategoryEditAdd, isTrue);
         },
       );
     },
@@ -56,10 +56,10 @@ void main() {
         '''Deve alterar o estado para ServiceCategoryEditUpdate e definir o ServiceCategory 
         a ser alterado''',
         () {
-          serviceCategoryEditController.initUpdate(serviceCategory: serviceCategory1);
+          serviceCategoryEditViewModel.initUpdate(serviceCategory: serviceCategory1);
 
-          expect(serviceCategoryEditController.state is ServiceCategoryEditUpdate, isTrue);
-          final state = (serviceCategoryEditController.state as ServiceCategoryEditUpdate);
+          expect(serviceCategoryEditViewModel.state is ServiceCategoryEditUpdate, isTrue);
+          final state = (serviceCategoryEditViewModel.state as ServiceCategoryEditUpdate);
           expect(state.serviceCategory, equals(serviceCategory1));
         },
       );
@@ -73,10 +73,10 @@ void main() {
         '''Deve alterar o estado para ServiceCategoryEditError e definir uma mensagem de erro 
         no campo "nameMessage" quando o campo "name" estiver vazio.''',
         () async {
-          await serviceCategoryEditController.validateAndInsert(serviceCategory: serviceCategoryWithoutName);
+          await serviceCategoryEditViewModel.validateAndInsert(serviceCategory: serviceCategoryWithoutName);
 
-          expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
-          final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
+          expect(serviceCategoryEditViewModel.state is ServiceCategoryEditError, isTrue);
+          final state = (serviceCategoryEditViewModel.state as ServiceCategoryEditError);
           expect(state.nameMessage, isNotNull);
         },
       );
@@ -89,10 +89,10 @@ void main() {
           when(onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.left((NetworkFailure(failureMessage))));
 
-          await serviceCategoryEditController.validateAndInsert(serviceCategory: serviceCategory1);
+          await serviceCategoryEditViewModel.validateAndInsert(serviceCategory: serviceCategory1);
 
-          expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
-          final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
+          expect(serviceCategoryEditViewModel.state is ServiceCategoryEditError, isTrue);
+          final state = (serviceCategoryEditViewModel.state as ServiceCategoryEditError);
           expect(state.genericMessage, equals(failureMessage));
         },
       );
@@ -106,10 +106,10 @@ void main() {
           when(offlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.right(serviceCategory1.id));
 
-          await serviceCategoryEditController.validateAndInsert(serviceCategory: serviceCategory1);
+          await serviceCategoryEditViewModel.validateAndInsert(serviceCategory: serviceCategory1);
 
-          expect(serviceCategoryEditController.state is ServiceCategoryEditSuccess, isTrue);
-          final state = (serviceCategoryEditController.state as ServiceCategoryEditSuccess);
+          expect(serviceCategoryEditViewModel.state is ServiceCategoryEditSuccess, isTrue);
+          final state = (serviceCategoryEditViewModel.state as ServiceCategoryEditSuccess);
           expect(state.serviceCategory, equals(serviceCategory1));
         },
       );
@@ -123,10 +123,10 @@ void main() {
         '''Deve alterar o estado para ServiceCategoryEditError e definir uma mensagem de erro no 
         campo "nameMessage" quando o campo "name" estiver vazio.''',
         () async {
-          await serviceCategoryEditController.validateAndUpdate(serviceCategory: serviceCategoryWithoutName);
+          await serviceCategoryEditViewModel.validateAndUpdate(serviceCategory: serviceCategoryWithoutName);
 
-          expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
-          final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
+          expect(serviceCategoryEditViewModel.state is ServiceCategoryEditError, isTrue);
+          final state = (serviceCategoryEditViewModel.state as ServiceCategoryEditError);
           expect(state.nameMessage, isNotNull);
         },
       );
@@ -139,10 +139,10 @@ void main() {
           when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
-          await serviceCategoryEditController.validateAndUpdate(serviceCategory: serviceCategory1);
+          await serviceCategoryEditViewModel.validateAndUpdate(serviceCategory: serviceCategory1);
 
-          expect(serviceCategoryEditController.state is ServiceCategoryEditError, isTrue);
-          final state = (serviceCategoryEditController.state as ServiceCategoryEditError);
+          expect(serviceCategoryEditViewModel.state is ServiceCategoryEditError, isTrue);
+          final state = (serviceCategoryEditViewModel.state as ServiceCategoryEditError);
           expect(state.genericMessage, equals(failureMessage));
         },
       );
@@ -156,10 +156,10 @@ void main() {
           when(offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.right(unit));
 
-          await serviceCategoryEditController.validateAndUpdate(serviceCategory: serviceCategory1);
+          await serviceCategoryEditViewModel.validateAndUpdate(serviceCategory: serviceCategory1);
 
-          expect(serviceCategoryEditController.state is ServiceCategoryEditSuccess, isTrue);
-          final state = (serviceCategoryEditController.state as ServiceCategoryEditSuccess);
+          expect(serviceCategoryEditViewModel.state is ServiceCategoryEditSuccess, isTrue);
+          final state = (serviceCategoryEditViewModel.state as ServiceCategoryEditSuccess);
           expect(state.serviceCategory, equals(serviceCategory1));
         },
       );

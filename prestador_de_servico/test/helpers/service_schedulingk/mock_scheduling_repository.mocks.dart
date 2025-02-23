@@ -12,8 +12,10 @@ import 'package:prestador_de_servico/app/models/service_scheduling/service_sched
     as _i6;
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart'
     as _i3;
-import 'package:prestador_de_servico/app/shared/utils/either/either.dart' as _i2;
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart' as _i5;
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart'
+    as _i2;
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart'
+    as _i5;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -160,6 +162,35 @@ class MockSchedulingRepository extends _i1.Mock
           this,
           Invocation.method(
             #getPendingProviderSchedules,
+            [],
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>);
+
+  @override
+  _i4.Future<
+      _i2.Either<_i5.Failure,
+          List<_i6.ServiceScheduling>>> getPendingPaymentSchedules() =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getPendingPaymentSchedules,
+          [],
+        ),
+        returnValue: _i4
+            .Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>.value(
+            _FakeEither_0<_i5.Failure, List<_i6.ServiceScheduling>>(
+          this,
+          Invocation.method(
+            #getPendingPaymentSchedules,
+            [],
+          ),
+        )),
+        returnValueForMissingStub: _i4
+            .Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>.value(
+            _FakeEither_0<_i5.Failure, List<_i6.ServiceScheduling>>(
+          this,
+          Invocation.method(
+            #getPendingPaymentSchedules,
             [],
           ),
         )),

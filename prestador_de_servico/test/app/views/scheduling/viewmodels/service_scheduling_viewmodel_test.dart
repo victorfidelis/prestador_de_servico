@@ -7,14 +7,14 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/scheduling/states/service_scheduling_state.dart';
 
-import '../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
+import '../../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
 
 void main() {
   
-  late ServiceSchedulingViewModel serviceSchedulingController;
+  late ServiceSchedulingViewModel serviceSchedulingViewModel;
 
   void setUpValues() {
-    serviceSchedulingController = ServiceSchedulingViewModel(
+    serviceSchedulingViewModel = ServiceSchedulingViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
       ),
@@ -38,10 +38,10 @@ void main() {
           when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: anyNamed('dateTime')))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          await serviceSchedulingController.load(dateTime: DateTime.now());
+          await serviceSchedulingViewModel.load(dateTime: DateTime.now());
 
-          expect(serviceSchedulingController.state is ServiceSchedulingError, isTrue);
-          final state = (serviceSchedulingController.state as ServiceSchedulingError);
+          expect(serviceSchedulingViewModel.state is ServiceSchedulingError, isTrue);
+          final state = (serviceSchedulingViewModel.state as ServiceSchedulingError);
           expect(state.message, equals(failureMessage));
         },
       );
@@ -54,9 +54,9 @@ void main() {
           when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: anyNamed('dateTime')))
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
-          await serviceSchedulingController.load(dateTime: DateTime.now());
+          await serviceSchedulingViewModel.load(dateTime: DateTime.now());
 
-          expect(serviceSchedulingController.state is ServiceSchedulingLoaded, isTrue);
+          expect(serviceSchedulingViewModel.state is ServiceSchedulingLoaded, isTrue);
         },
       );
     },
@@ -68,9 +68,9 @@ void main() {
       test(
         '''Deve alterar o estado para ServiceSchedulingInitial''',
         () {
-          serviceSchedulingController.exit();
+          serviceSchedulingViewModel.exit();
 
-          expect(serviceSchedulingController.state is ServiceSchedulingInitial, isTrue);
+          expect(serviceSchedulingViewModel.state is ServiceSchedulingInitial, isTrue);
         },
       );
     },

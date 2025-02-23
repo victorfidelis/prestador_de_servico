@@ -82,18 +82,18 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                 ),
               ),
             ),
-            Consumer<ServiceEditViewModel>(builder: (context, serviceEditController, _) {
-              if (serviceEditController.state is ServiceEditSuccess) {
+            Consumer<ServiceEditViewModel>(builder: (context, serviceEditViewModel, _) {
+              if (serviceEditViewModel.state is ServiceEditSuccess) {
                 WidgetsBinding.instance.addPostFrameCallback(
                   (_) {
-                    Service service = (serviceEditController.state as ServiceEditSuccess).service;
+                    Service service = (serviceEditViewModel.state as ServiceEditSuccess).service;
                     Navigator.pop(context, service);
                   },
                 );
                 return Container();
               }
         
-              if (serviceEditController.state is ServiceEditLoading) {
+              if (serviceEditViewModel.state is ServiceEditLoading) {
                 return SizedBox(
                   height: MediaQuery.of(context).size.height,
                   child: const Center(
@@ -102,8 +102,8 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                 );
               } 
         
-              if (serviceEditController.state is PickImageError) {
-                final pickImageErroState = (serviceEditController.state as PickImageError);
+              if (serviceEditViewModel.state is PickImageError) {
+                final pickImageErroState = (serviceEditViewModel.state as PickImageError);
                 WidgetsBinding.instance.addPostFrameCallback(
                   (_) {
                     _notifications.showSnackBar(context: context, message: pickImageErroState.message);
@@ -111,8 +111,8 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                 );
               }
         
-              if (serviceEditController.state is PickImageSuccess) {
-                final pickImageSuccessState = (serviceEditController.state as PickImageSuccess);
+              if (serviceEditViewModel.state is PickImageSuccess) {
+                final pickImageSuccessState = (serviceEditViewModel.state as PickImageSuccess);
                 imageFile = pickImageSuccessState.imageFile;
               }
         
@@ -122,11 +122,11 @@ class _ServiceEditViewState extends State<ServiceEditView> {
               String? genericErrorMessage;
               Widget genericErrorWidget = const SizedBox(height: 18);
         
-              if (serviceEditController.state is ServiceEditError) {
-                nameErrorMessage = (serviceEditController.state as ServiceEditError).nameMessage;
-                priceErrorMessage = (serviceEditController.state as ServiceEditError).priceMessage;
-                hoursAndMinutesErrorMessage = (serviceEditController.state as ServiceEditError).hoursAndMinutesMessage;
-                genericErrorMessage = (serviceEditController.state as ServiceEditError).genericMessage;
+              if (serviceEditViewModel.state is ServiceEditError) {
+                nameErrorMessage = (serviceEditViewModel.state as ServiceEditError).nameMessage;
+                priceErrorMessage = (serviceEditViewModel.state as ServiceEditError).priceMessage;
+                hoursAndMinutesErrorMessage = (serviceEditViewModel.state as ServiceEditError).hoursAndMinutesMessage;
+                genericErrorMessage = (serviceEditViewModel.state as ServiceEditError).genericMessage;
                 if (genericErrorMessage != null) {
                   genericErrorWidget = CustomTextError(message: genericErrorMessage);
                 }
@@ -216,8 +216,8 @@ class _ServiceEditViewState extends State<ServiceEditView> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Consumer<ServiceEditViewModel>(
-        builder: (context, serviceEditController, _) {
-          if (serviceEditController.state is ServiceEditLoading || serviceEditController.state is ServiceEditSuccess) {
+        builder: (context, serviceEditViewModel, _) {
+          if (serviceEditViewModel.state is ServiceEditLoading || serviceEditViewModel.state is ServiceEditSuccess) {
             return Container();
           }
 

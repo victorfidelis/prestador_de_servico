@@ -1,21 +1,21 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:prestador_de_servico/app/views/pending_provider_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
-import 'package:prestador_de_servico/app/views/pending_provider_schedules/states/pending_provider_schedules_state.dart';
+import 'package:prestador_de_servico/app/views/pending_schedules/states/pending_schedules_state.dart';
 
-import '../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
+import '../../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
 
 void main() {
   
-  late PendingProviderSchedulesViewModel pendingProviderSchedulesController;
+  late PendingProviderSchedulesViewModel pendingProviderSchedulesViewModel;
 
   void setUpValues() {
-    pendingProviderSchedulesController = PendingProviderSchedulesViewModel(
+    pendingProviderSchedulesViewModel = PendingProviderSchedulesViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
       ),
@@ -39,10 +39,10 @@ void main() {
           when(onlineMockSchedulingRepository.getPendingProviderSchedules())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          await pendingProviderSchedulesController.load();
+          await pendingProviderSchedulesViewModel.load();
 
-          expect(pendingProviderSchedulesController.state is PendingProviderError, isTrue);
-          final state = (pendingProviderSchedulesController.state as PendingProviderError);
+          expect(pendingProviderSchedulesViewModel.state is PendingError, isTrue);
+          final state = (pendingProviderSchedulesViewModel.state as PendingError);
           expect(state.message, equals(failureMessage));
         },
       );
@@ -55,9 +55,9 @@ void main() {
           when(onlineMockSchedulingRepository.getPendingProviderSchedules())
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
-          await pendingProviderSchedulesController.load();
+          await pendingProviderSchedulesViewModel.load();
 
-          expect(pendingProviderSchedulesController.state is PendingProviderLoaded, isTrue);
+          expect(pendingProviderSchedulesViewModel.state is PendingLoaded, isTrue);
         },
       );
     },
@@ -69,9 +69,9 @@ void main() {
       test(
         '''Deve alterar o estado para PendingProviderInitial''',
         () {
-          pendingProviderSchedulesController.exit();
+          pendingProviderSchedulesViewModel.exit();
 
-          expect(pendingProviderSchedulesController.state is PendingProviderInitial, isTrue);
+          expect(pendingProviderSchedulesViewModel.state is PendingInitial, isTrue);
         },
       );
     },

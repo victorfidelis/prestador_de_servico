@@ -47,14 +47,14 @@ class _PasswordResetViewState extends State<PasswordResetView> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 38),
                   child: Consumer<PasswordResetViewModel>(
-                      builder: (context, passwordResetController, _) {
+                      builder: (context, passwordResetViewModel, _) {
                     String? emailMessage;
 
-                    if (passwordResetController.state is ErrorPasswordResetEmail) {
+                    if (passwordResetViewModel.state is ErrorPasswordResetEmail) {
                       emailMessage =
-                          (passwordResetController.state as ErrorPasswordResetEmail)
+                          (passwordResetViewModel.state as ErrorPasswordResetEmail)
                               .message;
-                    } else if (passwordResetController.state
+                    } else if (passwordResetViewModel.state
                         is PasswordResetEmailSentSuccess) {
                       return Column(
                         mainAxisSize: MainAxisSize.min,

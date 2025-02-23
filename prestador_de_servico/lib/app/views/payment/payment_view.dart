@@ -58,20 +58,20 @@ class _PaymentViewState extends State<PaymentView> {
             ),
           ),
           Consumer<PaymentViewModel>(
-            builder: (context, paymentController, _) {
-              if (paymentController.state is PaymentInitial) {
+            builder: (context, paymentViewModel, _) {
+              if (paymentViewModel.state is PaymentInitial) {
                 return const SliverFillRemaining();
               }
 
-              if (paymentController.state is PaymentError) {
+              if (paymentViewModel.state is PaymentError) {
                 return SliverFillRemaining(
                   child: Center(
-                    child: Text((paymentController.state as PaymentError).message),
+                    child: Text((paymentViewModel.state as PaymentError).message),
                   ),
                 );
               }
 
-              if (paymentController.state is PaymentLoading) {
+              if (paymentViewModel.state is PaymentLoading) {
                 return const SliverFillRemaining(
                   child: Center(
                     child: CustomLoading(),
@@ -79,7 +79,7 @@ class _PaymentViewState extends State<PaymentView> {
                 );
               }
 
-              final payments = (paymentController.state as PaymentLoaded).payments;
+              final payments = (paymentViewModel.state as PaymentLoaded).payments;
 
               payments.sort((p1, p2) {
                 if (p1.paymentType.index > p2.paymentType.index) {

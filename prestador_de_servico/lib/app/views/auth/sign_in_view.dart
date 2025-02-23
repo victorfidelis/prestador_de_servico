@@ -33,7 +33,7 @@ class _SignInViewState extends State<SignInView> {
 
   @override
   void initState() {
-    context.read<SyncController>().syncData();
+    context.read<SyncViewModel>().syncData();
     super.initState();
   }
 
@@ -58,14 +58,14 @@ class _SignInViewState extends State<SignInView> {
                 Container(
                   height: 500,
                   padding: const EdgeInsets.symmetric(horizontal: 38),
-                  child: Consumer<SignInViewModel>(builder: (context, signInController, _) {
-                    if (signInController.state is LoadingSignIn) {
+                  child: Consumer<SignInViewModel>(builder: (context, signInViewModel, _) {
+                    if (signInViewModel.state is LoadingSignIn) {
                       return const Center(
                         child: CustomLoading(),
                       );
                     }
 
-                    if (signInController.state is SignInSuccess) {
+                    if (signInViewModel.state is SignInSuccess) {
                       WidgetsBinding.instance.addPostFrameCallback((_) {
                         _notifications.showSnackBar(
                           context: context,
@@ -81,10 +81,10 @@ class _SignInViewState extends State<SignInView> {
                     String? passwordMessage;
                     String? genericMessage;
 
-                    if (signInController.state is SignInError) {
-                      emailMessage = (signInController.state as SignInError).emailMessage;
-                      passwordMessage = (signInController.state as SignInError).passwordMessage;
-                      genericMessage = (signInController.state as SignInError).genericMessage;
+                    if (signInViewModel.state is SignInError) {
+                      emailMessage = (signInViewModel.state as SignInError).emailMessage;
+                      passwordMessage = (signInViewModel.state as SignInError).passwordMessage;
+                      genericMessage = (signInViewModel.state as SignInError).genericMessage;
                       if (genericMessage != null) {
                         genericErrorWidget = CustomTextError(message: genericMessage);
                       }

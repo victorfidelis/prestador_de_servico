@@ -5,16 +5,16 @@ import 'package:prestador_de_servico/app/services/sync/sync_service_category_ser
 import 'package:prestador_de_servico/app/services/sync/sync_service_day_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/sync/sync_state.dart';
+import 'package:prestador_de_servico/app/shared/states/sync/sync_state.dart';
 
-class SyncController extends ChangeNotifier {
+class SyncViewModel extends ChangeNotifier {
   final NetworkService networkService;
   final SyncServiceCategoryService syncServiceCategoryService;
   final SyncServiceService syncServiceService;
   final SyncPaymentService syncPaymentService;
   final SyncServiceDayService syncServiceDayService;
 
-  SyncController({
+  SyncViewModel({
     required this.networkService,
     required this.syncServiceCategoryService,
     required this.syncServiceService,

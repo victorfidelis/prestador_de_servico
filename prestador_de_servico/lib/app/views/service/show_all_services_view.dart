@@ -102,13 +102,13 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
             ),
           ),
           Consumer<ShowAllServicesViewModel>(
-            builder: (context, showAllServicesController, _) {
-              if (showAllServicesController.state is! ShowAllServicesLoaded) {
+            builder: (context, showAllServicesViewModel, _) {
+              if (showAllServicesViewModel.state is! ShowAllServicesLoaded) {
                 return const SliverToBoxAdapter();
               }
 
               final serviceCategory =
-                  (showAllServicesController.state as ShowAllServicesLoaded).servicesByCategory.serviceCategory;
+                  (showAllServicesViewModel.state as ShowAllServicesLoaded).servicesByCategory.serviceCategory;
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(
@@ -125,20 +125,20 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
             },
           ),
           Consumer<ShowAllServicesViewModel>(
-            builder: (context, showAllServicesController, _) {
-              if (showAllServicesController.state is ShowAllServicesViewModel) {
+            builder: (context, showAllServicesViewModel, _) {
+              if (showAllServicesViewModel.state is ShowAllServicesViewModel) {
                 return const SliverFillRemaining();
               }
 
-              if (showAllServicesController.state is ShowAllServicesError) {
+              if (showAllServicesViewModel.state is ShowAllServicesError) {
                 return SliverFillRemaining(
                   child: Center(
-                    child: Text((showAllServicesController.state as ShowAllServicesError).message),
+                    child: Text((showAllServicesViewModel.state as ShowAllServicesError).message),
                   ),
                 );
               }
 
-              if (showAllServicesController.state is ShowAllServicesLoading) {
+              if (showAllServicesViewModel.state is ShowAllServicesLoading) {
                 return const SliverFillRemaining(
                   child: Center(
                     child: CustomLoading(),
@@ -146,12 +146,12 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
                 );
               }
 
-              final loadedState = (showAllServicesController.state as ShowAllServicesLoaded);
+              final loadedState = (showAllServicesViewModel.state as ShowAllServicesLoaded);
               final services = loadedState.servicesByCategory.services;
               servicesByCategory = loadedState.servicesByCategory.copyWith(services: List.from(services));
 
-              if (showAllServicesController.state is ShowAllServicesFiltered) {
-                final filteredState = (showAllServicesController.state as ShowAllServicesFiltered);
+              if (showAllServicesViewModel.state is ShowAllServicesFiltered) {
+                final filteredState = (showAllServicesViewModel.state as ShowAllServicesFiltered);
                 final servicesFiltered = filteredState.servicesByCategoryFiltered.services;
                 servicesByCategoryInScreen =
                     filteredState.servicesByCategoryFiltered.copyWith(services: List.from(servicesFiltered));

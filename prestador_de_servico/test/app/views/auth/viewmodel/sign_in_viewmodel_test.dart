@@ -7,11 +7,11 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/auth/states/sign_in_state.dart';
 
-import '../../../helpers/auth/mock_auth_repository.dart';
-import '../../../helpers/user/mock_user_repository.dart';
+import '../../../../helpers/auth/mock_auth_repository.dart';
+import '../../../../helpers/user/mock_user_repository.dart';
 
 void main() {
-  late SignInViewModel signInController;
+  late SignInViewModel signInViewModel;
 
   late User user1;
 
@@ -33,7 +33,7 @@ void main() {
         authRepository: mockAuthRepository,
         userRepository: mockUserRepository,
       );
-      signInController = SignInViewModel(authService: authService);
+      signInViewModel = SignInViewModel(authService: authService);
       setUpValues();
     },
   );
@@ -45,13 +45,13 @@ void main() {
         '''Deve definir o estado como SignInError e definir uma mensagem no campo "emailMessage" 
         quando o campo "email" estiver vazio''',
         () async { 
-          await signInController.signInEmailPassword(
+          await signInViewModel.signInEmailPassword(
             email: '',
             password: user1.password,
           );
 
-          expect(signInController.state is SignInError, isTrue);
-          final state = signInController.state as SignInError;
+          expect(signInViewModel.state is SignInError, isTrue);
+          final state = signInViewModel.state as SignInError;
           expect(state.emailMessage, isNotNull);
         },
       );
@@ -60,13 +60,13 @@ void main() {
         '''Deve definir o estado como SignInError e definir uma mensagem no campo "passwordMessage" 
         quando o campo "password" estiver vazio''',
         () async {
-          await signInController.signInEmailPassword(
+          await signInViewModel.signInEmailPassword(
             email: user1.email,
             password: '',
           );
 
-          expect(signInController.state is SignInError, isTrue);
-          final state = signInController.state as SignInError;
+          expect(signInViewModel.state is SignInError, isTrue);
+          final state = signInViewModel.state as SignInError;
           expect(state.passwordMessage, isNotNull);
         },
       );
@@ -79,13 +79,13 @@ void main() {
           when(mockUserRepository.getByEmail(email: user1.email))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
-          await signInController.signInEmailPassword(
+          await signInViewModel.signInEmailPassword(
             email: user1.email,
             password: user1.password,
           );
 
-          expect(signInController.state is SignInError, isTrue);
-          final state = signInController.state as SignInError;
+          expect(signInViewModel.state is SignInError, isTrue);
+          final state = signInViewModel.state as SignInError;
           expect(state.genericMessage, equals(failureMessage));
         },
       );
@@ -98,13 +98,13 @@ void main() {
           when(mockUserRepository.getByEmail(email: user1.email))
               .thenAnswer((_) async => Either.left(UserNotFoundFailure(failureMessage)));
 
-          await signInController.signInEmailPassword(
+          await signInViewModel.signInEmailPassword(
             email: user1.email,
             password: user1.password,
           );
 
-          expect(signInController.state is SignInError, isTrue);
-          final state = signInController.state as SignInError;
+          expect(signInViewModel.state is SignInError, isTrue);
+          final state = signInViewModel.state as SignInError;
           expect(state.genericMessage, equals(failureMessage));
         },
       );
@@ -118,13 +118,13 @@ void main() {
           when(mockAuthRepository.signInEmailPassword(email: user1.email, password: user1.password))
               .thenAnswer((_) async => Either.left(InvalidCredentialFailure(failureMessage)));
 
-          await signInController.signInEmailPassword(
+          await signInViewModel.signInEmailPassword(
             email: user1.email,
             password: user1.password,
           );
 
-          expect(signInController.state is SignInError, isTrue);
-          final state = signInController.state as SignInError;
+          expect(signInViewModel.state is SignInError, isTrue);
+          final state = signInViewModel.state as SignInError;
           expect(state.genericMessage, equals(failureMessage));
         },
       );
@@ -139,10 +139,10 @@ void main() {
               .thenAnswer((_) async => Either.left(EmailNotVerifiedFailure(failureMessage)));
           when(mockAuthRepository.sendEmailVerificationForCurrentUser()).thenAnswer((_) async => Either.right(unit));
 
-          await signInController.signInEmailPassword(email: user1.email, password: user1.password);
+          await signInViewModel.signInEmailPassword(email: user1.email, password: user1.password);
 
-          expect(signInController.state is SignInError, isTrue);
-          final state = signInController.state as SignInError;
+          expect(signInViewModel.state is SignInError, isTrue);
+          final state = signInViewModel.state as SignInError;
           expect(state.genericMessage, isNotEmpty);
         },
       );
@@ -156,13 +156,13 @@ void main() {
           when(mockAuthRepository.signInEmailPassword(email: user1.email, password: user1.password))
               .thenAnswer((_) async => Either.left(TooManyRequestsFailure(failureMessage)));
 
-          await signInController.signInEmailPassword(
+          await signInViewModel.signInEmailPassword(
             email: user1.email,
             password: user1.password,
           );
 
-          expect(signInController.state is SignInError, isTrue);
-          final state = signInController.state as SignInError;
+          expect(signInViewModel.state is SignInError, isTrue);
+          final state = signInViewModel.state as SignInError;
           expect(state.genericMessage, equals(failureMessage));
         },
       );
@@ -175,13 +175,13 @@ void main() {
           when(mockAuthRepository.signInEmailPassword(email: user1.email, password: user1.password))
               .thenAnswer((_) async => Either.right(unit));
 
-          await signInController.signInEmailPassword(
+          await signInViewModel.signInEmailPassword(
             email: user1.email,
             password: user1.password,
           );
 
-          expect(signInController.state is SignInSuccess, isTrue);
-          final state = signInController.state as SignInSuccess;
+          expect(signInViewModel.state is SignInSuccess, isTrue);
+          final state = signInViewModel.state as SignInSuccess;
           expect(state.user, equals(user1));
         },
       );

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/views/payment/viewmodels/payment_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_payment_schedules_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/pending_provider_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling/viewmodels/service_scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/show_all_services_viewmodel.dart';
@@ -47,8 +48,8 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<SyncController>(
-          create: (context) => SyncController(
+        ChangeNotifierProvider<SyncViewModel>(
+          create: (context) => SyncViewModel(
             networkService: NetworkService.create(),
             syncServiceCategoryService: SyncServiceCategoryService(
               syncRepository: SyncRepository.create(),
@@ -172,6 +173,13 @@ class App extends StatelessWidget {
         ),
         ChangeNotifierProvider<PendingProviderSchedulesViewModel>(
           create: (context) => PendingProviderSchedulesViewModel(
+            schedulingService: SchedulingService(
+              onlineRepository: SchedulingRepository.createOnline(),
+            ),
+          ),
+        ),
+        ChangeNotifierProvider<PendingPaymentSchedulesViewModel>(
+          create: (context) => PendingPaymentSchedulesViewModel(
             schedulingService: SchedulingService(
               onlineRepository: SchedulingRepository.createOnline(),
             ),

@@ -59,6 +59,16 @@ class MenuView extends StatelessWidget {
                 Navigator.of(context).pushNamed('/pendingProviderSchedules');
               },
             ),
+            Divider(
+              color: Theme.of(context).colorScheme.shadow,
+            ),
+            CustomMenuItem(
+              label: 'Pagamentos pendentes',
+              icon: Icons.money_off,
+              onTap: () {
+                Navigator.of(context).pushNamed('/pendingPaymentSchedules');
+              },
+            ),
           ],
         ),
       ),

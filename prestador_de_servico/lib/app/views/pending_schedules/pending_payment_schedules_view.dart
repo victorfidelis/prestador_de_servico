@@ -1,26 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/views/pending_provider_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
+import 'package:flutter/widgets.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
-import 'package:prestador_de_servico/app/views/pending_provider_schedules/states/pending_provider_schedules_state.dart';
-import 'package:prestador_de_servico/app/views/pending_provider_schedules/widgets/schedules_by_day_card.dart';
+import 'package:prestador_de_servico/app/views/pending_schedules/states/pending_schedules_state.dart';
+import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_payment_schedules_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/pending_schedules/widgets/schedules_by_day_card.dart';
 import 'package:provider/provider.dart';
 
-class PendingProviderSchedulesView extends StatefulWidget {
-  const PendingProviderSchedulesView({super.key});
+class PendingPaymentSchedulesView extends StatefulWidget {
+  const PendingPaymentSchedulesView({super.key});
 
   @override
-  State<PendingProviderSchedulesView> createState() => _PendingProviderSchedulesViewState();
+  State<PendingPaymentSchedulesView> createState() => _PendingPaymentSchedulesViewState();
 }
 
-class _PendingProviderSchedulesViewState extends State<PendingProviderSchedulesView> {
+class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesView> {
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PendingProviderSchedulesViewModel>().load();
+      context.read<PendingPaymentSchedulesViewModel>().load();
     });
     super.initState();
   }
@@ -47,7 +48,7 @@ class _PendingProviderSchedulesViewState extends State<PendingProviderSchedulesV
                           SizedBox(width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
                           const Expanded(
                             child: CustomAppBarTitle(
-                              title: 'Agendamentos Pendentes',
+                              title: 'Pagamentos Pendentes',
                               fontSize: 25,
                             ),
                           ),
@@ -60,22 +61,22 @@ class _PendingProviderSchedulesViewState extends State<PendingProviderSchedulesV
               ),
             ),
           ),
-          Consumer<PendingProviderSchedulesViewModel>(
-            builder: (context, pendingProviderController, _) {
+          Consumer<PendingPaymentSchedulesViewModel>(
+            builder: (context, pendingPaymentViewModel, _) {
               
-              if (pendingProviderController.state is PendingProviderInitial) {
+              if (pendingPaymentViewModel.state is PendingInitial) {
                 return const SliverFillRemaining();
               }
 
-              if (pendingProviderController.state is PendingProviderError) {
+              if (pendingPaymentViewModel.state is PendingError) {
                 return SliverFillRemaining(
                   child: Center(
-                    child: Text((pendingProviderController.state as PendingProviderError).message),
+                    child: Text((pendingPaymentViewModel.state as PendingError).message),
                   ),
                 );
               }
 
-              if (pendingProviderController.state is PendingProviderLoading) {
+              if (pendingPaymentViewModel.state is PendingLoading) {
                 return SliverFillRemaining(
                   child: Container(
                     padding: const EdgeInsets.only(top: 28),
@@ -84,7 +85,7 @@ class _PendingProviderSchedulesViewState extends State<PendingProviderSchedulesV
                 );
               }
 
-              final schedulesByDays = (pendingProviderController.state as PendingProviderLoaded).schedulesByDays;
+              final schedulesByDays = (pendingPaymentViewModel.state as PendingLoaded).schedulesByDays;
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 18),
