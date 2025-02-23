@@ -1,3 +1,4 @@
+import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
@@ -28,20 +29,24 @@ class SchedulingService {
         continue;
       }
 
-      final listOfConflicts = servicesSchedules.where(
-        (s) => (s.id != scheduling.id &&
-            s.serviceStatus.causesConflict() &&
-            s.startDateAndTime.compareTo(scheduling.endDateAndTime) <= 0 &&
-            s.endDateAndTime.compareTo(scheduling.startDateAndTime) >= 0),
-      ).toList();
+      final listOfConflicts = servicesSchedules
+          .where(
+            (s) => (s.id != scheduling.id &&
+                s.serviceStatus.causesConflict() &&
+                s.startDateAndTime.compareTo(scheduling.endDateAndTime) <= 0 &&
+                s.endDateAndTime.compareTo(scheduling.startDateAndTime) >= 0),
+          )
+          .toList();
       final conflictScheduing = listOfConflicts.isNotEmpty;
 
-      final listOfUnavailable = servicesSchedules.where(
-        (s) => (s.id != scheduling.id &&
-            s.serviceStatus.isAcceptStatus() &&
-            s.startDateAndTime.compareTo(scheduling.endDateAndTime) <= 0 &&
-            s.endDateAndTime.compareTo(scheduling.startDateAndTime) >= 0),
-      ).toList();
+      final listOfUnavailable = servicesSchedules
+          .where(
+            (s) => (s.id != scheduling.id &&
+                s.serviceStatus.isAcceptStatus() &&
+                s.startDateAndTime.compareTo(scheduling.endDateAndTime) <= 0 &&
+                s.endDateAndTime.compareTo(scheduling.startDateAndTime) >= 0),
+          )
+          .toList();
       final schedulingUnavailable = listOfUnavailable.isNotEmpty;
       servicesSchedules[i] = servicesSchedules[i].copyWith(
         conflictScheduing: conflictScheduing,
@@ -149,8 +154,32 @@ class SchedulingService {
 
     return dates;
   }
-  
-  Future<Either<Failure, List<ServiceScheduling>>> getPendingProviderSchedules() async {
-    return await onlineRepository.getPendingProviderSchedules();
+
+  Future<Either<Failure, List<SchedulesByDay>>> getPendingProviderSchedules() async {
+    final pendingProviderEither = await onlineRepository.getPendingProviderSchedules();
+    if (pendingProviderEither.isLeft) {
+      return Either.left(pendingProviderEither.left);
+    }
+
+    return Either.right(groupSchedulesByDay(pendingProviderEither.right!));
+  }
+
+  List<SchedulesByDay> groupSchedulesByDay(List<ServiceScheduling> serviceSchedules) {
+    serviceSchedules.sort((s1, s2) => s1.startDateAndTime.compareTo(s2.startDateAndTime));
+    List<SchedulesByDay> schedulesByDays = [];
+    for (ServiceScheduling serviceScheduling in serviceSchedules) {
+      final day = DateTime(
+        serviceScheduling.startDateAndTime.year,
+        serviceScheduling.startDateAndTime.month,
+        serviceScheduling.startDateAndTime.day,
+      );
+      var index = schedulesByDays.indexWhere((s) => s.day == day);
+      if (index == -1) {
+        schedulesByDays.add(SchedulesByDay(day: day, serviceSchedules: []));
+        index = schedulesByDays.length - 1;
+      }
+      schedulesByDays[index].serviceSchedules.add(serviceScheduling);
+    }
+    return schedulesByDays;
   }
 }

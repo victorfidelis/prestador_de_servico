@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/states/service_scheduling/pending_provider_schedules_state.dart';
-import 'package:prestador_de_servico/app/states/service_scheduling/service_scheduling_state.dart';
 
 class PendingProviderSchedulesController extends ChangeNotifier {
   final SchedulingService schedulingService;
@@ -27,7 +26,7 @@ class PendingProviderSchedulesController extends ChangeNotifier {
     if (pendingProviderSchedulesEither.isLeft) {
       _emitState(PendingProviderError(pendingProviderSchedulesEither.left!.message));
     } else {
-      _emitState(PendingProviderLoaded(serviceSchedules: pendingProviderSchedulesEither.right!));
+      _emitState(PendingProviderLoaded(schedulesByDays: pendingProviderSchedulesEither.right!));
     }
   }
   

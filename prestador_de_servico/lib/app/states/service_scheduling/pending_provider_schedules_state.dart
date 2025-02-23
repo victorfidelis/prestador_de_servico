@@ -1,5 +1,5 @@
 
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
 
 abstract class PendingProviderSchedulesState {}
 
@@ -13,8 +13,8 @@ class PendingProviderError extends PendingProviderSchedulesState {
 }
 
 class PendingProviderLoaded extends PendingProviderSchedulesState {
-  final List<ServiceScheduling> serviceSchedules;
+  final List<SchedulesByDay> schedulesByDays;
   final String message;
 
-  PendingProviderLoaded({required this.serviceSchedules, this.message = ''});
+  PendingProviderLoaded({required this.schedulesByDays, this.message = ''});
 }

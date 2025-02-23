@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
@@ -26,6 +27,12 @@ void main() {
   late ServiceScheduling serviceScheduling10as12;
   late ServiceScheduling serviceScheduling13as15confirm;
   late ServiceScheduling serviceScheduling14as16;
+
+  late ServiceScheduling serviceSchedulingDay1das08as09;
+  late ServiceScheduling serviceSchedulingDay2das08as09;
+  late ServiceScheduling serviceSchedulingDay2das09as11;
+  late ServiceScheduling serviceSchedulingDay3das08as09;
+  late ServiceScheduling serviceSchedulingDay3das09as11;
 
   late SchedulingDay schedulingDayBefore10Days;
   late SchedulingDay schedulingDayAfter10Days;
@@ -153,6 +160,24 @@ void main() {
       hasService: true,
       isToday: false,
       numberOfServices: 1,
+    );
+
+    serviceSchedulingDay1das08as09 = serviceScheduling08as09.copyWith();
+    serviceSchedulingDay2das08as09 = serviceScheduling08as09.copyWith(
+      startDateAndTime: serviceScheduling08as09.startDateAndTime.add(const Duration(days: 1)),
+      endDateAndTime: serviceScheduling08as09.endDateAndTime.add(const Duration(days: 1)),
+    );
+    serviceSchedulingDay2das09as11 = serviceScheduling09as11.copyWith(
+      startDateAndTime: serviceScheduling09as11.startDateAndTime.add(const Duration(days: 1)),
+      endDateAndTime: serviceScheduling09as11.endDateAndTime.add(const Duration(days: 1)),
+    );
+    serviceSchedulingDay3das08as09 = serviceScheduling08as09.copyWith(
+      startDateAndTime: serviceScheduling08as09.startDateAndTime.add(const Duration(days: 2)),
+      endDateAndTime: serviceScheduling08as09.endDateAndTime.add(const Duration(days: 2)),
+    );
+    serviceSchedulingDay3das09as11 = serviceScheduling09as11.copyWith(
+      startDateAndTime: serviceScheduling09as11.startDateAndTime.add(const Duration(days: 2)),
+      endDateAndTime: serviceScheduling09as11.endDateAndTime.add(const Duration(days: 2)),
     );
   }
 
@@ -352,6 +377,94 @@ void main() {
           expect(dates.length, equals(daysToAddOfActualDate + daysToRemoveOfActualDate + 1));
           expect(dates[0], equals(schedulingDayBefore10Days));
           expect(dates[daysToAddOfActualDate + daysToRemoveOfActualDate], equals(schedulingDayAfter100Days));
+        },
+      );
+    },
+  );
+
+  group(
+    'getPendingProviderSchedules',
+    () {
+      test(
+        '''Deve retornar um Failure quando algum erro ocorrer no repository''',
+        () async {
+          const failureMessage = 'Falha de teste';
+
+          when(onlineMockSchedulingRepository.getPendingProviderSchedules()).thenAnswer(
+            (_) async => Either.left(Failure(failureMessage)),
+          );
+
+          final pendingProviderEither = await serviceSchedulingService.getPendingProviderSchedules();
+
+          expect(pendingProviderEither.isLeft, isTrue);
+          expect(pendingProviderEither.left!.message, equals(failureMessage));
+        },
+      );
+      
+      test(
+        '''Deve retornar uma lista de SchedulesByDay vazia quando não houver pendências''',
+        () async {
+          final List<ServiceScheduling> servicesSchedules = [];
+
+          when(onlineMockSchedulingRepository.getPendingProviderSchedules()).thenAnswer(
+            (_) async => Either.right(servicesSchedules),
+          );
+
+          final pendingProviderEither = await serviceSchedulingService.getPendingProviderSchedules();
+
+          expect(pendingProviderEither.isRight, isTrue);
+          final schedulesByDaysReturns = pendingProviderEither.right!;
+
+          expect(schedulesByDaysReturns.length, equals(0));
+        },
+      );
+
+      test(
+        '''Deve retornar uma lista de SchedulesByDay''',
+        () async {
+          final List<ServiceScheduling> servicesSchedules = [
+            serviceSchedulingDay1das08as09,
+            serviceSchedulingDay2das08as09,
+            serviceSchedulingDay2das09as11,
+            serviceSchedulingDay3das08as09,
+            serviceSchedulingDay3das09as11,
+          ];
+
+          DateTime day1 = DateTime(
+            actualDate.year,
+            actualDate.month,
+            actualDate.day,
+          );
+          DateTime day2 = day1.add(const Duration(days: 1));
+          DateTime day3 = day1.add(const Duration(days: 2));
+
+          final List<SchedulesByDay> schedulesByDays = [
+            SchedulesByDay(day: day1, serviceSchedules: [serviceSchedulingDay1das08as09]),
+            SchedulesByDay(
+              day: day2,
+              serviceSchedules: [serviceSchedulingDay2das08as09, serviceSchedulingDay2das09as11],
+            ),
+            SchedulesByDay(
+              day: day3,
+              serviceSchedules: [serviceSchedulingDay3das08as09, serviceSchedulingDay3das09as11],
+            ),
+          ];
+
+          when(onlineMockSchedulingRepository.getPendingProviderSchedules()).thenAnswer(
+            (_) async => Either.right(servicesSchedules),
+          );
+
+          final pendingProviderEither = await serviceSchedulingService.getPendingProviderSchedules();
+
+          expect(pendingProviderEither.isRight, isTrue);
+          final schedulesByDaysReturns = pendingProviderEither.right!;
+
+          expect(schedulesByDaysReturns.length, equals(schedulesByDays.length));
+          expect(schedulesByDaysReturns[1].day, schedulesByDays[1].day);
+          expect(
+            schedulesByDaysReturns[1].serviceSchedules.length,
+            schedulesByDays[1].serviceSchedules.length,
+          );
         },
       );
     },
