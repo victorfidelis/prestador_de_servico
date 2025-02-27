@@ -46,7 +46,7 @@ void main() {
         DatabaseFactory databaseFactory = databaseFactoryFfi;
         Database database =
             await databaseFactory.openDatabase(inMemoryDatabasePath);
-        await SqfliteConfig().setupDatabase(database);
+        await SqfliteConfig().createDatabase(database);
 
         serviceRepository = SqfliteServiceRepository(database: database);
       });

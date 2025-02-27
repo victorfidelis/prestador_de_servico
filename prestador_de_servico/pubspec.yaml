@@ -35,7 +35,7 @@ dependencies:
   cloud_firestore: ^5.5.0
   firebase_storage: ^12.3.6
   provider: ^6.1.2
-  sqflite: ^2.3.3+2
+  sqflite: ^2.4.2
   connectivity_plus: ^6.1.0
   replace_diacritic:
     git:

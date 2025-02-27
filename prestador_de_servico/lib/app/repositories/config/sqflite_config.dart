@@ -1,3 +1,4 @@
+
 import 'package:sqflite/sqflite.dart';
 
 class SqfliteConfig {
@@ -24,7 +25,8 @@ class SqfliteConfig {
 
     mainDatabase = await openDatabase(
       fullNameDb,
-      onOpen: setupDatabase,
+      version: 3,
+      onCreate: createDatabase,
     );
 
     return mainDatabase!;
@@ -37,7 +39,7 @@ class SqfliteConfig {
     } 
   }
 
-  Future<void> setupDatabase(Database database) async {
+  Future<void> createDatabase(Database database, int version) async {
     await _createSyncControl(database: database);
     await _createServiceCategories(database: database);
     await _createServices(database: database);
@@ -55,10 +57,10 @@ class SqfliteConfig {
     if (integrationControlQuantity == 0) {
       await database.execute(
         'CREATE TABLE $syncControl ('
-        'dateSyncServiceCategory int, '
-        'dateSyncService int,'
-        'dateSyncPayment int,'
-        'dateSyncServiceDay int'
+        'dateSyncServiceCategory INT, '
+        'dateSyncService INT,'
+        'dateSyncPayment INT,'
+        'dateSyncServiceDay INT'
         ')',
       );
     }
