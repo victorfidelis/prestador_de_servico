@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 
-class ServiceAdapter {
+class ServiceConverter {
   static Map<String, dynamic> toMap({required Service service}) {
     return {
       'id': service.id,

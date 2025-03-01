@@ -3,7 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/payment/payment.dart';
 
-class PaymentAdapter {
+class PaymentConverter {
 
   static Map<String, dynamic> toFirebaseMap({required Payment payment}) {
     return {

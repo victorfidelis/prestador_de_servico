@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
-import 'package:prestador_de_servico/app/models/services_by_category/services_by_category_adapter.dart';
+import 'package:prestador_de_servico/app/models/services_by_category/services_by_category_converter.dart';
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/repositories/service/services_by_category/services_by_category_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
@@ -56,7 +56,7 @@ class SqfliteServicesByCategoryRepository implements ServicesByCategoryRepositor
 
     try {
       final servicesMap = await database!.rawQuery(selectCommand);
-      final services = ServicesByCategoryAdapter.fromListSqflite(servicesMap);
+      final services = ServicesByCategoryConverter.fromListSqflite(servicesMap);
       return Either.right(services);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
@@ -93,7 +93,7 @@ class SqfliteServicesByCategoryRepository implements ServicesByCategoryRepositor
 
     try {
       final servicesMap = await database!.rawQuery(selectCommand);
-      final services = ServicesByCategoryAdapter.fromListSqflite(servicesMap);
+      final services = ServicesByCategoryConverter.fromListSqflite(servicesMap);
       return Either.right(services);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));

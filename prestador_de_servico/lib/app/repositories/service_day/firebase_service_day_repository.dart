@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
-import 'package:prestador_de_servico/app/models/service_day/service_day_adapter.dart';
+import 'package:prestador_de_servico/app/models/service_day/service_day_converter.dart';
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/service_day/service_day_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
@@ -20,7 +20,7 @@ class FirebaseServiceDayRepository implements ServiceDayRepository {
     try {
       final serviceDaysCollection = FirebaseFirestore.instance.collection('serviceDays');
       QuerySnapshot snapServiceDays = await serviceDaysCollection.where('isDeleted', isEqualTo: false).get();
-      List<ServiceDay> serviceDays = snapServiceDays.docs.map((doc) => ServiceDayAdapter.fromDocumentSnapshot(doc: doc)).toList();
+      List<ServiceDay> serviceDays = snapServiceDays.docs.map((doc) => ServiceDayConverter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(serviceDays);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -40,7 +40,7 @@ class FirebaseServiceDayRepository implements ServiceDayRepository {
 
     try {
       final serviceDaysCollection = FirebaseFirestore.instance.collection('serviceDays');
-      await serviceDaysCollection.doc(serviceDay.id).update(ServiceDayAdapter.toFirebaseMap(serviceDay: serviceDay));
+      await serviceDaysCollection.doc(serviceDay.id).update(ServiceDayConverter.toFirebaseMap(serviceDay: serviceDay));
       return Either.right(unit);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -72,7 +72,7 @@ class FirebaseServiceDayRepository implements ServiceDayRepository {
       final serviceDaysCollection = FirebaseFirestore.instance.collection('serviceDays');
       final timestampLastSync = Timestamp.fromDate(dateLastSync);
       final snapServiceDay = await serviceDaysCollection.where('dateSync', isGreaterThan: timestampLastSync).get();
-      final serviceDays = snapServiceDay.docs.map((doc) => ServiceDayAdapter.fromDocumentSnapshot(doc: doc)).toList();
+      final serviceDays = snapServiceDay.docs.map((doc) => ServiceDayConverter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(serviceDays);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {

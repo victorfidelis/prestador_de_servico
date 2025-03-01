@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory_adapter.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory_converter.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
@@ -20,7 +20,7 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
     try {
       final colletion = FirebaseFirestore.instance.collection('serviceCategories');
       final querySnap = await colletion.where('isDeleted', isEqualTo: false).get();
-      final serviceCategories = querySnap.docs.map((doc) => ServiceCartegoryAdapter.fromFirebase(doc)).toList();
+      final serviceCategories = querySnap.docs.map((doc) => ServiceCartegoryConverter.fromFirebase(doc)).toList();
       return Either.right(serviceCategories);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -41,7 +41,7 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
     try {
       final collection = FirebaseFirestore.instance.collection('serviceCategories');
       final docSnap = await collection.doc(id).get();
-      final serviceCartegory = ServiceCartegoryAdapter.fromFirebase(docSnap);
+      final serviceCartegory = ServiceCartegoryConverter.fromFirebase(docSnap);
       return Either.right(serviceCartegory);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -84,7 +84,7 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
       final collection = FirebaseFirestore.instance.collection('serviceCategories');
       final timestampLastSync = Timestamp.fromDate(dateLastSync);
       final querySnap = await collection.where('dateSync', isGreaterThan: timestampLastSync).get();
-      final serviceCategories = querySnap.docs.map((doc) => ServiceCartegoryAdapter.fromFirebase(doc)).toList();
+      final serviceCategories = querySnap.docs.map((doc) => ServiceCartegoryConverter.fromFirebase(doc)).toList();
       return Either.right(serviceCategories);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -104,7 +104,7 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
 
     try {
       final collection = FirebaseFirestore.instance.collection('serviceCategories');
-      final docRef = await collection.add(ServiceCartegoryAdapter.toFirebaseMap(serviceCategory));
+      final docRef = await collection.add(ServiceCartegoryConverter.toFirebaseMap(serviceCategory));
       DocumentSnapshot docSnap = await docRef.get();
       return Either.right(docSnap.id);
     } on FirebaseException catch (e) {
@@ -125,7 +125,7 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
 
     try {
       final collection = FirebaseFirestore.instance.collection('serviceCategories');
-      await collection.doc(serviceCategory.id).update(ServiceCartegoryAdapter.toFirebaseMap(serviceCategory));
+      await collection.doc(serviceCategory.id).update(ServiceCartegoryConverter.toFirebaseMap(serviceCategory));
       return Either.right(unit);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -146,9 +146,9 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
     try {
       final collection = FirebaseFirestore.instance.collection('serviceCategories');
       final doc = collection.doc(id);
-      var serviceCategory = ServiceCartegoryAdapter.fromFirebase(await doc.get());
+      var serviceCategory = ServiceCartegoryConverter.fromFirebase(await doc.get());
       serviceCategory = serviceCategory.copyWith(isDeleted: true);
-      await doc.update(ServiceCartegoryAdapter.toFirebaseMap(serviceCategory));
+      await doc.update(ServiceCartegoryConverter.toFirebaseMap(serviceCategory));
       return Either.right(unit);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {

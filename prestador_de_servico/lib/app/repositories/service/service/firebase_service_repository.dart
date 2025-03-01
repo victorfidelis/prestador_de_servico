@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/models/service/service_adapter.dart';
+import 'package:prestador_de_servico/app/models/service/service_converter.dart';
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
@@ -20,7 +20,7 @@ class FirebaseServiceRepository implements ServiceRepository {
     try {
       final servicesCollection = FirebaseFirestore.instance.collection('services');
       QuerySnapshot snapServices = await servicesCollection.where('isDeleted', isEqualTo: false).get();
-      List<Service> services = snapServices.docs.map((doc) => ServiceAdapter.fromDocumentSnapshot(doc: doc)).toList();
+      List<Service> services = snapServices.docs.map((doc) => ServiceConverter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(services);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -44,7 +44,7 @@ class FirebaseServiceRepository implements ServiceRepository {
           .where('isDeleted', isEqualTo: false)
           .where('serviceCategoryId', isEqualTo: serviceCategoryId)
           .get();
-      final services = snapServices.docs.map((doc) => ServiceAdapter.fromDocumentSnapshot(doc: doc)).toList();
+      final services = snapServices.docs.map((doc) => ServiceConverter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(services);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -65,7 +65,7 @@ class FirebaseServiceRepository implements ServiceRepository {
     try {
       final servicesCollection = FirebaseFirestore.instance.collection('services');
       DocumentSnapshot docSnap = await servicesCollection.doc(id).get();
-      Service service = ServiceAdapter.fromDocumentSnapshot(doc: docSnap);
+      Service service = ServiceConverter.fromDocumentSnapshot(doc: docSnap);
       return Either.right(service);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -107,7 +107,7 @@ class FirebaseServiceRepository implements ServiceRepository {
       final servicesCollection = FirebaseFirestore.instance.collection('services');
       final timestampLastSync = Timestamp.fromDate(dateLastSync);
       final snapService = await servicesCollection.where('dateSync', isGreaterThan: timestampLastSync).get();
-      final services = snapService.docs.map((doc) => ServiceAdapter.fromDocumentSnapshot(doc: doc)).toList();
+      final services = snapService.docs.map((doc) => ServiceConverter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(services);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -128,7 +128,7 @@ class FirebaseServiceRepository implements ServiceRepository {
     try {
       final servicesCollection = FirebaseFirestore.instance.collection('services');
       final docRef = await servicesCollection.add(
-        ServiceAdapter.toFirebaseMap(
+        ServiceConverter.toFirebaseMap(
           service: service,
         ),
       );
@@ -152,7 +152,7 @@ class FirebaseServiceRepository implements ServiceRepository {
 
     try {
       final servicesCollection = FirebaseFirestore.instance.collection('services');
-      await servicesCollection.doc(service.id).update(ServiceAdapter.toFirebaseMap(service: service));
+      await servicesCollection.doc(service.id).update(ServiceConverter.toFirebaseMap(service: service));
       return Either.right(unit);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {

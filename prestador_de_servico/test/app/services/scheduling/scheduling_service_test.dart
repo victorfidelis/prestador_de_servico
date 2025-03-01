@@ -41,6 +41,8 @@ void main() {
   void setUpValues() {
     final actualTime = DateTime.now();
     actualDate = DateTime(actualTime.year, actualTime.month, actualTime.day);
+    final creationDate = actualTime.add(const Duration(days: -30));
+
 
     serviceSchedulingService = SchedulingService(
       onlineRepository: onlineMockSchedulingRepository,
@@ -86,6 +88,7 @@ void main() {
       totalPrice: service1.price,
       totalPaid: 0,
       totalRate: 0,
+      creationDate: creationDate,
     );
 
     serviceScheduling09as11 = ServiceScheduling(
@@ -99,6 +102,7 @@ void main() {
       totalPrice: service1.price + service2.price,
       totalPaid: 0,
       totalRate: 0,
+      creationDate: creationDate,
     );
 
     serviceScheduling10as12 = ServiceScheduling(
@@ -112,6 +116,7 @@ void main() {
       totalPrice: service1.price + service2.price,
       totalPaid: 0,
       totalRate: 0,
+      creationDate: creationDate,
     );
 
     serviceScheduling13as15confirm = ServiceScheduling(
@@ -125,6 +130,7 @@ void main() {
       totalPrice: service1.price + service3.price,
       totalPaid: 0,
       totalRate: 0,
+      creationDate: creationDate,
     );
 
     serviceScheduling14as16 = ServiceScheduling(
@@ -138,6 +144,7 @@ void main() {
       totalPrice: service1.price + service3.price,
       totalPaid: 0,
       totalRate: 0,
+      creationDate: creationDate,
     );
 
     schedulingDayBefore10Days = SchedulingDay(

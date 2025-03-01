@@ -20,6 +20,8 @@ class User {
     this.confirmPassword = '',
   });
 
+  String get fullname => '$name $surname'; 
+
   User copyWith({
     String? id,
     bool? isAdmin,

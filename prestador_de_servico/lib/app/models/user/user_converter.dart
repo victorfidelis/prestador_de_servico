@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 
-class UserAdapter {
+class UserConverter {
   static Map<String, dynamic> toMap({required User user}) {
     return {
       'id': user.id,

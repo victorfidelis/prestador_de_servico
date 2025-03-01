@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
-import 'package:prestador_de_servico/app/models/sync/sync_adapter.dart';
+import 'package:prestador_de_servico/app/models/sync/sync_converter.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
@@ -50,7 +50,7 @@ class SqfliteSyncRepository implements SyncRepository {
       if (syncMap.isEmpty) {
         return Either.right(Sync());
       }
-      final sync = SyncAdapter.fromSqflite(map: syncMap[0]);
+      final sync = SyncConverter.fromSqflite(map: syncMap[0]);
       return Either.right(sync);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));

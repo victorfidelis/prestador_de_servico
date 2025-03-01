@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:prestador_de_servico/app/models/user/user_adapter.dart';
+import 'package:prestador_de_servico/app/models/user/user_converter.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
@@ -20,7 +20,7 @@ class FirebaseUserRepository implements UserRepository {
     try {
       final usersCollection = FirebaseFirestore.instance.collection('users');
       DocumentReference docRef =
-          await usersCollection.add(UserAdapter.toFirebaseMap(user: user));
+          await usersCollection.add(UserConverter.toFirebaseMap(user: user));
       DocumentSnapshot docSnap = await docRef.get();
       return Either.right(docSnap.id);
     } on FirebaseException catch (e) {
@@ -42,7 +42,7 @@ class FirebaseUserRepository implements UserRepository {
     try {
       final usersCollection = FirebaseFirestore.instance.collection('users');
       DocumentSnapshot docSnap = await usersCollection.doc(id).get();
-      User user = UserAdapter.fromDocumentSnapshot(doc: docSnap);
+      User user = UserConverter.fromDocumentSnapshot(doc: docSnap);
       return Either.right(user);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -68,7 +68,7 @@ class FirebaseUserRepository implements UserRepository {
       if (querySnap.docs.isEmpty) {
         return Either.left(UserNotFoundFailure('Usuário não encontrado'));
       } else {
-        User user = UserAdapter.fromDocumentSnapshot(doc: querySnap.docs[0]);
+        User user = UserConverter.fromDocumentSnapshot(doc: querySnap.docs[0]);
         return Either.right(user);
       }
     } on FirebaseException catch (e) {
@@ -111,7 +111,7 @@ class FirebaseUserRepository implements UserRepository {
       final usersCollection = FirebaseFirestore.instance.collection('users');
       await usersCollection
           .doc(user.id)
-          .update(UserAdapter.toFirebaseMap(user: user));
+          .update(UserConverter.toFirebaseMap(user: user));
       return Either.right(unit);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {

@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/models/service/service_adapter.dart';
+import 'package:prestador_de_servico/app/models/service/service_converter.dart';
 import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
@@ -52,7 +52,7 @@ class SqfliteServiceRepository implements ServiceRepository {
 
     try {
       final servicesMap = await database!.rawQuery(selectCommand);
-      final services = servicesMap.map((service) => ServiceAdapter.fromSqflite(map: service)).toList();
+      final services = servicesMap.map((service) => ServiceConverter.fromSqflite(map: service)).toList();
       return Either.right(services);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
@@ -85,7 +85,7 @@ class SqfliteServiceRepository implements ServiceRepository {
     try {
       final params = [serviceCategoryId];
       final servicesMap = await database!.rawQuery(selectCommand, params);
-      final services = servicesMap.map((service) => ServiceAdapter.fromSqflite(map: service)).toList();
+      final services = servicesMap.map((service) => ServiceConverter.fromSqflite(map: service)).toList();
       return Either.right(services);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
@@ -118,7 +118,7 @@ class SqfliteServiceRepository implements ServiceRepository {
     try {
       final params = [id];
       final serviceMap = await database!.rawQuery(selectCommand, params);
-      final service = ServiceAdapter.fromSqflite(map: serviceMap[0]);
+      final service = ServiceConverter.fromSqflite(map: serviceMap[0]);
       return Either.right(service);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
@@ -153,7 +153,7 @@ class SqfliteServiceRepository implements ServiceRepository {
 
     try {
       final serviceMap = await database!.rawQuery(selectCommand);
-      final services = serviceMap.map((service) => ServiceAdapter.fromSqflite(map: service)).toList();
+      final services = serviceMap.map((service) => ServiceConverter.fromSqflite(map: service)).toList();
       return Either.right(services);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));

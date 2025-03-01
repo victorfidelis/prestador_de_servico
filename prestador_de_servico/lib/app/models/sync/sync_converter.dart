@@ -1,6 +1,6 @@
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
 
-class SyncAdapter {
+class SyncConverter {
   static Sync fromSqflite({required Map map}) {
     DateTime? dateSyncServiceCategory;
     if (map['dateSyncServiceCategory'] > 0) {

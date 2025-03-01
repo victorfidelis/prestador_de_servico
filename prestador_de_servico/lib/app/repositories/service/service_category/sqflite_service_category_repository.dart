@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
-import 'package:prestador_de_servico/app/models/service_category/service_cartegory_adapter.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory_converter.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
@@ -48,7 +48,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
     try {
       final map = await database!.rawQuery(selectCommand);
       final serviceCartegories =
-          map.map((serviceCategory) => ServiceCartegoryAdapter.fromSqflite(serviceCategory)).toList();
+          map.map((serviceCategory) => ServiceCartegoryConverter.fromSqflite(serviceCategory)).toList();
       return Either.right(serviceCartegories);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
@@ -77,7 +77,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
 
     try {
       final map = await database!.rawQuery(selectCommand, params);
-      final serviceCartegory = ServiceCartegoryAdapter.fromSqflite(map[0]);
+      final serviceCartegory = ServiceCartegoryConverter.fromSqflite(map[0]);
       return Either.right(serviceCartegory);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
@@ -107,7 +107,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
     try {
       final map = await database!.rawQuery(selectCommand);
       final serviceCartegories =
-          map.map((serviceCategory) => ServiceCartegoryAdapter.fromSqflite(serviceCategory)).toList();
+          map.map((serviceCategory) => ServiceCartegoryConverter.fromSqflite(serviceCategory)).toList();
       return Either.right(serviceCartegories);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));

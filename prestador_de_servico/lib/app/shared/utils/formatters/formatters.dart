@@ -2,6 +2,11 @@
 import 'package:prestador_de_servico/app/shared/utils/extensions/string_extensions.dart';
 
 class Formatters {
+
+  static String formatZipCode(String zipCode) {
+    return '${zipCode.substring(0, 5)}-${zipCode.substring(5, 8)}';
+  }
+
   static String formatPrice(double price) {
     var textPrice = price.toStringAsFixed(2).replaceAll('.', ',').trim();
     textPrice = addThousandsSeparator(textPrice);

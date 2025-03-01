@@ -1,7 +1,7 @@
 
 import 'dart:io';
 import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
-import 'package:prestador_de_servico/app/models/service_day/service_day_adapter.dart';
+import 'package:prestador_de_servico/app/models/service_day/service_day_converter.dart';
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/repositories/service_day/service_day_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
@@ -53,7 +53,7 @@ class SqfliteServiceDayRepository implements ServiceDayRepository {
 
     try {
       final serviceDaysMap = await database!.rawQuery(selectCommand);
-      final serviceDays = serviceDaysMap.map((serviceDay) => ServiceDayAdapter.fromSqflite(map: serviceDay)).toList();
+      final serviceDays = serviceDaysMap.map((serviceDay) => ServiceDayConverter.fromSqflite(map: serviceDay)).toList();
       return Either.right(serviceDays);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));

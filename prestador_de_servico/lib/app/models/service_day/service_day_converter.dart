@@ -3,7 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
 
-class ServiceDayAdapter {
+class ServiceDayConverter {
 
   static Map<String, dynamic> toFirebaseMap({required ServiceDay serviceDay}) {
     return {

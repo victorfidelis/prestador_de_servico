@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
-import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_adapter.dart';
+import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_converter.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling_adapter.dart';
+import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling_converter.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
@@ -30,7 +30,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
           .where('startDateAndTime', isLessThan: endDate)
           .get();
       List<ServiceScheduling> serviceSchedules =
-          snapServiceSchedules.docs.map((doc) => ServiceSchedulingAdapter.fromDocumentSnapshot(doc: doc)).toList();
+          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -52,7 +52,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
       QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection.where('user.id', isEqualTo: userId).get();
       List<ServiceScheduling> serviceSchedules =
-          snapServiceSchedules.docs.map((doc) => ServiceSchedulingAdapter.fromDocumentSnapshot(doc: doc)).toList();
+          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -74,7 +74,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       final schedulesPerDayCollection = FirebaseFirestore.instance.collection('schedulesPerDay');
       QuerySnapshot snapSchedulesPerDay = await schedulesPerDayCollection.get();
       List<SchedulingDay> schedulesPerDay =
-          snapSchedulesPerDay.docs.map((doc) => SchedulingDayAdapter.fromDocumentSnapshot(doc: doc)).toList();
+          snapSchedulesPerDay.docs.map((doc) => SchedulingDayConverter.fromDocumentSnapshot(doc: doc)).toList();
 
       return Either.right(schedulesPerDay);
     } on FirebaseException catch (e) {
@@ -97,7 +97,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
       QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection.where('serviceStatusCode', isEqualTo: 1).get();
       List<ServiceScheduling> serviceSchedules =
-          snapServiceSchedules.docs.map((doc) => ServiceSchedulingAdapter.fromDocumentSnapshot(doc: doc)).toList();
+          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -122,7 +122,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       .where('isPaid', isEqualTo: false)
       .get();
       List<ServiceScheduling> serviceSchedules =
-          snapServiceSchedules.docs.map((doc) => ServiceSchedulingAdapter.fromDocumentSnapshot(doc: doc)).toList();
+          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {

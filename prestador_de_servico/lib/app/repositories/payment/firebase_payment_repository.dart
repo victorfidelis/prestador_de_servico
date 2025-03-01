@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/payment/payment.dart';
-import 'package:prestador_de_servico/app/models/payment/payment_adapter.dart';
+import 'package:prestador_de_servico/app/models/payment/payment_converter.dart';
 import 'package:prestador_de_servico/app/repositories/config/firebase_initializer.dart';
 import 'package:prestador_de_servico/app/repositories/payment/payment_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
@@ -20,7 +20,7 @@ class FirebasePaymentRepository implements PaymentRepository {
     try {
       final paymentsCollection = FirebaseFirestore.instance.collection('payments');
       QuerySnapshot snapPayments = await paymentsCollection.where('isDeleted', isEqualTo: false).get();
-      List<Payment> payments = snapPayments.docs.map((doc) => PaymentAdapter.fromDocumentSnapshot(doc: doc)).toList();
+      List<Payment> payments = snapPayments.docs.map((doc) => PaymentConverter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(payments);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -40,7 +40,7 @@ class FirebasePaymentRepository implements PaymentRepository {
 
     try {
       final paymentsCollection = FirebaseFirestore.instance.collection('payments');
-      await paymentsCollection.doc(payment.id).update(PaymentAdapter.toFirebaseMap(payment: payment));
+      await paymentsCollection.doc(payment.id).update(PaymentConverter.toFirebaseMap(payment: payment));
       return Either.right(unit);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -72,7 +72,7 @@ class FirebasePaymentRepository implements PaymentRepository {
       final paymentsCollection = FirebaseFirestore.instance.collection('payments');
       final timestampLastSync = Timestamp.fromDate(dateLastSync);
       final snapPayment = await paymentsCollection.where('dateSync', isGreaterThan: timestampLastSync).get();
-      final payments = snapPayment.docs.map((doc) => PaymentAdapter.fromDocumentSnapshot(doc: doc)).toList();
+      final payments = snapPayment.docs.map((doc) => PaymentConverter.fromDocumentSnapshot(doc: doc)).toList();
       return Either.right(payments);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {

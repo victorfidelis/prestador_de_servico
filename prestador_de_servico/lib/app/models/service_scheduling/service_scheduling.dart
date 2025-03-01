@@ -1,4 +1,5 @@
 
+import 'package:prestador_de_servico/app/models/address/address.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
@@ -17,6 +18,8 @@ class ServiceScheduling {
   bool schedulingUnavailable;
   bool conflictScheduing;
   bool isPaid;
+  DateTime creationDate;
+  Address? address;
 
   double get needToPay => totalPrice + totalRate - totalDiscount - totalPaid;
   double get totalPriceToPay => totalPrice + totalRate - totalDiscount;
@@ -35,6 +38,8 @@ class ServiceScheduling {
     this.schedulingUnavailable = false,
     this.conflictScheduing = false,
     this.isPaid = false,
+    required this.creationDate, 
+    this.address,
   });
 
   ServiceScheduling copyWith({
@@ -50,6 +55,8 @@ class ServiceScheduling {
     double? totalPaid,
     bool? schedulingUnavailable,
     bool? conflictScheduing,
+    DateTime? creationDate,
+    Address? address,
   }) {
     return ServiceScheduling(
       id: id ?? this.id,
@@ -64,6 +71,8 @@ class ServiceScheduling {
       totalPaid: totalPaid ?? this.totalPaid,
       schedulingUnavailable: schedulingUnavailable ?? this.schedulingUnavailable,
       conflictScheduing: conflictScheduing ?? this.conflictScheduing,
+      creationDate: creationDate ?? this.creationDate,
+      address: address ?? this.address,
     );
   }
 }

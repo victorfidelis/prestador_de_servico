@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 
-class ServiceCartegoryAdapter {
+class ServiceCartegoryConverter {
   static Map<String, dynamic> toMap(ServiceCategory serviceCategory) {
     return {
       'id': serviceCategory.id,

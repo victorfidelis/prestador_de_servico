@@ -2,7 +2,7 @@
 import 'dart:io';
 
 import 'package:prestador_de_servico/app/models/payment/payment.dart';
-import 'package:prestador_de_servico/app/models/payment/payment_adapter.dart';
+import 'package:prestador_de_servico/app/models/payment/payment_converter.dart';
 import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart';
 import 'package:prestador_de_servico/app/repositories/payment/payment_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
@@ -51,7 +51,7 @@ class SqflitePaymentRepository implements PaymentRepository {
 
     try {
       final paymentsMap = await database!.rawQuery(selectCommand);
-      final payments = paymentsMap.map((payment) => PaymentAdapter.fromSqflite(map: payment)).toList();
+      final payments = paymentsMap.map((payment) => PaymentConverter.fromSqflite(map: payment)).toList();
       return Either.right(payments);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
