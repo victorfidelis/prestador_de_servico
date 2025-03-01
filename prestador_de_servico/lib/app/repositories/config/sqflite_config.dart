@@ -26,7 +26,7 @@ class SqfliteConfig {
     mainDatabase = await openDatabase(
       fullNameDb,
       version: 3,
-      onCreate: createDatabase,
+      onCreate: (database, version) => createDatabase(database),
     );
 
     return mainDatabase!;
@@ -39,7 +39,7 @@ class SqfliteConfig {
     } 
   }
 
-  Future<void> createDatabase(Database database, int version) async {
+  Future<void> createDatabase(Database database) async {
     await _createSyncControl(database: database);
     await _createServiceCategories(database: database);
     await _createServices(database: database);
