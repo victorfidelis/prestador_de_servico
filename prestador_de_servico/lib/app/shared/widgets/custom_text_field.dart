@@ -43,16 +43,17 @@ class CustomTextField extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surface,
-            borderRadius: const BorderRadius.all(Radius.circular(12)),
-            boxShadow: [
-              BoxShadow(
-                color: Theme.of(context).colorScheme.shadow,
-                offset: const Offset(0, 4),
-                blurStyle: BlurStyle.normal,
-                blurRadius: 4,
-              )
-            ]),
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.shadow,
+              offset: const Offset(0, 4),
+              blurStyle: BlurStyle.normal,
+              blurRadius: 4,
+            )
+          ],
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -98,7 +99,8 @@ class CustomTextField extends StatelessWidget {
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           isDense: true,
-                          contentPadding: const EdgeInsets.symmetric(vertical: 6),
+                          contentPadding:
+                              const EdgeInsets.symmetric(vertical: 6),
                           errorText: errorMessage,
                         ),
                         style: const TextStyle(
