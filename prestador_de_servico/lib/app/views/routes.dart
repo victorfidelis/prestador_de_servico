@@ -9,6 +9,7 @@ import 'package:prestador_de_servico/app/views/payment/payment_view.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/pending_payment_schedules_view.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/pending_provider_schedules_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling/scheduling_view.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/edit_date_and_time_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/scheduling_details_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
@@ -43,9 +44,12 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     return _buildRoute(
       settings,
       ShowAllServicesView(
-        removeServiceOfOtherScreen: (argmuments['removeServiceOfOtherScreen'] as Function({required Service service})),
-        addServiceOfOtherScreen: (argmuments['addServiceOfOtherScreen'] as Function({required Service service})),
-        editServiceOfOtherScreen: (argmuments['editServiceOfOtherScreen'] as Function({required Service service})),
+        removeServiceOfOtherScreen: (argmuments['removeServiceOfOtherScreen']
+            as Function({required Service service})),
+        addServiceOfOtherScreen: (argmuments['addServiceOfOtherScreen']
+            as Function({required Service service})),
+        editServiceOfOtherScreen: (argmuments['editServiceOfOtherScreen']
+            as Function({required Service service})),
       ),
     );
   }
@@ -69,7 +73,17 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     return _buildRoute(
       settings,
       SchedulingDetailsView(
-        serviceScheduling: (argmuments['serviceScheduling']) as ServiceScheduling,
+        serviceScheduling:
+            (argmuments['serviceScheduling']) as ServiceScheduling,
+      ),
+    );
+  }
+  if (settings.name == '/editDateAndTime') {
+    final argmuments = (settings.arguments as Map);
+    return _buildRoute(
+      settings,
+      EditDateAndTimeView(
+        serviceScheduling: argmuments['serviceScheduling'] as ServiceScheduling,
       ),
     );
   }

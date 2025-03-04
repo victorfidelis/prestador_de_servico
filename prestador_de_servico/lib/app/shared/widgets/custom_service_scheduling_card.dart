@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
+import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 
@@ -40,7 +41,7 @@ class _CustomServiceSchedulingCardState
     );
     final formatPriceToPay =
         Formatters.formatPrice(serviceScheduling.totalPriceToPay);
-    final textColor = ColorsUtils.getColorFromStatus(serviceScheduling.serviceStatus);
+    Color statusColor = ColorsUtils.getColorFromStatus(context, serviceScheduling.serviceStatus);
     final finishedSealIcon = getFinishedSealIcon();
     final othersValues = getOtherValues();
     final message = messageWidget();
@@ -104,7 +105,7 @@ class _CustomServiceSchedulingCardState
                               Text(
                                 serviceScheduling.user.fullname,
                                 style: TextStyle(
-                                  color: textColor,
+                                  color: statusColor,
                                   fontWeight: FontWeight.w700,
                                   fontSize: 16,
                                 ),
@@ -114,7 +115,7 @@ class _CustomServiceSchedulingCardState
                                 child: Text(
                                   serviceScheduling.serviceStatus.name,
                                   style: TextStyle(
-                                    color: textColor,
+                                    color: statusColor,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 14,
                                   ),
@@ -332,4 +333,5 @@ class _CustomServiceSchedulingCardState
       ],
     );
   }
+
 }

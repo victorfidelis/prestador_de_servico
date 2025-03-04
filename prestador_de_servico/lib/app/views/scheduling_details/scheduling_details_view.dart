@@ -29,8 +29,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    Color textColor =
-        ColorsUtils.getColorFromStatus(serviceScheduling.serviceStatus);
+    Color statusColor = ColorsUtils.getColorFromStatus(context, serviceScheduling.serviceStatus);
 
     return Scaffold(
       body: CustomScrollView(
@@ -77,7 +76,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                   Text(
                     serviceScheduling.user.fullname,
                     style: TextStyle(
-                      color: textColor,
+                      color: statusColor,
                       fontSize: 24,
                       fontWeight: FontWeight.w700,
                     ),
@@ -86,7 +85,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                   Text(
                     serviceScheduling.serviceStatus.name,
                     style: TextStyle(
-                      color: textColor,
+                      color: statusColor,
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                     ),
@@ -97,6 +96,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                   DateAndTimeCard(
                     startDateAndTime: serviceScheduling.startDateAndTime,
                     endDateAndTime: serviceScheduling.endDateAndTime,
+                    onEdit: _onEditDateAndTime,
                   ),
                   const SizedBox(height: 8),
                   Divider(color: Theme.of(context).colorScheme.shadow),
@@ -112,6 +112,14 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
           ),
         ],
       ),
+    );
+  }
+
+  void _onEditDateAndTime() {
+    Navigator.pushNamed(
+      context,
+      '/editDateAndTime',
+      arguments: {'serviceScheduling': serviceScheduling},
     );
   }
 
