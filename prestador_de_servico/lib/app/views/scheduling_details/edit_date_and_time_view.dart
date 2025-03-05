@@ -7,6 +7,7 @@ import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_text_data.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_white_buttom.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
@@ -100,7 +101,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                   Divider(color: Theme.of(context).colorScheme.shadow),
                   const SizedBox(height: 8),
                   const Text(
-                    'Data original',
+                    'Data atual',
                     style: TextStyle(fontSize: 16),
                   ),
                   Padding(
@@ -152,10 +153,11 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                   const SizedBox(height: 8),
                   Divider(color: Theme.of(context).colorScheme.shadow),
                   const SizedBox(height: 8),
-                  CustomTextField(
-                      label: 'Nova data',
-                      controller: dateController,
-                      focusNode: dateFocus),
+                  CustomTextData(
+                    label: 'Nova data',
+                    controller: dateController,
+                    onTap: getDataByUser,
+                  ),
                   const SizedBox(height: 8),
                   CustomTextField(
                       label: 'Novo horário',
@@ -177,5 +179,29 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
       ),
     );
   }
-}
 
+  void getDataByUser() async {
+    final actualDate = DateTime.now();
+    final firstDate =
+        DateTime(actualDate.year, actualDate.month, actualDate.day);
+    final lastDate = firstDate.add(const Duration(days: 90));
+    final DateTime selectedDate;
+    if (dateController.text.isNotEmpty) {
+      selectedDate = Formatters.dateFromTextDefaultDate(dateController.text);
+    } else {
+      selectedDate = actualDate;
+    }
+
+    final newDate = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: firstDate,
+      lastDate: lastDate,
+    );
+
+    if (newDate == null) {
+      return;
+    }
+    dateController.text = Formatters.defaultFormatDate(newDate);
+  }
+}

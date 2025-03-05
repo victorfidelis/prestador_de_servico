@@ -40,6 +40,7 @@ import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
 import 'package:prestador_de_servico/app/views/routes.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -97,7 +98,8 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-        ChangeNotifierProvider<NavigationViewModel>(create: (context) => NavigationViewModel()),
+        ChangeNotifierProvider<NavigationViewModel>(
+            create: (context) => NavigationViewModel()),
         ChangeNotifierProvider<ServiceViewModel>(
           create: (context) => ServiceViewModel(
             serviceCategoryService: ServiceCategoryService(
@@ -190,6 +192,13 @@ class App extends StatelessWidget {
         theme: mainTheme,
         initialRoute: '/signIn',
         onGenerateRoute: getRoute,
+        locale: const Locale('pt', 'BR'),
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: const [Locale('pt', 'BR')],
       ),
     );
   }

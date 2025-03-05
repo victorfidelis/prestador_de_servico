@@ -116,4 +116,11 @@ class Formatters {
     final year = date.year.toString();
     return '$day/$month/$year';
   }
+
+  static DateTime dateFromTextDefaultDate(String date) {
+    final year = int.parse(date.substring(6));
+    final month = int.parse(date.substring(3, 5));
+    final day = int.parse(date.substring(0, 2));
+    return DateTime(year, month, day);
+  }
 }
