@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
-import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/time_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_data.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_white_buttom.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_text_filed_underline.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 
 class EditDateAndTimeView extends StatefulWidget {
@@ -26,10 +25,13 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   final FocusNode dateFocus = FocusNode();
   final TextEditingController timeController = TextEditingController();
   final FocusNode timeFocus = FocusNode();
+  final ValueNotifier<String> endTime = ValueNotifier('');
+  late int schedulingTimeInMinutes;
 
   @override
   void initState() {
     serviceScheduling = widget.serviceScheduling;
+    setSchedulingTime();
     super.initState();
   }
 
@@ -158,11 +160,49 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                     controller: dateController,
                     onTap: getDataByUser,
                   ),
-                  const SizedBox(height: 8),
-                  CustomTextField(
-                      label: 'Novo horário',
-                      controller: timeController,
-                      focusNode: timeFocus),
+                  const SizedBox(height: 12),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8),
+                    child: Text(
+                      'Novo horário',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Row(
+                      children: [
+                        const Text('Das'),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: CustomTextFieldUnderline(
+                            controller: timeController,
+                            focusNode: timeFocus,
+                            inputFormatters: [TimeTextInputFormatter()],
+                            onChanged: (_) => calculateEndTime(),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        const Text('às'),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: ListenableBuilder(
+                              listenable: endTime,
+                              builder: (context, _) {
+                                return Text(
+                                  endTime.value,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                );
+                              }),
+                        ),
+                      ],
+                    ),
+                  )
                 ],
               ),
             ),
@@ -203,5 +243,16 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
       return;
     }
     dateController.text = Formatters.defaultFormatDate(newDate);
+  }
+
+  void calculateEndTime() {
+    final String startTime = timeController.text;
+    endTime.value = Formatters.addMinutes(startTime, schedulingTimeInMinutes);
+  }
+
+  void setSchedulingTime() {
+    final durationScheduling = serviceScheduling.endDateAndTime
+        .difference(serviceScheduling.startDateAndTime);
+    schedulingTimeInMinutes = durationScheduling.inMinutes;
   }
 }

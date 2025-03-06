@@ -1,8 +1,6 @@
-
 import 'package:prestador_de_servico/app/shared/utils/extensions/string_extensions.dart';
 
 class Formatters {
-
   static String formatZipCode(String zipCode) {
     return '${zipCode.substring(0, 5)}-${zipCode.substring(5, 8)}';
   }
@@ -45,7 +43,7 @@ class Formatters {
     textHoursAndMinutes += minutes.toString().padLeft(2, '0');
     return textHoursAndMinutes;
   }
-  
+
   static String getMonthName(int month) {
     if (month < 1 || month > 12) {
       throw ArgumentError('Mês inválido: $month');
@@ -87,7 +85,6 @@ class Formatters {
     ];
 
     return weekDays[weekDay];
-
   }
 
   static getWeekDayNameWithDoubleLine(int weekDay) {
@@ -107,7 +104,6 @@ class Formatters {
     ];
 
     return weekDays[weekDay];
-
   }
 
   static String defaultFormatDate(DateTime date) {
@@ -122,5 +118,51 @@ class Formatters {
     final month = int.parse(date.substring(3, 5));
     final day = int.parse(date.substring(0, 2));
     return DateTime(year, month, day);
+  }
+
+  static bool isTime(String time) {
+    if (time.isEmpty || time.length != 5) {
+      return false;
+    }
+
+    List<String> parts = time.split(':');
+
+    if (parts.length != 2) {
+      return false;
+    }
+
+    int? hours = int.tryParse(parts[0]);
+    int? minutes = int.tryParse(parts[1]);
+
+    if (hours == null || minutes == null) {
+      return false;
+    }
+
+    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+      return false;
+    }
+
+    return true;
+  }
+
+  static String addMinutes(String time, int addMinutes) {
+    if (!isTime(time)) {
+      return ':';
+    }
+
+    List<String> partes = time.split(':');
+    int horas = int.parse(partes[0]);
+    int minutos = int.parse(partes[1]);
+
+    minutos += addMinutes;
+
+    horas += minutos ~/ 60;
+    minutos %= 60;
+    horas %= 24;
+
+    String novaHora =
+        "${horas.toString().padLeft(2, '0')}:${minutos.toString().padLeft(2, '0')}";
+
+    return novaHora;
   }
 }

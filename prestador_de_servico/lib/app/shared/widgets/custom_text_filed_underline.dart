@@ -10,6 +10,7 @@ class CustomTextFieldUnderline extends StatelessWidget {
   final bool isNumeric;
   final String? errorMessage;
   final List<TextInputFormatter> inputFormatters;
+  final Function(String)? onChanged;
 
   CustomTextFieldUnderline({
     super.key,
@@ -21,6 +22,7 @@ class CustomTextFieldUnderline extends StatelessWidget {
     this.isNumeric = false,
     this.errorMessage,
     this.inputFormatters = const [],
+    this.onChanged,
   });
 
   final ValueNotifier<bool> obscureText = ValueNotifier(true);
@@ -90,6 +92,7 @@ class CustomTextFieldUnderline extends StatelessWidget {
                       child: TextField(
                         controller: controller,
                         focusNode: focusNode,
+                        onChanged: onChanged,
                         decoration: InputDecoration(
                           enabledBorder: UnderlineInputBorder(
                             borderSide: BorderSide(
