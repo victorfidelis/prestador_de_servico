@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/views/scheduling/states/service_scheduling_state.dart';
+import 'package:prestador_de_servico/app/shared/states/scheduling/service_scheduling_state.dart';
 
 class ServiceSchedulingViewModel extends ChangeNotifier {
   final SchedulingService schedulingService;

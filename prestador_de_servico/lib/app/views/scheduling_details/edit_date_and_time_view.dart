@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
+import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
+import 'package:prestador_de_servico/app/shared/states/scheduling/service_scheduling_state.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/time_text_input_formatter.dart';
+import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_service_scheduling_card.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_data.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_filed_underline.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
+import 'package:provider/provider.dart';
 
 class EditDateAndTimeView extends StatefulWidget {
   final ServiceScheduling serviceScheduling;
@@ -20,17 +27,25 @@ class EditDateAndTimeView extends StatefulWidget {
 }
 
 class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
+  late ServiceSchedulingViewModel serviceSchedulingViewModel;
+
   late ServiceScheduling serviceScheduling;
   final TextEditingController dateController = TextEditingController();
   final FocusNode dateFocus = FocusNode();
   final TextEditingController timeController = TextEditingController();
   final FocusNode timeFocus = FocusNode();
   final ValueNotifier<String> endTime = ValueNotifier('');
+  ValueNotifier<DateTime?> selectedDay = ValueNotifier(null);
   late int schedulingTimeInMinutes;
 
   @override
   void initState() {
     serviceScheduling = widget.serviceScheduling;
+    serviceSchedulingViewModel = ServiceSchedulingViewModel(
+      schedulingService: SchedulingService(
+          onlineRepository: SchedulingRepository.createOnline()),
+    );
+
     setSchedulingTime();
     super.initState();
   }
@@ -76,10 +91,11 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
               ),
             ),
           ),
-          SliverFillRemaining(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            sliver: SliverToBoxAdapter(
               child: Column(
+                mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -189,23 +205,119 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: ListenableBuilder(
-                              listenable: endTime,
-                              builder: (context, _) {
-                                return Text(
-                                  endTime.value,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                );
-                              }),
+                            listenable: endTime,
+                            builder: (context, _) {
+                              return Text(
+                                endTime.value,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              );
+                            },
+                          ),
                         ),
                       ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 6)),
+          SliverToBoxAdapter(
+              child: Divider(color: Theme.of(context).colorScheme.shadow)),
+          const SliverToBoxAdapter(child: SizedBox(height: 6)),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      'Agendamentos',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                  ListenableBuilder(
+                    listenable: selectedDay,
+                    builder: (context, _) {
+                      if (selectedDay.value == null) {
+                        return const SizedBox();
+                      }
+                      return Text(
+                        Formatters.defaultFormatDate(selectedDay.value!),
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SliverToBoxAdapter(child: SizedBox(height: 6)),
+          ListenableBuilder(
+            listenable: serviceSchedulingViewModel,
+            builder: (context, _) {
+              if (serviceSchedulingViewModel.state
+                  is ServiceSchedulingInitial) {
+                return const SliverFillRemaining();
+              }
+
+              if (serviceSchedulingViewModel.state
+                  is ServiceSchedulingLoading) {
+                return const SliverFillRemaining(
+                  child: Center(child: CustomLoading()),
+                );
+              }
+
+              final serviceSchedules =
+                  (serviceSchedulingViewModel.state as ServiceSchedulingLoaded)
+                      .serviceSchedules;
+
+              if (serviceSchedules.isEmpty) {
+                return SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 40),
+                    child: Center(
+                      child: Text(
+                        'Nenhum serviço agendado',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Theme.of(context).colorScheme.shadow,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                );
+              }
+
+              return SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                sliver: SliverList.builder(
+                  itemCount: serviceSchedules.length + 1,
+                  itemBuilder: (context, index) {
+                    if (index == serviceSchedules.length) {
+                      return const SizedBox(height: 150);
+                    }
+
+                    return CustomServiceSchedulingCard(
+                      serviceScheduling: serviceSchedules[index],
+                      isReadOnly: true,
+                    );
+                  },
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -243,6 +355,8 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
       return;
     }
     dateController.text = Formatters.defaultFormatDate(newDate);
+    serviceSchedulingViewModel.load(dateTime: newDate);
+    selectedDay.value = newDate;
   }
 
   void calculateEndTime() {

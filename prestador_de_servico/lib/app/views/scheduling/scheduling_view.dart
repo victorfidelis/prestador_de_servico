@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/scheduling/viewmodels/service_scheduling_viewmodel.dart';
+import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/views/scheduling/states/days_state.dart';
-import 'package:prestador_de_servico/app/views/scheduling/states/service_scheduling_state.dart';
+import 'package:prestador_de_servico/app/shared/states/scheduling/service_scheduling_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_horizontal_calendar.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_menu_calendar_type.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_month_calendar.dart';
