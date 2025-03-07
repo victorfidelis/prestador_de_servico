@@ -164,5 +164,20 @@ class Formatters {
         "${horas.toString().padLeft(2, '0')}:${minutos.toString().padLeft(2, '0')}";
 
     return novaHora;
-  }
+  } 
+
+  static DateTime concatDateAndHours(DateTime date, String time) {
+    if (!isTime(time)) {
+      throw const FormatException('Hora com um formato inválido.');
+    } 
+
+    final parts = time.split(':'); 
+    final int hours = int.parse(parts[0]);
+    final int minutes = int.parse(parts[1]);
+
+    date.add(Duration(hours: hours));
+    date.add(Duration(minutes: minutes));
+
+    return date;
+  } 
 }

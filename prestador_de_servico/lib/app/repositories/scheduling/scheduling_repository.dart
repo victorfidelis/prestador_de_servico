@@ -15,4 +15,9 @@ abstract class SchedulingRepository {
   Future<Either<Failure, List<SchedulingDay>>> getDaysWithService();
   Future<Either<Failure, List<ServiceScheduling>>> getPendingProviderSchedules();
   Future<Either<Failure, List<ServiceScheduling>>> getPendingPaymentSchedules();
+  Future<Either<Failure, Unit>> editDateOfScheduling({
+    required String schedulingId,
+    required DateTime startDateAndTime,
+    required DateTime endDateAndTime,
+  });
 }

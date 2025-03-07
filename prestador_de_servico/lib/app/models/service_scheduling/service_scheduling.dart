@@ -1,14 +1,13 @@
-
 import 'package:prestador_de_servico/app/models/address/address.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 
 class ServiceScheduling {
-  String id; 
+  String id;
   User user;
   List<Service> services;
-  ServiceStatus serviceStatus; 
+  ServiceStatus serviceStatus;
   DateTime startDateAndTime;
   DateTime endDateAndTime;
   double totalRate;
@@ -23,6 +22,7 @@ class ServiceScheduling {
 
   double get needToPay => totalPrice + totalRate - totalDiscount - totalPaid;
   double get totalPriceToPay => totalPrice + totalRate - totalDiscount;
+  int get serviceTime => endDateAndTime.difference(startDateAndTime).inMinutes;
 
   ServiceScheduling({
     this.id = '',
@@ -38,7 +38,7 @@ class ServiceScheduling {
     this.schedulingUnavailable = false,
     this.conflictScheduing = false,
     this.isPaid = false,
-    required this.creationDate, 
+    required this.creationDate,
     this.address,
   });
 
@@ -69,7 +69,8 @@ class ServiceScheduling {
       totalDiscount: totalDiscount ?? this.totalDiscount,
       totalPrice: totalPrice ?? this.totalPrice,
       totalPaid: totalPaid ?? this.totalPaid,
-      schedulingUnavailable: schedulingUnavailable ?? this.schedulingUnavailable,
+      schedulingUnavailable:
+          schedulingUnavailable ?? this.schedulingUnavailable,
       conflictScheduing: conflictScheduing ?? this.conflictScheduing,
       creationDate: creationDate ?? this.creationDate,
       address: address ?? this.address,

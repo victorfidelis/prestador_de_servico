@@ -14,7 +14,8 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
   final _firebaseInitializer = FirebaseInitializer();
 
   @override
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay({required DateTime dateTime}) async {
+  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay(
+      {required DateTime dateTime}) async {
     final initializeEither = await _firebaseInitializer.initialize();
     if (initializeEither.isLeft) {
       return Either.left(initializeEither.left);
@@ -24,13 +25,16 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     final endDate = startDate.add(const Duration(days: 1));
 
     try {
-      final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
+      final serviceSchedulesCollection =
+          FirebaseFirestore.instance.collection('serviceSchedules');
       QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection
           .where('startDateAndTime', isGreaterThanOrEqualTo: startDate)
           .where('startDateAndTime', isLessThan: endDate)
           .get();
-      List<ServiceScheduling> serviceSchedules =
-          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc)).toList();
+      List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
+          .map((doc) =>
+              ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc))
+          .toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -42,17 +46,23 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
   }
 
   @override
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId({required String userId}) async {
+  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId(
+      {required String userId}) async {
     final initializeEither = await _firebaseInitializer.initialize();
     if (initializeEither.isLeft) {
       return Either.left(initializeEither.left);
     }
 
     try {
-      final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
-      QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection.where('user.id', isEqualTo: userId).get();
-      List<ServiceScheduling> serviceSchedules =
-          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc)).toList();
+      final serviceSchedulesCollection =
+          FirebaseFirestore.instance.collection('serviceSchedules');
+      QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection
+          .where('user.id', isEqualTo: userId)
+          .get();
+      List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
+          .map((doc) =>
+              ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc))
+          .toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -71,10 +81,12 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     }
 
     try {
-      final schedulesPerDayCollection = FirebaseFirestore.instance.collection('schedulesPerDay');
+      final schedulesPerDayCollection =
+          FirebaseFirestore.instance.collection('schedulesPerDay');
       QuerySnapshot snapSchedulesPerDay = await schedulesPerDayCollection.get();
-      List<SchedulingDay> schedulesPerDay =
-          snapSchedulesPerDay.docs.map((doc) => SchedulingDayConverter.fromDocumentSnapshot(doc: doc)).toList();
+      List<SchedulingDay> schedulesPerDay = snapSchedulesPerDay.docs
+          .map((doc) => SchedulingDayConverter.fromDocumentSnapshot(doc: doc))
+          .toList();
 
       return Either.right(schedulesPerDay);
     } on FirebaseException catch (e) {
@@ -85,19 +97,25 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       }
     }
   }
-  
+
   @override
-  Future<Either<Failure, List<ServiceScheduling>>> getPendingProviderSchedules() async {
+  Future<Either<Failure, List<ServiceScheduling>>>
+      getPendingProviderSchedules() async {
     final initializeEither = await _firebaseInitializer.initialize();
     if (initializeEither.isLeft) {
       return Either.left(initializeEither.left);
     }
 
     try {
-      final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
-      QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection.where('serviceStatusCode', isEqualTo: 1).get();
-      List<ServiceScheduling> serviceSchedules =
-          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc)).toList();
+      final serviceSchedulesCollection =
+          FirebaseFirestore.instance.collection('serviceSchedules');
+      QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection
+          .where('serviceStatusCode', isEqualTo: 1)
+          .get();
+      List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
+          .map((doc) =>
+              ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc))
+          .toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -107,23 +125,66 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       }
     }
   }
-  
+
   @override
-  Future<Either<Failure, List<ServiceScheduling>>> getPendingPaymentSchedules() async{
+  Future<Either<Failure, List<ServiceScheduling>>>
+      getPendingPaymentSchedules() async {
     final initializeEither = await _firebaseInitializer.initialize();
     if (initializeEither.isLeft) {
       return Either.left(initializeEither.left);
     }
 
     try {
-      final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
+      final serviceSchedulesCollection =
+          FirebaseFirestore.instance.collection('serviceSchedules');
       QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection
-      .where('serviceStatusCode', whereIn: ServiceStatus.servicePerformStatusCodes)
-      .where('isPaid', isEqualTo: false)
-      .get();
-      List<ServiceScheduling> serviceSchedules =
-          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc)).toList();
+          .where('serviceStatusCode',
+              whereIn: ServiceStatus.servicePerformStatusCodes)
+          .where('isPaid', isEqualTo: false)
+          .get();
+      List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
+          .map((doc) =>
+              ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc))
+          .toList();
       return Either.right(serviceSchedules);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> editDateOfScheduling({
+    required String schedulingId,
+    required DateTime startDateAndTime,
+    required DateTime endDateAndTime,
+  }) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    try {
+      final serviceSchedulesCollection =
+          FirebaseFirestore.instance.collection('serviceSchedules');
+      final docRef = serviceSchedulesCollection.doc(schedulingId);
+
+      final snapshot = await docRef.get();
+      final map = snapshot.data() as Map<String, dynamic>;
+      final DateTime oldStartDateAndTime = (map['startDateAndTime'] as Timestamp).toDate();
+      final DateTime oldEndDateAndTime = (map['endDateAndTime'] as Timestamp).toDate();
+      
+      await docRef.update({
+        'startDateAndTime': Timestamp.fromDate(startDateAndTime),
+        'endDateAndTime': Timestamp.fromDate(endDateAndTime),
+        'oldStartDateAndTime': Timestamp.fromDate(oldStartDateAndTime),
+        'oldEndDateAndTime': Timestamp.fromDate(oldEndDateAndTime),
+      });
+
+      return Either.right(unit);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
         return Either.left(NetworkFailure('Sem conexão com a internet'));

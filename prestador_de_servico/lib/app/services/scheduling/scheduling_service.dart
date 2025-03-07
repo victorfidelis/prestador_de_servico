@@ -13,16 +13,20 @@ class SchedulingService {
 
   SchedulingService({required this.onlineRepository});
 
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay({required DateTime dateTime}) async {
-    final getEither = await onlineRepository.getAllServicesByDay(dateTime: dateTime);
+  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay(
+      {required DateTime dateTime}) async {
+    final getEither =
+        await onlineRepository.getAllServicesByDay(dateTime: dateTime);
     if (getEither.isLeft) {
       return Either.left(getEither.left);
     }
 
-    return Either.right(flagServicesWithConflictAndUnavailability(getEither.right!));
+    return Either.right(
+        flagServicesWithConflictAndUnavailability(getEither.right!));
   }
 
-  List<ServiceScheduling> flagServicesWithConflictAndUnavailability(List<ServiceScheduling> servicesSchedules) {
+  List<ServiceScheduling> flagServicesWithConflictAndUnavailability(
+      List<ServiceScheduling> servicesSchedules) {
     for (int i = 0; i < servicesSchedules.length; i++) {
       final scheduling = servicesSchedules[i];
       if (!scheduling.serviceStatus.isPendingStatus()) {
@@ -57,7 +61,8 @@ class SchedulingService {
     return servicesSchedules;
   }
 
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId({required String userId}) async {
+  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId(
+      {required String userId}) async {
     return await onlineRepository.getAllServicesByUserId(userId: userId);
   }
 
@@ -95,7 +100,8 @@ class SchedulingService {
       initialDate = actualDate;
     }
 
-    initialDate = DateTime(initialDate.year, initialDate.month, initialDate.day);
+    initialDate =
+        DateTime(initialDate.year, initialDate.month, initialDate.day);
 
     return initialDate;
   }
@@ -145,7 +151,9 @@ class SchedulingService {
         schedulingDay = daysWithService[index];
       }
 
-      if (date.year == actualDate.year && date.month == actualDate.month && date.day == actualDate.day) {
+      if (date.year == actualDate.year &&
+          date.month == actualDate.month &&
+          date.day == actualDate.day) {
         schedulingDay = schedulingDay.copyWith(isSelected: true, isToday: true);
       }
 
@@ -155,8 +163,10 @@ class SchedulingService {
     return dates;
   }
 
-  Future<Either<Failure, List<SchedulesByDay>>> getPendingProviderSchedules() async {
-    final pendingProviderEither = await onlineRepository.getPendingProviderSchedules();
+  Future<Either<Failure, List<SchedulesByDay>>>
+      getPendingProviderSchedules() async {
+    final pendingProviderEither =
+        await onlineRepository.getPendingProviderSchedules();
     if (pendingProviderEither.isLeft) {
       return Either.left(pendingProviderEither.left);
     }
@@ -164,8 +174,10 @@ class SchedulingService {
     return Either.right(groupSchedulesByDay(pendingProviderEither.right!));
   }
 
-  Future<Either<Failure, List<SchedulesByDay>>> getPendingPaymentSchedules() async {
-    final pendingPaymentEither = await onlineRepository.getPendingPaymentSchedules();
+  Future<Either<Failure, List<SchedulesByDay>>>
+      getPendingPaymentSchedules() async {
+    final pendingPaymentEither =
+        await onlineRepository.getPendingPaymentSchedules();
     if (pendingPaymentEither.isLeft) {
       return Either.left(pendingPaymentEither.left);
     }
@@ -173,8 +185,10 @@ class SchedulingService {
     return Either.right(groupSchedulesByDay(pendingPaymentEither.right!));
   }
 
-  List<SchedulesByDay> groupSchedulesByDay(List<ServiceScheduling> serviceSchedules) {
-    serviceSchedules.sort((s1, s2) => s1.startDateAndTime.compareTo(s2.startDateAndTime));
+  List<SchedulesByDay> groupSchedulesByDay(
+      List<ServiceScheduling> serviceSchedules) {
+    serviceSchedules
+        .sort((s1, s2) => s1.startDateAndTime.compareTo(s2.startDateAndTime));
     List<SchedulesByDay> schedulesByDays = [];
     for (ServiceScheduling serviceScheduling in serviceSchedules) {
       final day = DateTime(
@@ -190,5 +204,17 @@ class SchedulingService {
       schedulesByDays[index].serviceSchedules.add(serviceScheduling);
     }
     return schedulesByDays;
+  }
+
+  Future<Either<Failure, Unit>> editDateOfScheduling({
+    required String schedulingId,
+    required DateTime startDateAndTime,
+    required DateTime endDateAndTime,
+  }) async {
+    return await onlineRepository.editDateOfScheduling(
+      schedulingId: schedulingId,
+      startDateAndTime: startDateAndTime,
+      endDateAndTime: endDateAndTime,
+    );
   }
 }
