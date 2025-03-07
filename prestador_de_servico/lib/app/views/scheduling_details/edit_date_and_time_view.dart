@@ -38,9 +38,6 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   final FocusNode dateFocus = FocusNode();
   final TextEditingController timeController = TextEditingController();
   final FocusNode timeFocus = FocusNode();
-  final ValueNotifier<String> endTime = ValueNotifier('');
-  ValueNotifier<DateTime?> selectedDay = ValueNotifier(null);
-  late int schedulingTimeInMinutes;
 
   @override
   void initState() {
@@ -267,13 +264,13 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                     ),
                   ),
                   ListenableBuilder(
-                    listenable: selectedDay,
+                    listenable: editDateAndTimeViewModel.schedulingDate,
                     builder: (context, _) {
-                      if (selectedDay.value == null) {
+                      if (editDateAndTimeViewModel.schedulingDate.value == null) {
                         return const SizedBox();
                       }
                       return Text(
-                        Formatters.defaultFormatDate(selectedDay.value!),
+                        Formatters.defaultFormatDate(editDateAndTimeViewModel.schedulingDate.value!),
                         style: TextStyle(
                           fontSize: 24,
                           color: Theme.of(context).colorScheme.primary,
@@ -348,33 +345,37 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ListenableBuilder(
-            listenable: endTime,
-            builder: (context, _) {
-              if (editDateAndTimeViewModel.state is EditDateAndTimeLoading) {
-                return const Center(child: CustomLoading());
-              }
+          listenable: editDateAndTimeViewModel,
+          builder: (context, _) {
+            if (editDateAndTimeViewModel.state is EditDateAndTimeLoading) {
+              return const CustomLoading();
+            }
 
-              if (editDateAndTimeViewModel.state is EditDateAndTimeError) {
-                final messageError =
-                    (editDateAndTimeViewModel.state as EditDateAndTimeError)
-                        .message;
-                WidgetsBinding.instance.addPostFrameCallback(
-                  (_) => customNotifications.showSnackBar(
-                    context: context,
-                    message: messageError,
-                  ),
-                );
-              } 
-
-              if (editDateAndTimeViewModel.startTime is EditDateAndTimeUpdateSuccess) {
-                // Sair da tela 
-              }
-
-              return CustomButton(
-                label: 'Salvar',
-                onTap: _onSave,
+            if (editDateAndTimeViewModel.state is EditDateAndTimeError) {
+              final messageError =
+                  (editDateAndTimeViewModel.state as EditDateAndTimeError)
+                      .message;
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => customNotifications.showSnackBar(
+                  context: context,
+                  message: messageError,
+                ),
               );
-            }),
+            }
+
+            if (editDateAndTimeViewModel.state
+                is EditDateAndTimeUpdateSuccess) {
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => Navigator.pop(context),
+              );
+            }
+
+            return CustomButton(
+              label: 'Salvar',
+              onTap: _onSave,
+            );
+          },
+        ),
       ),
     );
   }
@@ -386,7 +387,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
     final lastDate = firstDate.add(const Duration(days: 90));
     final DateTime selectedDate;
     if (dateController.text.isNotEmpty) {
-      selectedDate = Formatters.dateFromTextDefaultDate(dateController.text);
+      selectedDate = Formatters.dateFromDefaultDateText(dateController.text);
     } else {
       selectedDate = actualDate;
     }
@@ -406,10 +407,25 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
     editDateAndTimeViewModel.setSchedulingDate(newDate);
   }
 
-  void _onSave() {
+  Future<void> _onSave() async {
     if (!editDateAndTimeViewModel.validate()) {
       return;
     }
-    editDateAndTimeViewModel.save();
+    await _confirmSave();
+  }
+
+  Future<void> _confirmSave() async {
+    final dateText = Formatters.defaultFormatDate(
+        editDateAndTimeViewModel.schedulingDate.value!);
+    final hourText = editDateAndTimeViewModel.startTime;
+    final String dateHourText = '$dateText $hourText';
+
+    await customNotifications.showQuestionAlert(
+      context: context,
+      title: 'Alterar data e hora',
+      content:
+          'Tem certeza que deseja alterar a data e a hora do serviço para "$dateHourText"?',
+      confirmCallback: () => editDateAndTimeViewModel.save(),
+    );
   }
 }

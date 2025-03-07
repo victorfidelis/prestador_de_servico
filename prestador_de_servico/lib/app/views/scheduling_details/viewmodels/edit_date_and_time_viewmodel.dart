@@ -68,6 +68,8 @@ class EditDateAndTimeViewModel extends ChangeNotifier {
   }
 
   Future<void> save() async {
+    _emitState(EditDateAndTimeLoading());
+
     final startDateAndTime =
         Formatters.concatDateAndHours(schedulingDate.value!, startTime);
     final endDateAndTime =

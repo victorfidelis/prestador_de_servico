@@ -113,7 +113,7 @@ class Formatters {
     return '$day/$month/$year';
   }
 
-  static DateTime dateFromTextDefaultDate(String date) {
+  static DateTime dateFromDefaultDateText(String date) {
     final year = int.parse(date.substring(6));
     final month = int.parse(date.substring(3, 5));
     final day = int.parse(date.substring(0, 2));
@@ -175,9 +175,16 @@ class Formatters {
     final int hours = int.parse(parts[0]);
     final int minutes = int.parse(parts[1]);
 
-    date.add(Duration(hours: hours));
-    date.add(Duration(minutes: minutes));
+    date = date.add(Duration(hours: hours));
+    date = date.add(Duration(minutes: minutes));
 
     return date;
   } 
+
+  static String formatDateISO8601(DateTime date) {
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    final year = date.year.toString();
+    return '$year-$month-$day';
+  }
 }

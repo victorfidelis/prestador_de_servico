@@ -9,6 +9,7 @@ import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repo
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 
 class FirebaseSchedulingRepository implements SchedulingRepository {
   final _firebaseInitializer = FirebaseInitializer();
@@ -174,9 +175,14 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
 
       final snapshot = await docRef.get();
       final map = snapshot.data() as Map<String, dynamic>;
-      final DateTime oldStartDateAndTime = (map['startDateAndTime'] as Timestamp).toDate();
-      final DateTime oldEndDateAndTime = (map['endDateAndTime'] as Timestamp).toDate();
-      
+      final DateTime oldStartDateAndTime =
+          (map['startDateAndTime'] as Timestamp).toDate();
+      final DateTime oldEndDateAndTime =
+          (map['endDateAndTime'] as Timestamp).toDate();
+
+      await removeSchedulingPerDay(oldStartDateAndTime);
+      await addSchedulingPerDay(startDateAndTime);
+
       await docRef.update({
         'startDateAndTime': Timestamp.fromDate(startDateAndTime),
         'endDateAndTime': Timestamp.fromDate(endDateAndTime),
@@ -191,6 +197,49 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       } else {
         return Either.left(Failure('Firestore error: ${e.message}'));
       }
+    }
+  }
+
+  Future<void> removeSchedulingPerDay(DateTime date) async {
+    final String schedulesPerDayId = Formatters.formatDateISO8601(date);
+    final schedulesPerDayCollection =
+        FirebaseFirestore.instance.collection('schedulesPerDay');
+    final docRef = schedulesPerDayCollection.doc(schedulesPerDayId);
+
+    final snapshot = await docRef.get();
+    final map = snapshot.data() as Map<String, dynamic>;
+    int numberOfServices = (map['numberOfServices'] as int);
+    numberOfServices -= 1;
+    final bool hasService = numberOfServices > 0;
+
+    await docRef.update({
+      'hasService': hasService,
+      'numberOfServices': numberOfServices,
+    });
+  }
+
+  Future<void> addSchedulingPerDay(DateTime date) async {
+    final String schedulesPerDayId = Formatters.formatDateISO8601(date);
+    final schedulesPerDayCollection =
+        FirebaseFirestore.instance.collection('schedulesPerDay');
+    final docRef = schedulesPerDayCollection.doc(schedulesPerDayId);
+
+    final snapshot = await docRef.get();
+    if (snapshot.exists) {
+      final map = snapshot.data() as Map<String, dynamic>;
+      int numberOfServices = (map['numberOfServices'] as int);
+      numberOfServices += 1;
+      await docRef.update({
+        'hasService': true,
+        'numberOfServices': numberOfServices,
+      });
+    } else {
+      await schedulesPerDayCollection.doc(schedulesPerDayId).set(
+        {
+          'hasService': true,
+          'numberOfServices': 1,
+        },
+      );
     }
   }
 }
