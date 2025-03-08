@@ -17,10 +17,6 @@ class CreateUserViewModel extends ChangeNotifier {
 
   CreateUserViewModel({required this.authService});
 
-  void init() {
-    _emitState(WaitingUserCreation());
-  }
-
   Future<void> createUserEmailPassword({required User user}) async {
     _emitState(LoadingUserCreation());
 
@@ -57,7 +53,8 @@ class CreateUserViewModel extends ChangeNotifier {
       return ErrorUserCreation(passwordMessage: 'Necessário informar a senha');
     }
     if (user.confirmPassword.isEmpty) {
-      return ErrorUserCreation(confirmPasswordMessage: 'Necessário informar a confirmação da senha');
+      return ErrorUserCreation(
+          confirmPasswordMessage: 'Necessário informar a confirmação da senha');
     }
     if (user.password != user.confirmPassword) {
       return ErrorUserCreation(

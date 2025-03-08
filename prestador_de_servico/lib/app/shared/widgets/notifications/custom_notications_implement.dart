@@ -64,32 +64,33 @@ class CustomNotificationsImplement implements CustomNotifications {
     Function()? cancelCallback,
   }) async {
     await showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text(title),
-            content: Text(content),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  if (confirmCallback != null) {
-                    confirmCallback();
-                  }
-                },
-                child: const Text('Sim'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  if (cancelCallback != null) {
-                    cancelCallback();
-                  }
-                },
-                child: const Text('Não'),
-              ),
-            ],
-          );
-        });
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(content),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                if (confirmCallback != null) {
+                  confirmCallback();
+                }
+              },
+              child: const Text('Sim'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                if (cancelCallback != null) {
+                  cancelCallback();
+                }
+              },
+              child: const Text('Não'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

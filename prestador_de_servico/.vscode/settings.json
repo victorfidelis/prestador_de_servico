@@ -1,4 +1,5 @@
 {
-    "editor.wordWrapColumn": 120,
-    "editor.wordWrap": "off",
+    "editor.wordWrapColumn": 100,
+    "editor.wordWrap": "wordWrapColumn",
+    "dart.lineLength": 100 
 }

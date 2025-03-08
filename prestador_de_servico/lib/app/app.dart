@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/repositories/service/service/firebase_service_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service/sqflite_service_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service_category/firebase_service_category_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service_category/sqflite_service_category_repository.dart';
 import 'package:prestador_de_servico/app/views/payment/viewmodels/payment_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_payment_schedules_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
@@ -48,7 +52,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
+      providers: [        
         ChangeNotifierProvider<SyncViewModel>(
           create: (context) => SyncViewModel(
             networkService: NetworkService.create(),
@@ -82,24 +86,19 @@ class App extends StatelessWidget {
             ),
           ),
         ),
-        ChangeNotifierProvider<CreateUserViewModel>(
-          create: (context) => CreateUserViewModel(
-            authService: AuthService(
-              authRepository: AuthRepository.create(),
-              userRepository: UserRepository.create(),
-            ),
+        Provider<AuthService>(
+          create: (context) => AuthService(
+            authRepository: AuthRepository.create(),
+            userRepository: UserRepository.create(),
           ),
         ),
-        ChangeNotifierProvider<PasswordResetViewModel>(
-          create: (context) => PasswordResetViewModel(
-            authService: AuthService(
-              authRepository: AuthRepository.create(),
-              userRepository: UserRepository.create(),
-            ),
+        ChangeNotifierProvider<NavigationViewModel>(create: (context) => NavigationViewModel()),
+        Provider<ServiceCategoryService>(
+          create: (context) => ServiceCategoryService(
+            offlineRepository: ServiceCategoryRepository.createOffline(),
+            onlineRepository: ServiceCategoryRepository.createOnline(),
           ),
         ),
-        ChangeNotifierProvider<NavigationViewModel>(
-            create: (context) => NavigationViewModel()),
         ChangeNotifierProvider<ServiceViewModel>(
           create: (context) => ServiceViewModel(
             serviceCategoryService: ServiceCategoryService(

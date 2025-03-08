@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/create_user_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
@@ -19,22 +20,47 @@ class CreateUserView extends StatefulWidget {
 }
 
 class _CreateUserViewState extends State<CreateUserView> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _surnameController = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
+  late CreateUserViewModel createUserViewModel;
 
-  final FocusNode _focusNodeName = FocusNode();
-  final FocusNode _focusNodeSurname = FocusNode();
-  final FocusNode _focusNodePhone = FocusNode();
-  final FocusNode _focusNodeEmail = FocusNode();
-  final FocusNode _focusNodePassword = FocusNode();
-  final FocusNode _focusNodeConfirmPassword = FocusNode();
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController surnameController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
 
-  final CustomNotifications _notifications = CustomNotifications();
+  final FocusNode focusNodeName = FocusNode();
+  final FocusNode focusNodeSurname = FocusNode();
+  final FocusNode focusNodePhone = FocusNode();
+  final FocusNode focusNodeEmail = FocusNode();
+  final FocusNode focusNodePassword = FocusNode();
+  final FocusNode focusNodeConfirmPassword = FocusNode();
+
+  final CustomNotifications notifications = CustomNotifications();
+
+  @override
+  void initState() {
+    createUserViewModel = CreateUserViewModel(authService: context.read<AuthService>());
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    createUserViewModel.dispose();
+    nameController.dispose();
+    surnameController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    focusNodeName.dispose();
+    focusNodeSurname.dispose();
+    focusNodePhone.dispose();
+    focusNodeEmail.dispose();
+    focusNodePassword.dispose();
+    focusNodeConfirmPassword.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,108 +89,106 @@ class _CreateUserViewState extends State<CreateUserView> {
                 const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 38),
-                  child: Consumer<CreateUserViewModel>(
-                      builder: (context, createAccountViewModel, _) {
-                    bool createUserLoading =
-                        createAccountViewModel.state is LoadingUserCreation;
+                  child: ListenableBuilder(
+                      listenable: createUserViewModel,
+                      builder: (context, _) {
+                        bool createUserLoading = createUserViewModel.state is LoadingUserCreation;
 
-                    if (createAccountViewModel.state is UserCreated) {
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        Navigator.pop(context);
-                        _notifications.showSuccessAlert(
-                          context: context,
-                          title: 'Usuário Cadastrado',
-                          content:
-                              'Faça a confirmação de sua conta através do link enviado para o seu email.',
+                        if (createUserViewModel.state is UserCreated) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            Navigator.pop(context);
+                            notifications.showSuccessAlert(
+                              context: context,
+                              title: 'Usuário Cadastrado',
+                              content:
+                                  'Faça a confirmação de sua conta através do link enviado para o seu email.',
+                            );
+                          });
+                        }
+
+                        Widget genericErrorWidget = const SizedBox(height: 18);
+                        String? nameMessage;
+                        String? surnameMessage;
+                        String? phoneMessage;
+                        String? emailMessage;
+                        String? passwordMessage;
+                        String? confirmPasswordMessage;
+                        String? genericMessage;
+
+                        if (createUserViewModel.state is ErrorUserCreation) {
+                          final errorState = (createUserViewModel.state as ErrorUserCreation);
+                          nameMessage = errorState.nameMessage;
+                          surnameMessage = errorState.surnameMessage;
+                          phoneMessage = errorState.phoneMessage;
+                          emailMessage = errorState.emailMessage;
+                          passwordMessage = errorState.passwordMessage;
+                          confirmPasswordMessage = errorState.confirmPasswordMessage;
+                          genericMessage = errorState.genericMessage;
+                          if (genericMessage != null) {
+                            genericErrorWidget = CustomTextError(message: genericMessage);
+                          }
+                        }
+
+                        return Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CustomTextField(
+                              label: 'Nome',
+                              controller: nameController,
+                              focusNode: focusNodeName,
+                              errorMessage: nameMessage,
+                            ),
+                            const SizedBox(height: 18),
+                            CustomTextField(
+                              label: 'Sobrenome',
+                              controller: surnameController,
+                              focusNode: focusNodeSurname,
+                              errorMessage: surnameMessage,
+                            ),
+                            const SizedBox(height: 18),
+                            CustomTextField(
+                              label: 'Telefone',
+                              controller: phoneController,
+                              focusNode: focusNodePhone,
+                              errorMessage: phoneMessage,
+                            ),
+                            const SizedBox(height: 18),
+                            CustomTextField(
+                              label: 'Email',
+                              controller: emailController,
+                              focusNode: focusNodeEmail,
+                              errorMessage: emailMessage,
+                            ),
+                            const SizedBox(height: 18),
+                            CustomTextField(
+                              label: 'Senha',
+                              controller: passwordController,
+                              focusNode: focusNodePassword,
+                              isPassword: true,
+                              errorMessage: passwordMessage,
+                            ),
+                            const SizedBox(height: 18),
+                            CustomTextField(
+                              label: 'Confirmação de senha',
+                              controller: confirmPasswordController,
+                              focusNode: focusNodeConfirmPassword,
+                              isPassword: true,
+                              errorMessage: confirmPasswordMessage,
+                            ),
+                            genericErrorWidget,
+                            const SizedBox(height: 32),
+                            createUserLoading
+                                ? const Center(
+                                    child: CustomLoading(),
+                                  )
+                                : CustomButton(
+                                    label: 'Criar',
+                                    onTap: createAccountWithEmailAndPassword,
+                                  ),
+                            const SizedBox(height: 20),
+                          ],
                         );
-                      });
-                    }
-
-                    Widget genericErrorWidget = const SizedBox(height: 18);
-                    String? nameMessage;
-                    String? surnameMessage;
-                    String? phoneMessage;
-                    String? emailMessage;
-                    String? passwordMessage;
-                    String? confirmPasswordMessage;
-                    String? genericMessage;
-
-                    if (createAccountViewModel.state is ErrorUserCreation) {
-                      final errorState =
-                          (createAccountViewModel.state as ErrorUserCreation);
-                      nameMessage = errorState.nameMessage;
-                      surnameMessage = errorState.surnameMessage;
-                      phoneMessage = errorState.phoneMessage;
-                      emailMessage = errorState.emailMessage;
-                      passwordMessage = errorState.passwordMessage;
-                      confirmPasswordMessage = errorState.confirmPasswordMessage;
-                      genericMessage = errorState.genericMessage;
-                      if (genericMessage != null) {
-                        genericErrorWidget =
-                            CustomTextError(message: genericMessage);
-                      }
-                    }
-
-                    return Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CustomTextField(
-                          label: 'Nome',
-                          controller: _nameController,
-                          focusNode: _focusNodeName,
-                          errorMessage: nameMessage,
-                        ),
-                        const SizedBox(height: 18),
-                        CustomTextField(
-                          label: 'Sobrenome',
-                          controller: _surnameController,
-                          focusNode: _focusNodeSurname,
-                          errorMessage: surnameMessage,
-                        ),
-                        const SizedBox(height: 18),
-                        CustomTextField(
-                          label: 'Telefone',
-                          controller: _phoneController,
-                          focusNode: _focusNodePhone,
-                          errorMessage: phoneMessage,
-                        ),
-                        const SizedBox(height: 18),
-                        CustomTextField(
-                          label: 'Email',
-                          controller: _emailController,
-                          focusNode: _focusNodeEmail,
-                          errorMessage: emailMessage,
-                        ),
-                        const SizedBox(height: 18),
-                        CustomTextField(
-                          label: 'Senha',
-                          controller: _passwordController,
-                          focusNode: _focusNodePassword,
-                          isPassword: true,
-                          errorMessage: passwordMessage,
-                        ),
-                        const SizedBox(height: 18),
-                        CustomTextField(
-                          label: 'Confirmação de senha',
-                          controller: _confirmPasswordController,
-                          focusNode: _focusNodeConfirmPassword,
-                          isPassword: true,
-                          errorMessage: confirmPasswordMessage,
-                        ),
-                        genericErrorWidget,
-                        const SizedBox(height: 32),
-                        createUserLoading
-                            ? const Center(
-                                child: CustomLoading(),
-                              )
-                            : CustomButton(
-                                label: 'Criar',
-                                onTap: createAccountWithEmailAndPassword,
-                              ),
-                        const SizedBox(height: 20),
-                      ],
-                    );
-                  }),
+                      }),
                 ),
               ],
             ),
@@ -180,14 +204,14 @@ class _CreateUserViewState extends State<CreateUserView> {
 
   void createAccountWithEmailAndPassword() {
     User user = User(
-      name: _nameController.text.trim(),
-      surname: _surnameController.text.trim(),
-      phone: _phoneController.text.trim(),
-      email: _emailController.text.trim().toLowerCase(),
-      password: _passwordController.text.trim(),
-      confirmPassword: _confirmPasswordController.text.trim(),
+      name: nameController.text.trim(),
+      surname: surnameController.text.trim(),
+      phone: phoneController.text.trim(),
+      email: emailController.text.trim().toLowerCase(),
+      password: passwordController.text.trim(),
+      confirmPassword: confirmPasswordController.text.trim(),
     );
 
-    context.read<CreateUserViewModel>().createUserEmailPassword(user: user);
+    createUserViewModel.createUserEmailPassword(user: user);
   }
 }

@@ -154,12 +154,10 @@ class _SignInViewState extends State<SignInView> {
   }
 
   void doCreateAccount() {
-    context.read<CreateUserViewModel>().init();
     Navigator.pushNamed(context, '/createAccount');
   }
 
   void doPasswordReset() {
-    context.read<PasswordResetViewModel>().init();
     Navigator.pushNamed(context, '/passwordReset');
   }
 
