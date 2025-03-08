@@ -36,37 +36,6 @@ void main() {
   );
 
   group(
-    'initInsert',
-    () {
-      test(
-        'Deve alterar o estado para ServiceCategoryEditAdd',
-        () {
-          serviceCategoryEditViewModel.initInsert();
-
-          expect(serviceCategoryEditViewModel.state is ServiceCategoryEditAdd, isTrue);
-        },
-      );
-    },
-  );
-
-  group(
-    'initUpdate',
-    () {
-      test(
-        '''Deve alterar o estado para ServiceCategoryEditUpdate e definir o ServiceCategory 
-        a ser alterado''',
-        () {
-          serviceCategoryEditViewModel.initUpdate(serviceCategory: serviceCategory1);
-
-          expect(serviceCategoryEditViewModel.state is ServiceCategoryEditUpdate, isTrue);
-          final state = (serviceCategoryEditViewModel.state as ServiceCategoryEditUpdate);
-          expect(state.serviceCategory, equals(serviceCategory1));
-        },
-      );
-    },
-  );
-
-  group(
     'validateAndInsert',
     () {
       test(

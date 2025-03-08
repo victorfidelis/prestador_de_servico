@@ -1,4 +1,3 @@
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/show_all_services_viewmodel.dart';
@@ -67,6 +66,7 @@ void main() {
 
   setUp(
     () {
+      setUpValues();
       setUpMockServiceRepository();
       setUpMockImageRepository();
       final serviceService = ServiceService(
@@ -74,9 +74,10 @@ void main() {
         onlineRepository: onlineMockServiceRepository,
         imageRepository: mockImageRepository,
       );
-      showAllServicesViewModel = ShowAllServicesViewModel(serviceService: serviceService);
-      setUpValues();
-      showAllServicesViewModel.init();
+      showAllServicesViewModel = ShowAllServicesViewModel(
+        serviceService: serviceService,
+        servicesByCategory: servicesByCategory1,
+      );
     },
   );
 
@@ -87,8 +88,6 @@ void main() {
         '''Deve alterar o estado ShowAllServicesLoaded com o objeto ServicesByCategory correspondente 
         ao passado via parâmetro.''',
         () {
-          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
-
           expect(showAllServicesViewModel.state is ShowAllServicesLoaded, isTrue);
           final state = (showAllServicesViewModel.state as ShowAllServicesLoaded);
           expect(state.servicesByCategory, equals(servicesByCategory1));
@@ -101,43 +100,6 @@ void main() {
     'delete',
     () {
       test(
-        '''Deve alterar o estado ShowAllServicesError caso ocorra algum erro na exclusão da imagem
-        e o estado NÃO ESTIVER carregado.''',
-        () async {
-          const failureMessage = 'Falha no teste';
-          when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl)).thenAnswer(
-            (_) async => Either.left(Failure(failureMessage)),
-          );
-
-          await showAllServicesViewModel.delete(service: service1);
-
-          expect(showAllServicesViewModel.state is ShowAllServicesError, isTrue);
-          final state = (showAllServicesViewModel.state as ShowAllServicesError);
-          expect(state.message, equals(failureMessage));
-        },
-      );
-
-      test(
-        '''Deve alterar o estado ShowAllServicesError caso ocorra algum erro na exclusão
-        e o estado NÃO ESTIVER carregado.''',
-        () async {
-          const failureMessage = 'Falha no teste';
-          when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl)).thenAnswer(
-            (_) async => Either.right(unit),
-          );
-          when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer(
-            (_) async => Either.left(Failure(failureMessage)),
-          );
-
-          await showAllServicesViewModel.delete(service: service1);
-
-          expect(showAllServicesViewModel.state is ShowAllServicesError, isTrue);
-          final state = (showAllServicesViewModel.state as ShowAllServicesError);
-          expect(state.message, equals(failureMessage));
-        },
-      );
-
-      test(
         '''Deve alterar o estado ShowAllServicesLoaded com a mensagem de erro caso ocorra algum 
         erro na exclusão da imagem e o estado ESTIVER carregado.''',
         () async {
@@ -145,7 +107,6 @@ void main() {
           when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl)).thenAnswer(
             (_) async => Either.left(Failure(failureMessage)),
           );
-          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
           await showAllServicesViewModel.delete(service: service1);
 
@@ -167,7 +128,6 @@ void main() {
           when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer(
             (_) async => Either.left(Failure(failureMessage)),
           );
-          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
           await showAllServicesViewModel.delete(service: service1);
 
@@ -190,7 +150,6 @@ void main() {
           when(offlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer(
             (_) async => Either.right(unit),
           );
-          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
 
           await showAllServicesViewModel.delete(service: service1);
 
@@ -206,20 +165,8 @@ void main() {
     'filter',
     () {
       test(
-        'Deve manter o estado quando o estado atual for diferente de ShowAllServicesLoaded',
-        () async { 
-
-          showAllServicesViewModel.filter(textFilter: 'chapinha');
-
-          expect((showAllServicesViewModel.state is ShowAllServicesInitial), isTrue);
-        },
-      );
-
-      test(
         'Deve manter o estado de ShowAllServicesLoaded quando o valor filtrado for vazio',
-        () async { 
-          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
-
+        () async {
           showAllServicesViewModel.filter(textFilter: '');
 
           expect((showAllServicesViewModel.state is ShowAllServicesLoaded), isTrue);
@@ -228,13 +175,11 @@ void main() {
           expect(showAllServicesState.servicesByCategory, equals(servicesByCategory1));
         },
       );
-      
+
       test(
         '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
         filtrados quando filtrar "h"''',
-        () { 
-          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
-
+        () {
           showAllServicesViewModel.filter(textFilter: 'h');
 
           expect((showAllServicesViewModel.state is ShowAllServicesFiltered), isTrue);
@@ -242,13 +187,11 @@ void main() {
           expect(state.servicesByCategoryFiltered.services.length, equals(2));
         },
       );
-      
+
       test(
         '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
         filtrados quando filtrar "chapinHA"''',
-        () { 
-          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
-
+        () {
           showAllServicesViewModel.filter(textFilter: 'chapinHA');
 
           expect((showAllServicesViewModel.state is ShowAllServicesFiltered), isTrue);
@@ -256,13 +199,11 @@ void main() {
           expect(state.servicesByCategoryFiltered.services.length, equals(1));
         },
       );
-      
+
       test(
         '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
         filtrados quando filtrar "hidratação"''',
-        () { 
-          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
-
+        () {
           showAllServicesViewModel.filter(textFilter: 'hidratação');
 
           expect((showAllServicesViewModel.state is ShowAllServicesFiltered), isTrue);
@@ -270,13 +211,11 @@ void main() {
           expect(state.servicesByCategoryFiltered.services.length, equals(1));
         },
       );
-      
+
       test(
         '''Deve alterar o estado para ShowAllServicesFiltered com os dados 
         filtrados quando filtrar "hidratacao"''',
-        () { 
-          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
-
+        () {
           showAllServicesViewModel.filter(textFilter: 'hidratacao');
 
           expect((showAllServicesViewModel.state is ShowAllServicesFiltered), isTrue);
@@ -284,13 +223,11 @@ void main() {
           expect(state.servicesByCategoryFiltered.services.length, equals(1));
         },
       );
-      
+
       test(
         '''Deve alterar o estado para ShowAllServicesLoaded quando filtrar com um valor 
         vazio''',
-        () { 
-          showAllServicesViewModel.setServicesByCategory(servicesByCategory: servicesByCategory1);
-          
+        () {
           showAllServicesViewModel.filter(textFilter: 'hidratacao');
           expect((showAllServicesViewModel.state is ShowAllServicesFiltered), isTrue);
           final state = (showAllServicesViewModel.state as ShowAllServicesFiltered);
