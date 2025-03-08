@@ -13,11 +13,13 @@ import 'package:prestador_de_servico/app/views/pending_schedules/pending_provide
 import 'package:prestador_de_servico/app/views/scheduling/scheduling_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/edit_date_and_time_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/scheduling_details_view.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_view.dart';
 import 'package:prestador_de_servico/app/views/service/show_all_services_view.dart';
 import 'package:prestador_de_servico/app/views/service_day/service_day_view.dart';
+import 'package:provider/provider.dart';
 
 Route<dynamic>? getRoute(RouteSettings settings) {
   if (settings.name == '/signIn') {
@@ -95,10 +97,14 @@ Route<dynamic>? getRoute(RouteSettings settings) {
   }
   if (settings.name == '/schedulingDetails') {
     final arguments = (settings.arguments as Map);
+    final serviceScheduling = (arguments['serviceScheduling']) as ServiceScheduling;
     return _buildRoute(
       settings,
-      SchedulingDetailsView(
-        serviceScheduling: (arguments['serviceScheduling']) as ServiceScheduling,
+      ChangeNotifierProvider<SchedulingDetailViewModel>(
+      create: (context) => SchedulingDetailViewModel(serviceScheduling: serviceScheduling),
+        child: SchedulingDetailsView(
+          serviceScheduling: serviceScheduling,
+        ),
       ),
     );
   }
@@ -106,8 +112,9 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     final arguments = (settings.arguments as Map);
     return _buildRoute(
       settings,
-      EditDateAndTimeView(
-        serviceScheduling: arguments['serviceScheduling'] as ServiceScheduling,
+      ChangeNotifierProvider.value(
+        value: arguments['schedulingDetailViewModel'] as SchedulingDetailViewModel,
+        child: const EditDateAndTimeView(),
       ),
     );
   }

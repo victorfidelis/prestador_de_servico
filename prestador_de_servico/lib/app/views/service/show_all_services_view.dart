@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
-import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/show_all_services_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';

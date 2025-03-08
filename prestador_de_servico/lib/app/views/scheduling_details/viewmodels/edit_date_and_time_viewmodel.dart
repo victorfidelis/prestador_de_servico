@@ -26,6 +26,25 @@ class EditDateAndTimeViewModel extends ChangeNotifier {
 
   EditDateAndTimeViewModel({required this.schedulingService});
 
+  DateTime? get startDateAndTime {
+    if (schedulingDate.value == null || !Formatters.isTime(startTime)) {
+      return null;
+    }
+    return Formatters.concatDateAndHours(
+      schedulingDate.value!,
+      startTime,
+    );
+  }
+  DateTime? get endDateAndTime {
+    if (schedulingDate.value == null || !Formatters.isTime(endTime.value)) {
+      return null;
+    }
+    return Formatters.concatDateAndHours(
+      schedulingDate.value!,
+      endTime.value,
+    );
+  }
+
   void setServiceTime(int serviceTimeInMinutes) {
     this.serviceTimeInMinutes = serviceTimeInMinutes;
   }
@@ -70,15 +89,10 @@ class EditDateAndTimeViewModel extends ChangeNotifier {
   Future<void> save() async {
     _emitState(EditDateAndTimeLoading());
 
-    final startDateAndTime =
-        Formatters.concatDateAndHours(schedulingDate.value!, startTime);
-    final endDateAndTime =
-        Formatters.concatDateAndHours(schedulingDate.value!, endTime.value);
-
-    final editEither =  await schedulingService.editDateOfScheduling(
+    final editEither = await schedulingService.editDateOfScheduling(
       schedulingId: schedulingId,
-      startDateAndTime: startDateAndTime,
-      endDateAndTime: endDateAndTime,
+      startDateAndTime: startDateAndTime!,
+      endDateAndTime: endDateAndTime!,
     );
 
     if (editEither.isLeft) {

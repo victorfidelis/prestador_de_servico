@@ -19,11 +19,11 @@ import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_not
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_date_and_time_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/edit_date_and_time_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class EditDateAndTimeView extends StatefulWidget {
-  final ServiceScheduling serviceScheduling;
-  const EditDateAndTimeView({super.key, required this.serviceScheduling});
+  const EditDateAndTimeView({super.key});
 
   @override
   State<EditDateAndTimeView> createState() => _EditDateAndTimeViewState();
@@ -42,7 +42,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
 
   @override
   void initState() {
-    serviceScheduling = widget.serviceScheduling;
+    serviceScheduling = context.read<SchedulingDetailViewModel>().serviceScheduling;
     serviceSchedulingViewModel = ServiceSchedulingViewModel(
       schedulingService: context.read<SchedulingService>(),
     );
@@ -178,7 +178,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                       return CustomTextData(
                         label: 'Nova data',
                         controller: dateController,
-                        onTap: getDataByUser,
+                        onTap: getNewDate,
                         errorMessage: editDateAndTimeViewModel.schedulingDateError.value,
                       );
                     },
@@ -359,7 +359,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
 
             return CustomButton(
               label: 'Salvar',
-              onTap: _onSave,
+              onTap: onSave,
             );
           },
         ),
@@ -367,7 +367,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
     );
   }
 
-  void getDataByUser() async {
+  void getNewDate() async {
     final actualDate = DateTime.now();
     final firstDate = DateTime(actualDate.year, actualDate.month, actualDate.day);
     final lastDate = firstDate.add(const Duration(days: 90));
@@ -393,14 +393,14 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
     editDateAndTimeViewModel.setSchedulingDate(newDate);
   }
 
-  Future<void> _onSave() async {
+  Future<void> onSave() async {
     if (!editDateAndTimeViewModel.validate()) {
       return;
     }
-    await _confirmSave();
+    await confirmSave();
   }
 
-  Future<void> _confirmSave() async {
+  Future<void> confirmSave() async {
     final dateText = Formatters.defaultFormatDate(editDateAndTimeViewModel.schedulingDate.value!);
     final hourText = editDateAndTimeViewModel.startTime;
     final String dateHourText = '$dateText $hourText';
@@ -409,7 +409,13 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
       context: context,
       title: 'Alterar data e hora',
       content: 'Tem certeza que deseja alterar a data e a hora do serviço para "$dateHourText"?',
-      confirmCallback: () => editDateAndTimeViewModel.save(),
+      confirmCallback: () {
+        editDateAndTimeViewModel.save();
+        context.read<SchedulingDetailViewModel>().changeDateAndTime(
+              startDateAndTime: editDateAndTimeViewModel.startDateAndTime!,
+              endDateAndTime: editDateAndTimeViewModel.endDateAndTime!,
+            );
+      },
     );
   }
 }

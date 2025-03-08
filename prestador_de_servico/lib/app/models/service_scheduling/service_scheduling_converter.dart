@@ -17,6 +17,16 @@ class ServiceSchedulingConverter {
 
     final serviceStatus = ServiceStatus(code: map['serviceStatusCode'], name: map['serviceStatusName']);
 
+    DateTime? oldStartDateAndTime;
+    if (map.containsKey('oldStartDateAndTime')) {
+      oldStartDateAndTime = (map['oldStartDateAndTime'] as Timestamp).toDate();
+    }
+
+    DateTime? oldEndDateAndTime;
+    if (map.containsKey('oldEndDateAndTime')) {
+      oldEndDateAndTime = (map['oldEndDateAndTime'] as Timestamp).toDate();
+    }
+
     return ServiceScheduling(
       id: doc.id,
       user: user,
@@ -24,6 +34,8 @@ class ServiceSchedulingConverter {
       serviceStatus: serviceStatus,
       startDateAndTime: (map['startDateAndTime'] as Timestamp).toDate(),
       endDateAndTime: (map['endDateAndTime'] as Timestamp).toDate(),
+      oldStartDateAndTime: oldStartDateAndTime,
+      oldEndDateAndTime: oldEndDateAndTime,
       totalRate: (map['totalRate'] * 1.0),
       totalDiscount: (map['totalDiscount'] * 1.0),
       totalPrice: (map['totalPrice'] * 1.0),

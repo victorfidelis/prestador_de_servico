@@ -4,7 +4,6 @@ import 'package:prestador_de_servico/app/services/service/service_category_servi
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/services/service/services_by_category_service.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/service/viewmodels/service_category_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';

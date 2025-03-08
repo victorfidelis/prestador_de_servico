@@ -5,9 +5,11 @@ import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/address_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/date_and_time_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/service_list_card.dart';
+import 'package:provider/provider.dart';
 
 class SchedulingDetailsView extends StatefulWidget {
   final ServiceScheduling serviceScheduling;
@@ -29,8 +31,6 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    Color statusColor = ColorsUtils.getColorFromStatus(context, serviceScheduling.serviceStatus);
-
     return Scaffold(
       body: CustomScrollView(
         slivers: [
@@ -50,8 +50,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         children: [
                           SizedBox(
                               width: 60,
-                              child: BackNavigation(
-                                  onTap: () => Navigator.pop(context))),
+                              child: BackNavigation(onTap: () => Navigator.pop(context))),
                           const Expanded(
                             child: CustomAppBarTitle(
                               title: 'Agendamento',
@@ -67,59 +66,76 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
               ),
             ),
           ),
-          SliverFillRemaining(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    serviceScheduling.user.fullname,
-                    style: TextStyle(
-                      color: statusColor,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
-                    ),
+          Consumer<SchedulingDetailViewModel>(
+            builder: (context, schedulingDetailViewModel, _) {
+              Color statusColor = ColorsUtils.getColorFromStatus(
+                context,
+                schedulingDetailViewModel.serviceScheduling.serviceStatus,
+              );
+
+              return SliverFillRemaining(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        schedulingDetailViewModel.serviceScheduling.user.fullname,
+                        style: TextStyle(
+                          color: statusColor,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        schedulingDetailViewModel.serviceScheduling.serviceStatus.name,
+                        style: TextStyle(
+                          color: statusColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Divider(color: Theme.of(context).colorScheme.shadow),
+                      const SizedBox(height: 8),
+                      DateAndTimeCard(
+                        key: ValueKey(schedulingDetailViewModel.serviceScheduling.startDateAndTime),
+                        oldStartDateAndTime:
+                            schedulingDetailViewModel.serviceScheduling.oldStartDateAndTime,
+                        oldEndDateAndTime:
+                            schedulingDetailViewModel.serviceScheduling.oldEndDateAndTime,
+                        startDateAndTime:
+                            schedulingDetailViewModel.serviceScheduling.startDateAndTime,
+                        endDateAndTime: schedulingDetailViewModel.serviceScheduling.endDateAndTime,
+                        onEdit: onEditDateAndTime,
+                      ),
+                      const SizedBox(height: 8),
+                      Divider(color: Theme.of(context).colorScheme.shadow),
+                      const SizedBox(height: 8),
+                      addressWidget(),
+                      const SizedBox(height: 8),
+                      Divider(color: Theme.of(context).colorScheme.shadow),
+                      const SizedBox(height: 8),
+                      ServiceListCard(
+                        serviceScheduling: schedulingDetailViewModel.serviceScheduling,
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    serviceScheduling.serviceStatus.name,
-                    style: TextStyle(
-                      color: statusColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Divider(color: Theme.of(context).colorScheme.shadow),
-                  const SizedBox(height: 8),
-                  DateAndTimeCard(
-                    startDateAndTime: serviceScheduling.startDateAndTime,
-                    endDateAndTime: serviceScheduling.endDateAndTime,
-                    onEdit: _onEditDateAndTime,
-                  ),
-                  const SizedBox(height: 8),
-                  Divider(color: Theme.of(context).colorScheme.shadow),
-                  const SizedBox(height: 8),
-                  addressWidget(),
-                  const SizedBox(height: 8),
-                  Divider(color: Theme.of(context).colorScheme.shadow),
-                  const SizedBox(height: 8),
-                  ServiceListCard(serviceScheduling: serviceScheduling),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
         ],
       ),
     );
   }
 
-  void _onEditDateAndTime() {
+  void onEditDateAndTime() {
     Navigator.pushNamed(
       context,
       '/editDateAndTime',
-      arguments: {'serviceScheduling': serviceScheduling},
+      arguments: {'schedulingDetailViewModel': context.read<SchedulingDetailViewModel>()},
     );
   }
 

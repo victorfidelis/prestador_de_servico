@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/views/auth/viewmodel/create_user_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/auth/viewmodel/password_reset_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/sign_in_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/auth/states/sign_in_state.dart';

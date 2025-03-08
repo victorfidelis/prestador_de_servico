@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_payment_schedules_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
-import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/sign_in_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/navigation/viewmodels/navigation_viewmodel.dart';

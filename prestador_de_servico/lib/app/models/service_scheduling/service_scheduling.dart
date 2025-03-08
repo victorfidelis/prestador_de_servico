@@ -10,6 +10,8 @@ class ServiceScheduling {
   ServiceStatus serviceStatus;
   DateTime startDateAndTime;
   DateTime endDateAndTime;
+  DateTime? oldStartDateAndTime;
+  DateTime? oldEndDateAndTime;
   double totalRate;
   double totalDiscount;
   double totalPrice;
@@ -31,6 +33,8 @@ class ServiceScheduling {
     required this.serviceStatus,
     required this.startDateAndTime,
     required this.endDateAndTime,
+    this.oldStartDateAndTime,
+    this.oldEndDateAndTime,
     required this.totalRate,
     required this.totalDiscount,
     required this.totalPrice,
@@ -49,6 +53,8 @@ class ServiceScheduling {
     ServiceStatus? serviceStatus,
     DateTime? startDateAndTime,
     DateTime? endDateAndTime,
+    DateTime? oldStartDateAndTime,
+    DateTime? oldEndDateAndTime,
     double? totalRate,
     double? totalDiscount,
     double? totalPrice,
@@ -65,6 +71,8 @@ class ServiceScheduling {
       serviceStatus: serviceStatus ?? this.serviceStatus,
       startDateAndTime: startDateAndTime ?? this.startDateAndTime,
       endDateAndTime: endDateAndTime ?? this.endDateAndTime,
+      oldStartDateAndTime: oldStartDateAndTime ?? this.oldStartDateAndTime,
+      oldEndDateAndTime: oldEndDateAndTime ?? this.oldEndDateAndTime,
       totalRate: totalRate ?? this.totalRate,
       totalDiscount: totalDiscount ?? this.totalDiscount,
       totalPrice: totalPrice ?? this.totalPrice,

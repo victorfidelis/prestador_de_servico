@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/views/service/viewmodels/service_category_edit_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/service/viewmodels/show_all_services_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
@@ -9,7 +6,6 @@ import 'package:prestador_de_servico/app/shared/animated_collections_helpers/ani
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_card.dart';
-import 'package:provider/provider.dart';
 
 class ServiceCategoryCard extends StatefulWidget {
   final ServicesByCategory servicesByCategory;

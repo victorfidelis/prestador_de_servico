@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/service_day/service_day_service.dart';
 import 'package:prestador_de_servico/app/views/service_day/viewmodels/service_day_viewmodel.dart';
-import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
