@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/edit_button.dart';
 
@@ -50,21 +51,12 @@ class _DateAndTimeCardState extends State<DateAndTimeCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              hasOldDate
-                  ? const Text(
-                      'Data trocada',
-                      style: TextStyle(fontSize: 16),
-                    )
-                  : const SizedBox(),
-              hasOldDate ? card(oldStartDateAndTime!, oldEndDateAndTime!) : const SizedBox(),
               Text(
-                'Data do serviço',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: hasOldDate ? const Color(0xff1976D2) : Colors.black,
-                ),
+                hasOldDate ? 'Nova data' : 'Data',
+                style: const TextStyle(fontSize: 16),
               ),
-              card(startDateAndTime, endDateAndTime, hasOldDate),
+              card(startDateAndTime, endDateAndTime),
+              hasOldDate ? card(oldStartDateAndTime!, oldEndDateAndTime!, true) : const SizedBox(),
             ],
           ),
         ),
@@ -73,58 +65,107 @@ class _DateAndTimeCardState extends State<DateAndTimeCard> {
     );
   }
 
-  Widget card(DateTime startDateAndTime, DateTime endDateAndTime, [bool newDate = false]) {
-    final Color textColor;
-    if (newDate) {
-      textColor = const Color(0xff1976D2);
-    } else {
-      textColor = Colors.black;
+  Widget card(DateTime startDateAndTime, DateTime endDateAndTime, [bool oldDate = false]) {
+    Color textColor = Colors.black;
+    if (oldDate) {
+      textColor = Theme.of(context).extension<CustomColors>()!.cancel!;
     }
 
-    return Padding(
-      padding: const EdgeInsets.only(left: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            Formatters.defaultFormatDate(startDateAndTime),
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-              color: textColor,
+    String title;
+    if (oldDate) {
+      title = 'Data trocada';
+    } else if (hasOldDate) {
+      title = 'Nova data';
+    } else {
+      title = 'Data';
+    }
+
+    return Opacity(
+      opacity: oldDate ? 0.6 : 1.0,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 20),
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    Formatters.defaultFormatDate(startDateAndTime),
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                      color: textColor,
+                    ),
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        'das',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: textColor,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        Formatters.defaultFormatHoursAndMinutes(
+                          startDateAndTime.hour,
+                          startDateAndTime.minute,
+                        ),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: textColor,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        'às',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: textColor,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        Formatters.defaultFormatHoursAndMinutes(
+                          endDateAndTime.hour,
+                          endDateAndTime.minute,
+                        ),
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: textColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'das',
-                style: TextStyle(fontSize: 14, color: textColor),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                Formatters.defaultFormatHoursAndMinutes(
-                  startDateAndTime.hour,
-                  startDateAndTime.minute,
-                ),
-                style: TextStyle(fontSize: 18, color: textColor),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                'às',
-                style: TextStyle(fontSize: 16, color: textColor),
-              ),
-              const SizedBox(width: 6),
-              Text(
-                Formatters.defaultFormatHoursAndMinutes(
-                  endDateAndTime.hour,
-                  endDateAndTime.minute,
-                ),
-                style: TextStyle(fontSize: 18, color: textColor),
-              ),
-            ],
-          ),
-        ],
+            oldDate
+                ? Positioned(
+                    top: 12,
+                    child: Container(
+                      height: 2,
+                      width: 115,
+                      color: textColor,
+                    ),
+                  )
+                : const SizedBox(),
+            oldDate
+                ? Positioned(
+                    top: 38,
+                    child: Container(
+                      height: 2,
+                      width: 160,
+                      color: textColor,
+                    ),
+                  )
+                : const SizedBox(),
+          ],
+        ),
       ),
     );
   }

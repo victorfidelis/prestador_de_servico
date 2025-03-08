@@ -3,6 +3,7 @@ import 'package:prestador_de_servico/app/models/service_scheduling/service_sched
 
 class SchedulingDetailViewModel extends ChangeNotifier {
   ServiceScheduling serviceScheduling;
+  bool hasChange = false;
   
   SchedulingDetailViewModel({required this.serviceScheduling});
   
@@ -16,6 +17,7 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       startDateAndTime: startDateAndTime,
       endDateAndTime: endDateAndTime,
     );
+    hasChange = true;
 
     notifyListeners();
   }
