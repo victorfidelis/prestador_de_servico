@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
@@ -22,15 +23,30 @@ class SchedulingView extends StatefulWidget {
 }
 
 class _SchedulingViewState extends State<SchedulingView> {
+  late final DaysViewModel daysViewModel;
+  late final ServiceSchedulingViewModel serviceSchedulingViewModel;
+
   ValueNotifier<DateTime> selectedDay = ValueNotifier(DateTime.now());
 
   @override
   void initState() {
+    daysViewModel = DaysViewModel(schedulingService: context.read<SchedulingService>());
+    serviceSchedulingViewModel = ServiceSchedulingViewModel(
+      schedulingService: context.read<SchedulingService>(),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DaysViewModel>().load();
+      daysViewModel.load();
       _loadToday();
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    daysViewModel.dispose();
+    serviceSchedulingViewModel.dispose();
+    selectedDay.dispose();
+    super.dispose();
   }
 
   @override
@@ -49,13 +65,16 @@ class _SchedulingViewState extends State<SchedulingView> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
+                      SizedBox(
+                          width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
                       const Expanded(
                         child: CustomAppBarTitle(title: 'Agenda'),
                       ),
                       SizedBox(
                         width: 60,
-                        child: CustomMenuCalendarType(),
+                        child: CustomMenuCalendarType(
+                          onChangeTypeView: daysViewModel.changeTypeView,
+                        ),
                       )
                     ],
                   ),
@@ -64,8 +83,9 @@ class _SchedulingViewState extends State<SchedulingView> {
             ],
           ),
           const SizedBox(height: 10),
-          Consumer<DaysViewModel>(
-            builder: (context, daysViewModel, _) {
+          ListenableBuilder(
+            listenable: daysViewModel,
+            builder: (context, _) {
               if (daysViewModel.state is DaysInitial) {
                 return Container();
               }
@@ -133,8 +153,9 @@ class _SchedulingViewState extends State<SchedulingView> {
             ),
           ),
           const SizedBox(height: 6),
-          Consumer<ServiceSchedulingViewModel>(
-            builder: (context, serviceSchedulingViewModel, _) {
+          ListenableBuilder(
+            listenable: serviceSchedulingViewModel,
+            builder: (context, _) {
               if (serviceSchedulingViewModel.state is ServiceSchedulingInitial) {
                 return Container();
               }
@@ -152,7 +173,8 @@ class _SchedulingViewState extends State<SchedulingView> {
                 );
               }
 
-              final serviceSchedules = (serviceSchedulingViewModel.state as ServiceSchedulingLoaded).serviceSchedules;
+              final serviceSchedules =
+                  (serviceSchedulingViewModel.state as ServiceSchedulingLoaded).serviceSchedules;
 
               return Expanded(
                 child: Container(
@@ -182,12 +204,12 @@ class _SchedulingViewState extends State<SchedulingView> {
   void _loadToday() {
     final actualDateTime = DateTime.now();
     selectedDay.value = DateTime(actualDateTime.year, actualDateTime.month, actualDateTime.day);
-    context.read<ServiceSchedulingViewModel>().load(dateTime: selectedDay.value);
+    serviceSchedulingViewModel.load(dateTime: selectedDay.value);
   }
 
   void _onChangeSelectedDay(DateTime date) {
     selectedDay.value = date;
-    context.read<ServiceSchedulingViewModel>().load(dateTime: selectedDay.value);
-    context.read<DaysViewModel>().changeSelectedDay(date);
+    serviceSchedulingViewModel.load(dateTime: selectedDay.value);
+    daysViewModel.changeSelectedDay(date);
   }
 }

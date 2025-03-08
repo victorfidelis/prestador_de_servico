@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/service_category_edit_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/show_all_services_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
@@ -14,7 +13,8 @@ import 'package:provider/provider.dart';
 
 class ServiceCategoryCard extends StatefulWidget {
   final ServicesByCategory servicesByCategory;
-  final Function({required ServiceCategory serviceCategory, required int index}) onDelete;
+  final Function({required ServiceCategory serviceCategory, required int index}) onRemoveCategory;
+  final Function({required Service service}) onRemoveService;
   final Function({required ServiceCategory serviceCategory}) editServiceCategory;
   final int index;
   final Animation<double> animation;
@@ -23,7 +23,8 @@ class ServiceCategoryCard extends StatefulWidget {
   const ServiceCategoryCard({
     super.key,
     required this.servicesByCategory,
-    required this.onDelete,
+    required this.onRemoveCategory,
+    required this.onRemoveService,
     required this.editServiceCategory,
     required this.index,
     required this.animation,
@@ -97,7 +98,9 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       ? Container()
                       : IconButton(
                           onPressed: () {
-                            widget.onDelete(serviceCategory: servicesByCategory.serviceCategory, index: widget.index);
+                            widget.onRemoveCategory(
+                                serviceCategory: servicesByCategory.serviceCategory,
+                                index: widget.index);
                           },
                           icon: Icon(
                             Icons.delete,
@@ -170,18 +173,25 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   }
 
   void _onShowAll() {
-    final servicesByCategoryToShowAll = servicesByCategory.copyWith(services: List.from(servicesByCategory.services));
-    context.read<ShowAllServicesViewModel>().setServicesByCategory(servicesByCategory: servicesByCategoryToShowAll);
-    Navigator.of(context).pushNamed('/showAllServices', arguments: {
-      'removeServiceOfOtherScreen': _removeServiceOfScreen,
-      'addServiceOfOtherScreen': _addServiceOfScreenWithoutScrool,
-      'editServiceOfOtherScreen': _editServiceOfScreen
-    });
+    final servicesByCategoryToShowAll =
+        servicesByCategory.copyWith(services: List.from(servicesByCategory.services));
+
+    Navigator.of(context).pushNamed(
+      '/showAllServices',
+      arguments: {
+        'servicesByCategory': servicesByCategoryToShowAll,
+        'removeServiceOfOtherScreen': _removeServiceOfScreen,
+        'addServiceOfOtherScreen': _addServiceOfScreenWithoutScrool,
+        'editServiceOfOtherScreen': _editServiceOfScreen
+      },
+    );
   }
 
   Future<void> _onEdit() async {
-    context.read<ServiceCategoryEditViewModel>().initUpdate(serviceCategory: servicesByCategory.serviceCategory);
-    final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
+    final result = await Navigator.of(context).pushNamed(
+      '/serviceCategoryEdit',
+      arguments: {'serviceCategory': servicesByCategory.serviceCategory},
+    );
     if (result != null) {
       final serviceCategoryUpdate = result as ServiceCategory;
       widget.editServiceCategory(serviceCategory: serviceCategoryUpdate);
@@ -191,8 +201,10 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   Future<void> _onAddService({required ServiceCategory serviceCategory}) async {
     widget.removeFocusOfWidgets();
-    context.read<ServiceEditViewModel>().initInsert(serviceCategory: serviceCategory);
-    final result = await Navigator.of(context).pushNamed('/serviceEdit');
+    final result = await Navigator.of(context).pushNamed(
+      '/serviceEdit',
+      arguments: {'serviceCategory': serviceCategory},
+    );
     if (result != null) {
       _addServiceOfScreen(service: result as Service);
     }
@@ -233,11 +245,15 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     required Service service,
   }) async {
     widget.removeFocusOfWidgets();
-    context.read<ServiceEditViewModel>().initUpdate(
-          serviceCategory: serviceCategory,
-          service: service,
-        );
-    final result = await Navigator.of(context).pushNamed('/serviceEdit');
+
+    final result = await Navigator.of(context).pushNamed(
+      '/serviceEdit',
+      arguments: {
+        'serviceCategory': serviceCategory,
+        'service': service,
+      },
+    );
+
     if (result != null) {
       _editServiceOfScreen(service: result as Service);
     }
@@ -257,8 +273,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       title: 'Excluir serviço',
       content: 'Tem certeza que deseja excluir serviço?',
       confirmCallback: () {
-        context.read<ServiceViewModel>().deleteService(service: service);
-        _removeServiceOfDatabase(service: service);
+        widget.onRemoveService(service: service);
         _removeServiceOfScreen(service: service);
       },
     );
@@ -277,10 +292,6 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     if (_listServicesCategoryCard.length == 0) {
       setState(() {});
     }
-  }
-
-  void _removeServiceOfDatabase({required Service service}) {
-    context.read<ServiceViewModel>().deleteService(service: service);
   }
 
   Future<void> _changeCategory(ServiceCategory serviceCategory) async {

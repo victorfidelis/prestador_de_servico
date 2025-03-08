@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/services/payments/payment_service.dart';
 import 'package:prestador_de_servico/app/views/payment/viewmodels/payment_viewmodel.dart';
-import 'package:prestador_de_servico/app/models/payment/payment.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
@@ -18,11 +18,19 @@ class PaymentView extends StatefulWidget {
 }
 
 class _PaymentViewState extends State<PaymentView> {
+  late final PaymentViewModel paymentViewModel;
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<PaymentViewModel>().load());
+    paymentViewModel = PaymentViewModel(paymentService: context.read<PaymentService>());
+    WidgetsBinding.instance.addPostFrameCallback((_) => paymentViewModel.load());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    paymentViewModel.dispose();
+    super.dispose();
   }
 
   @override
@@ -44,7 +52,9 @@ class _PaymentViewState extends State<PaymentView> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
+                          SizedBox(
+                              width: 60,
+                              child: BackNavigation(onTap: () => Navigator.pop(context))),
                           const Expanded(
                             child: CustomAppBarTitle(title: 'Pagamentos'),
                           ),
@@ -57,8 +67,9 @@ class _PaymentViewState extends State<PaymentView> {
               ),
             ),
           ),
-          Consumer<PaymentViewModel>(
-            builder: (context, paymentViewModel, _) {
+          ListenableBuilder(
+            listenable: paymentViewModel,
+            builder: (context, _) {
               if (paymentViewModel.state is PaymentInitial) {
                 return const SliverFillRemaining();
               }
@@ -101,7 +112,7 @@ class _PaymentViewState extends State<PaymentView> {
                   itemBuilder: (context, index) {
                     return CustomPaymentCard(
                       payment: payments[index],
-                      changeStateOfPayment: _changeStateOfPayment,
+                      changeStateOfPayment: paymentViewModel.update,
                     );
                   },
                 ),
@@ -111,9 +122,5 @@ class _PaymentViewState extends State<PaymentView> {
         ],
       ),
     );
-  }
-
-  void _changeStateOfPayment({required Payment payment}) {
-    context.read<PaymentViewModel>().update(payment: payment);
   }
 }

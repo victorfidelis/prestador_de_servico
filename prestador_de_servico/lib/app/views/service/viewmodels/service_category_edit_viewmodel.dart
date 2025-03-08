@@ -16,14 +16,6 @@ class ServiceCategoryEditViewModel extends ChangeNotifier {
 
   ServiceCategoryEditViewModel({required this.serviceCategoryService});
 
-  void initInsert() {
-    _emitState(ServiceCategoryEditAdd());
-  }
-
-  void initUpdate({required ServiceCategory serviceCategory}) {
-    _emitState(ServiceCategoryEditUpdate(serviceCategory: serviceCategory));
-  }
-
   Future<void> validateAndInsert({required ServiceCategory serviceCategory}) async {
     if (state is ServiceCategoryEditLoading) {
       return;

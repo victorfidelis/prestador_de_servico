@@ -20,18 +20,11 @@ class ShowAllServicesViewModel extends ChangeNotifier {
     _state = currentState;
   }
 
-  ShowAllServicesViewModel({required this.serviceService});
-
-  void setServicesByCategory({required ServicesByCategory servicesByCategory}) {
-    _emitState(ShowAllServicesLoaded(servicesByCategory: servicesByCategory));
-  }
-
-  void init() {
-    _state = ShowAllServicesInitial();
-  }
-
-  void exit() {
-    _state = ShowAllServicesInitial();
+  ShowAllServicesViewModel({
+    required this.serviceService,
+    required ServicesByCategory servicesByCategory,
+  }) {    
+    _changeState(ShowAllServicesLoaded(servicesByCategory: servicesByCategory));
   }
 
   Future<void> delete({required Service service}) async {
@@ -82,7 +75,8 @@ class ShowAllServicesViewModel extends ChangeNotifier {
 
     final nextState = ShowAllServicesFiltered(
       servicesByCategory: stateToBack.servicesByCategory,
-      servicesByCategoryFiltered: stateToBack.servicesByCategory.copyWith(services: servicesFiltered),
+      servicesByCategoryFiltered:
+          stateToBack.servicesByCategory.copyWith(services: servicesFiltered),
     );
 
     _emitState(nextState);
@@ -103,7 +97,7 @@ class ShowAllServicesViewModel extends ChangeNotifier {
           servicesByCategoryFiltered: servicesByCategoryFiltered,
         ),
       );
-    } else  {
+    } else {
       _changeState(ShowAllServicesLoaded(servicesByCategory: servicesByCategory));
     }
   }

@@ -1,22 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/repositories/service/service/firebase_service_repository.dart';
-import 'package:prestador_de_servico/app/repositories/service/service/sqflite_service_repository.dart';
-import 'package:prestador_de_servico/app/repositories/service/service_category/firebase_service_category_repository.dart';
-import 'package:prestador_de_servico/app/repositories/service/service_category/sqflite_service_category_repository.dart';
-import 'package:prestador_de_servico/app/views/payment/viewmodels/payment_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_payment_schedules_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/service/viewmodels/show_all_services_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/service_day/viewmodels/service_day_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/auth/viewmodel/create_user_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/sign_in_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/auth/viewmodel/password_reset_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/service/viewmodels/service_category_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/navigation/viewmodels/navigation_viewmodel.dart';
 import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
 import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
@@ -52,7 +39,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [        
+      providers: [
         ChangeNotifierProvider<SyncViewModel>(
           create: (context) => SyncViewModel(
             networkService: NetworkService.create(),
@@ -99,91 +86,34 @@ class App extends StatelessWidget {
             onlineRepository: ServiceCategoryRepository.createOnline(),
           ),
         ),
-        ChangeNotifierProvider<ServiceViewModel>(
-          create: (context) => ServiceViewModel(
-            serviceCategoryService: ServiceCategoryService(
-              offlineRepository: ServiceCategoryRepository.createOffline(),
-              onlineRepository: ServiceCategoryRepository.createOnline(),
-            ),
-            serviceService: ServiceService(
-              offlineRepository: ServiceRepository.createOffline(),
-              onlineRepository: ServiceRepository.createOnline(),
-              imageRepository: ImageRepository.create(),
-            ),
-            servicesByCategoryService: ServicesByCategoryService(
-              offlineRepository: ServicesByCategoryRepository.createOffline(),
-            ),
+        Provider<ServiceService>(
+          create: (context) => ServiceService(
+            offlineRepository: ServiceRepository.createOffline(),
+            onlineRepository: ServiceRepository.createOnline(),
+            imageRepository: ImageRepository.create(),
           ),
         ),
-        ChangeNotifierProvider<ServiceCategoryEditViewModel>(
-          create: (context) => ServiceCategoryEditViewModel(
-            serviceCategoryService: ServiceCategoryService(
-              onlineRepository: ServiceCategoryRepository.createOnline(),
-              offlineRepository: ServiceCategoryRepository.createOffline(),
-            ),
+        Provider<ServicesByCategoryService>(
+          create: (context) => ServicesByCategoryService(
+            offlineRepository: ServicesByCategoryRepository.createOffline(),
           ),
         ),
-        ChangeNotifierProvider<ServiceEditViewModel>(
-          create: (context) => ServiceEditViewModel(
-            serviceService: ServiceService(
-              offlineRepository: ServiceRepository.createOffline(),
-              onlineRepository: ServiceRepository.createOnline(),
-              imageRepository: ImageRepository.create(),
-            ),
-            offlineImageService: OfflineImageService.create(),
+        Provider<OfflineImageService>(create: (context) => OfflineImageService.create()),
+        Provider<PaymentService>(
+          create: (context) => PaymentService(
+            offlineRepository: PaymentRepository.createOffline(),
+            onlineRepository: PaymentRepository.createOnline(),
           ),
         ),
-        ChangeNotifierProvider<ShowAllServicesViewModel>(
-          create: (context) => ShowAllServicesViewModel(
-            serviceService: ServiceService(
-              offlineRepository: ServiceRepository.createOffline(),
-              onlineRepository: ServiceRepository.createOnline(),
-              imageRepository: ImageRepository.create(),
-            ),
+        Provider<ServiceDayService>(
+          create: (context) => ServiceDayService(
+            offlineRepository: ServiceDayRepository.createOffline(),
+            onlineRepository: ServiceDayRepository.createOnline(),
           ),
         ),
-        ChangeNotifierProvider<PaymentViewModel>(
-          create: (context) => PaymentViewModel(
-            paymentService: PaymentService(
-              offlineRepository: PaymentRepository.createOffline(),
-              onlineRepository: PaymentRepository.createOnline(),
-            ),
-          ),
-        ),
-        ChangeNotifierProvider<ServiceDayViewModel>(
-          create: (context) => ServiceDayViewModel(
-            serviceDayService: ServiceDayService(
-              offlineRepository: ServiceDayRepository.createOffline(),
-              onlineRepository: ServiceDayRepository.createOnline(),
-            ),
-          ),
-        ),
-        ChangeNotifierProvider<DaysViewModel>(
-          create: (context) => DaysViewModel(
-            schedulingService: SchedulingService(
-              onlineRepository: SchedulingRepository.createOnline(),
-            ),
-          ),
-        ),
-        ChangeNotifierProvider<ServiceSchedulingViewModel>(
-          create: (context) => ServiceSchedulingViewModel(
-            schedulingService: SchedulingService(
-              onlineRepository: SchedulingRepository.createOnline(),
-            ),
-          ),
-        ),
-        ChangeNotifierProvider<PendingProviderSchedulesViewModel>(
-          create: (context) => PendingProviderSchedulesViewModel(
-            schedulingService: SchedulingService(
-              onlineRepository: SchedulingRepository.createOnline(),
-            ),
-          ),
-        ),
-        ChangeNotifierProvider<PendingPaymentSchedulesViewModel>(
-          create: (context) => PendingPaymentSchedulesViewModel(
-            schedulingService: SchedulingService(
-              onlineRepository: SchedulingRepository.createOnline(),
-            ),
+        Provider<SchedulingService>(
+          create: (context) => SchedulingService(
+            onlineRepository: SchedulingRepository.createOnline(),
           ),
         ),
       ],

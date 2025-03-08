@@ -1,5 +1,5 @@
-
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/services/service_day/service_day_service.dart';
 import 'package:prestador_de_servico/app/views/service_day/viewmodels/service_day_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
@@ -19,11 +19,21 @@ class ServiceDayView extends StatefulWidget {
 }
 
 class _ServiceDayViewState extends State<ServiceDayView> {
+  late final ServiceDayViewModel serviceDayViewModel;
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) => context.read<ServiceDayViewModel>().load());
+    serviceDayViewModel = ServiceDayViewModel(
+      serviceDayService: context.read<ServiceDayService>(),
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) => serviceDayViewModel.load());
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    serviceDayViewModel.dispose();
+    super.dispose();
   }
 
   @override
@@ -45,7 +55,9 @@ class _ServiceDayViewState extends State<ServiceDayView> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
+                          SizedBox(
+                              width: 60,
+                              child: BackNavigation(onTap: () => Navigator.pop(context))),
                           const Expanded(
                             child: CustomAppBarTitle(title: 'Dias de atendimento'),
                           ),
@@ -58,8 +70,9 @@ class _ServiceDayViewState extends State<ServiceDayView> {
               ),
             ),
           ),
-          Consumer<ServiceDayViewModel>(
-            builder: (context, serviceDayViewModel, _) {
+          ListenableBuilder(
+            listenable: serviceDayViewModel,
+            builder: (context, _) {
               if (serviceDayViewModel.state is ServiceDayInitial) {
                 return const SliverFillRemaining();
               }
@@ -91,7 +104,7 @@ class _ServiceDayViewState extends State<ServiceDayView> {
                 }
                 return 0;
               });
-              
+
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(
                   vertical: 6,
@@ -105,7 +118,7 @@ class _ServiceDayViewState extends State<ServiceDayView> {
                     }
                     return CustomServiceDayCard(
                       serviceDay: serviceDays[index],
-                      changeStateOfServiceDay: _changeStateOfServiceDay,
+                      changeStateOfServiceDay: serviceDayViewModel.update,
                     );
                   },
                 ),
@@ -115,9 +128,5 @@ class _ServiceDayViewState extends State<ServiceDayView> {
         ],
       ),
     );
-  }
-
-  void _changeStateOfServiceDay({required ServiceDay serviceDay}) {
-    context.read<ServiceDayViewModel>().update(serviceDay: serviceDay);
   }
 }

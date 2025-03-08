@@ -5,7 +5,11 @@ import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_type_ca
 import 'package:provider/provider.dart';
 
 class CustomMenuCalendarType extends StatelessWidget {
-  CustomMenuCalendarType({super.key});
+  final Function(TypeView typeView) onChangeTypeView;
+  CustomMenuCalendarType({
+    super.key,
+    required this.onChangeTypeView,
+  });
 
   final MenuController _menuController = MenuController();
 
@@ -29,7 +33,7 @@ class CustomMenuCalendarType extends StatelessWidget {
         CustomTypeCalendar(
           onPressed: () {
             _menuController.close();
-            context.read<DaysViewModel>().changeTypeView(TypeView.main);
+            onChangeTypeView(TypeView.main);
           },
           iconData: Icons.view_agenda_outlined,
           label: 'Principal',
@@ -37,7 +41,7 @@ class CustomMenuCalendarType extends StatelessWidget {
         CustomTypeCalendar(
           onPressed: () {
             _menuController.close();
-            context.read<DaysViewModel>().changeTypeView(TypeView.mount);
+            onChangeTypeView(TypeView.mount);
           },
           iconData: Icons.calendar_month,
           label: 'Mês',

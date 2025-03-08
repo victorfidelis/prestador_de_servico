@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
@@ -17,10 +18,15 @@ class PendingPaymentSchedulesView extends StatefulWidget {
 }
 
 class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesView> {
+  late final PendingPaymentSchedulesViewModel pendingPaymentSchedulesViewModel;
+
   @override
   void initState() {
+    pendingPaymentSchedulesViewModel = PendingPaymentSchedulesViewModel(
+      schedulingService: context.read<SchedulingService>(),
+    );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PendingPaymentSchedulesViewModel>().load();
+      pendingPaymentSchedulesViewModel.load();
     });
     super.initState();
   }
@@ -44,7 +50,9 @@ class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesVie
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
+                          SizedBox(
+                              width: 60,
+                              child: BackNavigation(onTap: () => Navigator.pop(context))),
                           const Expanded(
                             child: CustomAppBarTitle(
                               title: 'Pagamentos Pendentes',
@@ -60,22 +68,22 @@ class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesVie
               ),
             ),
           ),
-          Consumer<PendingPaymentSchedulesViewModel>(
-            builder: (context, pendingPaymentViewModel, _) {
-              
-              if (pendingPaymentViewModel.state is PendingInitial) {
+          ListenableBuilder(
+            listenable: pendingPaymentSchedulesViewModel,
+            builder: (context, _) {
+              if (pendingPaymentSchedulesViewModel.state is PendingInitial) {
                 return const SliverFillRemaining();
               }
 
-              if (pendingPaymentViewModel.state is PendingError) {
+              if (pendingPaymentSchedulesViewModel.state is PendingError) {
                 return SliverFillRemaining(
                   child: Center(
-                    child: Text((pendingPaymentViewModel.state as PendingError).message),
+                    child: Text((pendingPaymentSchedulesViewModel.state as PendingError).message),
                   ),
                 );
               }
 
-              if (pendingPaymentViewModel.state is PendingLoading) {
+              if (pendingPaymentSchedulesViewModel.state is PendingLoading) {
                 return SliverFillRemaining(
                   child: Container(
                     padding: const EdgeInsets.only(top: 28),
@@ -84,7 +92,8 @@ class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesVie
                 );
               }
 
-              final schedulesByDays = (pendingPaymentViewModel.state as PendingLoaded).schedulesByDays;
+              final schedulesByDays =
+                  (pendingPaymentSchedulesViewModel.state as PendingLoaded).schedulesByDays;
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 18),
@@ -94,7 +103,7 @@ class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesVie
                     if (index == schedulesByDays.length) {
                       return const SizedBox(height: 150);
                     }
-                              
+
                     return SchedulesByDayCard(
                       schedulesByDay: schedulesByDays[index],
                     );

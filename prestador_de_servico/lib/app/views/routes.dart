@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
 import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
@@ -34,22 +36,45 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     return _buildRoute(settings, const ServiceView());
   }
   if (settings.name == '/serviceCategoryEdit') {
-    return _buildRoute(settings, const ServiceCategoryEditView());
+    final arguments = (settings.arguments as Map);
+    ServiceCategory? serviceCategory;
+    if (arguments.containsKey('serviceCategory')) {
+      serviceCategory = arguments['serviceCategory'] as ServiceCategory;
+    }
+    return _buildRoute(
+      settings,
+      ServiceCategoryEditView(
+        serviceCategory: serviceCategory,
+      ),
+    );
   }
   if (settings.name == '/serviceEdit') {
-    return _buildRoute(settings, const ServiceEditView());
+    final arguments = (settings.arguments as Map);
+    final ServiceCategory serviceCategory = arguments['serviceCategory'] as ServiceCategory;
+    Service? service;
+    if (arguments.containsKey('service')) {
+      service = arguments['service'] as Service;
+    }
+    return _buildRoute(
+      settings,
+      ServiceEditView(
+        serviceCategory: serviceCategory,
+        service: service,
+      ),
+    );
   }
   if (settings.name == '/showAllServices') {
-    final argmuments = (settings.arguments as Map);
+    final arguments = (settings.arguments as Map);
     return _buildRoute(
       settings,
       ShowAllServicesView(
-        removeServiceOfOtherScreen: (argmuments['removeServiceOfOtherScreen']
-            as Function({required Service service})),
-        addServiceOfOtherScreen: (argmuments['addServiceOfOtherScreen']
-            as Function({required Service service})),
-        editServiceOfOtherScreen: (argmuments['editServiceOfOtherScreen']
-            as Function({required Service service})),
+        servicesByCategory: (arguments['servicesByCategory'] as ServicesByCategory),
+        removeServiceOfOtherScreen:
+            (arguments['removeServiceOfOtherScreen'] as Function({required Service service})),
+        addServiceOfOtherScreen:
+            (arguments['addServiceOfOtherScreen'] as Function({required Service service})),
+        editServiceOfOtherScreen:
+            (arguments['editServiceOfOtherScreen'] as Function({required Service service})),
       ),
     );
   }
@@ -69,21 +94,20 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     return _buildRoute(settings, const PendingPaymentSchedulesView());
   }
   if (settings.name == '/schedulingDetails') {
-    final argmuments = (settings.arguments as Map);
+    final arguments = (settings.arguments as Map);
     return _buildRoute(
       settings,
       SchedulingDetailsView(
-        serviceScheduling:
-            (argmuments['serviceScheduling']) as ServiceScheduling,
+        serviceScheduling: (arguments['serviceScheduling']) as ServiceScheduling,
       ),
     );
   }
   if (settings.name == '/editDateAndTime') {
-    final argmuments = (settings.arguments as Map);
+    final arguments = (settings.arguments as Map);
     return _buildRoute(
       settings,
       EditDateAndTimeView(
-        serviceScheduling: argmuments['serviceScheduling'] as ServiceScheduling,
+        serviceScheduling: arguments['serviceScheduling'] as ServiceScheduling,
       ),
     );
   }
