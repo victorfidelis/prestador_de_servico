@@ -71,15 +71,6 @@ class _DateAndTimeCardState extends State<DateAndTimeCard> {
       textColor = Theme.of(context).extension<CustomColors>()!.cancel!;
     }
 
-    String title;
-    if (oldDate) {
-      title = 'Data trocada';
-    } else if (hasOldDate) {
-      title = 'Nova data';
-    } else {
-      title = 'Data';
-    }
-
     return Opacity(
       opacity: oldDate ? 0.6 : 1.0,
       child: Padding(

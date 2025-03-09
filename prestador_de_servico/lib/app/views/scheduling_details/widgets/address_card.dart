@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/address/address.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
+import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
+import 'package:replace_diacritic/replace_diacritic.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AddressCard extends StatefulWidget {
   final Address address;
@@ -13,6 +16,7 @@ class AddressCard extends StatefulWidget {
 
 class _AddressCardState extends State<AddressCard> {
   late Address address;
+  final CustomNotifications notifications = CustomNotifications();
 
   @override
   void initState() {
@@ -35,7 +39,7 @@ class _AddressCardState extends State<AddressCard> {
                 style: TextStyle(fontSize: 16),
               ),
             ),
-            CustomLink(label: 'Abrir no maps', onTap: () {})
+            CustomLink(label: 'Abrir no maps', onTap: openUrl)
           ],
         ),
         Padding(
@@ -64,5 +68,16 @@ class _AddressCardState extends State<AddressCard> {
         ),
       ],
     );
+  }
+
+  Future<void> openUrl() async {
+    var textUrl =
+        'https://www.google.com/maps/place/${address.street.trim()},+${address.number.trim()},+${Formatters.formatZipCode(address.zipCode)}';
+    textUrl = textUrl.replaceAll(' ', '+');
+    textUrl = replaceDiacritic(textUrl);
+    final uri = Uri.parse(textUrl);
+    if (!await launchUrl(uri)) {
+      throw Exception('Houve uma falha ao abrir a url $textUrl');
+    }
   }
 }

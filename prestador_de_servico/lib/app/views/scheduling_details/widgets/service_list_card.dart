@@ -72,7 +72,7 @@ class _ServiceListCardState extends State<ServiceListCard> {
         const Expanded(
           child: Text(
             'Total',
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
             ),
