@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
@@ -14,24 +13,21 @@ class DaysViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _changeState(DaysState currentState) {
-    _state = currentState;
-  }
-
   DaysViewModel({required this.schedulingService});
 
-  Future<void> load() async {
+  Future<void> load(DateTime selectedDay) async {
+    TypeView typeView = TypeView.main;
+    if (state is DaysLoaded) {
+      typeView = (state as DaysLoaded).typeView;
+    }
+
     _emitState(DaysLoading());
-    final daysEither = await schedulingService.getDates();
+    final daysEither = await schedulingService.getDates(selectedDay);
     if (daysEither.isLeft) {
       _emitState(DaysError(daysEither.left!.message));
     } else {
-      _emitState(DaysLoaded(dates: daysEither.right!));
+      _emitState(DaysLoaded(dates: daysEither.right!, typeView: typeView));
     }
-  }
-
-  void exit() {
-    _changeState(DaysInitial());
   }
 
   void changeTypeView(TypeView typeView) {

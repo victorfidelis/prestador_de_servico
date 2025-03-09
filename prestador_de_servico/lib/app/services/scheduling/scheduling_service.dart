@@ -66,7 +66,7 @@ class SchedulingService {
     return await onlineRepository.getAllServicesByUserId(userId: userId);
   }
 
-  Future<Either<Failure, List<SchedulingDay>>> getDates() async {
+  Future<Either<Failure, List<SchedulingDay>>> getDates(DateTime selectedDay) async {
     final daysEither = await onlineRepository.getDaysWithService();
     if (daysEither.isLeft) {
       return Either.left(daysEither.left);
@@ -80,6 +80,7 @@ class SchedulingService {
     return Either.right(
       getDatesFromInterval(
         daysWithService: daysWithService,
+        selectedDay: selectedDay,
         firstDate: initialDate,
         lastDate: finalDate,
       ),
@@ -127,11 +128,11 @@ class SchedulingService {
 
   List<SchedulingDay> getDatesFromInterval({
     required List<SchedulingDay> daysWithService,
+    required DateTime selectedDay,
     required DateTime firstDate,
     required DateTime lastDate,
   }) {
     List<SchedulingDay> dates = [];
-    DateTime actualDate = DateTime.now();
 
     final daysDifference = lastDate.difference(firstDate).inDays;
     for (int i = 0; i <= daysDifference; i++) {
@@ -151,9 +152,9 @@ class SchedulingService {
         schedulingDay = daysWithService[index];
       }
 
-      if (date.year == actualDate.year &&
-          date.month == actualDate.month &&
-          date.day == actualDate.day) {
+      if (date.year == selectedDay.year &&
+          date.month == selectedDay.month &&
+          date.day == selectedDay.day) {
         schedulingDay = schedulingDay.copyWith(isSelected: true, isToday: true);
       }
 

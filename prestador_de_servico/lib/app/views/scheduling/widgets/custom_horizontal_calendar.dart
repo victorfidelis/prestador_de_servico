@@ -6,11 +6,13 @@ import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_horizon
 
 class CustomHorizontalCalendar extends StatefulWidget {
   final List<SchedulingDay> schedulesPerDay;
+  final DateTime initialDate;
   final Function(DateTime) onChangeSelectedDay;
 
   const CustomHorizontalCalendar({
     super.key,
     required this.schedulesPerDay,
+    required this.initialDate,
     required this.onChangeSelectedDay,
   });
 
@@ -19,7 +21,7 @@ class CustomHorizontalCalendar extends StatefulWidget {
 }
 
 class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
-  late final ScrollController _scrollController;
+  late final ScrollController scrollController;
   late SchedulingDayList schedulingDayList;
   late DateTime selectedDay;
   final ValueNotifier<String> selectedMonth = ValueNotifier('');
@@ -32,10 +34,18 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
     loadSelectedDay();
     selectedMonth.value = Formatters.getMonthName(selectedDay.month);
     selectedYear.value = selectedDay.year.toString();
-    _scrollController = ScrollController(initialScrollOffset: _getPositionScroll(selectedDay));
-    _scrollController.addListener(_onScroll);
+    scrollController = ScrollController(initialScrollOffset: getPositionScroll(widget.initialDate));
+    scrollController.addListener(onScroll);
 
     super.initState();
+  }
+
+  @override void dispose() {
+    scrollController.dispose();
+    schedulingDayList.dispose();
+    selectedMonth.dispose();
+    selectedYear.dispose();
+    super.dispose();
   }
 
   @override
@@ -85,14 +95,14 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
             listenable: schedulingDayList,
             builder: (context, _) {
               return ListView.builder(
-                controller: _scrollController,
+                controller: scrollController,
                 scrollDirection: Axis.horizontal,
                 itemCount: schedulingDayList.value.length,
                 itemBuilder: (context, index) {
                   return CustomHorizontalCalendarCard(
                     key: ValueKey(schedulingDayList.value[index].hashCode.toString()),
                     schedulingDay: schedulingDayList.value[index],
-                    onSelectedDay: _onChangeSelectedDay,
+                    onSelectedDay: onChangeSelectedDay,
                   );
                 },
               );
@@ -103,18 +113,18 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
     );
   }
 
-  void _onScroll() {
-    final int index = (_scrollController.offset / cardWidth).floor();
+  void onScroll() {
+    final int index = (scrollController.offset / cardWidth).floor();
     selectedMonth.value = Formatters.getMonthName(schedulingDayList.value[index].date.month);
     selectedYear.value = schedulingDayList.value[index].date.year.toString();
   }
 
-  void _onChangeSelectedDay(DateTime date) {
+  void onChangeSelectedDay(DateTime date) {
     schedulingDayList.changeSelectedDay(date);
     widget.onChangeSelectedDay(date);
   }
 
-  double _getPositionScroll(DateTime date) {
+  double getPositionScroll(DateTime date) {
     final minDate = schedulingDayList.value[0].date;
 
     final int numberOfDaysUntilDate = date.difference(minDate).inDays;
@@ -127,5 +137,5 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
   void loadSelectedDay() {
     final int indexForSelectedDay = schedulingDayList.value.indexWhere((s) => s.isSelected);
     selectedDay = schedulingDayList.value[indexForSelectedDay].date;
-  } 
+  }
 }

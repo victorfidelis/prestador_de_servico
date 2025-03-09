@@ -7,11 +7,13 @@ import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart
 
 class CustomServiceSchedulingCard extends StatefulWidget {
   final ServiceScheduling serviceScheduling;
+  final Function()? refreshOriginPage; 
   final bool isReadOnly;
 
   const CustomServiceSchedulingCard({
     super.key,
     required this.serviceScheduling,
+    this.refreshOriginPage,
     this.isReadOnly = false,
   });
 
@@ -48,7 +50,7 @@ class _CustomServiceSchedulingCardState
     final message = messageWidget();
 
     return GestureDetector(
-      onTap: _onTap,
+      onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -166,18 +168,22 @@ class _CustomServiceSchedulingCardState
     );
   }
 
-  void _onTap() {
+  void onTap() async {
     if (widget.isReadOnly) {
       return;
     }
 
-    Navigator.pushNamed(
+    final bool hasChange = await Navigator.pushNamed(
       context,
       '/schedulingDetails',
       arguments: {'serviceScheduling': serviceScheduling},
-    );
-  }
+    ) as bool;
 
+    if (hasChange && widget.refreshOriginPage != null) {
+      widget.refreshOriginPage!();
+    }
+  }
+ 
   Widget serviceItemList(Service service) {
     final formatPrice = Formatters.formatPrice(service.price);
 

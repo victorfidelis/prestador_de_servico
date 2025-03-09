@@ -11,6 +11,7 @@ import '../../../../helpers/service_schedulingk/mock_scheduling_repository.dart'
 
 void main() {
   late DaysViewModel daysViewModel;
+  DateTime actualDate = DateTime.now();
 
   void setUpValues() {
     daysViewModel = DaysViewModel(
@@ -37,7 +38,7 @@ void main() {
           when(onlineMockSchedulingRepository.getDaysWithService())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          await daysViewModel.load();
+          await daysViewModel.load(actualDate);
 
           expect(daysViewModel.state is DaysError, isTrue);
           final state = (daysViewModel.state as DaysError);
@@ -53,23 +54,9 @@ void main() {
           when(onlineMockSchedulingRepository.getDaysWithService())
               .thenAnswer((_) async => Either.right(schedulesPerDay));
 
-          await daysViewModel.load();
+          await daysViewModel.load(actualDate);
 
           expect(daysViewModel.state is DaysLoaded, isTrue);
-        },
-      );
-    },
-  );
-
-  group(
-    'exit',
-    () {
-      test(
-        '''Deve alterar o estado para DaysInitial''',
-        () {
-          daysViewModel.exit();
-
-          expect(daysViewModel.state is DaysInitial, isTrue);
         },
       );
     },

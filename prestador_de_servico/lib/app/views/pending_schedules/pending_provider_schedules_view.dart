@@ -107,6 +107,7 @@ class _PendingProviderSchedulesViewState extends State<PendingProviderSchedulesV
 
                     return SchedulesByDayCard(
                       schedulesByDay: schedulesByDays[index],
+                      refreshOriginPage: () => pendingProviderSchedulesViewModel.load(),
                     );
                   },
                 ),

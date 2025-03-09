@@ -292,7 +292,7 @@ void main() {
           when(onlineMockSchedulingRepository.getDaysWithService())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          final datesEither = await serviceSchedulingService.getDates();
+          final datesEither = await serviceSchedulingService.getDates(actualDate);
 
           expect(datesEither.isLeft, isTrue);
           expect(datesEither.left!.message, equals(failureMessage));
@@ -306,7 +306,7 @@ void main() {
           when(onlineMockSchedulingRepository.getDaysWithService())
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
-          final datesEither = await serviceSchedulingService.getDates();
+          final datesEither = await serviceSchedulingService.getDates(actualDate);
 
           expect(datesEither.isLeft, isTrue);
           expect(datesEither.left is NetworkFailure, isTrue);
@@ -324,7 +324,7 @@ void main() {
         when(onlineMockSchedulingRepository.getDaysWithService())
             .thenAnswer((_) async => Either.right(schedulesPerDay));
 
-        final datesEither = await serviceSchedulingService.getDates();
+        final datesEither = await serviceSchedulingService.getDates(actualDate);
 
         expect(datesEither.isRight, isTrue);
         final dates = datesEither.right!;
@@ -351,7 +351,7 @@ void main() {
           when(onlineMockSchedulingRepository.getDaysWithService())
               .thenAnswer((_) async => Either.right(schedulesPerDay));
 
-          final datesEither = await serviceSchedulingService.getDates();
+          final datesEither = await serviceSchedulingService.getDates(actualDate);
 
           expect(datesEither.isRight, isTrue);
           final dates = datesEither.right!;
@@ -377,7 +377,7 @@ void main() {
           when(onlineMockSchedulingRepository.getDaysWithService())
               .thenAnswer((_) async => Either.right(schedulesPerDay));
 
-          final datesEither = await serviceSchedulingService.getDates();
+          final datesEither = await serviceSchedulingService.getDates(actualDate);
 
           expect(datesEither.isRight, isTrue);
           final dates = datesEither.right!;

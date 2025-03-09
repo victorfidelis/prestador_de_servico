@@ -32,7 +32,11 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvokedWithResult: (_, __) {
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) {
+          return;
+        }
         Navigator.pop(context, context.read<SchedulingDetailViewModel>().hasChange);
       },
       child: Scaffold(
@@ -53,8 +57,14 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
-                                width: 60,
-                                child: BackNavigation(onTap: () => Navigator.pop(context))),
+                              width: 60,
+                              child: BackNavigation(
+                                onTap: () => Navigator.pop(
+                                  context,
+                                  context.read<SchedulingDetailViewModel>().hasChange,
+                                ),
+                              ),
+                            ),
                             const Expanded(
                               child: CustomAppBarTitle(
                                 title: 'Agendamento',
@@ -76,7 +86,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                   context,
                   schedulingDetailViewModel.serviceScheduling.serviceStatus,
                 );
-      
+
                 return SliverFillRemaining(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -104,14 +114,16 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         Divider(color: Theme.of(context).colorScheme.shadow),
                         const SizedBox(height: 8),
                         DateAndTimeCard(
-                          key: ValueKey(schedulingDetailViewModel.serviceScheduling.startDateAndTime),
+                          key: ValueKey(
+                              schedulingDetailViewModel.serviceScheduling.startDateAndTime),
                           oldStartDateAndTime:
                               schedulingDetailViewModel.serviceScheduling.oldStartDateAndTime,
                           oldEndDateAndTime:
                               schedulingDetailViewModel.serviceScheduling.oldEndDateAndTime,
                           startDateAndTime:
                               schedulingDetailViewModel.serviceScheduling.startDateAndTime,
-                          endDateAndTime: schedulingDetailViewModel.serviceScheduling.endDateAndTime,
+                          endDateAndTime:
+                              schedulingDetailViewModel.serviceScheduling.endDateAndTime,
                           onEdit: onEditDateAndTime,
                         ),
                         const SizedBox(height: 8),

@@ -5,7 +5,12 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_service_schedulin
 
 class SchedulesByDayCard extends StatefulWidget {
   final SchedulesByDay schedulesByDay;
-  const SchedulesByDayCard({super.key, required this.schedulesByDay});
+  final Function()? refreshOriginPage;
+  const SchedulesByDayCard({
+    super.key,
+    required this.schedulesByDay,
+    this.refreshOriginPage,
+  });
 
   @override
   State<SchedulesByDayCard> createState() => _SchedulesByDayCardState();
@@ -44,6 +49,13 @@ class _SchedulesByDayCardState extends State<SchedulesByDayCard> {
   }
 
   List<CustomServiceSchedulingCard> serviceScheduleschedulesCard() {
-    return schedulesByDay.serviceSchedules.map((s) => CustomServiceSchedulingCard(serviceScheduling: s)).toList();
+    return schedulesByDay.serviceSchedules
+        .map(
+          (serviceScheduling) => CustomServiceSchedulingCard(
+            serviceScheduling: serviceScheduling,
+            refreshOriginPage: widget.refreshOriginPage,
+          ),
+        )
+        .toList();
   }
 }

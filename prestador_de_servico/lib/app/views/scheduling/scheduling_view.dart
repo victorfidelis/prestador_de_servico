@@ -35,8 +35,8 @@ class _SchedulingViewState extends State<SchedulingView> {
       schedulingService: context.read<SchedulingService>(),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      daysViewModel.load();
-      _loadToday();
+      daysViewModel.load(selectedDay.value);
+      loadToday();
     });
     super.initState();
   }
@@ -109,12 +109,13 @@ class _SchedulingViewState extends State<SchedulingView> {
               if (loadedState.typeView == TypeView.main) {
                 return CustomHorizontalCalendar(
                   schedulesPerDay: schedulesPerDay,
-                  onChangeSelectedDay: _onChangeSelectedDay,
+                  initialDate: selectedDay.value,
+                  onChangeSelectedDay: onChangeSelectedDay,
                 );
               } else {
                 return CustomMonthCalendar(
                   schedulesPerDay: schedulesPerDay,
-                  onChangeSelectedDay: _onChangeSelectedDay,
+                  onChangeSelectedDay: onChangeSelectedDay,
                 );
               }
             },
@@ -189,6 +190,7 @@ class _SchedulingViewState extends State<SchedulingView> {
 
                       return CustomServiceSchedulingCard(
                         serviceScheduling: serviceSchedules[index],
+                        refreshOriginPage: refreshView,
                       );
                     },
                   ),
@@ -201,15 +203,20 @@ class _SchedulingViewState extends State<SchedulingView> {
     );
   }
 
-  void _loadToday() {
+  void loadToday() {
     final actualDateTime = DateTime.now();
     selectedDay.value = DateTime(actualDateTime.year, actualDateTime.month, actualDateTime.day);
     serviceSchedulingViewModel.load(dateTime: selectedDay.value);
   }
 
-  void _onChangeSelectedDay(DateTime date) {
+  void onChangeSelectedDay(DateTime date) {
     selectedDay.value = date;
     serviceSchedulingViewModel.load(dateTime: selectedDay.value);
     daysViewModel.changeSelectedDay(date);
+  }
+
+  void refreshView() {
+    daysViewModel.load(selectedDay.value);
+    serviceSchedulingViewModel.load(dateTime: selectedDay.value);
   }
 }
