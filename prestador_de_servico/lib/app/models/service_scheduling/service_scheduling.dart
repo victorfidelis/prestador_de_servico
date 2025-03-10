@@ -1,12 +1,12 @@
 import 'package:prestador_de_servico/app/models/address/address.dart';
-import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 
 class ServiceScheduling {
   String id;
   User user;
-  List<Service> services;
+  List<ScheduledService> services;
   ServiceStatus serviceStatus;
   DateTime startDateAndTime;
   DateTime endDateAndTime;
@@ -49,7 +49,7 @@ class ServiceScheduling {
   ServiceScheduling copyWith({
     String? id,
     User? user,
-    List<Service>? services,
+    List<ScheduledService>? services,
     ServiceStatus? serviceStatus,
     DateTime? startDateAndTime,
     DateTime? endDateAndTime,

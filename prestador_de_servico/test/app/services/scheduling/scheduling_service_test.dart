@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
@@ -18,9 +19,9 @@ void main() {
 
   late SchedulingService serviceSchedulingService;
 
-  late Service service1;
-  late Service service2;
-  late Service service3;
+  late ScheduledService service1;
+  late ScheduledService service2;
+  late ScheduledService service3;
 
   late ServiceScheduling serviceScheduling08as09;
   late ServiceScheduling serviceScheduling09as11;
@@ -47,7 +48,7 @@ void main() {
     serviceSchedulingService = SchedulingService(
       onlineRepository: onlineMockSchedulingRepository,
     );
-    service1 = Service(
+    service1 = ScheduledService(
       id: '1',
       serviceCategoryId: '1',
       name: 'Corte cabelo',
@@ -55,9 +56,11 @@ void main() {
       hours: 1,
       minutes: 0,
       imageUrl: '',
+      isAdditional: false,
+      removed: false,
     );
 
-    service2 = Service(
+    service2 = ScheduledService(
       id: '2',
       serviceCategoryId: '1',
       name: 'Moicano',
@@ -65,9 +68,11 @@ void main() {
       hours: 1,
       minutes: 0,
       imageUrl: '',
+      isAdditional: false,
+      removed: false,
     );
 
-    service3 = Service(
+    service3 = ScheduledService(
       id: '3',
       serviceCategoryId: '1',
       name: 'Luzes',
@@ -75,6 +80,8 @@ void main() {
       hours: 1,
       minutes: 0,
       imageUrl: '',
+      isAdditional: false,
+      removed: false,
     );
 
     serviceScheduling08as09 = ServiceScheduling(

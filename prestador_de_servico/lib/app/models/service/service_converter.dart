@@ -84,16 +84,4 @@ class ServiceConverter {
       imageUrl: map['serviceUrlImage'],
     );
   }
-
-  static Service fromServiceSchedulingMap({required Map map}) {
-    return Service(
-      id: map['id'],
-      serviceCategoryId: '',
-      name: map['name'],
-      price: (map['price'] * 1.0),
-      hours: map['hours'],
-      minutes: map['minutes'],
-      imageUrl: '',
-    );
-  }
 }

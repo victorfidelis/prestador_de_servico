@@ -45,12 +45,12 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
             SliverPersistentHeader(
               floating: true,
               delegate: SliverAppBarDelegate(
-                minHeight: 144,
-                maxHeight: 144,
+                minHeight: 120,
+                maxHeight: 120,
                 child: Stack(
                   children: [
                     CustomHeaderContainer(
-                      height: 120,
+                      height: 100,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 28),
                         child: Row(
@@ -136,6 +136,9 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         ServiceListCard(
                           serviceScheduling: schedulingDetailViewModel.serviceScheduling,
                         ),
+                        const SizedBox(height: 8),
+                        Divider(color: Theme.of(context).colorScheme.shadow),
+                        const SizedBox(height: 8),
                       ],
                     ),
                   ),

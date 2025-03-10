@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/address/address_converter.dart';
-import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/models/service/service_converter.dart';
+import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
+import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service_converter.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
@@ -11,7 +11,7 @@ class ServiceSchedulingConverter {
     Map<String, dynamic> map = (doc.data() as Map<String, dynamic>);
 
     final List<Map<String, dynamic>> servicesMap = (map['services'] as List).map((e) => e as Map<String, dynamic>).toList();
-    final List<Service> services = servicesMap.map((e) => ServiceConverter.fromServiceSchedulingMap(map: e)).toList();
+    final List<ScheduledService> services = servicesMap.map((e) => ScheduledServiceConverter.fromServiceSchedulingMap(map: e)).toList();
 
     final user = User(id: map['userId'], name: map['userName'], surname: map['userSurname']);
 
