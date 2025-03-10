@@ -12,6 +12,7 @@ import 'package:prestador_de_servico/app/views/pending_schedules/pending_payment
 import 'package:prestador_de_servico/app/views/pending_schedules/pending_provider_schedules_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling/scheduling_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/edit_date_and_time_view.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/edit_scheduled_services_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/scheduling_details_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
@@ -115,6 +116,16 @@ Route<dynamic>? getRoute(RouteSettings settings) {
       ChangeNotifierProvider.value(
         value: arguments['schedulingDetailViewModel'] as SchedulingDetailViewModel,
         child: const EditDateAndTimeView(),
+      ),
+    );
+  }
+  if (settings.name == '/editScheduledServices') {
+    final arguments = (settings.arguments as Map);
+    return _buildRoute(
+      settings,
+      ChangeNotifierProvider.value(
+        value: arguments['schedulingDetailViewModel'] as SchedulingDetailViewModel,
+        child: const EditScheduledServicesView(),
       ),
     );
   }

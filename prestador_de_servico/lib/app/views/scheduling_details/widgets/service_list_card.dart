@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/edit_button.dart';
@@ -7,8 +6,13 @@ import 'package:prestador_de_servico/app/views/scheduling_details/widgets/servic
 
 class ServiceListCard extends StatefulWidget {
   final ServiceScheduling serviceScheduling;
+  final Function() onEdit;
 
-  const ServiceListCard({super.key, required this.serviceScheduling});
+  const ServiceListCard({
+    super.key,
+    required this.serviceScheduling,
+    required this.onEdit,
+  });
 
   @override
   State<ServiceListCard> createState() => _ServiceListCardState();
@@ -44,16 +48,16 @@ class _ServiceListCardState extends State<ServiceListCard> {
               servicesCard(),
               const SizedBox(height: 12),
               otherValuesCard('Subtotal', serviceScheduling.totalPrice),
-              hasDiscount ? const SizedBox(height: 8) : const SizedBox(),
-              hasDiscount
-                  ? otherValuesCard('Discontos', serviceScheduling.totalDiscount)
-                  : const SizedBox(),
               hasRate ? const SizedBox(height: 8) : const SizedBox(),
               hasRate ? otherValuesCard('Taxas', serviceScheduling.totalRate) : const SizedBox(),
+              hasDiscount ? const SizedBox(height: 8) : const SizedBox(),
+              hasDiscount
+                  ? otherValuesCard('Descontos', serviceScheduling.totalDiscount)
+                  : const SizedBox(),
               const SizedBox(height: 8),
               totalCard(),
               const SizedBox(height: 8),
-              EditButton(onTap: () {}),
+              EditButton(onTap: widget.onEdit),
             ],
           ),
         )
@@ -70,7 +74,9 @@ class _ServiceListCardState extends State<ServiceListCard> {
         Column(
           children: [
             ServiceItemCard(service: serviceScheduling.services[i]),
-            isLastService ? const SizedBox() : const Divider(height: 1),
+            isLastService
+                ? const SizedBox()
+                : Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
           ],
         ),
       );

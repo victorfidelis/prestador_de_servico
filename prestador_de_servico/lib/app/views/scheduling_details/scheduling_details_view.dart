@@ -135,6 +135,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         const SizedBox(height: 8),
                         ServiceListCard(
                           serviceScheduling: schedulingDetailViewModel.serviceScheduling,
+                          onEdit: onEditScheduledServices,
                         ),
                         const SizedBox(height: 8),
                         Divider(color: Theme.of(context).colorScheme.shadow),
@@ -155,6 +156,14 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     Navigator.pushNamed(
       context,
       '/editDateAndTime',
+      arguments: {'schedulingDetailViewModel': context.read<SchedulingDetailViewModel>()},
+    );
+  }
+
+  void onEditScheduledServices() {
+    Navigator.pushNamed(
+      context,
+      '/editScheduledServices',
       arguments: {'schedulingDetailViewModel': context.read<SchedulingDetailViewModel>()},
     );
   }
