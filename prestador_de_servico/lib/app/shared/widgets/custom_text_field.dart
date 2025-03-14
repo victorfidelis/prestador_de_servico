@@ -10,6 +10,7 @@ class CustomTextField extends StatelessWidget {
   final bool isNumeric;
   final String? errorMessage;
   final List<TextInputFormatter> inputFormatters;
+  final Function(String)? onChanged;
 
   CustomTextField({
     super.key,
@@ -21,6 +22,7 @@ class CustomTextField extends StatelessWidget {
     this.isNumeric = false,
     this.errorMessage,
     this.inputFormatters = const [],
+    this.onChanged,
   });
 
   final ValueNotifier<bool> obscureText = ValueNotifier(true);
@@ -109,6 +111,7 @@ class CustomTextField extends StatelessWidget {
                         obscureText: isPassword && obscureText.value,
                         keyboardType: textInputType,
                         inputFormatters: inputFormatters,
+                        onChanged: onChanged,
                       ),
                     ),
                     Padding(

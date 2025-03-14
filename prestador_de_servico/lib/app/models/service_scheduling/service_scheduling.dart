@@ -4,23 +4,23 @@ import 'package:prestador_de_servico/app/models/service_status/service_status.da
 import 'package:prestador_de_servico/app/models/user/user.dart';
 
 class ServiceScheduling {
-  String id;
-  User user;
-  List<ScheduledService> services;
-  ServiceStatus serviceStatus;
-  DateTime startDateAndTime;
-  DateTime endDateAndTime;
-  DateTime? oldStartDateAndTime;
-  DateTime? oldEndDateAndTime;
-  double totalRate;
-  double totalDiscount;
-  double totalPrice;
-  double totalPaid;
-  bool schedulingUnavailable;
-  bool conflictScheduing;
-  bool isPaid;
-  DateTime creationDate;
-  Address? address;
+  final String id;
+  final User user;
+  final List<ScheduledService> services;
+  final ServiceStatus serviceStatus;
+  final DateTime startDateAndTime;
+  final DateTime endDateAndTime;
+  final DateTime? oldStartDateAndTime;
+  final DateTime? oldEndDateAndTime;
+  final double totalRate;
+  final double totalDiscount;
+  final double totalPrice;
+  final double totalPaid;
+  final bool schedulingUnavailable;
+  final bool conflictScheduing;
+  final bool isPaid;
+  final DateTime creationDate;
+  final Address? address;
 
   double get needToPay => totalPrice + totalRate - totalDiscount - totalPaid;
   double get totalPriceToPay => totalPrice + totalRate - totalDiscount;

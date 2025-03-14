@@ -32,6 +32,7 @@ ThemeData mainTheme = ThemeData(
       onConflict: Colors.white,
       money: const Color(0xff00891E),
       onMoney: Colors.white,
+      
     ),
   ],
 );
