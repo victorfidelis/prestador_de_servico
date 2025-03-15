@@ -48,6 +48,7 @@ void main() {
       onlineRepository: onlineMockSchedulingRepository,
     );
     service1 = ScheduledService(
+      scheduledServiceId: 1,
       id: '1',
       serviceCategoryId: '1',
       name: 'Corte cabelo',
@@ -60,6 +61,7 @@ void main() {
     );
 
     service2 = ScheduledService(
+      scheduledServiceId: 2,
       id: '2',
       serviceCategoryId: '1',
       name: 'Moicano',
@@ -72,6 +74,7 @@ void main() {
     );
 
     service3 = ScheduledService(
+      scheduledServiceId: 3,
       id: '3',
       serviceCategoryId: '1',
       name: 'Luzes',

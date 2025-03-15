@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
@@ -121,6 +122,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
                         isNumeric: true,
                         inputFormatters: [MoneyTextInputFormatter()],
                         onChanged: (_) => onChangeDicount(),
+                        errorMessage: editViewModel.discountError,
                       ),
                       const SizedBox(height: 20),
                       Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
@@ -137,12 +139,10 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
                       Row(
                         children: [
                           const Expanded(child: SizedBox()),
-                          AddServiceButtom(onTap: () {}),
+                          AddServiceButtom(onTap: onNewService),
                         ],
                       ),
                       const SizedBox(height: 12),
-                      Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
-                      const SizedBox(height: 12), 
                       Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
                       const SizedBox(height: 12),
                       totalCard(),
@@ -159,7 +159,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: CustomButton(
           label: 'Salvar',
-          onTap: () {},
+          onTap: onSave,
         ),
       ),
     );
@@ -245,15 +245,23 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
   }
 
   void onRemoveService(int index) {
-    final service = editViewModel.serviceScheduling.services[index];
-    notifications.showQuestionAlert(
-      context: context,
-      title: 'Remover serviço',
-      content: 'Tem certeza que deseja remover o serviço "${service.name}"?',
-      confirmCallback: () {
-        editViewModel.removeService(index: index);
-      },
-    );
+    if (editViewModel.quantityOfActiveServices() == 1) {
+      notifications.showSuccessAlert(
+        context: context,
+        title: 'Exclusão não permitida',
+        content: 'Não é permitido excluir todos os serviços do agendamento.',
+      );
+    } else {
+      final service = editViewModel.serviceScheduling.services[index];
+      notifications.showQuestionAlert(
+        context: context,
+        title: 'Remover serviço',
+        content: 'Tem certeza que deseja remover o serviço "${service.name}"?',
+        confirmCallback: () {
+          editViewModel.removeService(index: index);
+        },
+      );
+    }
   }
 
   void onReturnService(int index) {
@@ -266,7 +274,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
         editViewModel.returnService(index: index);
       },
     );
-  } 
+  }
 
   void onChangeRate() {
     if (rateController.text.isEmpty) {
@@ -281,6 +289,24 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
       editViewModel.changeDicount(0);
     } else {
       editViewModel.changeDicount(double.parse(discountController.text.replaceAll(',', '.')));
+    }
+  }
+
+  void onNewService() async {
+    final result = await Navigator.pushNamed(
+      context,
+      '/service',
+      arguments: {'isSelectionView': true},
+    );
+
+    if (result is Service) {
+      editViewModel.addService(service: result);
+    }
+  }
+
+  void onSave() {
+    if (!editViewModel.validateSave()) {
+      return;
     }
   }
 }

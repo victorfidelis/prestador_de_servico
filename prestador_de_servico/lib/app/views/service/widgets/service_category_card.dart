@@ -15,6 +15,8 @@ class ServiceCategoryCard extends StatefulWidget {
   final int index;
   final Animation<double> animation;
   final void Function() removeFocusOfWidgets;
+  final bool isSelectionView;
+  final Function(Service service) onSelectedService;
 
   const ServiceCategoryCard({
     super.key,
@@ -25,6 +27,8 @@ class ServiceCategoryCard extends StatefulWidget {
     required this.index,
     required this.animation,
     required this.removeFocusOfWidgets,
+    required this.isSelectionView,
+    required this.onSelectedService,
   });
 
   @override
@@ -62,7 +66,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
     _listServicesCategoryCard = AnimatedListHelper<Service>(
       listKey: _animatedListKey,
-      removedItemBuilder: _buildRemovedItem,
+      removedItemBuilder: buildRemovedItem,
       initialItems: servicesByCategory.services,
     );
 
@@ -90,8 +94,8 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                           );
                         }),
                   ),
-                  hasService
-                      ? Container()
+                  hasService || widget.isSelectionView
+                      ? const SizedBox()
                       : IconButton(
                           onPressed: () {
                             widget.onRemoveCategory(
@@ -103,15 +107,17 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                             color: Theme.of(context).colorScheme.error,
                           ),
                         ),
-                  IconButton(
-                    onPressed: () {
-                      _onEdit();
-                    },
-                    icon: Icon(
-                      Icons.edit,
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                  ),
+                  widget.isSelectionView
+                      ? const SizedBox()
+                      : IconButton(
+                          onPressed: () {
+                            onEdit();
+                          },
+                          icon: Icon(
+                            Icons.edit,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
+                        ),
                 ],
               ),
             ),
@@ -134,30 +140,32 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       controller: _scrollController,
                       scrollDirection: Axis.horizontal,
                       initialItemCount: _listServicesCategoryCard.length + 2,
-                      itemBuilder: _itemBuilder,
+                      itemBuilder: itemBuilder,
                     ),
                   )
                 : Container(),
             const SizedBox(height: 6),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 26),
-              child: Row(
-                children: [
-                  Expanded(
-                      child: CustomLink(
-                    label: 'Adicionar novo',
-                    onTap: () {
-                      _onAddService(serviceCategory: servicesByCategory.serviceCategory);
-                    },
-                  )),
-                  CustomLink(
-                    label: 'Mostrar tudo',
-                    onTap: _onShowAll,
+            widget.isSelectionView
+                ? const SizedBox()
+                : Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 26),
+                    child: Row(
+                      children: [
+                        Expanded(
+                            child: CustomLink(
+                          label: 'Adicionar novo',
+                          onTap: () {
+                            onAddService(serviceCategory: servicesByCategory.serviceCategory);
+                          },
+                        )),
+                        CustomLink(
+                          label: 'Mostrar tudo',
+                          onTap: onShowAll,
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-            const SizedBox(height: 10),
+            widget.isSelectionView ? const SizedBox() : const SizedBox(height: 10),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: Divider(color: Theme.of(context).colorScheme.shadow, height: 2),
@@ -168,7 +176,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     );
   }
 
-  void _onShowAll() {
+  void onShowAll() {
     final servicesByCategoryToShowAll =
         servicesByCategory.copyWith(services: List.from(servicesByCategory.services));
 
@@ -176,14 +184,14 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       '/showAllServices',
       arguments: {
         'servicesByCategory': servicesByCategoryToShowAll,
-        'removeServiceOfOtherScreen': _removeServiceOfScreen,
-        'addServiceOfOtherScreen': _addServiceOfScreenWithoutScrool,
-        'editServiceOfOtherScreen': _editServiceOfScreen
+        'removeServiceOfOtherScreen': removeServiceOfScreen,
+        'addServiceOfOtherScreen': addServiceOfScreenWithoutScrool,
+        'editServiceOfOtherScreen': editServiceOfScreen
       },
     );
   }
 
-  Future<void> _onEdit() async {
+  Future<void> onEdit() async {
     final result = await Navigator.of(context).pushNamed(
       '/serviceCategoryEdit',
       arguments: {'serviceCategory': servicesByCategory.serviceCategory},
@@ -195,23 +203,23 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     }
   }
 
-  Future<void> _onAddService({required ServiceCategory serviceCategory}) async {
+  Future<void> onAddService({required ServiceCategory serviceCategory}) async {
     widget.removeFocusOfWidgets();
     final result = await Navigator.of(context).pushNamed(
       '/serviceEdit',
       arguments: {'serviceCategory': serviceCategory},
     );
     if (result != null) {
-      _addServiceOfScreen(service: result as Service);
+      addServiceOfScreen(service: result as Service);
     }
   }
 
-  Future<void> _addServiceOfScreen({
+  Future<void> addServiceOfScreen({
     required Service service,
   }) async {
     final hasService = _listServicesCategoryCard.length > 0;
 
-    if (hasService) await _scrollToEnd();
+    if (hasService) await scrollToEnd();
 
     servicesByCategory.services.add(service);
 
@@ -222,7 +230,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     }
   }
 
-  void _addServiceOfScreenWithoutScrool({
+  void addServiceOfScreenWithoutScrool({
     required Service service,
   }) async {
     final hasService = _listServicesCategoryCard.length > 0;
@@ -236,7 +244,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     }
   }
 
-  Future<void> _onEditService({
+  Future<void> onEditService({
     required ServiceCategory serviceCategory,
     required Service service,
   }) async {
@@ -251,11 +259,11 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     );
 
     if (result != null) {
-      _editServiceOfScreen(service: result as Service);
+      editServiceOfScreen(service: result as Service);
     }
   }
 
-  void _editServiceOfScreen({required Service service}) {
+  void editServiceOfScreen({required Service service}) {
     final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
     servicesByCategory.services[index] = service;
 
@@ -263,19 +271,19 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     _listServicesCategoryCard.insertAt(index, service);
   }
 
-  void _onRemoveService({required Service service}) {
+  void onRemoveService({required Service service}) {
     _customNotifications.showQuestionAlert(
       context: context,
       title: 'Excluir serviço',
       content: 'Tem certeza que deseja excluir serviço?',
       confirmCallback: () {
         widget.onRemoveService(service: service);
-        _removeServiceOfScreen(service: service);
+        removeServiceOfScreen(service: service);
       },
     );
   }
 
-  void _removeServiceOfScreen({required Service service}) {
+  void removeServiceOfScreen({required Service service}) {
     final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
 
     if (index < 0) {
@@ -296,7 +304,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     await controller.animateTo(1, curve: Curves.easeIn);
   }
 
-  Widget _buildRemovedItem(
+  Widget buildRemovedItem(
     Service service,
     BuildContext context,
     Animation<double> animation,
@@ -304,7 +312,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     return ServiceCard(onTap: () {}, onLongPress: () {}, service: service, animation: animation);
   }
 
-  Widget _itemBuilder(
+  Widget itemBuilder(
     BuildContext context,
     int index,
     Animation<double> animation,
@@ -325,20 +333,24 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     return ServiceCard(
       key: ValueKey(_listServicesCategoryCard[index].id),
       onTap: () {
-        _onEditService(
-          serviceCategory: servicesByCategory.serviceCategory,
-          service: _listServicesCategoryCard[index],
-        );
+        if (widget.isSelectionView) {
+          widget.onSelectedService(_listServicesCategoryCard[index]);
+        } else {
+          onEditService(
+            serviceCategory: servicesByCategory.serviceCategory,
+            service: _listServicesCategoryCard[index],
+          );
+        }
       },
       onLongPress: () {
-        _onRemoveService(service: _listServicesCategoryCard[index]);
+        onRemoveService(service: _listServicesCategoryCard[index]);
       },
       service: _listServicesCategoryCard[index],
       animation: animation,
     );
   }
 
-  Future<void> _scrollToEnd() async {
+  Future<void> scrollToEnd() async {
     await _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 300),

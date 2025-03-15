@@ -1,0 +1,2 @@
+/mnt/nexus/Development/projects/prestador_de_servico/prestador_de_servico/android/app/.cxx/Debug/40a1ta6e/x86/CMakeFiles/edit_cache.dir
+/mnt/nexus/Development/projects/prestador_de_servico/prestador_de_servico/android/app/.cxx/Debug/40a1ta6e/x86/CMakeFiles/rebuild_cache.dir

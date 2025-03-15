@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 
 class ScheduledService extends Service {
+  final int scheduledServiceId;
   final bool isAdditional;
   final bool removed;
 
   ScheduledService({
+    required this.scheduledServiceId,
     required super.id,
     required super.serviceCategoryId,
     required super.name,
@@ -23,6 +25,7 @@ class ScheduledService extends Service {
 
   @override
   ScheduledService copyWith({
+    int? scheduledServiceId,
     String? id,
     String? serviceCategoryId,
     String? name,
@@ -37,6 +40,7 @@ class ScheduledService extends Service {
     bool? removed,
   }) {
     return ScheduledService(
+      scheduledServiceId: scheduledServiceId ?? this.scheduledServiceId,
       id: id ?? this.id,
       serviceCategoryId: serviceCategoryId ?? this.serviceCategoryId,
       name: name ?? this.name,
@@ -53,7 +57,9 @@ class ScheduledService extends Service {
   } 
 
   @override
-  int get hashCode => id.hashCode ^ 
+  int get hashCode => 
+  scheduledServiceId.hashCode ^ 
+  id.hashCode ^ 
   serviceCategoryId.hashCode ^
   name.hashCode ^
   price.hashCode ^

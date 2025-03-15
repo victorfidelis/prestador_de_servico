@@ -36,7 +36,12 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     return _buildRoute(settings, NavigationView());
   }
   if (settings.name == '/service') {
-    return _buildRoute(settings, const ServiceView());
+    final arguments = settings.arguments as Map;
+    bool isSelectionView = false;
+    if (arguments.containsKey('isSelectionView')) {
+      isSelectionView = arguments['isSelectionView'];
+    }
+    return _buildRoute(settings, ServiceView(isSelectionView: isSelectionView));
   }
   if (settings.name == '/serviceCategoryEdit') {
     final arguments = (settings.arguments as Map);

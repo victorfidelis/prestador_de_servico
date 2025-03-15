@@ -4,6 +4,7 @@ class ScheduledServiceConverter {
 
   static ScheduledService fromServiceSchedulingMap({required Map map}) {
     return ScheduledService(
+      scheduledServiceId: map['scheduledServiceId'],
       id: map['id'],
       serviceCategoryId: '',
       name: map['name'],
