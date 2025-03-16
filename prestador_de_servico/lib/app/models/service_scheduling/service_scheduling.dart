@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:prestador_de_servico/app/models/address/address.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
+import 'package:prestador_de_servico/app/shared/utils/general.dart';
 
 class ServiceScheduling {
   final String id;
@@ -25,6 +27,9 @@ class ServiceScheduling {
   double get needToPay => totalPrice + totalRate - totalDiscount - totalPaid;
   double get totalPriceToPay => totalPrice + totalRate - totalDiscount;
   int get serviceTime => endDateAndTime.difference(startDateAndTime).inMinutes;
+  List<ScheduledService> get activeServices  {
+    return services.where((s) => !s.removed).toList();
+  }
 
   ServiceScheduling({
     this.id = '',
@@ -77,11 +82,51 @@ class ServiceScheduling {
       totalDiscount: totalDiscount ?? this.totalDiscount,
       totalPrice: totalPrice ?? this.totalPrice,
       totalPaid: totalPaid ?? this.totalPaid,
-      schedulingUnavailable:
-          schedulingUnavailable ?? this.schedulingUnavailable,
+      schedulingUnavailable: schedulingUnavailable ?? this.schedulingUnavailable,
       conflictScheduing: conflictScheduing ?? this.conflictScheduing,
       creationDate: creationDate ?? this.creationDate,
       address: address ?? this.address,
     );
   }
+
+  @override
+  bool operator ==(covariant ServiceScheduling other) {
+    return id == other.id &&
+        user == other.user &&
+        listEquals(services, other.services) &&
+        serviceStatus == other.serviceStatus &&
+        startDateAndTime == other.startDateAndTime &&
+        endDateAndTime == other.endDateAndTime &&
+        oldStartDateAndTime == other.oldStartDateAndTime &&
+        oldEndDateAndTime == other.oldEndDateAndTime &&
+        totalRate == other.totalRate &&
+        totalDiscount == other.totalDiscount &&
+        totalPrice == other.totalPrice &&
+        totalPaid == other.totalPaid &&
+        schedulingUnavailable == other.schedulingUnavailable &&
+        conflictScheduing == other.conflictScheduing &&
+        isPaid == other.isPaid &&
+        creationDate == other.creationDate &&
+        address == other.address;
+  }
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      user.hashCode ^
+      hashList(services) ^
+      serviceStatus.hashCode ^
+      startDateAndTime.hashCode ^
+      endDateAndTime.hashCode ^
+      oldStartDateAndTime.hashCode ^
+      oldEndDateAndTime.hashCode ^
+      totalRate.hashCode ^
+      totalDiscount.hashCode ^
+      totalPrice.hashCode ^
+      totalPaid.hashCode ^
+      schedulingUnavailable.hashCode ^
+      conflictScheduing.hashCode ^
+      isPaid.hashCode ^
+      creationDate.hashCode ^
+      address.hashCode;
 }

@@ -1,17 +1,15 @@
-
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/payment/payment.dart';
 
 class PaymentConverter {
-
   static Map<String, dynamic> toFirebaseMap({required Payment payment}) {
     return {
       'paymentType': payment.paymentType.index,
       'name': payment.name,
       'urlIcon': payment.urlIcon,
       'isActive': payment.isActive,
-      'dateSync': FieldValue.serverTimestamp(), // Todo envio para o firebase deve conter a data atual do servidor
+      'dateSync': FieldValue
+          .serverTimestamp(), // Todo envio para o firebase deve conter a data atual do servidor
       'isDeleted': false,
     };
   }
@@ -21,11 +19,10 @@ class PaymentConverter {
 
     Payment payment = Payment(
       id: doc.id,
-      paymentType: PaymentType.values[map
-      ['paymentType']],
+      paymentType: PaymentType.values[map['paymentType']],
       name: map['name'],
       urlIcon: map['urlIcon'],
-      isActive: map['isActive'] ,
+      isActive: map['isActive'],
       syncDate: (map['dateSync'] as Timestamp).toDate(),
     );
 

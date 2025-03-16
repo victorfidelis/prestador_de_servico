@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_services_and_prices_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/edit_scheduled_services_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/add_service_buttom.dart';
@@ -37,6 +40,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
   void initState() {
     final serviceScheduling = context.read<SchedulingDetailViewModel>().serviceScheduling;
     editViewModel = EditScheduledServicesViewmodel(
+      schedulingService: context.read<SchedulingService>(),
       serviceScheduling: serviceScheduling.copyWith(
         services: List.from(serviceScheduling.services),
       ),
@@ -157,10 +161,34 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: CustomButton(
-          label: 'Salvar',
-          onTap: onSave,
-        ),
+        child: ListenableBuilder(
+            listenable: editViewModel,
+            builder: (context, _) {
+              if (editViewModel.state is EditServicesAndPricesLoading) {
+                return const CustomLoading();
+              }
+
+              if (editViewModel.state is EditServicesAndPricesError) {
+                final messageError = (editViewModel.state as EditServicesAndPricesError).message;
+                WidgetsBinding.instance.addPostFrameCallback(
+                  (_) => notifications.showSnackBar(
+                    context: context,
+                    message: messageError,
+                  ),
+                );
+              }
+
+              if (editViewModel.state is EditServicesAndPricesUpdateSuccess) {
+                WidgetsBinding.instance.addPostFrameCallback(
+                  (_) => Navigator.pop(context),
+                );
+              }
+
+              return CustomButton(
+                label: 'Salvar',
+                onTap: onSave,
+              );
+            }),
       ),
     );
   }
@@ -308,5 +336,21 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     if (!editViewModel.validateSave()) {
       return;
     }
+
+    confirmSave();
+  }
+
+  Future<void> confirmSave() async {
+    await notifications.showQuestionAlert(
+      context: context,
+      title: 'Alterar serviços e preços',
+      content: 'Tem certeza que deseja salvar as alterações efetuadas?',
+      confirmCallback: () {
+        editViewModel.save();
+        context.read<SchedulingDetailViewModel>().changeServiceScheduling(
+              serviceScheduling: editViewModel.serviceScheduling,
+            );
+      },
+    );
   }
 }

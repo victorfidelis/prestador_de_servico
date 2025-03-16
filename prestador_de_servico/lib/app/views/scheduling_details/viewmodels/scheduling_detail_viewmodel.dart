@@ -21,4 +21,12 @@ class SchedulingDetailViewModel extends ChangeNotifier {
 
     notifyListeners();
   }
+  
+  void changeServiceScheduling({
+    required ServiceScheduling serviceScheduling,
+  }) {
+    this.serviceScheduling = serviceScheduling;
+    hasChange = true;
+    notifyListeners();
+  }
 }

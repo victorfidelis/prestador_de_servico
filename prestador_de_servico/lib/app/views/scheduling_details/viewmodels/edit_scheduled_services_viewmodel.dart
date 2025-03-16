@@ -2,13 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_services_and_prices_state.dart';
 
 class EditScheduledServicesViewmodel extends ChangeNotifier {
+  final SchedulingService schedulingService;
   ServiceScheduling serviceScheduling;
   late List<ScheduledService> scheduledServicesOriginal;
   String? discountError;
 
-  EditScheduledServicesViewmodel({required this.serviceScheduling}) {
+  EditServicesAndPricesState _state = EditServicesAndPricesInitial();
+  EditServicesAndPricesState get state => _state;
+  void _emitState(EditServicesAndPricesState currentState) {
+    _state = currentState;
+    notifyListeners();
+  }
+
+  EditScheduledServicesViewmodel({
+    required this.schedulingService,
+    required this.serviceScheduling,
+  }) {
     scheduledServicesOriginal = List.from(serviceScheduling.services);
   }
 
@@ -20,7 +34,7 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
     } else {
       serviceScheduling.services.remove(service);
     }
-    
+
     serviceScheduling = serviceScheduling.copyWith(
       totalPrice: serviceScheduling.totalPrice - service.price,
     );
@@ -88,5 +102,23 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
         serviceScheduling.services
             .map((s) => s.scheduledServiceId)
             .reduce((id1, id2) => id1 > id2 ? id1 : id2);
+  }
+
+  Future<void> save() async {
+    _emitState(EditServicesAndPricesLoading());
+
+    final editEither = await schedulingService.editServicesAndPricesOfScheduling(
+      schedulingId: serviceScheduling.id,
+      totalRate: serviceScheduling.totalRate,
+      totalDiscount: serviceScheduling.totalDiscount,
+      totalPrice: serviceScheduling.totalPrice,
+      scheduledServices: serviceScheduling.services,
+    );
+
+    if (editEither.isLeft) {
+      _emitState(EditServicesAndPricesError(message: editEither.left!.message));
+    } else {
+      _emitState(EditServicesAndPricesUpdateSuccess());
+    }
   }
 }

@@ -1,3 +1,4 @@
+import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/firebase_scheduling_repository.dart';
@@ -19,5 +20,12 @@ abstract class SchedulingRepository {
     required String schedulingId,
     required DateTime startDateAndTime,
     required DateTime endDateAndTime,
+  });
+  Future<Either<Failure, Unit>> editServicesAndPrices({
+    required String schedulingId,
+    required double totalRate,
+    required double totalDiscount,
+    required double totalPrice,
+    required List<ScheduledService> scheduledServices,
   });
 }

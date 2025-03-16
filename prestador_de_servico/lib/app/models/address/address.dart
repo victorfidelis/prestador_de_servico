@@ -17,7 +17,7 @@ class Address {
     required this.street,
     required this.zipCode,
   });
-  
+
   Address copyWith({
     String? city,
     String? complement,
@@ -40,16 +40,22 @@ class Address {
 
   @override
   bool operator ==(covariant Address other) {
-    return other.hashCode == hashCode;
+    return city == other.city &&
+        complement == other.city &&
+        neighborhood == other.city &&
+        number == other.city &&
+        state == other.city &&
+        street == other.city &&
+        zipCode == other.city;
   }
-  
+
   @override
-  int get hashCode => 
-    city.hashCode ^      
-    complement.hashCode ^      
-    neighborhood.hashCode ^      
-    number.hashCode ^      
-    state.hashCode ^      
-    street.hashCode ^      
-    zipCode.hashCode;    
+  int get hashCode =>
+      city.hashCode ^
+      complement.hashCode ^
+      neighborhood.hashCode ^
+      number.hashCode ^
+      state.hashCode ^
+      street.hashCode ^
+      zipCode.hashCode;
 }

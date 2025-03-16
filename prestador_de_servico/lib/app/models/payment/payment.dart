@@ -52,7 +52,10 @@ class Payment {
 
   @override
   bool operator ==(covariant Payment other) {
-    return other.id == id && other.paymentType == paymentType && other.name == name && other.isActive == isActive;
+    return other.id == id &&
+        other.paymentType == paymentType &&
+        other.name == name &&
+        other.isActive == isActive;
   }
 
   @override

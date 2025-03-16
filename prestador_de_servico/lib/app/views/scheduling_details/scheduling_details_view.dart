@@ -134,6 +134,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         Divider(color: Theme.of(context).colorScheme.shadow),
                         const SizedBox(height: 8),
                         ServiceListCard(
+                          key: ValueKey(schedulingDetailViewModel.serviceScheduling.hashCode),
                           serviceScheduling: schedulingDetailViewModel.serviceScheduling,
                           onEdit: onEditScheduledServices,
                         ),

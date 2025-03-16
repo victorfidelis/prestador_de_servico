@@ -1,3 +1,4 @@
+import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
@@ -15,14 +16,12 @@ class SchedulingService {
 
   Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay(
       {required DateTime dateTime}) async {
-    final getEither =
-        await onlineRepository.getAllServicesByDay(dateTime: dateTime);
+    final getEither = await onlineRepository.getAllServicesByDay(dateTime: dateTime);
     if (getEither.isLeft) {
       return Either.left(getEither.left);
     }
 
-    return Either.right(
-        flagServicesWithConflictAndUnavailability(getEither.right!));
+    return Either.right(flagServicesWithConflictAndUnavailability(getEither.right!));
   }
 
   List<ServiceScheduling> flagServicesWithConflictAndUnavailability(
@@ -101,8 +100,7 @@ class SchedulingService {
       initialDate = actualDate;
     }
 
-    initialDate =
-        DateTime(initialDate.year, initialDate.month, initialDate.day);
+    initialDate = DateTime(initialDate.year, initialDate.month, initialDate.day);
 
     return initialDate;
   }
@@ -164,10 +162,8 @@ class SchedulingService {
     return dates;
   }
 
-  Future<Either<Failure, List<SchedulesByDay>>>
-      getPendingProviderSchedules() async {
-    final pendingProviderEither =
-        await onlineRepository.getPendingProviderSchedules();
+  Future<Either<Failure, List<SchedulesByDay>>> getPendingProviderSchedules() async {
+    final pendingProviderEither = await onlineRepository.getPendingProviderSchedules();
     if (pendingProviderEither.isLeft) {
       return Either.left(pendingProviderEither.left);
     }
@@ -175,10 +171,8 @@ class SchedulingService {
     return Either.right(groupSchedulesByDay(pendingProviderEither.right!));
   }
 
-  Future<Either<Failure, List<SchedulesByDay>>>
-      getPendingPaymentSchedules() async {
-    final pendingPaymentEither =
-        await onlineRepository.getPendingPaymentSchedules();
+  Future<Either<Failure, List<SchedulesByDay>>> getPendingPaymentSchedules() async {
+    final pendingPaymentEither = await onlineRepository.getPendingPaymentSchedules();
     if (pendingPaymentEither.isLeft) {
       return Either.left(pendingPaymentEither.left);
     }
@@ -186,10 +180,8 @@ class SchedulingService {
     return Either.right(groupSchedulesByDay(pendingPaymentEither.right!));
   }
 
-  List<SchedulesByDay> groupSchedulesByDay(
-      List<ServiceScheduling> serviceSchedules) {
-    serviceSchedules
-        .sort((s1, s2) => s1.startDateAndTime.compareTo(s2.startDateAndTime));
+  List<SchedulesByDay> groupSchedulesByDay(List<ServiceScheduling> serviceSchedules) {
+    serviceSchedules.sort((s1, s2) => s1.startDateAndTime.compareTo(s2.startDateAndTime));
     List<SchedulesByDay> schedulesByDays = [];
     for (ServiceScheduling serviceScheduling in serviceSchedules) {
       final day = DateTime(
@@ -216,6 +208,22 @@ class SchedulingService {
       schedulingId: schedulingId,
       startDateAndTime: startDateAndTime,
       endDateAndTime: endDateAndTime,
+    );
+  }
+
+  Future<Either<Failure, Unit>> editServicesAndPricesOfScheduling({
+    required String schedulingId,
+    required double totalRate,
+    required double totalDiscount,
+    required double totalPrice,
+    required List<ScheduledService> scheduledServices,
+  }) async {
+    return await onlineRepository.editServicesAndPrices(
+      schedulingId: schedulingId,
+      totalRate: totalRate,
+      totalDiscount: totalDiscount,
+      totalPrice: totalPrice,
+      scheduledServices: scheduledServices,
     );
   }
 }

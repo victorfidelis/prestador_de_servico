@@ -54,26 +54,34 @@ class ScheduledService extends Service {
       isAdditional: isAdditional ?? this.isAdditional,
       removed: removed ?? this.removed,
     );
-  } 
+  }
 
   @override
-  int get hashCode => 
-  scheduledServiceId.hashCode ^ 
-  id.hashCode ^ 
-  serviceCategoryId.hashCode ^
-  name.hashCode ^
-  price.hashCode ^
-  hours.hashCode ^
-  minutes.hashCode ^
-  imageUrl.hashCode ^
-  imageFile.hashCode ^
-  syncDate.hashCode ^
-  isDeleted.hashCode ^
-  isAdditional.hashCode ^
-  removed.hashCode ;
-  
+  int get hashCode =>
+      scheduledServiceId.hashCode ^
+      id.hashCode ^
+      serviceCategoryId.hashCode ^
+      name.hashCode ^
+      price.hashCode ^
+      hours.hashCode ^
+      minutes.hashCode ^
+      imageUrl.hashCode ^
+      isDeleted.hashCode ^
+      isAdditional.hashCode ^
+      removed.hashCode;
+
   @override
   bool operator ==(covariant ScheduledService other) {
-    return hashCode == other.hashCode;
+    return scheduledServiceId == other.scheduledServiceId &&
+        id == other.id &&
+        serviceCategoryId == other.serviceCategoryId &&
+        name == other.name &&
+        price == other.price &&
+        hours == other.hours &&
+        minutes == other.minutes &&
+        imageUrl == other.imageUrl &&
+        isDeleted == other.isDeleted &&
+        isAdditional == other.isAdditional &&
+        removed == other.removed;
   }
 }

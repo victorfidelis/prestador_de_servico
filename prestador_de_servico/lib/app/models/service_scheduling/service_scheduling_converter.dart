@@ -10,12 +10,15 @@ class ServiceSchedulingConverter {
   static ServiceScheduling fromDocumentSnapshot({required DocumentSnapshot doc}) {
     Map<String, dynamic> map = (doc.data() as Map<String, dynamic>);
 
-    final List<Map<String, dynamic>> servicesMap = (map['services'] as List).map((e) => e as Map<String, dynamic>).toList();
-    final List<ScheduledService> services = servicesMap.map((e) => ScheduledServiceConverter.fromServiceSchedulingMap(map: e)).toList();
+    final List<Map<String, dynamic>> servicesMap =
+        (map['services'] as List).map((e) => e as Map<String, dynamic>).toList();
+    final List<ScheduledService> services =
+        servicesMap.map((e) => ScheduledServiceConverter.fromServiceSchedulingMap(map: e)).toList();
 
     final user = User(id: map['userId'], name: map['userName'], surname: map['userSurname']);
 
-    final serviceStatus = ServiceStatus(code: map['serviceStatusCode'], name: map['serviceStatusName']);
+    final serviceStatus =
+        ServiceStatus(code: map['serviceStatusCode'], name: map['serviceStatusName']);
 
     DateTime? oldStartDateAndTime;
     if (map.containsKey('oldStartDateAndTime')) {
@@ -40,9 +43,40 @@ class ServiceSchedulingConverter {
       totalDiscount: (map['totalDiscount'] * 1.0),
       totalPrice: (map['totalPrice'] * 1.0),
       totalPaid: (map['totalPaid'] * 1.0),
-      isPaid: map['isPaid'], 
+      isPaid: map['isPaid'],
       creationDate: (map['endDateAndTime'] as Timestamp).toDate(),
       address: AddressConverter.fromMap(map: map['address']),
     );
+  }
+
+  static Map<String, dynamic> toEditDateAndTimeFirebaseMap({
+    required DateTime startDateAndTime,
+    required DateTime endDateAndTime,
+    required DateTime oldStartDateAndTime,
+    required DateTime oldEndDateAndTime,
+  }) {
+    return {
+      'startDateAndTime': Timestamp.fromDate(startDateAndTime),
+      'endDateAndTime': Timestamp.fromDate(endDateAndTime),
+      'oldStartDateAndTime': Timestamp.fromDate(oldStartDateAndTime),
+      'oldEndDateAndTime': Timestamp.fromDate(oldEndDateAndTime),
+    };
+  }
+
+  static Map<String, dynamic> toEditServiceAndPricesFirebaseMap({
+    required double totalRate,
+    required double totalDiscount,
+    required double totalPrice,
+    required List<ScheduledService> scheduledServices,
+  }) {
+    final List<Map<String, dynamic>> services = scheduledServices
+        .map((s) => ScheduledServiceConverter.toFirebaseMap(scheduledService: s))
+        .toList();
+    return {
+      'totalRate': totalRate,
+      'totalDiscount': totalDiscount,
+      'totalPrice': totalPrice,
+      'services': services,
+    };
   }
 }

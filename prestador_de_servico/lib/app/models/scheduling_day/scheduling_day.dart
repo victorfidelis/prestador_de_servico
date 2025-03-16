@@ -34,11 +34,19 @@ class SchedulingDay {
   bool operator ==(covariant SchedulingDay other) {
     if (identical(this, other)) return true;
 
-    return other.hashCode == hashCode;
+    return date == other.date &&
+        isSelected == other.isSelected &&
+        isToday == other.isToday &&
+        hasService == other.hasService &&
+        numberOfServices == other.numberOfServices;
   }
 
   @override
   int get hashCode {
-    return date.hashCode ^ isSelected.hashCode ^ isToday.hashCode ^ hasService.hashCode ^ numberOfServices.hashCode;
+    return date.hashCode ^
+        isSelected.hashCode ^
+        isToday.hashCode ^
+        hasService.hashCode ^
+        numberOfServices.hashCode;
   }
 }

@@ -135,7 +135,7 @@ class _CustomServiceSchedulingCardState
                       padding: const EdgeInsets.only(left: 16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: serviceScheduling.services
+                        children: serviceScheduling.activeServices
                             .map((e) => serviceItemList(e))
                             .toList(),
                       ),
