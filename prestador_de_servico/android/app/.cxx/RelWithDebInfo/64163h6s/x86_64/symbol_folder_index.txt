@@ -1,0 +1,1 @@
+/mnt/nexus/Development/projects/prestador_de_servico/prestador_de_servico/build/app/intermediates/cxx/RelWithDebInfo/64163h6s/obj/x86_64

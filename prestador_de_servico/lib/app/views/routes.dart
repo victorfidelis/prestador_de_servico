@@ -36,10 +36,12 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     return _buildRoute(settings, NavigationView());
   }
   if (settings.name == '/service') {
-    final arguments = settings.arguments as Map;
     bool isSelectionView = false;
-    if (arguments.containsKey('isSelectionView')) {
-      isSelectionView = arguments['isSelectionView'];
+    if (settings.arguments != null) {
+      final arguments = settings.arguments as Map;
+      if (arguments.containsKey('isSelectionView')) {
+        isSelectionView = arguments['isSelectionView'];
+      }
     }
     return _buildRoute(settings, ServiceView(isSelectionView: isSelectionView));
   }
@@ -107,7 +109,7 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     return _buildRoute(
       settings,
       ChangeNotifierProvider<SchedulingDetailViewModel>(
-      create: (context) => SchedulingDetailViewModel(serviceScheduling: serviceScheduling),
+        create: (context) => SchedulingDetailViewModel(serviceScheduling: serviceScheduling),
         child: SchedulingDetailsView(
           serviceScheduling: serviceScheduling,
         ),
