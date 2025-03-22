@@ -1,2 +1,0 @@
-/mnt/nexus/Development/projects/prestador_de_servico/prestador_de_servico/android/app/.cxx/RelWithDebInfo/64163h6s/arm64-v8a/CMakeFiles/edit_cache.dir
-/mnt/nexus/Development/projects/prestador_de_servico/prestador_de_servico/android/app/.cxx/RelWithDebInfo/64163h6s/arm64-v8a/CMakeFiles/rebuild_cache.dir

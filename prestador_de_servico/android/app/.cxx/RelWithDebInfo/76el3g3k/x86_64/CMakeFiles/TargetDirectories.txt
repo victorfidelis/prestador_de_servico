@@ -1,2 +1,0 @@
-/media/victor/Drive/Development/projects/prestador_de_servico/prestador_de_servico/android/app/.cxx/RelWithDebInfo/76el3g3k/x86_64/CMakeFiles/edit_cache.dir
-/media/victor/Drive/Development/projects/prestador_de_servico/prestador_de_servico/android/app/.cxx/RelWithDebInfo/76el3g3k/x86_64/CMakeFiles/rebuild_cache.dir
