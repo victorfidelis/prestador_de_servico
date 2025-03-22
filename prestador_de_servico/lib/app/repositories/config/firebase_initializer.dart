@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
-import 'package:prestador_de_servico/firebase_options.dart';
 
 class FirebaseInitializer {
   bool _isInitialized = false;
@@ -18,9 +17,7 @@ class FirebaseInitializer {
     }
 
     try {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
+      await Firebase.initializeApp();
       _isInitialized = true;
       return Either.right(unit);
     } on FirebaseException catch (e) {

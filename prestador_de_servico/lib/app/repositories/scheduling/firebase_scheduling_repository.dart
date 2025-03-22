@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
-import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service_converter.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_converter.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
