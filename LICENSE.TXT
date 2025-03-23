@@ -1,0 +1,16 @@
+
+Copyright (c) 2025 Victor Fidelis Correa
+
+1. Permissão de Uso:
+   É permitido visualizar, estudar, compartilhar e modificar este software para fins não comerciais.
+
+2. Restrições:
+   O uso comercial deste software, incluindo, mas não se limitando a, venda, distribuição ou integração em produtos comerciais, é estritamente proibido sem autorização por escrito do autor.
+
+3. Responsabilidade:
+   O software é fornecido "como está", sem garantias de qualquer tipo. Em nenhuma circunstância o autor será responsável por danos decorrentes do uso deste software.
+
+4. Violação:
+   Qualquer violação desta licença pode resultar em ações legais, incluindo, mas não se limitando a, cessação do uso e pagamento de indenizações.
+
+Para solicitar permissão de uso comercial, entre em contato: vf.desenvolvimento.acc@gmail.com.
