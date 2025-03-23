@@ -73,6 +73,21 @@ O projeto conta com testes unitários que foram desenvolvidos utilizando TDD. Os
    ```bash
    flutter run
    ```
+---
+
+## 🖼️ Capturas de Tela
+
+<img src="https://github.com/user-attachments/assets/6b6127e9-7895-42d3-96ba-33e81e21b6bb" width="250">
+<img src="https://github.com/user-attachments/assets/717dcf25-dfd1-4153-b40d-d8ab711396f9" width="250">
+<img src="https://github.com/user-attachments/assets/05330826-6319-4b0d-bef4-c5cbbf424877" width="250">
+<img src="https://github.com/user-attachments/assets/9bd180c7-6640-45ca-b4bd-fbbf43723479" width="250">
+<img src="https://github.com/user-attachments/assets/c1fdb247-a34e-4b76-babf-58d25ae5c6ef" width="250">
+<img src="https://github.com/user-attachments/assets/a5e8a369-64b2-40d0-8c95-9fcf5697243c" width="250">
+<img src="https://github.com/user-attachments/assets/116213f0-d86f-46f3-82ea-019ca6c61a87" width="250">
+<img src="https://github.com/user-attachments/assets/e26cda51-4656-4800-8698-b5b32323d151" width="250">
+<img src="https://github.com/user-attachments/assets/24abe2fd-9e48-4015-9ed0-2e5ec161b818" width="250">
+<img src="https://github.com/user-attachments/assets/57649540-c419-4aac-a325-a040d6d1093b" width="250">
+<img src="https://github.com/user-attachments/assets/82b09911-dafb-450e-8e38-6562030a8bf7" width="250">
 
 ---
 
