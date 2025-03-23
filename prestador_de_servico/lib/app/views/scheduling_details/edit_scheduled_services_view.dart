@@ -264,6 +264,8 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
   }
 
   void onLongPressService(int index) {
+    removeFocus();
+
     final service = editViewModel.serviceScheduling.services[index];
     if (service.removed) {
       onReturnService(index);
@@ -321,6 +323,8 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
   }
 
   void onNewService() async {
+    removeFocus();
+
     final result = await Navigator.pushNamed(
       context,
       '/service',
@@ -333,6 +337,8 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
   }
 
   void onSave() {
+    removeFocus();
+
     if (!editViewModel.validateSave()) {
       return;
     }
@@ -352,5 +358,10 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
             );
       },
     );
+  }
+
+  void removeFocus() {
+    rateFocus.unfocus();
+    discountFocus.unfocus();
   }
 }

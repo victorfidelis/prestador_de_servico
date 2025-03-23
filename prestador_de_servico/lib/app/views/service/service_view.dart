@@ -70,7 +70,7 @@ class _ServiceViewState extends State<ServiceView> {
     if (widget.isSelectionView) {
       title = 'Selecione um serviço';
     } else {
-      title = 'Selecione um serviço';
+      title = 'Serviços';
     }
     return Scaffold(
       body: CustomScrollView(

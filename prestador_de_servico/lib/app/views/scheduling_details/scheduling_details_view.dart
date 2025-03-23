@@ -87,11 +87,12 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                   schedulingDetailViewModel.serviceScheduling.serviceStatus,
                 );
 
-                return SliverFillRemaining(
+                return SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           schedulingDetailViewModel.serviceScheduling.user.fullname,

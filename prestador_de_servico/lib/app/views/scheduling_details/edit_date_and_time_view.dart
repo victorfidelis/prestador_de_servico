@@ -210,6 +210,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                                   onChanged: (value) =>
                                       editDateAndTimeViewModel.setStartTime(value),
                                   errorMessage: editDateAndTimeViewModel.startTimeError.value,
+                                  isNumeric: true,
                                 );
                               }),
                         ),
@@ -281,11 +282,11 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
             listenable: serviceSchedulingViewModel,
             builder: (context, _) {
               if (serviceSchedulingViewModel.state is ServiceSchedulingInitial) {
-                return const SliverFillRemaining();
+                return const SliverToBoxAdapter();
               }
 
               if (serviceSchedulingViewModel.state is ServiceSchedulingLoading) {
-                return const SliverFillRemaining(
+                return const SliverToBoxAdapter(
                   child: Center(child: CustomLoading()),
                 );
               }
@@ -368,6 +369,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   }
 
   void getNewDate() async {
+    timeFocus.unfocus();
     final actualDate = DateTime.now();
     final firstDate = DateTime(actualDate.year, actualDate.month, actualDate.day);
     final lastDate = firstDate.add(const Duration(days: 90));
@@ -394,6 +396,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   }
 
   Future<void> onSave() async {
+    timeFocus.unfocus();
     if (!editDateAndTimeViewModel.validate()) {
       return;
     }

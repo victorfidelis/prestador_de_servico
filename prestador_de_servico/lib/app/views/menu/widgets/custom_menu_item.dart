@@ -25,13 +25,16 @@ class CustomMenuItem extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: 28,
+              size: 24,
             ),
             const SizedBox(width: 12),
-            Text(
-              label,
-              style: const  TextStyle(
-                fontSize: 20,
+            Expanded(
+              child: Text(
+                label,
+                style: const  TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
           ],
