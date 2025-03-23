@@ -75,7 +75,7 @@ O projeto conta com testes unitários que foram desenvolvidos utilizando TDD. Os
    ```
 ---
 
-## 🖼️ Capturas de Tela
+## 🖼️ Capturas de Tela 
 
 <img src="https://github.com/user-attachments/assets/6b6127e9-7895-42d3-96ba-33e81e21b6bb" width="250">
 <img src="https://github.com/user-attachments/assets/717dcf25-dfd1-4153-b40d-d8ab711396f9" width="250">
