@@ -16,7 +16,7 @@ O **Prestador de Serviço** consiste em dois aplicativos integrados:
    - Acompanhar e gerenciar seus agendamentos.
 
 2. **App do Prestador**:  
-   Para o profissional autônomos que irá prestam serviços. O prestador pode:
+   Para o profissional autônomo que irá prestar serviços. O prestador pode:
    - Cadastrar serviços e suas categorias.
    - Definir dias e horários disponíveis.
    - Configurar formas de pagamento.
