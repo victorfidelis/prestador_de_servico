@@ -37,12 +37,11 @@ O **Prestador de Serviço** consiste em dois aplicativos integrados:
   - **Firebase Storage**
 - **SQLite (sqflite)**
 - **Provider** + **ChangeNotifier** para gerenciamento de estado.
-- Functional Programming
-  - **Either**
-  - **State Pattern**
+- Programação funcional com **Either**
 - Padrões de Projeto:
   - **Repository Pattern**
   - Princípios **SOLID** aplicados (**Single Responsibility**, **Open-Closed**, **Dependency Inversion**).
+  - **State Pattern**
 - Testes:
   - **Flutter test**
   - **Mockito**
