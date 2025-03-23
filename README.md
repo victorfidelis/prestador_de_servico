@@ -1,6 +1,6 @@
 # Prestador de Serviço (em desenvolvimento)
 
-Aplicativo completo para gestão de agendamentos de serviços rápidos voltado para profissionais autônomos e seus clientes.
+Projeto completo para gestão de agendamentos de serviços rápidos voltado para profissionais autônomos e seus clientes.
 
 **Atenção**: Este projeto está em processo de desenvolvimento e ainda não está finalizado. Até o momento só foi executado em ambiente Android. Novas funcionalidades estão sendo implementadas e ajustes estão sendo feitos continuamente.
 
