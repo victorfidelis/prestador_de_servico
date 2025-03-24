@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
@@ -87,6 +88,9 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                   schedulingDetailViewModel.serviceScheduling.serviceStatus,
                 );
 
+                bool allowsEdit =
+                    !schedulingDetailViewModel.serviceScheduling.serviceStatus.isFinalStatus();
+
                 return SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -125,7 +129,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                               schedulingDetailViewModel.serviceScheduling.startDateAndTime,
                           endDateAndTime:
                               schedulingDetailViewModel.serviceScheduling.endDateAndTime,
-                          onEdit: onEditDateAndTime,
+                          onEdit: allowsEdit ? onEditDateAndTime : null,
                         ),
                         const SizedBox(height: 8),
                         Divider(color: Theme.of(context).colorScheme.shadow),
@@ -137,7 +141,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         ServiceListCard(
                           key: ValueKey(schedulingDetailViewModel.serviceScheduling.hashCode),
                           serviceScheduling: schedulingDetailViewModel.serviceScheduling,
-                          onEdit: onEditScheduledServices,
+                          onEdit: allowsEdit ? onEditScheduledServices : null,
                         ),
                         const SizedBox(height: 8),
                         Divider(color: Theme.of(context).colorScheme.shadow),

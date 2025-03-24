@@ -6,7 +6,7 @@ import 'package:prestador_de_servico/app/views/scheduling_details/widgets/servic
 
 class ServiceListCard extends StatefulWidget {
   final ServiceScheduling serviceScheduling;
-  final Function() onEdit;
+  final Function()? onEdit;
 
   const ServiceListCard({
     super.key,
@@ -20,10 +20,12 @@ class ServiceListCard extends StatefulWidget {
 
 class _ServiceListCardState extends State<ServiceListCard> {
   late ServiceScheduling serviceScheduling;
+  late bool hasEditButtom;
 
   @override
   void initState() {
     serviceScheduling = widget.serviceScheduling;
+    hasEditButtom = widget.onEdit != null;
     super.initState();
   }
 
@@ -56,8 +58,8 @@ class _ServiceListCardState extends State<ServiceListCard> {
                   : const SizedBox(),
               const SizedBox(height: 8),
               totalCard(),
-              const SizedBox(height: 8),
-              EditButton(onTap: widget.onEdit),
+              hasEditButtom ? const SizedBox(height: 8) : const SizedBox(),
+              hasEditButtom ? EditButton(onTap: widget.onEdit!) : const SizedBox(),
             ],
           ),
         )

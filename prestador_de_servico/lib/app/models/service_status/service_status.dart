@@ -22,4 +22,5 @@ class ServiceStatus {
   static List<int> get acceptStatusCodes => [3, 4, 5];
   static List<int> get cancellationStatusCodes => [6, 7, 8, 9];
   static List<int> get servicePerformStatusCodes => [5];
+  static List<int> get finalStatusCodes => [5, 6, 7, 8, 9];
 }
