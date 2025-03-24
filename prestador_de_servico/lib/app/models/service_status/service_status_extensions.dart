@@ -8,4 +8,5 @@ extension ServiceStatusExtensions on ServiceStatus {
   bool isCancellationStatus() => ServiceStatus.cancellationStatusCodes.contains(code);
   bool isServicePerformStatus() => ServiceStatus.servicePerformStatusCodes.contains(code);
   bool isFinalStatus() => ServiceStatus.finalStatusCodes.contains(code);
+  bool isBlockChangesStatus() => ServiceStatus.blockChangesStatusCodes.contains(code);
 }

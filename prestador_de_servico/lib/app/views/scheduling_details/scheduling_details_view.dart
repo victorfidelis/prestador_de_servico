@@ -88,8 +88,8 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                   schedulingDetailViewModel.serviceScheduling.serviceStatus,
                 );
 
-                bool allowsEdit =
-                    !schedulingDetailViewModel.serviceScheduling.serviceStatus.isFinalStatus();
+                bool allowsEdit = !schedulingDetailViewModel.serviceScheduling.serviceStatus
+                    .isBlockChangesStatus();
 
                 return SliverToBoxAdapter(
                   child: Padding(
