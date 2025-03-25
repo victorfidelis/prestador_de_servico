@@ -414,10 +414,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
       content: 'Tem certeza que deseja alterar a data e a hora do serviço para "$dateHourText"?',
       confirmCallback: () {
         editDateAndTimeViewModel.save();
-        context.read<SchedulingDetailViewModel>().changeDateAndTime(
-              startDateAndTime: editDateAndTimeViewModel.startDateAndTime!,
-              endDateAndTime: editDateAndTimeViewModel.endDateAndTime!,
-            );
+        context.read<SchedulingDetailViewModel>().refreshServiceScheduling();
       },
     );
   }

@@ -10,6 +10,7 @@ import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
 
 import '../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
 
@@ -42,7 +43,6 @@ void main() {
     final actualTime = DateTime.now();
     actualDate = DateTime(actualTime.year, actualTime.month, actualTime.day);
     final creationDate = actualTime.add(const Duration(days: -30));
-
 
     serviceSchedulingService = SchedulingService(
       onlineRepository: onlineMockSchedulingRepository,
@@ -203,6 +203,146 @@ void main() {
   });
 
   group(
+    'getServiceScheduling',
+    () {
+      test(
+        '''Deve retornar um Failure caso uma falha ocorra na busca''',
+        () async {
+          const failureMessage = 'Mensagem de falha';
+
+          when(onlineMockSchedulingRepository.getServiceScheduling(
+            serviceSchedulingId: serviceScheduling08as09.id,
+          )).thenAnswer((_) async => Either.left(Failure(failureMessage)));
+
+          final getEither = await serviceSchedulingService.getServiceScheduling(
+              serviceSchedulingId: serviceScheduling08as09.id);
+
+          expect(getEither.isLeft, isTrue);
+          expect(getEither.left!.message, equals(failureMessage));
+        },
+      );
+
+      test(
+        '''Deve retornar um Failure caso uma falha ocorra na busca de conflitos''',
+        () async {
+          const failureMessage = 'Mensagem de falha';
+
+          when(onlineMockSchedulingRepository.getServiceScheduling(
+            serviceSchedulingId: serviceScheduling08as09.id,
+          )).thenAnswer((_) async => Either.right(serviceScheduling08as09));
+          when(onlineMockSchedulingRepository.getConflicts(
+            startDate: serviceScheduling08as09.startDateAndTime,
+            endDate: serviceScheduling08as09.endDateAndTime,
+          )).thenAnswer((_) async => Either.left(Failure(failureMessage)));
+
+          final getEither = await serviceSchedulingService.getServiceScheduling(
+              serviceSchedulingId: serviceScheduling08as09.id);
+
+          expect(getEither.isLeft, isTrue);
+          expect(getEither.left!.message, equals(failureMessage));
+        },
+      );
+
+      test(
+        '''Deve retornar um ServiceScheduling com conflito de horário 
+        quando houver conflito de horário''',
+        () async {
+          final serviceScheduling = serviceScheduling09as11.copyWith();
+
+          when(onlineMockSchedulingRepository.getServiceScheduling(
+            serviceSchedulingId: serviceScheduling.id,
+          )).thenAnswer((_) async => Either.right(serviceScheduling));
+          when(onlineMockSchedulingRepository.getConflicts(
+            startDate: serviceScheduling.startDateAndTime,
+            endDate: serviceScheduling.endDateAndTime,
+          )).thenAnswer((_) async => Either.right([serviceScheduling10as12]));
+
+          final getEither = await serviceSchedulingService.getServiceScheduling(
+              serviceSchedulingId: serviceScheduling.id);
+
+          expect(getEither.isRight, isTrue);
+          final serviceSchedulingReturn = getEither.right!;
+
+          expect(serviceSchedulingReturn.conflictScheduing, isTrue);
+          expect(serviceSchedulingReturn.schedulingUnavailable, isFalse);
+        },
+      );
+
+      test('''Deve retornar um ServiceScheduling com conflite e indiponibilida caso 
+      a consulta retorne algum serviço em conflito com status confirmado''', () async {
+        final serviceScheduling = serviceScheduling09as11.copyWith();
+        final serviceSchedulingUnavailable = serviceScheduling10as12.copyWith(
+          serviceStatus: ServiceStatus(code: 3, name: 'Confirmado'),
+        );
+
+        when(onlineMockSchedulingRepository.getServiceScheduling(
+          serviceSchedulingId: serviceScheduling.id,
+        )).thenAnswer((_) async => Either.right(serviceScheduling));
+        when(onlineMockSchedulingRepository.getConflicts(
+          startDate: serviceScheduling.startDateAndTime,
+          endDate: serviceScheduling.endDateAndTime,
+        )).thenAnswer((_) async => Either.right([serviceSchedulingUnavailable]));
+
+        final getEither = await serviceSchedulingService.getServiceScheduling(
+            serviceSchedulingId: serviceScheduling.id);
+
+        expect(getEither.isRight, isTrue);
+        final serviceSchedulingReturn = getEither.right!;
+
+        expect(serviceSchedulingReturn.conflictScheduing, isTrue);
+        expect(serviceSchedulingReturn.schedulingUnavailable, isTrue);
+      });
+
+      test('''Deve retornar um ServiceScheduling sem conflito de horário''',
+      () async {
+        final serviceScheduling = serviceScheduling09as11.copyWith();
+
+        when(onlineMockSchedulingRepository.getServiceScheduling(
+          serviceSchedulingId: serviceScheduling.id,
+        )).thenAnswer((_) async => Either.right(serviceScheduling));
+        when(onlineMockSchedulingRepository.getConflicts(
+          startDate: serviceScheduling.startDateAndTime,
+          endDate: serviceScheduling.endDateAndTime,
+        )).thenAnswer((_) async => Either.right([]));
+
+        final getEither = await serviceSchedulingService.getServiceScheduling(
+            serviceSchedulingId: serviceScheduling.id);
+
+        expect(getEither.isRight, isTrue);
+        final serviceSchedulingReturn = getEither.right!;
+
+        expect(serviceSchedulingReturn.conflictScheduing, isFalse);
+        expect(serviceSchedulingReturn.schedulingUnavailable, isFalse);
+      });
+
+      test('''Deve retornar um ServiceScheduling sem conflito de horário caso o serviço 
+      em questão já esteja confirmado''',
+      () async {
+        final serviceScheduling = serviceScheduling09as11.copyWith(
+          serviceStatus: ServiceStatus(code: 3, name: 'Confirmado'),
+        );
+
+        when(onlineMockSchedulingRepository.getServiceScheduling(
+          serviceSchedulingId: serviceScheduling.id,
+        )).thenAnswer((_) async => Either.right(serviceScheduling));
+        when(onlineMockSchedulingRepository.getConflicts(
+          startDate: serviceScheduling.startDateAndTime,
+          endDate: serviceScheduling.endDateAndTime,
+        )).thenAnswer((_) async => Either.right([serviceScheduling10as12]));
+
+        final getEither = await serviceSchedulingService.getServiceScheduling(
+            serviceSchedulingId: serviceScheduling.id);
+
+        expect(getEither.isRight, isTrue);
+        final serviceSchedulingReturn = getEither.right!;
+
+        expect(serviceSchedulingReturn.conflictScheduing, isFalse);
+        expect(serviceSchedulingReturn.schedulingUnavailable, isFalse);
+      });
+    },
+  );
+
+  group(
     'getAllServicesByDay',
     () {
       test(
@@ -213,7 +353,8 @@ void main() {
           when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: dateToConsult))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          final getEither = await serviceSchedulingService.getAllServicesByDay(dateTime: dateToConsult);
+          final getEither =
+              await serviceSchedulingService.getAllServicesByDay(dateTime: dateToConsult);
 
           expect(getEither.isLeft, isTrue);
           expect(getEither.left!.message, equals(failureMessage));
@@ -232,7 +373,8 @@ void main() {
           when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: dateToConsult))
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
-          final getEither = await serviceSchedulingService.getAllServicesByDay(dateTime: dateToConsult);
+          final getEither =
+              await serviceSchedulingService.getAllServicesByDay(dateTime: dateToConsult);
 
           expect(getEither.isRight, isTrue);
           expect(getEither.right!.length, equals(serviceSchedules.length));
@@ -255,7 +397,8 @@ void main() {
           when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: dateToConsult))
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
-          final getEither = await serviceSchedulingService.getAllServicesByDay(dateTime: dateToConsult);
+          final getEither =
+              await serviceSchedulingService.getAllServicesByDay(dateTime: dateToConsult);
 
           expect(getEither.isRight, isTrue);
           expect(getEither.right!.length, equals(serviceSchedules.length));
@@ -280,7 +423,8 @@ void main() {
           when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: dateToConsult))
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
-          final getEither = await serviceSchedulingService.getAllServicesByDay(dateTime: dateToConsult);
+          final getEither =
+              await serviceSchedulingService.getAllServicesByDay(dateTime: dateToConsult);
 
           expect(getEither.isRight, isTrue);
           expect(getEither.right!.length, equals(serviceSchedules.length));
@@ -392,7 +536,8 @@ void main() {
           final dates = datesEither.right!;
           expect(dates.length, equals(daysToAddOfActualDate + daysToRemoveOfActualDate + 1));
           expect(dates[0], equals(schedulingDayBefore10Days));
-          expect(dates[daysToAddOfActualDate + daysToRemoveOfActualDate], equals(schedulingDayAfter100Days));
+          expect(dates[daysToAddOfActualDate + daysToRemoveOfActualDate],
+              equals(schedulingDayAfter100Days));
         },
       );
     },
@@ -410,13 +555,14 @@ void main() {
             (_) async => Either.left(Failure(failureMessage)),
           );
 
-          final pendingProviderEither = await serviceSchedulingService.getPendingProviderSchedules();
+          final pendingProviderEither =
+              await serviceSchedulingService.getPendingProviderSchedules();
 
           expect(pendingProviderEither.isLeft, isTrue);
           expect(pendingProviderEither.left!.message, equals(failureMessage));
         },
       );
-      
+
       test(
         '''Deve retornar uma lista de SchedulesByDay vazia quando não houver pendências''',
         () async {
@@ -426,7 +572,8 @@ void main() {
             (_) async => Either.right(servicesSchedules),
           );
 
-          final pendingProviderEither = await serviceSchedulingService.getPendingProviderSchedules();
+          final pendingProviderEither =
+              await serviceSchedulingService.getPendingProviderSchedules();
 
           expect(pendingProviderEither.isRight, isTrue);
           final schedulesByDaysReturns = pendingProviderEither.right!;
@@ -470,7 +617,8 @@ void main() {
             (_) async => Either.right(servicesSchedules),
           );
 
-          final pendingProviderEither = await serviceSchedulingService.getPendingProviderSchedules();
+          final pendingProviderEither =
+              await serviceSchedulingService.getPendingProviderSchedules();
 
           expect(pendingProviderEither.isRight, isTrue);
           final schedulesByDaysReturns = pendingProviderEither.right!;
@@ -485,7 +633,6 @@ void main() {
       );
     },
   );
-  
 
   group(
     'getPendingPaymentSchedules',
@@ -505,7 +652,7 @@ void main() {
           expect(pendingPaymentEither.left!.message, equals(failureMessage));
         },
       );
-      
+
       test(
         '''Deve retornar uma lista de SchedulesByDay vazia quando não houver pendências''',
         () async {

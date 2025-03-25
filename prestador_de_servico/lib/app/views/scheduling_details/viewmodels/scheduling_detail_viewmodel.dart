@@ -21,24 +21,7 @@ class SchedulingDetailViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void changeDateAndTime({
-    required DateTime startDateAndTime,
-    required DateTime endDateAndTime,
-  }) {
-    serviceScheduling = serviceScheduling.copyWith(
-      oldStartDateAndTime: serviceScheduling.startDateAndTime,
-      oldEndDateAndTime: serviceScheduling.endDateAndTime,
-      startDateAndTime: startDateAndTime,
-      endDateAndTime: endDateAndTime,
-    );
-    hasChange = true;
-
-    notifyListeners();
-  }
-
-  void changeServiceScheduling({
-    required ServiceScheduling serviceScheduling,
-  }) async {
+  void refreshServiceScheduling() async {
     _emitState(SchedulingDetailLoading());
 
     final getEither =

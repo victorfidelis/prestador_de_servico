@@ -6,6 +6,8 @@
 import 'dart:async' as _i4;
 
 import 'package:mockito/mockito.dart' as _i1;
+import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart'
+    as _i8;
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart'
     as _i7;
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart'
@@ -45,6 +47,38 @@ class _FakeEither_0<L, R> extends _i1.SmartFake implements _i2.Either<L, R> {
 /// See the documentation for Mockito's code generation for more information.
 class MockSchedulingRepository extends _i1.Mock
     implements _i3.SchedulingRepository {
+  @override
+  _i4.Future<
+      _i2.Either<_i5.Failure, _i6.ServiceScheduling>> getServiceScheduling(
+          {required String? serviceSchedulingId}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getServiceScheduling,
+          [],
+          {#serviceSchedulingId: serviceSchedulingId},
+        ),
+        returnValue:
+            _i4.Future<_i2.Either<_i5.Failure, _i6.ServiceScheduling>>.value(
+                _FakeEither_0<_i5.Failure, _i6.ServiceScheduling>(
+          this,
+          Invocation.method(
+            #getServiceScheduling,
+            [],
+            {#serviceSchedulingId: serviceSchedulingId},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i6.ServiceScheduling>>.value(
+                _FakeEither_0<_i5.Failure, _i6.ServiceScheduling>(
+          this,
+          Invocation.method(
+            #getServiceScheduling,
+            [],
+            {#serviceSchedulingId: serviceSchedulingId},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i6.ServiceScheduling>>);
+
   @override
   _i4.Future<
       _i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>> getAllServicesByDay(
@@ -192,6 +226,151 @@ class MockSchedulingRepository extends _i1.Mock
           Invocation.method(
             #getPendingPaymentSchedules,
             [],
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> editDateOfScheduling({
+    required String? schedulingId,
+    required DateTime? startDateAndTime,
+    required DateTime? endDateAndTime,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #editDateOfScheduling,
+          [],
+          {
+            #schedulingId: schedulingId,
+            #startDateAndTime: startDateAndTime,
+            #endDateAndTime: endDateAndTime,
+          },
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #editDateOfScheduling,
+            [],
+            {
+              #schedulingId: schedulingId,
+              #startDateAndTime: startDateAndTime,
+              #endDateAndTime: endDateAndTime,
+            },
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #editDateOfScheduling,
+            [],
+            {
+              #schedulingId: schedulingId,
+              #startDateAndTime: startDateAndTime,
+              #endDateAndTime: endDateAndTime,
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> editServicesAndPrices({
+    required String? schedulingId,
+    required double? totalRate,
+    required double? totalDiscount,
+    required double? totalPrice,
+    required List<_i8.ScheduledService>? scheduledServices,
+    required DateTime? newEndDate,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #editServicesAndPrices,
+          [],
+          {
+            #schedulingId: schedulingId,
+            #totalRate: totalRate,
+            #totalDiscount: totalDiscount,
+            #totalPrice: totalPrice,
+            #scheduledServices: scheduledServices,
+            #newEndDate: newEndDate,
+          },
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #editServicesAndPrices,
+            [],
+            {
+              #schedulingId: schedulingId,
+              #totalRate: totalRate,
+              #totalDiscount: totalDiscount,
+              #totalPrice: totalPrice,
+              #scheduledServices: scheduledServices,
+              #newEndDate: newEndDate,
+            },
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #editServicesAndPrices,
+            [],
+            {
+              #schedulingId: schedulingId,
+              #totalRate: totalRate,
+              #totalDiscount: totalDiscount,
+              #totalPrice: totalPrice,
+              #scheduledServices: scheduledServices,
+              #newEndDate: newEndDate,
+            },
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
+
+  @override
+  _i4.Future<
+      _i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>> getConflicts({
+    required DateTime? startDate,
+    required DateTime? endDate,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #getConflicts,
+          [],
+          {
+            #startDate: startDate,
+            #endDate: endDate,
+          },
+        ),
+        returnValue: _i4
+            .Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>.value(
+            _FakeEither_0<_i5.Failure, List<_i6.ServiceScheduling>>(
+          this,
+          Invocation.method(
+            #getConflicts,
+            [],
+            {
+              #startDate: startDate,
+              #endDate: endDate,
+            },
+          ),
+        )),
+        returnValueForMissingStub: _i4
+            .Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>.value(
+            _FakeEither_0<_i5.Failure, List<_i6.ServiceScheduling>>(
+          this,
+          Invocation.method(
+            #getConflicts,
+            [],
+            {
+              #startDate: startDate,
+              #endDate: endDate,
+            },
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>);

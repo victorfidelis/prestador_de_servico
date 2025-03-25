@@ -61,6 +61,8 @@ class _DateAndTimeCardState extends State<DateAndTimeCard> {
               ),
               card(startDateAndTime, endDateAndTime),
               hasOldDate ? card(oldStartDateAndTime!, oldEndDateAndTime!, true) : const SizedBox(),
+              const SizedBox(height: 8),
+              message(),
             ],
           ),
         ),
@@ -183,7 +185,7 @@ class _DateAndTimeCardState extends State<DateAndTimeCard> {
           fontWeight: FontWeight.w700,
         ),
       );
-    } 
+    }
     return widgetReturn;
   }
 }

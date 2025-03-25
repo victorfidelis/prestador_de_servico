@@ -353,9 +353,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
       content: 'Tem certeza que deseja salvar as alterações efetuadas?',
       confirmCallback: () {
         editViewModel.save();
-        context.read<SchedulingDetailViewModel>().changeServiceScheduling(
-              serviceScheduling: editViewModel.serviceScheduling,
-            );
+        context.read<SchedulingDetailViewModel>().refreshServiceScheduling();
       },
     );
   }
