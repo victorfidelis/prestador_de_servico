@@ -6,12 +6,14 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
 abstract class SchedulingRepository {
-
   factory SchedulingRepository.createOnline() {
     return FirebaseSchedulingRepository();
   }
 
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay({required DateTime dateTime});
+  Future<Either<Failure, ServiceScheduling>> getServiceScheduling(
+      {required String serviceSchedulingId});
+  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay(
+      {required DateTime dateTime});
   Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId({required String userId});
   Future<Either<Failure, List<SchedulingDay>>> getDaysWithService();
   Future<Either<Failure, List<ServiceScheduling>>> getPendingProviderSchedules();
@@ -27,5 +29,10 @@ abstract class SchedulingRepository {
     required double totalDiscount,
     required double totalPrice,
     required List<ScheduledService> scheduledServices,
+    required DateTime newEndDate,
+  });
+  Future<Either<Failure, List<ServiceScheduling>>> getConflicts({
+    required DateTime startDate,
+    required DateTime endDate,
   });
 }

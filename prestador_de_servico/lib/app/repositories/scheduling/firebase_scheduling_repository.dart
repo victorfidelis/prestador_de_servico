@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_converter.dart';
@@ -16,13 +17,29 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
   final _firebaseInitializer = FirebaseInitializer();
 
   @override
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay(
-      {required DateTime dateTime}) async {
+  Future<Either<Failure, ServiceScheduling>> getServiceScheduling({required String serviceSchedulingId}) async {
     final initializeEither = await _firebaseInitializer.initialize();
     if (initializeEither.isLeft) {
       return Either.left(initializeEither.left);
     }
 
+    try {
+      final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
+      final snapServiceSchedules = await serviceSchedulesCollection.doc(serviceSchedulingId).get();
+      return Either.right(
+          ServiceSchedulingConverter.fromDocumentSnapshot(doc: snapServiceSchedules));
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay(
+      {required DateTime dateTime}) async {
     final startDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
     final endDate = startDate.add(const Duration(days: 1));
 
@@ -232,6 +249,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     required double totalDiscount,
     required double totalPrice,
     required List<ScheduledService> scheduledServices,
+    required DateTime newEndDate,
   }) async {
     final initializeEither = await _firebaseInitializer.initialize();
     if (initializeEither.isLeft) {
@@ -248,10 +266,45 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
           totalDiscount: totalDiscount,
           totalPrice: totalPrice,
           scheduledServices: scheduledServices,
+          newEndDate: newEndDate,
         ),
       );
 
       return Either.right(unit);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ServiceScheduling>>> getConflicts({
+    required DateTime startDate,
+    required DateTime endDate,
+  }) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    var startDateTimestamp = Timestamp.fromDate(startDate);
+    var endDateTimestamp = Timestamp.fromDate(endDate);
+
+    try {
+      final collection = FirebaseFirestore.instance.collection('serviceSchedules');
+      final docs = await collection
+          .where("startDateAndTime", isLessThan: endDateTimestamp)
+          .where("endDateAndTime", isGreaterThan: startDateTimestamp)
+          .get();
+
+      var schedules = docs.docs
+          .map((schedule) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: schedule))
+          .toList();
+
+      return Either.right(schedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
         return Either.left(NetworkFailure('Sem conexão com a internet'));

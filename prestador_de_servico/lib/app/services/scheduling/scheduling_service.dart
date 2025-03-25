@@ -1,6 +1,7 @@
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
+import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
@@ -14,8 +15,43 @@ class SchedulingService {
 
   SchedulingService({required this.onlineRepository});
 
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay(
-      {required DateTime dateTime}) async {
+  Future<Either<Failure, ServiceScheduling>> getServiceScheduling(
+      {required String serviceSchedulingId}) async {
+    final getEither =
+        await onlineRepository.getServiceScheduling(serviceSchedulingId: serviceSchedulingId);
+    if (getEither.isLeft) {
+      return Either.left(getEither.left);
+    }
+
+    var serviceScheduling = getEither.right!;
+    if (!serviceScheduling.serviceStatus.isPendingStatus()) {
+      return Either.right(serviceScheduling);
+    }
+
+    final conflictsEither = await onlineRepository.getConflicts(
+      startDate: serviceScheduling.startDateAndTime,
+      endDate: serviceScheduling.endDateAndTime,
+    );
+    if (conflictsEither.isLeft) {
+      return Either.left(conflictsEither.left);
+    }
+
+    var schedules = conflictsEither.right!;
+    serviceScheduling = serviceScheduling.copyWith(
+      conflictScheduing: schedules.isNotEmpty,
+      schedulingUnavailable: isUnavailable(schedules)
+    );
+
+    return Either.right(serviceScheduling);
+  }
+
+  bool isUnavailable(List<ServiceScheduling> schedules) {
+    return schedules.where((s) => s.serviceStatus.isAcceptStatus()).isNotEmpty;
+  }
+
+  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay({
+    required DateTime dateTime,
+  }) async {
     final getEither = await onlineRepository.getAllServicesByDay(dateTime: dateTime);
     if (getEither.isLeft) {
       return Either.left(getEither.left);
@@ -217,6 +253,7 @@ class SchedulingService {
     required double totalDiscount,
     required double totalPrice,
     required List<ScheduledService> scheduledServices,
+    required DateTime newEndDate,
   }) async {
     return await onlineRepository.editServicesAndPrices(
       schedulingId: schedulingId,
@@ -224,6 +261,22 @@ class SchedulingService {
       totalDiscount: totalDiscount,
       totalPrice: totalPrice,
       scheduledServices: scheduledServices,
+      newEndDate: newEndDate,
     );
+  }
+
+  DateTime calculateEndDate(List<ScheduledService> services, DateTime startDate) {
+    int durationInMinutes = calculateDurationOfServiceInMinutes(services);
+    return startDate.add(Duration(minutes: durationInMinutes));
+  }
+
+  int calculateDurationOfServiceInMinutes(List<ScheduledService> services) {
+    int minutes = 0;
+    services = services.where((service) => !service.removed).toList();
+    for (Service service in services) {
+      minutes += service.minutes;
+      minutes += (service.hours * 60);
+    }
+    return minutes;
   }
 }

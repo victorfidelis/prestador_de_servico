@@ -9,6 +9,8 @@ class DateAndTimeCard extends StatefulWidget {
   final DateTime startDateAndTime;
   final DateTime endDateAndTime;
   final Function()? onEdit;
+  final bool unavailable;
+  final bool inConflict;
 
   const DateAndTimeCard({
     super.key,
@@ -17,6 +19,8 @@ class DateAndTimeCard extends StatefulWidget {
     required this.startDateAndTime,
     required this.endDateAndTime,
     this.onEdit,
+    this.unavailable = false,
+    this.inConflict = false,
   });
 
   @override
@@ -159,5 +163,27 @@ class _DateAndTimeCardState extends State<DateAndTimeCard> {
         ),
       ),
     );
+  }
+
+  Widget message() {
+    Widget widgetReturn = Container();
+    if (widget.unavailable) {
+      widgetReturn = const Text(
+        'Horário indisponível',
+        style: TextStyle(
+          color: Color(0xffE70000),
+          fontWeight: FontWeight.w700,
+        ),
+      );
+    } else if (widget.inConflict) {
+      widgetReturn = const Text(
+        'Horário em conflito',
+        style: TextStyle(
+          color: Color(0xffE70000),
+          fontWeight: FontWeight.w700,
+        ),
+      );
+    } 
+    return widgetReturn;
   }
 }

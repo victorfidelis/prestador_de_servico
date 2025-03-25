@@ -8,7 +8,9 @@ import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_light_buttom.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/states/scheduling_detail_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/address_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/date_and_time_card.dart';
@@ -75,7 +77,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                                 fontSize: 25,
                               ),
                             ),
-                            const SizedBox(width: 60)
+                            const SizedBox(width: 60),
                           ],
                         ),
                       ),
@@ -86,6 +88,18 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
             ),
             Consumer<SchedulingDetailViewModel>(
               builder: (context, schedulingDetailViewModel, _) {
+
+                if (schedulingDetailViewModel.state is SchedulingDetailLoading) {
+                  return const CustomLoading();
+                }
+                
+                if (schedulingDetailViewModel.state is SchedulingDetailError) {
+                  var error = schedulingDetailViewModel.state as SchedulingDetailError;
+                  return Center(
+                    child: Text(error.message),
+                  );
+                }
+
                 Color statusColor = ColorsUtils.getColorFromStatus(
                   context,
                   schedulingDetailViewModel.serviceScheduling.serviceStatus,
@@ -133,6 +147,9 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                           endDateAndTime:
                               schedulingDetailViewModel.serviceScheduling.endDateAndTime,
                           onEdit: allowsEdit ? onEditDateAndTime : null,
+                          unavailable:
+                              schedulingDetailViewModel.serviceScheduling.schedulingUnavailable,
+                          inConflict: schedulingDetailViewModel.serviceScheduling.conflictScheduing,
                         ),
                         const SizedBox(height: 8),
                         Divider(color: Theme.of(context).colorScheme.shadow),

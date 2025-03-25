@@ -68,6 +68,7 @@ class ServiceSchedulingConverter {
     required double totalDiscount,
     required double totalPrice,
     required List<ScheduledService> scheduledServices,
+    required DateTime newEndDate,
   }) {
     final List<Map<String, dynamic>> services = scheduledServices
         .map((s) => ScheduledServiceConverter.toFirebaseMap(scheduledService: s))
@@ -77,6 +78,7 @@ class ServiceSchedulingConverter {
       'totalDiscount': totalDiscount,
       'totalPrice': totalPrice,
       'services': services,
+      'endDateAndTime': Timestamp.fromDate(newEndDate),
     };
   }
 }

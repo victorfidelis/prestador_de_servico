@@ -3,6 +3,7 @@ import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
+import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
 import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
@@ -109,7 +110,10 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     return _buildRoute(
       settings,
       ChangeNotifierProvider<SchedulingDetailViewModel>(
-        create: (context) => SchedulingDetailViewModel(serviceScheduling: serviceScheduling),
+        create: (context) => SchedulingDetailViewModel(
+          schedulingService: context.read<SchedulingService>(),
+          serviceScheduling: serviceScheduling,
+        ),
         child: SchedulingDetailsView(
           serviceScheduling: serviceScheduling,
         ),

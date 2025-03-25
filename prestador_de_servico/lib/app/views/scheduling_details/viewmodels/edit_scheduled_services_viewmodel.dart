@@ -107,12 +107,20 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
   Future<void> save() async {
     _emitState(EditServicesAndPricesLoading());
 
+    serviceScheduling = serviceScheduling.copyWith(
+      endDateAndTime: schedulingService.calculateEndDate(
+        serviceScheduling.services,
+        serviceScheduling.startDateAndTime,
+      ),
+    );
+
     final editEither = await schedulingService.editServicesAndPricesOfScheduling(
       schedulingId: serviceScheduling.id,
       totalRate: serviceScheduling.totalRate,
       totalDiscount: serviceScheduling.totalDiscount,
       totalPrice: serviceScheduling.totalPrice,
       scheduledServices: serviceScheduling.services,
+      newEndDate: serviceScheduling.endDateAndTime,
     );
 
     if (editEither.isLeft) {
