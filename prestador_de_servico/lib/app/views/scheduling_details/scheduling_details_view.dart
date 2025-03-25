@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
+import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_light_buttom.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/address_card.dart';
@@ -146,6 +149,8 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         const SizedBox(height: 8),
                         Divider(color: Theme.of(context).colorScheme.shadow),
                         const SizedBox(height: 8),
+                        actions(),
+                        const SizedBox(height: 50),
                       ],
                     ),
                   ),
@@ -179,5 +184,75 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       return const Text('Local não informado');
     }
     return AddressCard(address: serviceScheduling.address!);
+  }
+
+  Widget actions() {
+    bool isPaid = context.read<SchedulingDetailViewModel>().serviceScheduling.isPaid;
+    ServiceStatus serviceStatus =
+        context.read<SchedulingDetailViewModel>().serviceScheduling.serviceStatus;
+
+    List<Widget> buttons = [];
+
+    if (serviceStatus.isPendingProviderStatus()) {
+      buttons.add(CustomLightButtom(
+        label: 'Aprovar',
+        labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
+        onTap: () {},
+      ));
+    }
+
+    if (serviceStatus.isConfirmStatus()) {
+      buttons.add(CustomLightButtom(
+        label: 'Colocar em atendimento',
+        labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
+        onTap: () {},
+      ));
+    }
+
+    if (serviceStatus.isInAttendanceStatus()) {
+      buttons.add(CustomLightButtom(
+        label: 'Marcar como realizado',
+        labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
+        onTap: () {},
+      ));
+    }
+
+    if (serviceStatus.isPendingProviderStatus()) {
+      buttons.add(CustomLightButtom(
+        label: 'Solicitar alterações',
+        labelColor: Theme.of(context).extension<CustomColors>()!.pending!,
+        onTap: () {},
+      ));
+    }
+
+    if (!isPaid && serviceStatus.isAcceptStatus()) {
+      buttons.add(CustomLightButtom(
+        label: 'Receber pagamentos',
+        labelColor: Theme.of(context).extension<CustomColors>()!.money!,
+        onTap: () {},
+      ));
+    }
+
+    if (serviceStatus.isPendingProviderStatus()) {
+      buttons.add(CustomLightButtom(
+        label: 'Recusar',
+        labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,
+        onTap: () {},
+      ));
+    }
+
+    if (!serviceStatus.isFinalStatus() &&
+        (serviceStatus.isPendingClientStatus() || serviceStatus.isAcceptStatus())) {
+      buttons.add(CustomLightButtom(
+        label: 'Cancelar',
+        labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,
+        onTap: () {},
+      ));
+    }
+
+    return Column(
+      spacing: 8,
+      children: buttons,
+    );
   }
 }
