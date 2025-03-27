@@ -7,7 +7,7 @@ import 'package:prestador_de_servico/app/models/service_status/service_status.da
 import 'package:prestador_de_servico/app/models/user/user.dart';
 
 class ServiceSchedulingConverter {
-  static ServiceScheduling fromDocumentSnapshot({required DocumentSnapshot doc}) {
+  static ServiceScheduling fromFirebaseDoc({required DocumentSnapshot doc}) {
     Map<String, dynamic> map = (doc.data() as Map<String, dynamic>);
 
     final List<Map<String, dynamic>> servicesMap =

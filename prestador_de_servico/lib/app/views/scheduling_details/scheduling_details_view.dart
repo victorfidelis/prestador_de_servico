@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
+import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
@@ -29,9 +30,15 @@ class SchedulingDetailsView extends StatefulWidget {
 class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   late ServiceScheduling serviceScheduling;
 
+  late final SchedulingDetailViewModel schedulingDetailViewModel;
+
   @override
   void initState() {
     serviceScheduling = widget.serviceScheduling;
+    schedulingDetailViewModel = SchedulingDetailViewModel(
+      schedulingService: context.read<SchedulingService>(),
+      serviceScheduling: serviceScheduling,
+    );
     super.initState();
   }
 
@@ -43,7 +50,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
         if (didPop) {
           return;
         }
-        Navigator.pop(context, context.read<SchedulingDetailViewModel>().hasChange);
+        Navigator.pop(context, schedulingDetailViewModel.hasChange);
       },
       child: Scaffold(
         body: CustomScrollView(
@@ -67,7 +74,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                               child: BackNavigation(
                                 onTap: () => Navigator.pop(
                                   context,
-                                  context.read<SchedulingDetailViewModel>().hasChange,
+                                  schedulingDetailViewModel.hasChange,
                                 ),
                               ),
                             ),
@@ -86,13 +93,13 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                 ),
               ),
             ),
-            Consumer<SchedulingDetailViewModel>(
-              builder: (context, schedulingDetailViewModel, _) {
-
+            ListenableBuilder(
+              listenable: schedulingDetailViewModel,
+              builder: (context, _) {
                 if (schedulingDetailViewModel.state is SchedulingDetailLoading) {
                   return const CustomLoading();
                 }
-                
+
                 if (schedulingDetailViewModel.state is SchedulingDetailError) {
                   var error = schedulingDetailViewModel.state as SchedulingDetailError;
                   return Center(
@@ -180,20 +187,26 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
-  void onEditDateAndTime() {
-    Navigator.pushNamed(
+  void onEditDateAndTime() async {
+    final hasChange = await Navigator.pushNamed(
       context,
       '/editDateAndTime',
-      arguments: {'schedulingDetailViewModel': context.read<SchedulingDetailViewModel>()},
+      arguments: {'serviceScheduling': schedulingDetailViewModel.serviceScheduling},
     );
+    if (hasChange != null && hasChange as bool) {
+      schedulingDetailViewModel.refreshServiceScheduling();
+    }
   }
 
-  void onEditScheduledServices() {
-    Navigator.pushNamed(
+  void onEditScheduledServices() async {
+    final hasChange = await Navigator.pushNamed(
       context,
       '/editScheduledServices',
-      arguments: {'schedulingDetailViewModel': context.read<SchedulingDetailViewModel>()},
+      arguments: {'serviceScheduling': schedulingDetailViewModel.serviceScheduling},
     );
+    if (hasChange != null && hasChange as bool) {
+      schedulingDetailViewModel.refreshServiceScheduling();
+    }
   }
 
   Widget addressWidget() {
@@ -204,9 +217,8 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   }
 
   Widget actions() {
-    bool isPaid = context.read<SchedulingDetailViewModel>().serviceScheduling.isPaid;
-    ServiceStatus serviceStatus =
-        context.read<SchedulingDetailViewModel>().serviceScheduling.serviceStatus;
+    bool isPaid = schedulingDetailViewModel.serviceScheduling.isPaid;
+    ServiceStatus serviceStatus = schedulingDetailViewModel.serviceScheduling.serviceStatus;
 
     List<Widget> buttons = [];
 

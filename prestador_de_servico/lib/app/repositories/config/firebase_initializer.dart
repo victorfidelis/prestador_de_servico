@@ -1,3 +1,4 @@
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
@@ -18,6 +19,7 @@ class FirebaseInitializer {
 
     try {
       await Firebase.initializeApp();
+      await FirebaseAppCheck.instance.activate(androidProvider: AndroidProvider.playIntegrity);
       _isInitialized = true;
       return Either.right(unit);
     } on FirebaseException catch (e) {

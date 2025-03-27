@@ -23,7 +23,8 @@ import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/sch
 import 'package:provider/provider.dart';
 
 class EditDateAndTimeView extends StatefulWidget {
-  const EditDateAndTimeView({super.key});
+  final ServiceScheduling serviceScheduling;
+  const EditDateAndTimeView({super.key, required this.serviceScheduling});
 
   @override
   State<EditDateAndTimeView> createState() => _EditDateAndTimeViewState();
@@ -42,7 +43,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
 
   @override
   void initState() {
-    serviceScheduling = context.read<SchedulingDetailViewModel>().serviceScheduling;
+    serviceScheduling = widget.serviceScheduling;
     serviceSchedulingViewModel = ServiceSchedulingViewModel(
       schedulingService: context.read<SchedulingService>(),
     );
@@ -58,311 +59,320 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   Widget build(BuildContext context) {
     Color statusColor = ColorsUtils.getColorFromStatus(context, serviceScheduling.serviceStatus);
 
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverPersistentHeader(
-            floating: true,
-            delegate: SliverAppBarDelegate(
-              minHeight: 144,
-              maxHeight: 144,
-              child: Stack(
-                children: [
-                  CustomHeaderContainer(
-                    height: 120,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 28),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, hasChange) {
+        if (didPop) {
+          return;
+        }
+        Navigator.pop(context, hasChange as bool?);
+      },
+      child: Scaffold(
+        body: CustomScrollView(
+          slivers: [
+            SliverPersistentHeader(
+              floating: true,
+              delegate: SliverAppBarDelegate(
+                minHeight: 144,
+                maxHeight: 144,
+                child: Stack(
+                  children: [
+                    CustomHeaderContainer(
+                      height: 120,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 28),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                                width: 60,
+                                child: BackNavigation(onTap: () => Navigator.pop(context))),
+                            const Expanded(
+                              child: CustomAppBarTitle(
+                                title: 'Alteração de Agendamento',
+                                fontSize: 25,
+                              ),
+                            ),
+                            const SizedBox(width: 60)
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              sliver: SliverToBoxAdapter(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      serviceScheduling.user.fullname,
+                      style: TextStyle(
+                        color: statusColor,
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      serviceScheduling.serviceStatus.name,
+                      style: TextStyle(
+                        color: statusColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Divider(color: Theme.of(context).colorScheme.shadow),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Data atual',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                              width: 60,
-                              child: BackNavigation(onTap: () => Navigator.pop(context))),
-                          const Expanded(
-                            child: CustomAppBarTitle(
-                              title: 'Alteração de Agendamento',
-                              fontSize: 25,
+                          Text(
+                            Formatters.defaultFormatDate(serviceScheduling.startDateAndTime),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(width: 60)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'das',
+                                style: TextStyle(fontSize: 14),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                Formatters.defaultFormatHoursAndMinutes(
+                                  serviceScheduling.startDateAndTime.hour,
+                                  serviceScheduling.startDateAndTime.minute,
+                                ),
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              const SizedBox(width: 6),
+                              const Text(
+                                'às',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                Formatters.defaultFormatHoursAndMinutes(
+                                  serviceScheduling.endDateAndTime.hour,
+                                  serviceScheduling.endDateAndTime.minute,
+                                ),
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            sliver: SliverToBoxAdapter(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    serviceScheduling.user.fullname,
-                    style: TextStyle(
-                      color: statusColor,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w700,
+                    const SizedBox(height: 8),
+                    Divider(color: Theme.of(context).colorScheme.shadow),
+                    const SizedBox(height: 8),
+                    ListenableBuilder(
+                      listenable: editDateAndTimeViewModel.schedulingDateError,
+                      builder: (context, _) {
+                        return CustomTextData(
+                          label: 'Nova data',
+                          controller: dateController,
+                          onTap: getNewDate,
+                          errorMessage: editDateAndTimeViewModel.schedulingDateError.value,
+                        );
+                      },
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    serviceScheduling.serviceStatus.name,
-                    style: TextStyle(
-                      color: statusColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Divider(color: Theme.of(context).colorScheme.shadow),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Data atual',
-                    style: TextStyle(fontSize: 16),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          Formatters.defaultFormatDate(serviceScheduling.startDateAndTime),
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            const Text(
-                              'das',
-                              style: TextStyle(fontSize: 14),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              Formatters.defaultFormatHoursAndMinutes(
-                                serviceScheduling.startDateAndTime.hour,
-                                serviceScheduling.startDateAndTime.minute,
-                              ),
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                            const SizedBox(width: 6),
-                            const Text(
-                              'às',
-                              style: TextStyle(fontSize: 16),
-                            ),
-                            const SizedBox(width: 6),
-                            Text(
-                              Formatters.defaultFormatHoursAndMinutes(
-                                serviceScheduling.endDateAndTime.hour,
-                                serviceScheduling.endDateAndTime.minute,
-                              ),
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Divider(color: Theme.of(context).colorScheme.shadow),
-                  const SizedBox(height: 8),
-                  ListenableBuilder(
-                    listenable: editDateAndTimeViewModel.schedulingDateError,
-                    builder: (context, _) {
-                      return CustomTextData(
-                        label: 'Nova data',
-                        controller: dateController,
-                        onTap: getNewDate,
-                        errorMessage: editDateAndTimeViewModel.schedulingDateError.value,
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  const Padding(
-                    padding: EdgeInsets.only(left: 8),
-                    child: Text(
-                      'Novo horário',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      children: [
-                        const Text('Das'),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ListenableBuilder(
-                              listenable: editDateAndTimeViewModel.startTimeError,
-                              builder: (context, _) {
-                                return CustomTextFieldUnderline(
-                                  controller: timeController,
-                                  focusNode: timeFocus,
-                                  inputFormatters: [TimeTextInputFormatter()],
-                                  onChanged: (value) =>
-                                      editDateAndTimeViewModel.setStartTime(value),
-                                  errorMessage: editDateAndTimeViewModel.startTimeError.value,
-                                  isNumeric: true,
-                                );
-                              }),
-                        ),
-                        const SizedBox(width: 12),
-                        const Text('às'),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: ListenableBuilder(
-                            listenable: editDateAndTimeViewModel.endTime,
-                            builder: (context, _) {
-                              return Text(
-                                editDateAndTimeViewModel.endTime.value,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 6)),
-          SliverToBoxAdapter(child: Divider(color: Theme.of(context).colorScheme.shadow)),
-          const SliverToBoxAdapter(child: SizedBox(height: 6)),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      'Agendamentos',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Theme.of(context).colorScheme.primary,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  ListenableBuilder(
-                    listenable: editDateAndTimeViewModel.schedulingDate,
-                    builder: (context, _) {
-                      if (editDateAndTimeViewModel.schedulingDate.value == null) {
-                        return const SizedBox();
-                      }
-                      return Text(
-                        Formatters.defaultFormatDate(
-                            editDateAndTimeViewModel.schedulingDate.value!),
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Theme.of(context).colorScheme.primary,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ),
-          const SliverToBoxAdapter(child: SizedBox(height: 6)),
-          ListenableBuilder(
-            listenable: serviceSchedulingViewModel,
-            builder: (context, _) {
-              if (serviceSchedulingViewModel.state is ServiceSchedulingInitial) {
-                return const SliverToBoxAdapter();
-              }
-
-              if (serviceSchedulingViewModel.state is ServiceSchedulingLoading) {
-                return const SliverToBoxAdapter(
-                  child: Center(child: CustomLoading()),
-                );
-              }
-
-              final serviceSchedules =
-                  (serviceSchedulingViewModel.state as ServiceSchedulingLoaded).serviceSchedules;
-
-              if (serviceSchedules.isEmpty) {
-                return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 40),
-                    child: Center(
+                    const SizedBox(height: 12),
+                    const Padding(
+                      padding: EdgeInsets.only(left: 8),
                       child: Text(
-                        'Nenhum serviço agendado',
+                        'Novo horário',
                         style: TextStyle(
-                          fontSize: 18,
-                          color: Theme.of(context).colorScheme.shadow,
                           fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Row(
+                        children: [
+                          const Text('Das'),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ListenableBuilder(
+                                listenable: editDateAndTimeViewModel.startTimeError,
+                                builder: (context, _) {
+                                  return CustomTextFieldUnderline(
+                                    controller: timeController,
+                                    focusNode: timeFocus,
+                                    inputFormatters: [TimeTextInputFormatter()],
+                                    onChanged: (value) =>
+                                        editDateAndTimeViewModel.setStartTime(value),
+                                    errorMessage: editDateAndTimeViewModel.startTimeError.value,
+                                    isNumeric: true,
+                                  );
+                                }),
+                          ),
+                          const SizedBox(width: 12),
+                          const Text('às'),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ListenableBuilder(
+                              listenable: editDateAndTimeViewModel.endTime,
+                              builder: (context, _) {
+                                return Text(
+                                  editDateAndTimeViewModel.endTime.value,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 6)),
+            SliverToBoxAdapter(child: Divider(color: Theme.of(context).colorScheme.shadow)),
+            const SliverToBoxAdapter(child: SizedBox(height: 6)),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        'Agendamentos',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                    ListenableBuilder(
+                      listenable: editDateAndTimeViewModel.schedulingDate,
+                      builder: (context, _) {
+                        if (editDateAndTimeViewModel.schedulingDate.value == null) {
+                          return const SizedBox();
+                        }
+                        return Text(
+                          Formatters.defaultFormatDate(
+                              editDateAndTimeViewModel.schedulingDate.value!),
+                          style: TextStyle(
+                            fontSize: 24,
+                            color: Theme.of(context).colorScheme.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 6)),
+            ListenableBuilder(
+              listenable: serviceSchedulingViewModel,
+              builder: (context, _) {
+                if (serviceSchedulingViewModel.state is ServiceSchedulingInitial) {
+                  return const SliverToBoxAdapter();
+                }
+      
+                if (serviceSchedulingViewModel.state is ServiceSchedulingLoading) {
+                  return const SliverToBoxAdapter(
+                    child: Center(child: CustomLoading()),
+                  );
+                }
+      
+                final serviceSchedules =
+                    (serviceSchedulingViewModel.state as ServiceSchedulingLoaded).serviceSchedules;
+      
+                if (serviceSchedules.isEmpty) {
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.only(top: 40),
+                      child: Center(
+                        child: Text(
+                          'Nenhum serviço agendado',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Theme.of(context).colorScheme.shadow,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                }
+      
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  sliver: SliverList.builder(
+                    itemCount: serviceSchedules.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == serviceSchedules.length) {
+                        return const SizedBox(height: 150);
+                      }
+      
+                      return CustomServiceSchedulingCard(
+                        serviceScheduling: serviceSchedules[index],
+                        isReadOnly: true,
+                      );
+                    },
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ListenableBuilder(
+            listenable: editDateAndTimeViewModel,
+            builder: (context, _) {
+              if (editDateAndTimeViewModel.state is EditDateAndTimeLoading) {
+                return const CustomLoading();
+              }
+      
+              if (editDateAndTimeViewModel.state is EditDateAndTimeError) {
+                final messageError = (editDateAndTimeViewModel.state as EditDateAndTimeError).message;
+                WidgetsBinding.instance.addPostFrameCallback(
+                  (_) => customNotifications.showSnackBar(
+                    context: context,
+                    message: messageError,
                   ),
                 );
               }
-
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                sliver: SliverList.builder(
-                  itemCount: serviceSchedules.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == serviceSchedules.length) {
-                      return const SizedBox(height: 150);
-                    }
-
-                    return CustomServiceSchedulingCard(
-                      serviceScheduling: serviceSchedules[index],
-                      isReadOnly: true,
-                    );
-                  },
-                ),
+      
+              if (editDateAndTimeViewModel.state is EditDateAndTimeUpdateSuccess) {
+                WidgetsBinding.instance.addPostFrameCallback(
+                  (_) => Navigator.pop(context, true),
+                );
+              }
+      
+              return CustomButton(
+                label: 'Salvar',
+                onTap: onSave,
               );
             },
           ),
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ListenableBuilder(
-          listenable: editDateAndTimeViewModel,
-          builder: (context, _) {
-            if (editDateAndTimeViewModel.state is EditDateAndTimeLoading) {
-              return const CustomLoading();
-            }
-
-            if (editDateAndTimeViewModel.state is EditDateAndTimeError) {
-              final messageError = (editDateAndTimeViewModel.state as EditDateAndTimeError).message;
-              WidgetsBinding.instance.addPostFrameCallback(
-                (_) => customNotifications.showSnackBar(
-                  context: context,
-                  message: messageError,
-                ),
-              );
-            }
-
-            if (editDateAndTimeViewModel.state is EditDateAndTimeUpdateSuccess) {
-              WidgetsBinding.instance.addPostFrameCallback(
-                (_) => Navigator.pop(context),
-              );
-            }
-
-            return CustomButton(
-              label: 'Salvar',
-              onTap: onSave,
-            );
-          },
         ),
       ),
     );
@@ -414,7 +424,6 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
       content: 'Tem certeza que deseja alterar a data e a hora do serviço para "$dateHourText"?',
       confirmCallback: () {
         editDateAndTimeViewModel.save();
-        context.read<SchedulingDetailViewModel>().refreshServiceScheduling();
       },
     );
   }

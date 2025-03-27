@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
@@ -19,7 +20,8 @@ import 'package:prestador_de_servico/app/views/scheduling_details/widgets/edit_s
 import 'package:provider/provider.dart';
 
 class EditScheduledServicesView extends StatefulWidget {
-  const EditScheduledServicesView({super.key});
+  final ServiceScheduling serviceScheduling;
+  const EditScheduledServicesView({super.key, required this.serviceScheduling});
 
   @override
   State<EditScheduledServicesView> createState() => _EditScheduledServicesViewState();
@@ -38,7 +40,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
 
   @override
   void initState() {
-    final serviceScheduling = context.read<SchedulingDetailViewModel>().serviceScheduling;
+    final serviceScheduling = widget.serviceScheduling;
     editViewModel = EditScheduledServicesViewmodel(
       schedulingService: context.read<SchedulingService>(),
       serviceScheduling: serviceScheduling.copyWith(
@@ -66,129 +68,138 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverPersistentHeader(
-            floating: true,
-            delegate: SliverAppBarDelegate(
-              minHeight: 120,
-              maxHeight: 120,
-              child: Stack(
-                children: [
-                  CustomHeaderContainer(
-                    height: 100,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 28),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                              width: 60,
-                              child: BackNavigation(onTap: () => Navigator.pop(context))),
-                          const Expanded(
-                            child: CustomAppBarTitle(
-                              title: 'Alteração de Serviços',
-                              fontSize: 25,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, hasChange) {
+        if (didPop) {
+          return;
+        }
+        Navigator.pop(context, hasChange as bool?);
+      },
+      child: Scaffold(
+        body: CustomScrollView(
+          slivers: [
+            SliverPersistentHeader(
+              floating: true,
+              delegate: SliverAppBarDelegate(
+                minHeight: 120,
+                maxHeight: 120,
+                child: Stack(
+                  children: [
+                    CustomHeaderContainer(
+                      height: 100,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 28),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                                width: 60,
+                                child: BackNavigation(onTap: () => Navigator.pop(context))),
+                            const Expanded(
+                              child: CustomAppBarTitle(
+                                title: 'Alteração de Serviços',
+                                fontSize: 25,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 60),
-                        ],
+                            const SizedBox(width: 60),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          ListenableBuilder(
-            listenable: editViewModel,
-            builder: (context, _) {
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                sliver: SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      CustomTextField(
-                        label: 'Taxa',
-                        controller: rateController,
-                        focusNode: rateFocus,
-                        isNumeric: true,
-                        inputFormatters: [MoneyTextInputFormatter()],
-                        onChanged: (_) => onChangeRate(),
-                      ),
-                      const SizedBox(height: 12),
-                      CustomTextField(
-                        label: 'Desconto',
-                        controller: discountController,
-                        focusNode: discountFocus,
-                        isNumeric: true,
-                        inputFormatters: [MoneyTextInputFormatter()],
-                        onChanged: (_) => onChangeDicount(),
-                        errorMessage: editViewModel.discountError,
-                      ),
-                      const SizedBox(height: 20),
-                      Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
-                      const SizedBox(height: 18),
-                      const Text(
-                        'Serviços',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                      ),
-                      const SizedBox(height: 12),
-                      servicesCard(),
-                      const SizedBox(height: 12),
-                      totalProductsCard(),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          const Expanded(child: SizedBox()),
-                          AddServiceButtom(onTap: onNewService),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
-                      const SizedBox(height: 12),
-                      totalCard(),
-                    ],
-                  ),
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: ListenableBuilder(
-            listenable: editViewModel,
-            builder: (context, _) {
-              if (editViewModel.state is EditServicesAndPricesLoading) {
-                return const CustomLoading();
-              }
-
-              if (editViewModel.state is EditServicesAndPricesError) {
-                final messageError = (editViewModel.state as EditServicesAndPricesError).message;
-                WidgetsBinding.instance.addPostFrameCallback(
-                  (_) => notifications.showSnackBar(
-                    context: context,
-                    message: messageError,
+            ListenableBuilder(
+              listenable: editViewModel,
+              builder: (context, _) {
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        CustomTextField(
+                          label: 'Taxa',
+                          controller: rateController,
+                          focusNode: rateFocus,
+                          isNumeric: true,
+                          inputFormatters: [MoneyTextInputFormatter()],
+                          onChanged: (_) => onChangeRate(),
+                        ),
+                        const SizedBox(height: 12),
+                        CustomTextField(
+                          label: 'Desconto',
+                          controller: discountController,
+                          focusNode: discountFocus,
+                          isNumeric: true,
+                          inputFormatters: [MoneyTextInputFormatter()],
+                          onChanged: (_) => onChangeDicount(),
+                          errorMessage: editViewModel.discountError,
+                        ),
+                        const SizedBox(height: 20),
+                        Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
+                        const SizedBox(height: 18),
+                        const Text(
+                          'Serviços',
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                        ),
+                        const SizedBox(height: 12),
+                        servicesCard(),
+                        const SizedBox(height: 12),
+                        totalProductsCard(),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            const Expanded(child: SizedBox()),
+                            AddServiceButtom(onTap: onNewService),
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
+                        const SizedBox(height: 12),
+                        totalCard(),
+                      ],
+                    ),
                   ),
                 );
-              }
-
-              if (editViewModel.state is EditServicesAndPricesUpdateSuccess) {
-                WidgetsBinding.instance.addPostFrameCallback(
-                  (_) => Navigator.pop(context),
+              },
+            ),
+          ],
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ListenableBuilder(
+              listenable: editViewModel,
+              builder: (context, _) {
+                if (editViewModel.state is EditServicesAndPricesLoading) {
+                  return const CustomLoading();
+                }
+      
+                if (editViewModel.state is EditServicesAndPricesError) {
+                  final messageError = (editViewModel.state as EditServicesAndPricesError).message;
+                  WidgetsBinding.instance.addPostFrameCallback(
+                    (_) => notifications.showSnackBar(
+                      context: context,
+                      message: messageError,
+                    ),
+                  );
+                }
+      
+                if (editViewModel.state is EditServicesAndPricesUpdateSuccess) {
+                  WidgetsBinding.instance.addPostFrameCallback(
+                    (_) => Navigator.pop(context),
+                  );
+                }
+      
+                return CustomButton(
+                  label: 'Salvar',
+                  onTap: onSave,
                 );
-              }
-
-              return CustomButton(
-                label: 'Salvar',
-                onTap: onSave,
-              );
-            }),
+              }),
+        ),
       ),
     );
   }
@@ -353,7 +364,6 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
       content: 'Tem certeza que deseja salvar as alterações efetuadas?',
       confirmCallback: () {
         editViewModel.save();
-        context.read<SchedulingDetailViewModel>().refreshServiceScheduling();
       },
     );
   }

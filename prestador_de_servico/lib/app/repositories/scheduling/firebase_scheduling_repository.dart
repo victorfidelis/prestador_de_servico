@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_converter.dart';
@@ -17,17 +16,18 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
   final _firebaseInitializer = FirebaseInitializer();
 
   @override
-  Future<Either<Failure, ServiceScheduling>> getServiceScheduling({required String serviceSchedulingId}) async {
+  Future<Either<Failure, ServiceScheduling>> getServiceScheduling(
+      {required String serviceSchedulingId}) async {
     final initializeEither = await _firebaseInitializer.initialize();
     if (initializeEither.isLeft) {
       return Either.left(initializeEither.left);
     }
 
     try {
-      final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
-      final snapServiceSchedules = await serviceSchedulesCollection.doc(serviceSchedulingId).get();
-      return Either.right(
-          ServiceSchedulingConverter.fromDocumentSnapshot(doc: snapServiceSchedules));
+      final docRef =
+          FirebaseFirestore.instance.collection('serviceSchedules').doc(serviceSchedulingId);
+      final scheduling = await docRef.get();
+      return Either.right(ServiceSchedulingConverter.fromFirebaseDoc(doc: scheduling));
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
         return Either.left(NetworkFailure('Sem conexão com a internet'));
@@ -50,7 +50,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
           .where('startDateAndTime', isLessThan: endDate)
           .get();
       List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
-          .map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc))
+          .map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc))
           .toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
@@ -75,7 +75,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       QuerySnapshot snapServiceSchedules =
           await serviceSchedulesCollection.where('user.id', isEqualTo: userId).get();
       List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
-          .map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc))
+          .map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc))
           .toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
@@ -123,7 +123,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       QuerySnapshot snapServiceSchedules =
           await serviceSchedulesCollection.where('serviceStatusCode', isEqualTo: 1).get();
       List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
-          .map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc))
+          .map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc))
           .toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
@@ -149,7 +149,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
           .where('isPaid', isEqualTo: false)
           .get();
       List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
-          .map((doc) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: doc))
+          .map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc))
           .toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
@@ -301,7 +301,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
           .get();
 
       var schedules = docs.docs
-          .map((schedule) => ServiceSchedulingConverter.fromDocumentSnapshot(doc: schedule))
+          .map((schedule) => ServiceSchedulingConverter.fromFirebaseDoc(doc: schedule))
           .toList();
 
       return Either.right(schedules);

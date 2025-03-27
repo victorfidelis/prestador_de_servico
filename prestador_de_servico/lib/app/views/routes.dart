@@ -109,35 +109,23 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     final serviceScheduling = (arguments['serviceScheduling']) as ServiceScheduling;
     return _buildRoute(
       settings,
-      ChangeNotifierProvider<SchedulingDetailViewModel>(
-        create: (context) => SchedulingDetailViewModel(
-          schedulingService: context.read<SchedulingService>(),
-          serviceScheduling: serviceScheduling,
-        ),
-        child: SchedulingDetailsView(
-          serviceScheduling: serviceScheduling,
-        ),
-      ),
+      SchedulingDetailsView(serviceScheduling: serviceScheduling),
     );
   }
   if (settings.name == '/editDateAndTime') {
     final arguments = (settings.arguments as Map);
+    final serviceScheduling = (arguments['serviceScheduling']) as ServiceScheduling;
     return _buildRoute(
       settings,
-      ChangeNotifierProvider.value(
-        value: arguments['schedulingDetailViewModel'] as SchedulingDetailViewModel,
-        child: const EditDateAndTimeView(),
-      ),
+      EditDateAndTimeView(serviceScheduling: serviceScheduling),
     );
   }
   if (settings.name == '/editScheduledServices') {
     final arguments = (settings.arguments as Map);
+    final serviceScheduling = (arguments['serviceScheduling']) as ServiceScheduling;
     return _buildRoute(
       settings,
-      ChangeNotifierProvider.value(
-        value: arguments['schedulingDetailViewModel'] as SchedulingDetailViewModel,
-        child: const EditScheduledServicesView(),
-      ),
+      EditScheduledServicesView(serviceScheduling: serviceScheduling),
     );
   }
 

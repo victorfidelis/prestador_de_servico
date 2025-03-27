@@ -10,7 +10,6 @@ import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
-import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
 
 import '../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
 
