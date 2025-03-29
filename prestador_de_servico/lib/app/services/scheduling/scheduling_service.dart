@@ -37,6 +37,7 @@ class SchedulingService {
     }
 
     var schedules = conflictsEither.right!;
+    schedules.removeWhere((schedule) => schedule.id == serviceSchedulingId);
     serviceScheduling = serviceScheduling.copyWith(
       conflictScheduing: schedules.isNotEmpty,
       schedulingUnavailable: isUnavailable(schedules)
