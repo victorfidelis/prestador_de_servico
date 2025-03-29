@@ -3,7 +3,6 @@ import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
-import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
 import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
@@ -15,13 +14,11 @@ import 'package:prestador_de_servico/app/views/scheduling/scheduling_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/edit_date_and_time_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/edit_scheduled_services_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/scheduling_details_view.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_view.dart';
 import 'package:prestador_de_servico/app/views/service/show_all_services_view.dart';
 import 'package:prestador_de_servico/app/views/service_day/service_day_view.dart';
-import 'package:provider/provider.dart';
 
 Route<dynamic>? getRoute(RouteSettings settings) {
   if (settings.name == '/signIn') {

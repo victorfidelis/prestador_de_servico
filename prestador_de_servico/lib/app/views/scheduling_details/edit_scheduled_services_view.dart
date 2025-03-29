@@ -14,7 +14,6 @@ import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_not
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_services_and_prices_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/edit_scheduled_services_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/add_service_buttom.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/edit_service_item_card.dart';
 import 'package:provider/provider.dart';

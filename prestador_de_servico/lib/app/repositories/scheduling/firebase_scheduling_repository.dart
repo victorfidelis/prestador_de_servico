@@ -18,6 +18,8 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
   @override
   Future<Either<Failure, ServiceScheduling>> getServiceScheduling(
       {required String serviceSchedulingId}) async {
+    await Future.delayed(const Duration(milliseconds: 100));
+
     final initializeEither = await _firebaseInitializer.initialize();
     if (initializeEither.isLeft) {
       return Either.left(initializeEither.left);
@@ -295,6 +297,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
 
     try {
       final collection = FirebaseFirestore.instance.collection('serviceSchedules');
+
       final docs = await collection
           .where("startDateAndTime", isLessThan: endDateTimestamp)
           .where("endDateAndTime", isGreaterThan: startDateTimestamp)

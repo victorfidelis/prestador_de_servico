@@ -19,7 +19,6 @@ import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_not
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_date_and_time_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/edit_date_and_time_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class EditDateAndTimeView extends StatefulWidget {
@@ -53,6 +52,17 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
     editDateAndTimeViewModel.setServiceTime(serviceScheduling.serviceTime);
     editDateAndTimeViewModel.setSchedulingId(serviceScheduling.id);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    editDateAndTimeViewModel.dispose();
+    serviceSchedulingViewModel.dispose();
+    dateController.dispose();
+    timeController.dispose();
+    dateFocus.dispose();
+    timeFocus.dispose();
+    super.dispose();
   }
 
   @override

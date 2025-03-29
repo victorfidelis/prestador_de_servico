@@ -28,18 +28,24 @@ class SchedulingDetailsView extends StatefulWidget {
 }
 
 class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
-  late ServiceScheduling serviceScheduling;
-
   late final SchedulingDetailViewModel schedulingDetailViewModel;
 
   @override
   void initState() {
-    serviceScheduling = widget.serviceScheduling;
     schedulingDetailViewModel = SchedulingDetailViewModel(
       schedulingService: context.read<SchedulingService>(),
-      serviceScheduling: serviceScheduling,
+      serviceScheduling: widget.serviceScheduling,
     );
+    
+    schedulingDetailViewModel.refreshServiceScheduling();
+  
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    schedulingDetailViewModel.dispose();
+    super.dispose();
   }
 
   @override
@@ -97,13 +103,17 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
               listenable: schedulingDetailViewModel,
               builder: (context, _) {
                 if (schedulingDetailViewModel.state is SchedulingDetailLoading) {
-                  return const CustomLoading();
+                  return const SliverFillRemaining(
+                    child: Center(child: CustomLoading()),
+                  );
                 }
 
                 if (schedulingDetailViewModel.state is SchedulingDetailError) {
                   var error = schedulingDetailViewModel.state as SchedulingDetailError;
-                  return Center(
-                    child: Text(error.message),
+                  return SliverToBoxAdapter(
+                    child: Center(
+                      child: Text(error.message),
+                    ),
                   );
                 }
 
@@ -194,7 +204,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       arguments: {'serviceScheduling': schedulingDetailViewModel.serviceScheduling},
     );
     if (hasChange != null && hasChange as bool) {
-      schedulingDetailViewModel.refreshServiceScheduling();
+      await schedulingDetailViewModel.refreshServiceScheduling();
     }
   }
 
@@ -205,15 +215,15 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       arguments: {'serviceScheduling': schedulingDetailViewModel.serviceScheduling},
     );
     if (hasChange != null && hasChange as bool) {
-      schedulingDetailViewModel.refreshServiceScheduling();
+      await schedulingDetailViewModel.refreshServiceScheduling();
     }
   }
 
   Widget addressWidget() {
-    if (serviceScheduling.address == null) {
+    if (schedulingDetailViewModel.serviceScheduling.address == null) {
       return const Text('Local não informado');
     }
-    return AddressCard(address: serviceScheduling.address!);
+    return AddressCard(address: schedulingDetailViewModel.serviceScheduling.address!);
   }
 
   Widget actions() {
