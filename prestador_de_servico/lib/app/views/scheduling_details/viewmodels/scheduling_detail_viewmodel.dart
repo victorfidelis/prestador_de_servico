@@ -21,6 +21,11 @@ class SchedulingDetailViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> onChangeScheduling() async {
+    hasChange = true;
+    await refreshServiceScheduling();
+  }
+
   Future<void> refreshServiceScheduling() async {
     _emitState(SchedulingDetailLoading());
 

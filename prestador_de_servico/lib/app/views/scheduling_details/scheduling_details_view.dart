@@ -203,8 +203,8 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       '/editDateAndTime',
       arguments: {'serviceScheduling': schedulingDetailViewModel.serviceScheduling},
     );
-    if (hasChange != null && hasChange as bool) {
-      await schedulingDetailViewModel.refreshServiceScheduling();
+    if (hasChange != null && (hasChange as bool)) {
+      await schedulingDetailViewModel.onChangeScheduling();
     }
   }
 
@@ -214,8 +214,8 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       '/editScheduledServices',
       arguments: {'serviceScheduling': schedulingDetailViewModel.serviceScheduling},
     );
-    if (hasChange != null && hasChange as bool) {
-      await schedulingDetailViewModel.refreshServiceScheduling();
+    if (hasChange != null && (hasChange as bool)) {
+      await schedulingDetailViewModel.onChangeScheduling();
     }
   }
 

@@ -189,7 +189,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
       
                 if (editViewModel.state is EditServicesAndPricesUpdateSuccess) {
                   WidgetsBinding.instance.addPostFrameCallback(
-                    (_) => Navigator.pop(context),
+                    (_) => Navigator.pop(context, true),
                   );
                 }
       
