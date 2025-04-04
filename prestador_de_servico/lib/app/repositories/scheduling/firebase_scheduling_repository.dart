@@ -147,7 +147,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     try {
       final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
       QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection
-          .where('serviceStatusCode', whereIn: ServiceStatus.servicePerformCode)
+          .where('serviceStatusCode', isEqualTo: ServiceStatus.servicePerformCode)
           .where('isPaid', isEqualTo: false)
           .get();
       List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
@@ -327,13 +327,9 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     try {
       final docRef = FirebaseFirestore.instance.collection('serviceSchedules').doc(schedulingId);
 
-      docRef.update({'serviceStatusCode': ServiceStatus.confirmCode[0]});
+      await docRef.update({'serviceStatusCode': ServiceStatus.confirmCode});
 
-      var schedules = docs.docs
-          .map((schedule) => ServiceSchedulingConverter.fromFirebaseDoc(doc: schedule))
-          .toList();
-
-      return Either.right(schedules);
+      return Either.right(unit);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
         return Either.left(NetworkFailure('Sem conexão com a internet'));
@@ -341,7 +337,5 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
         return Either.left(Failure('Firestore error: ${e.message}'));
       }
     }
-
-
   }
 }
