@@ -123,7 +123,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                 );
 
                 bool allowsEdit = !schedulingDetailViewModel.serviceScheduling.serviceStatus
-                    .isBlockChangesStatus();
+                    .isBlockedChangeStatus();
 
                 return SliverToBoxAdapter(
                   child: Padding(
@@ -232,7 +232,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
 
     List<Widget> buttons = [];
 
-    if (serviceStatus.isPendingProviderStatus()) {
+    if (serviceStatus.isPendingProvider()) {
       buttons.add(CustomLightButtom(
         label: 'Aprovar',
         labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
@@ -240,7 +240,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       ));
     }
 
-    if (serviceStatus.isConfirmStatus()) {
+    if (serviceStatus.isConfirm()) {
       buttons.add(CustomLightButtom(
         label: 'Colocar em atendimento',
         labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
@@ -248,7 +248,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       ));
     }
 
-    if (serviceStatus.isInAttendanceStatus()) {
+    if (serviceStatus.isInAttendance()) {
       buttons.add(CustomLightButtom(
         label: 'Marcar como realizado',
         labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
@@ -256,7 +256,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       ));
     }
 
-    if (serviceStatus.isPendingProviderStatus()) {
+    if (serviceStatus.isPendingProvider()) {
       buttons.add(CustomLightButtom(
         label: 'Solicitar alterações',
         labelColor: Theme.of(context).extension<CustomColors>()!.pending!,
@@ -264,7 +264,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       ));
     }
 
-    if (!isPaid && serviceStatus.isAcceptStatus()) {
+    if (!isPaid && serviceStatus.isAccept()) {
       buttons.add(CustomLightButtom(
         label: 'Receber pagamentos',
         labelColor: Theme.of(context).extension<CustomColors>()!.money!,
@@ -272,7 +272,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       ));
     }
 
-    if (serviceStatus.isPendingProviderStatus()) {
+    if (serviceStatus.isPendingProvider()) {
       buttons.add(CustomLightButtom(
         label: 'Recusar',
         labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,
@@ -281,7 +281,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     }
 
     if (!serviceStatus.isFinalStatus() &&
-        (serviceStatus.isPendingClientStatus() || serviceStatus.isAcceptStatus())) {
+        (serviceStatus.isPendingClient() || serviceStatus.isAccept())) {
       buttons.add(CustomLightButtom(
         label: 'Cancelar',
         labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,

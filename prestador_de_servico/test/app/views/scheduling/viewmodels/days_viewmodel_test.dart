@@ -35,7 +35,7 @@ void main() {
         () async {
           const failureMessage = 'Teste de falha';
 
-          when(onlineMockSchedulingRepository.getDaysWithService())
+          when(onlineMockSchedulingRepository.getDaysWithSchedules())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           await daysViewModel.load(actualDate);
@@ -51,7 +51,7 @@ void main() {
         () async {
           final List<SchedulingDay> schedulesPerDay = [];
 
-          when(onlineMockSchedulingRepository.getDaysWithService())
+          when(onlineMockSchedulingRepository.getDaysWithSchedules())
               .thenAnswer((_) async => Either.right(schedulesPerDay));
 
           await daysViewModel.load(actualDate);

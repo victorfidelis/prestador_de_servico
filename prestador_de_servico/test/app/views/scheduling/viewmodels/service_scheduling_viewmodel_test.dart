@@ -35,7 +35,7 @@ void main() {
         () async {
           const failureMessage = 'Teste de falha';
 
-          when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: anyNamed('dateTime')))
+          when(onlineMockSchedulingRepository.getAllSchedulesByDay(dateTime: anyNamed('dateTime')))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           await serviceSchedulingViewModel.load(dateTime: DateTime.now());
@@ -51,7 +51,7 @@ void main() {
         () async {
           final List<ServiceScheduling> serviceSchedules = [];
 
-          when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: anyNamed('dateTime')))
+          when(onlineMockSchedulingRepository.getAllSchedulesByDay(dateTime: anyNamed('dateTime')))
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
           await serviceSchedulingViewModel.load(dateTime: DateTime.now());

@@ -18,13 +18,13 @@ class SchedulingService {
   Future<Either<Failure, ServiceScheduling>> getServiceScheduling(
       {required String serviceSchedulingId}) async {
     final getEither =
-        await onlineRepository.getServiceScheduling(serviceSchedulingId: serviceSchedulingId);
+        await onlineRepository.getScheduling(schedulingId: serviceSchedulingId);
     if (getEither.isLeft) {
       return Either.left(getEither.left);
     }
 
     var serviceScheduling = getEither.right!;
-    if (!serviceScheduling.serviceStatus.isPendingStatus()) {
+    if (!serviceScheduling.serviceStatus.isPending()) {
       return Either.right(serviceScheduling);
     }
 
@@ -47,13 +47,13 @@ class SchedulingService {
   }
 
   bool isUnavailable(List<ServiceScheduling> schedules) {
-    return schedules.where((s) => s.serviceStatus.isAcceptStatus()).isNotEmpty;
+    return schedules.where((s) => s.serviceStatus.isAccept()).isNotEmpty;
   }
 
   Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay({
     required DateTime dateTime,
   }) async {
-    final getEither = await onlineRepository.getAllServicesByDay(dateTime: dateTime);
+    final getEither = await onlineRepository.getAllSchedulesByDay(dateTime: dateTime);
     if (getEither.isLeft) {
       return Either.left(getEither.left);
     }
@@ -65,7 +65,7 @@ class SchedulingService {
       List<ServiceScheduling> servicesSchedules) {
     for (int i = 0; i < servicesSchedules.length; i++) {
       final scheduling = servicesSchedules[i];
-      if (!scheduling.serviceStatus.isPendingStatus()) {
+      if (!scheduling.serviceStatus.isPending()) {
         continue;
       }
 
@@ -82,7 +82,7 @@ class SchedulingService {
       final listOfUnavailable = servicesSchedules
           .where(
             (s) => (s.id != scheduling.id &&
-                s.serviceStatus.isAcceptStatus() &&
+                s.serviceStatus.isAccept() &&
                 s.startDateAndTime.compareTo(scheduling.endDateAndTime) <= 0 &&
                 s.endDateAndTime.compareTo(scheduling.startDateAndTime) >= 0),
           )
@@ -99,11 +99,11 @@ class SchedulingService {
 
   Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId(
       {required String userId}) async {
-    return await onlineRepository.getAllServicesByUserId(userId: userId);
+    return await onlineRepository.getAllSchedulesByUserId(userId: userId);
   }
 
   Future<Either<Failure, List<SchedulingDay>>> getDates(DateTime selectedDay) async {
-    final daysEither = await onlineRepository.getDaysWithService();
+    final daysEither = await onlineRepository.getDaysWithSchedules();
     if (daysEither.isLeft) {
       return Either.left(daysEither.left);
     }

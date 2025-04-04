@@ -10,12 +10,12 @@ abstract class SchedulingRepository {
     return FirebaseSchedulingRepository();
   }
 
-  Future<Either<Failure, ServiceScheduling>> getServiceScheduling(
-      {required String serviceSchedulingId});
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay(
+  Future<Either<Failure, ServiceScheduling>> getScheduling(
+      {required String schedulingId});
+  Future<Either<Failure, List<ServiceScheduling>>> getAllSchedulesByDay(
       {required DateTime dateTime});
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId({required String userId});
-  Future<Either<Failure, List<SchedulingDay>>> getDaysWithService();
+  Future<Either<Failure, List<ServiceScheduling>>> getAllSchedulesByUserId({required String userId});
+  Future<Either<Failure, List<SchedulingDay>>> getDaysWithSchedules();
   Future<Either<Failure, List<ServiceScheduling>>> getPendingProviderSchedules();
   Future<Either<Failure, List<ServiceScheduling>>> getPendingPaymentSchedules();
   Future<Either<Failure, Unit>> editDateOfScheduling({
@@ -35,4 +35,5 @@ abstract class SchedulingRepository {
     required DateTime startDate,
     required DateTime endDate,
   });
+  Future<Either<Failure, Unit>> confirmScheduling({required String schedulingId});
 }

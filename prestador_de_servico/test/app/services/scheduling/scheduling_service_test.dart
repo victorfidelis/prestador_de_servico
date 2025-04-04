@@ -209,8 +209,8 @@ void main() {
         () async {
           const failureMessage = 'Mensagem de falha';
 
-          when(onlineMockSchedulingRepository.getServiceScheduling(
-            serviceSchedulingId: serviceScheduling08as09.id,
+          when(onlineMockSchedulingRepository.getScheduling(
+            schedulingId: serviceScheduling08as09.id,
           )).thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           final getEither = await serviceSchedulingService.getServiceScheduling(
@@ -226,8 +226,8 @@ void main() {
         () async {
           const failureMessage = 'Mensagem de falha';
 
-          when(onlineMockSchedulingRepository.getServiceScheduling(
-            serviceSchedulingId: serviceScheduling08as09.id,
+          when(onlineMockSchedulingRepository.getScheduling(
+            schedulingId: serviceScheduling08as09.id,
           )).thenAnswer((_) async => Either.right(serviceScheduling08as09));
           when(onlineMockSchedulingRepository.getConflicts(
             startDate: serviceScheduling08as09.startDateAndTime,
@@ -248,8 +248,8 @@ void main() {
         () async {
           final serviceScheduling = serviceScheduling09as11.copyWith();
 
-          when(onlineMockSchedulingRepository.getServiceScheduling(
-            serviceSchedulingId: serviceScheduling.id,
+          when(onlineMockSchedulingRepository.getScheduling(
+            schedulingId: serviceScheduling.id,
           )).thenAnswer((_) async => Either.right(serviceScheduling));
           when(onlineMockSchedulingRepository.getConflicts(
             startDate: serviceScheduling.startDateAndTime,
@@ -274,8 +274,8 @@ void main() {
           serviceStatus: ServiceStatus(code: 3, name: 'Confirmado'),
         );
 
-        when(onlineMockSchedulingRepository.getServiceScheduling(
-          serviceSchedulingId: serviceScheduling.id,
+        when(onlineMockSchedulingRepository.getScheduling(
+          schedulingId: serviceScheduling.id,
         )).thenAnswer((_) async => Either.right(serviceScheduling));
         when(onlineMockSchedulingRepository.getConflicts(
           startDate: serviceScheduling.startDateAndTime,
@@ -296,8 +296,8 @@ void main() {
       () async {
         final serviceScheduling = serviceScheduling09as11.copyWith();
 
-        when(onlineMockSchedulingRepository.getServiceScheduling(
-          serviceSchedulingId: serviceScheduling.id,
+        when(onlineMockSchedulingRepository.getScheduling(
+          schedulingId: serviceScheduling.id,
         )).thenAnswer((_) async => Either.right(serviceScheduling));
         when(onlineMockSchedulingRepository.getConflicts(
           startDate: serviceScheduling.startDateAndTime,
@@ -321,8 +321,8 @@ void main() {
           serviceStatus: ServiceStatus(code: 3, name: 'Confirmado'),
         );
 
-        when(onlineMockSchedulingRepository.getServiceScheduling(
-          serviceSchedulingId: serviceScheduling.id,
+        when(onlineMockSchedulingRepository.getScheduling(
+          schedulingId: serviceScheduling.id,
         )).thenAnswer((_) async => Either.right(serviceScheduling));
         when(onlineMockSchedulingRepository.getConflicts(
           startDate: serviceScheduling.startDateAndTime,
@@ -349,7 +349,7 @@ void main() {
         () async {
           const failureMessage = 'Mensagem de falha';
           final dateToConsult = DateTime(actualDate.year, actualDate.month, actualDate.day);
-          when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: dateToConsult))
+          when(onlineMockSchedulingRepository.getAllSchedulesByDay(dateTime: dateToConsult))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           final getEither =
@@ -369,7 +369,7 @@ void main() {
             serviceScheduling09as11,
             serviceScheduling13as15confirm,
           ];
-          when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: dateToConsult))
+          when(onlineMockSchedulingRepository.getAllSchedulesByDay(dateTime: dateToConsult))
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
           final getEither =
@@ -393,7 +393,7 @@ void main() {
             serviceScheduling13as15confirm,
           ];
 
-          when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: dateToConsult))
+          when(onlineMockSchedulingRepository.getAllSchedulesByDay(dateTime: dateToConsult))
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
           final getEither =
@@ -419,7 +419,7 @@ void main() {
             serviceScheduling14as16
           ];
 
-          when(onlineMockSchedulingRepository.getAllServicesByDay(dateTime: dateToConsult))
+          when(onlineMockSchedulingRepository.getAllSchedulesByDay(dateTime: dateToConsult))
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
           final getEither =
@@ -441,7 +441,7 @@ void main() {
         'Deve retorno um Failure caso algum erro ocorra no repository',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockSchedulingRepository.getDaysWithService())
+          when(onlineMockSchedulingRepository.getDaysWithSchedules())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           final datesEither = await serviceSchedulingService.getDates(actualDate);
@@ -455,7 +455,7 @@ void main() {
         'Deve retorno um NetworkFailure caso não tenha acesso a internet',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockSchedulingRepository.getDaysWithService())
+          when(onlineMockSchedulingRepository.getDaysWithSchedules())
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final datesEither = await serviceSchedulingService.getDates(actualDate);
@@ -473,7 +473,7 @@ void main() {
 
         final finalDate = actualDate.add(const Duration(days: daysToAdd));
 
-        when(onlineMockSchedulingRepository.getDaysWithService())
+        when(onlineMockSchedulingRepository.getDaysWithSchedules())
             .thenAnswer((_) async => Either.right(schedulesPerDay));
 
         final datesEither = await serviceSchedulingService.getDates(actualDate);
@@ -500,7 +500,7 @@ void main() {
 
           final finalDate = actualDate.add(const Duration(days: daysToAdd));
 
-          when(onlineMockSchedulingRepository.getDaysWithService())
+          when(onlineMockSchedulingRepository.getDaysWithSchedules())
               .thenAnswer((_) async => Either.right(schedulesPerDay));
 
           final datesEither = await serviceSchedulingService.getDates(actualDate);
@@ -526,7 +526,7 @@ void main() {
             schedulingDayAfter100Days,
           ];
 
-          when(onlineMockSchedulingRepository.getDaysWithService())
+          when(onlineMockSchedulingRepository.getDaysWithSchedules())
               .thenAnswer((_) async => Either.right(schedulesPerDay));
 
           final datesEither = await serviceSchedulingService.getDates(actualDate);

@@ -49,13 +49,13 @@ class MockSchedulingRepository extends _i1.Mock
     implements _i3.SchedulingRepository {
   @override
   _i4.Future<
-      _i2.Either<_i5.Failure, _i6.ServiceScheduling>> getServiceScheduling(
-          {required String? serviceSchedulingId}) =>
+      _i2.Either<_i5.Failure, _i6.ServiceScheduling>> getScheduling(
+          {required String? schedulingId}) =>
       (super.noSuchMethod(
         Invocation.method(
           #getServiceScheduling,
           [],
-          {#serviceSchedulingId: serviceSchedulingId},
+          {#serviceSchedulingId: schedulingId},
         ),
         returnValue:
             _i4.Future<_i2.Either<_i5.Failure, _i6.ServiceScheduling>>.value(
@@ -64,7 +64,7 @@ class MockSchedulingRepository extends _i1.Mock
           Invocation.method(
             #getServiceScheduling,
             [],
-            {#serviceSchedulingId: serviceSchedulingId},
+            {#serviceSchedulingId: schedulingId},
           ),
         )),
         returnValueForMissingStub:
@@ -74,14 +74,14 @@ class MockSchedulingRepository extends _i1.Mock
           Invocation.method(
             #getServiceScheduling,
             [],
-            {#serviceSchedulingId: serviceSchedulingId},
+            {#serviceSchedulingId: schedulingId},
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, _i6.ServiceScheduling>>);
 
   @override
   _i4.Future<
-      _i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>> getAllServicesByDay(
+      _i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>> getAllSchedulesByDay(
           {required DateTime? dateTime}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -114,7 +114,7 @@ class MockSchedulingRepository extends _i1.Mock
   @override
   _i4.Future<
       _i2
-      .Either<_i5.Failure, List<_i6.ServiceScheduling>>> getAllServicesByUserId(
+      .Either<_i5.Failure, List<_i6.ServiceScheduling>>> getAllSchedulesByUserId(
           {required String? userId}) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -147,7 +147,7 @@ class MockSchedulingRepository extends _i1.Mock
   @override
   _i4.Future<
       _i2.Either<_i5.Failure,
-          List<_i7.SchedulingDay>>> getDaysWithService() => (super.noSuchMethod(
+          List<_i7.SchedulingDay>>> getDaysWithSchedules() => (super.noSuchMethod(
         Invocation.method(
           #getDaysWithService,
           [],

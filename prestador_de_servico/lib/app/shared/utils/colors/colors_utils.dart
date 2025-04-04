@@ -7,13 +7,13 @@ class ColorsUtils {
   static Color getColorFromStatus(BuildContext context, ServiceStatus serviceStatus) {
     final customColors = Theme.of(context).extension<CustomColors>();
     Color color = Colors.black;
-    if (serviceStatus.isPendingStatus()) {
+    if (serviceStatus.isPending()) {
       color = customColors?.pending ?? const Color(0xffEC942C);
-    } else if (serviceStatus.isAcceptStatus()) {
+    } else if (serviceStatus.isAccept()) {
       color = customColors?.confirm ?? const Color(0xff1976D2);
-    } else if (serviceStatus.isServicePerformStatus()) {
+    } else if (serviceStatus.isServicePerform()) {
       color = customColors?.money ?? const Color(0xff00891E);
-    } else if (serviceStatus.isCancellationStatus()) {
+    } else if (serviceStatus.isCancelled()) {
       color = customColors?.cancel ?? const Color(0xffE70000);
     }
     return color;

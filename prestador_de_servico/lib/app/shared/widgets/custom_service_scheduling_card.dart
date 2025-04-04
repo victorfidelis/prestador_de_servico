@@ -237,7 +237,7 @@ class _CustomServiceSchedulingCardState
         ),
       );
     } else if (!serviceScheduling.isPaid &&
-        serviceScheduling.serviceStatus.isAcceptStatus()) {
+        serviceScheduling.serviceStatus.isAccept()) {
       final needToPay = Formatters.formatPrice(serviceScheduling.needToPay);
       widgetReturn = Text(
         '$needToPay pendente',
@@ -253,7 +253,7 @@ class _CustomServiceSchedulingCardState
   Widget getFinishedSealIcon() {
     Widget finishedSealIcon = Container();
 
-    if (serviceScheduling.serviceStatus.isCancellationStatus()) {
+    if (serviceScheduling.serviceStatus.isCancelled()) {
       finishedSealIcon = ClipOval(
         child: Container(
           color: const Color(0xffE70000),
@@ -265,7 +265,7 @@ class _CustomServiceSchedulingCardState
           ),
         ),
       );
-    } else if (serviceScheduling.serviceStatus.isServicePerformStatus() &&
+    } else if (serviceScheduling.serviceStatus.isServicePerform() &&
         serviceScheduling.isPaid) {
       finishedSealIcon = ClipOval(
         child: Container(
