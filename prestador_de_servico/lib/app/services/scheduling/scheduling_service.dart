@@ -279,5 +279,18 @@ class SchedulingService {
       minutes += (service.hours * 60);
     }
     return minutes;
+  } 
+
+  Future<Either<Failure, Unit>> confirmScheduling({required String schedulingId}) async {
+    final either = await onlineRepository.getScheduling(schedulingId: schedulingId);
+    if (either.isLeft) {
+      return Either.left(either.left);
+    }
+
+    if (!either.right!.serviceStatus.isPending()) {
+      return Either.left(Failure('Status do agendamento inválido.'));
+    }
+
+    return await onlineRepository.confirmScheduling(schedulingId: schedulingId);
   }
 }

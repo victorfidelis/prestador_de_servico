@@ -48,23 +48,22 @@ class _FakeEither_0<L, R> extends _i1.SmartFake implements _i2.Either<L, R> {
 class MockSchedulingRepository extends _i1.Mock
     implements _i3.SchedulingRepository {
   @override
-  _i4.Future<
-      _i2.Either<_i5.Failure, _i6.ServiceScheduling>> getScheduling(
+  _i4.Future<_i2.Either<_i5.Failure, _i6.ServiceScheduling>> getScheduling(
           {required String? schedulingId}) =>
       (super.noSuchMethod(
         Invocation.method(
-          #getServiceScheduling,
+          #getScheduling,
           [],
-          {#serviceSchedulingId: schedulingId},
+          {#schedulingId: schedulingId},
         ),
         returnValue:
             _i4.Future<_i2.Either<_i5.Failure, _i6.ServiceScheduling>>.value(
                 _FakeEither_0<_i5.Failure, _i6.ServiceScheduling>(
           this,
           Invocation.method(
-            #getServiceScheduling,
+            #getScheduling,
             [],
-            {#serviceSchedulingId: schedulingId},
+            {#schedulingId: schedulingId},
           ),
         )),
         returnValueForMissingStub:
@@ -72,20 +71,21 @@ class MockSchedulingRepository extends _i1.Mock
                 _FakeEither_0<_i5.Failure, _i6.ServiceScheduling>(
           this,
           Invocation.method(
-            #getServiceScheduling,
+            #getScheduling,
             [],
-            {#serviceSchedulingId: schedulingId},
+            {#schedulingId: schedulingId},
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, _i6.ServiceScheduling>>);
 
   @override
   _i4.Future<
-      _i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>> getAllSchedulesByDay(
+      _i2
+      .Either<_i5.Failure, List<_i6.ServiceScheduling>>> getAllSchedulesByDay(
           {required DateTime? dateTime}) =>
       (super.noSuchMethod(
         Invocation.method(
-          #getAllServicesByDay,
+          #getAllSchedulesByDay,
           [],
           {#dateTime: dateTime},
         ),
@@ -94,7 +94,7 @@ class MockSchedulingRepository extends _i1.Mock
             _FakeEither_0<_i5.Failure, List<_i6.ServiceScheduling>>(
           this,
           Invocation.method(
-            #getAllServicesByDay,
+            #getAllSchedulesByDay,
             [],
             {#dateTime: dateTime},
           ),
@@ -104,7 +104,7 @@ class MockSchedulingRepository extends _i1.Mock
             _FakeEither_0<_i5.Failure, List<_i6.ServiceScheduling>>(
           this,
           Invocation.method(
-            #getAllServicesByDay,
+            #getAllSchedulesByDay,
             [],
             {#dateTime: dateTime},
           ),
@@ -112,44 +112,43 @@ class MockSchedulingRepository extends _i1.Mock
       ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>);
 
   @override
-  _i4.Future<
-      _i2
-      .Either<_i5.Failure, List<_i6.ServiceScheduling>>> getAllSchedulesByUserId(
-          {required String? userId}) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #getAllServicesByUserId,
-          [],
-          {#userId: userId},
-        ),
-        returnValue: _i4
-            .Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>.value(
-            _FakeEither_0<_i5.Failure, List<_i6.ServiceScheduling>>(
-          this,
-          Invocation.method(
-            #getAllServicesByUserId,
-            [],
-            {#userId: userId},
-          ),
-        )),
-        returnValueForMissingStub: _i4
-            .Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>.value(
-            _FakeEither_0<_i5.Failure, List<_i6.ServiceScheduling>>(
-          this,
-          Invocation.method(
-            #getAllServicesByUserId,
-            [],
-            {#userId: userId},
-          ),
-        )),
-      ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>);
+  _i4.Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>
+      getAllSchedulesByUserId({required String? userId}) => (super.noSuchMethod(
+            Invocation.method(
+              #getAllSchedulesByUserId,
+              [],
+              {#userId: userId},
+            ),
+            returnValue: _i4.Future<
+                    _i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>.value(
+                _FakeEither_0<_i5.Failure, List<_i6.ServiceScheduling>>(
+              this,
+              Invocation.method(
+                #getAllSchedulesByUserId,
+                [],
+                {#userId: userId},
+              ),
+            )),
+            returnValueForMissingStub: _i4.Future<
+                    _i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>.value(
+                _FakeEither_0<_i5.Failure, List<_i6.ServiceScheduling>>(
+              this,
+              Invocation.method(
+                #getAllSchedulesByUserId,
+                [],
+                {#userId: userId},
+              ),
+            )),
+          ) as _i4
+              .Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>);
 
   @override
   _i4.Future<
       _i2.Either<_i5.Failure,
-          List<_i7.SchedulingDay>>> getDaysWithSchedules() => (super.noSuchMethod(
+          List<_i7.SchedulingDay>>> getDaysWithSchedules() =>
+      (super.noSuchMethod(
         Invocation.method(
-          #getDaysWithService,
+          #getDaysWithSchedules,
           [],
         ),
         returnValue:
@@ -157,7 +156,7 @@ class MockSchedulingRepository extends _i1.Mock
                 _FakeEither_0<_i5.Failure, List<_i7.SchedulingDay>>(
           this,
           Invocation.method(
-            #getDaysWithService,
+            #getDaysWithSchedules,
             [],
           ),
         )),
@@ -166,7 +165,7 @@ class MockSchedulingRepository extends _i1.Mock
                 _FakeEither_0<_i5.Failure, List<_i7.SchedulingDay>>(
           this,
           Invocation.method(
-            #getDaysWithService,
+            #getDaysWithSchedules,
             [],
           ),
         )),
@@ -374,4 +373,34 @@ class MockSchedulingRepository extends _i1.Mock
           ),
         )),
       ) as _i4.Future<_i2.Either<_i5.Failure, List<_i6.ServiceScheduling>>>);
+
+  @override
+  _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>> confirmScheduling(
+          {required String? schedulingId}) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #confirmScheduling,
+          [],
+          {#schedulingId: schedulingId},
+        ),
+        returnValue: _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+            _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #confirmScheduling,
+            [],
+            {#schedulingId: schedulingId},
+          ),
+        )),
+        returnValueForMissingStub:
+            _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>.value(
+                _FakeEither_0<_i5.Failure, _i2.Unit>(
+          this,
+          Invocation.method(
+            #confirmScheduling,
+            [],
+            {#schedulingId: schedulingId},
+          ),
+        )),
+      ) as _i4.Future<_i2.Either<_i5.Failure, _i2.Unit>>);
 }
