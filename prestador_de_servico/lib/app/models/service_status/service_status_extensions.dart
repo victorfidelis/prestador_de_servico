@@ -13,4 +13,5 @@ extension ServiceStatusExtensions on ServiceStatus {
   bool isServicePerform() => ServiceStatus.servicePerformCode == code;
   bool isFinalStatus() => ServiceStatus.finalStatusCodes.contains(code);
   bool isBlockedChangeStatus() => ServiceStatus.blockChangesStatusCodes.contains(code);
+  bool allowCancel() => ServiceStatus.allowCancelCodes.contains(code);
 }

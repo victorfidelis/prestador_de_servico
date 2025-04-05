@@ -854,4 +854,55 @@ void main() {
       );
     },
   );
+
+  group(
+    'cancelScheduling',
+    () {
+      test(
+        '''Deve retornar um Failure quando o status atual não permitir cancelamento''',
+        () async {
+          final scheduling = serviceScheduling08as09.copyWith(
+              serviceStatus: ServiceStatus(
+            code: ServiceStatus.deniedCode,
+            name: 'Nagado',
+          ));
+
+          when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
+              .thenAnswer((_) async => Either.right(scheduling));
+
+          final either = await schedulingService.cancelScheduling(
+            schedulingId: scheduling.id,
+          );
+
+          expect(either.isLeft, isTrue);
+        },
+      );
+
+      test(
+        '''Deve retornar um Unit quando o status atual permitir cancelamento''',
+        () async {
+          final scheduling = serviceScheduling08as09.copyWith(
+            serviceStatus: ServiceStatus(
+              code: ServiceStatus.pendingClientCode,
+              name: 'Pendente Cliente',
+            ),
+          );
+
+          when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
+              .thenAnswer((_) async => Either.right(scheduling));
+
+          when(onlineMockSchedulingRepository.changeStatus(
+            schedulingId: scheduling.id,
+            statusCode: ServiceStatus.canceledByProviderCode,
+          )).thenAnswer((_) async => Either.right(unit));
+
+          final either =
+              await schedulingService.cancelScheduling(schedulingId: scheduling.id);
+
+          expect(either.isRight, isTrue);
+          expect(either.right is Unit, isTrue);
+        },
+      );
+    },
+  );
 }

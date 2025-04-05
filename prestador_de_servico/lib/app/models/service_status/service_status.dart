@@ -33,4 +33,5 @@ class ServiceStatus {
   static List<int> get cancellationStatusCodes => [6, 7, 8, 9];
   static List<int> get finalStatusCodes => [5, 6, 7, 8, 9];
   static List<int> get blockChangesStatusCodes => [2, 5, 6, 7, 8, 9];
+  static List<int> get allowCancelCodes => [2, 3, 4];
 }

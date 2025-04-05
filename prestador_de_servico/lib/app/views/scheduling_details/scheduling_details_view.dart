@@ -254,6 +254,17 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
+  void onCancelScheduling() async {
+    await notifications.showQuestionAlert(
+      context: context,
+      title: 'Cancelar agendamento',
+      content: 'Tem certeza que deseja cancelar o agendamento?',
+      confirmCallback: () {
+        schedulingDetailViewModel.cancelScheduling();
+      },
+    );
+  }
+
   Widget addressWidget() {
     if (schedulingDetailViewModel.scheduling.address == null) {
       return const Text('Local não informado');
@@ -315,12 +326,11 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       ));
     }
 
-    if (!serviceStatus.isFinalStatus() &&
-        (serviceStatus.isPendingClient() || serviceStatus.isAccept())) {
+    if (serviceStatus.allowCancel()) {
       buttons.add(CustomLightButtom(
         label: 'Cancelar',
         labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,
-        onTap: () {},
+        onTap: onCancelScheduling,
       ));
     }
 
