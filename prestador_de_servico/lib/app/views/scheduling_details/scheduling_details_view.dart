@@ -277,7 +277,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       title: 'Agendamento realizado',
       content: 'Tem certeza que deseja colocar o agendamento como "Realizado"?',
       confirmCallback: () {
-        schedulingDetailViewModel.schedulingInService();
+        schedulingDetailViewModel.performScheduling();
       },
     );
   }
