@@ -216,6 +216,17 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     }
   }
 
+  void onReceivePayment() async {
+    final hasChange = await Navigator.pushNamed(
+      context,
+      '/paymentScheduling',
+      arguments: {'serviceScheduling': schedulingDetailViewModel.scheduling},
+    );
+    if (hasChange != null && (hasChange as bool)) {
+      await schedulingDetailViewModel.onChangeScheduling();
+    }
+  }
+
   void onConfirmScheduling() async {
     await notifications.showQuestionAlert(
       context: context,
@@ -331,7 +342,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       buttons.add(CustomLightButtom(
         label: 'Receber pagamentos',
         labelColor: Theme.of(context).extension<CustomColors>()!.money!,
-        onTap: () {},
+        onTap: onReceivePayment,
       ));
     }
 

@@ -13,6 +13,7 @@ import 'package:prestador_de_servico/app/views/pending_schedules/pending_provide
 import 'package:prestador_de_servico/app/views/scheduling/scheduling_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/edit_date_and_time_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/edit_scheduled_services_view.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/payment_scheduling_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/scheduling_details_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
@@ -123,6 +124,14 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     return _buildRoute(
       settings,
       EditScheduledServicesView(serviceScheduling: serviceScheduling),
+    );
+  }
+  if (settings.name == '/paymentScheduling') {
+    final arguments = (settings.arguments as Map);
+    final serviceScheduling = (arguments['serviceScheduling']) as ServiceScheduling;
+    return _buildRoute(
+      settings,
+      PaymentSchedulingView(serviceScheduling: serviceScheduling),
     );
   }
 
