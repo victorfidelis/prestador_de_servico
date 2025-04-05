@@ -743,8 +743,10 @@ void main() {
         when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
             .thenAnswer((_) async => Either.right(scheduling));
 
-        when(onlineMockSchedulingRepository.confirmScheduling(schedulingId: scheduling.id))
-            .thenAnswer((_) async => Either.right(unit));
+        when(onlineMockSchedulingRepository.changeStatus(
+          schedulingId: scheduling.id,
+          statusCode: ServiceStatus.confirmCode,
+        )).thenAnswer((_) async => Either.right(unit));
 
         final either = await schedulingService.confirmScheduling(schedulingId: scheduling.id);
 

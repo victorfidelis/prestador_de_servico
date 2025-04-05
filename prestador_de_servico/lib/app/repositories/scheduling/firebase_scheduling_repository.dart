@@ -16,8 +16,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
   final _firebaseInitializer = FirebaseInitializer();
 
   @override
-  Future<Either<Failure, ServiceScheduling>> getScheduling(
-      {required String schedulingId}) async {
+  Future<Either<Failure, ServiceScheduling>> getScheduling({required String schedulingId}) async {
     await Future.delayed(const Duration(milliseconds: 100));
 
     final initializeEither = await _firebaseInitializer.initialize();
@@ -26,8 +25,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     }
 
     try {
-      final docRef =
-          FirebaseFirestore.instance.collection('serviceSchedules').doc(schedulingId);
+      final docRef = FirebaseFirestore.instance.collection('serviceSchedules').doc(schedulingId);
       final scheduling = await docRef.get();
       return Either.right(ServiceSchedulingConverter.fromFirebaseDoc(doc: scheduling));
     } on FirebaseException catch (e) {
@@ -316,18 +314,21 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       }
     }
   }
-  
+
   @override
-  Future<Either<Failure, Unit>> confirmScheduling({required String schedulingId}) async {
+  Future<Either<Failure, Unit>> changeStatus({
+    required String schedulingId,
+    required int statusCode,
+  }) async {
     final initializeEither = await _firebaseInitializer.initialize();
     if (initializeEither.isLeft) {
       return Either.left(initializeEither.left);
-    } 
+    }
 
     try {
       final docRef = FirebaseFirestore.instance.collection('serviceSchedules').doc(schedulingId);
 
-      await docRef.update({'serviceStatusCode': ServiceStatus.confirmCode});
+      await docRef.update({'serviceStatusCode': statusCode});
 
       return Either.right(unit);
     } on FirebaseException catch (e) {

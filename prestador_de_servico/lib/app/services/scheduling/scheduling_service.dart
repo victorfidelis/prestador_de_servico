@@ -3,6 +3,7 @@ import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_da
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
@@ -17,8 +18,7 @@ class SchedulingService {
 
   Future<Either<Failure, ServiceScheduling>> getServiceScheduling(
       {required String serviceSchedulingId}) async {
-    final getEither =
-        await onlineRepository.getScheduling(schedulingId: serviceSchedulingId);
+    final getEither = await onlineRepository.getScheduling(schedulingId: serviceSchedulingId);
     if (getEither.isLeft) {
       return Either.left(getEither.left);
     }
@@ -39,9 +39,7 @@ class SchedulingService {
     var schedules = conflictsEither.right!;
     schedules.removeWhere((schedule) => schedule.id == serviceSchedulingId);
     serviceScheduling = serviceScheduling.copyWith(
-      conflictScheduing: schedules.isNotEmpty,
-      schedulingUnavailable: isUnavailable(schedules)
-    );
+        conflictScheduing: schedules.isNotEmpty, schedulingUnavailable: isUnavailable(schedules));
 
     return Either.right(serviceScheduling);
   }
@@ -279,7 +277,7 @@ class SchedulingService {
       minutes += (service.hours * 60);
     }
     return minutes;
-  } 
+  }
 
   Future<Either<Failure, Unit>> confirmScheduling({required String schedulingId}) async {
     final either = await onlineRepository.getScheduling(schedulingId: schedulingId);
@@ -291,6 +289,9 @@ class SchedulingService {
       return Either.left(Failure('Status do agendamento inválido.'));
     }
 
-    return await onlineRepository.confirmScheduling(schedulingId: schedulingId);
+    return await onlineRepository.changeStatus(
+      schedulingId: schedulingId,
+      statusCode: ServiceStatus.confirmCode,
+    );
   }
 }

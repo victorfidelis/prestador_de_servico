@@ -35,5 +35,8 @@ abstract class SchedulingRepository {
     required DateTime startDate,
     required DateTime endDate,
   });
-  Future<Either<Failure, Unit>> confirmScheduling({required String schedulingId});
+  Future<Either<Failure, Unit>> changeStatus({
+    required String schedulingId,
+    required int statusCode,
+  });
 }
