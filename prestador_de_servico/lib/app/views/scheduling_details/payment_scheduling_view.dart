@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
@@ -13,6 +14,7 @@ import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_not
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/payment_scheduling_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/payment_scheduling_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class PaymentSchedulingView extends StatefulWidget {
   final ServiceScheduling serviceScheduling;
@@ -23,12 +25,21 @@ class PaymentSchedulingView extends StatefulWidget {
 }
 
 class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
-  final PaymentSchedulingViewModel paymentViewModel = PaymentSchedulingViewModel();
+  late final PaymentSchedulingViewModel paymentViewModel;
 
   final notifications = CustomNotifications();
 
   final valueToPayController = TextEditingController();
   final valueToPayFocus = FocusNode();
+
+  @override
+  void initState() {
+    paymentViewModel = PaymentSchedulingViewModel(
+      schedulingService: context.read<SchedulingService>(),
+      serviceScheduling: widget.serviceScheduling,
+    );
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -43,9 +54,10 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
     final themeColor = Theme.of(context).colorScheme;
     final customColor = Theme.of(context).extension<CustomColors>()!;
 
-    final totalPrice = Formatters.formatPrice(widget.serviceScheduling.totalPriceCalculated);
-    final needToPay = Formatters.formatPrice(widget.serviceScheduling.needToPay);
-    final totalPaid = Formatters.formatPrice(widget.serviceScheduling.totalPaid);
+    final totalPrice =
+        Formatters.formatPrice(paymentViewModel.serviceScheduling.totalPriceCalculated);
+    final needToPay = Formatters.formatPrice(paymentViewModel.serviceScheduling.needToPay);
+    final totalPaid = Formatters.formatPrice(paymentViewModel.serviceScheduling.totalPaid);
 
     return Scaffold(
       body: CustomScrollView(
@@ -124,12 +136,18 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
                   const SizedBox(height: 28),
                   Divider(color: themeColor.shadow),
                   const SizedBox(height: 32),
-                  CustomTextField(
-                    label: 'Valor à pagar',
-                    controller: valueToPayController,
-                    focusNode: valueToPayFocus,
-                    inputFormatters: [MoneyTextInputFormatter()],
-                  ),
+                  ListenableBuilder(
+                      listenable: paymentViewModel.valueToPayError,
+                      builder: (context, _) {
+                        return CustomTextField(
+                          label: 'Valor à pagar',
+                          controller: valueToPayController,
+                          focusNode: valueToPayFocus,
+                          errorMessage: paymentViewModel.valueToPayError.value,
+                          inputFormatters: [MoneyTextInputFormatter()],
+                          onChanged: onValueChanged,
+                        );
+                      }),
                 ],
               ),
             ),
@@ -164,11 +182,38 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
 
             return CustomButton(
               label: 'Efetuar pagamento',
-              onTap: () {},
+              onTap: onSave,
             );
           },
         ),
       ),
     );
+  }
+
+  void onSave() async {
+    if (!paymentViewModel.validate()) {
+      return;
+    }
+
+    confirmSave();
+  }
+
+  void confirmSave() {
+    final value = Formatters.formatPrice(paymentViewModel.valueToPay);
+
+    notifications.showQuestionAlert(
+      context: context,
+      title: 'Pagamento',
+      content: 'Tem certeza que deseja efetivar o recebimento do pagamento no valor de $value?',
+      confirmCallback: paymentViewModel.receivePayment,
+    );
+  }
+
+  void onValueChanged(String value) {
+    var valueToPay = value.trim().replaceAll(',', '.');
+    if (valueToPay.isEmpty) {
+      valueToPay = '0';
+    }
+    paymentViewModel.setValueToPay(double.parse(valueToPay));
   }
 }

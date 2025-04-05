@@ -374,4 +374,16 @@ class SchedulingService {
       statusCode: ServiceStatus.servicePerformCode,
     );
   }
+
+  Future<Either<Failure, Unit>> receivePayment({
+    required String schedulingId,
+    required double totalPaid,
+    required bool isPaid,
+  }) async {
+    return onlineRepository.receivePayment(
+      schedulingId: schedulingId,
+      totalPaid: totalPaid,
+      isPaid: isPaid,
+    );
+  }
 }
