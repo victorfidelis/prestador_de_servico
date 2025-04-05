@@ -220,7 +220,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Confirmar agendamento',
-      content: 'Tem certeza que deseja confirmar agendamento?',
+      content: 'Tem certeza que deseja CONFIRMAR agendamento?',
       confirmCallback: () {
         schedulingDetailViewModel.confirmScheduling();
       },
@@ -231,7 +231,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Recusar agendamento',
-      content: 'Tem certeza que deseja recusar agendamento?',
+      content: 'Tem certeza que deseja RECUSAR agendamento?',
       confirmCallback: () {
         schedulingDetailViewModel.denyScheduling();
       },
@@ -242,7 +242,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Solicitar alterações',
-      content: 'Tem certeza que deseja solicitar alterações a cliente?',
+      content: 'Tem certeza que deseja solicitar alterações ao cliente?',
       confirmCallback: () {
         schedulingDetailViewModel.requestChangeScheduling();
       },
@@ -253,7 +253,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Cancelar agendamento',
-      content: 'Tem certeza que deseja cancelar o agendamento?',
+      content: 'Tem certeza que deseja CANCELAR o agendamento?',
       confirmCallback: () {
         schedulingDetailViewModel.cancelScheduling();
       },
@@ -264,7 +264,18 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Agendamento em atendimento',
-      content: 'Tem certeza que deseja colocar o agendamento em atendimento?',
+      content: 'Tem certeza que deseja colocar o agendamento "Em atendimento"?',
+      confirmCallback: () {
+        schedulingDetailViewModel.schedulingInService();
+      },
+    );
+  }
+
+  void onPerformScheduling() async {
+    await notifications.showQuestionAlert(
+      context: context,
+      title: 'Agendamento realizado',
+      content: 'Tem certeza que deseja colocar o agendamento como "Realizado"?',
       confirmCallback: () {
         schedulingDetailViewModel.schedulingInService();
       },
@@ -304,7 +315,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       buttons.add(CustomLightButtom(
         label: 'Marcar como realizado',
         labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
-        onTap: () {},
+        onTap: onPerformScheduling,
       ));
     }
 

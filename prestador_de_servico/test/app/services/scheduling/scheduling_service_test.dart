@@ -909,7 +909,7 @@ void main() {
     'schedulingInAttendence',
     () {
       test(
-        '''Deve retornar um Failure quando o status atual não seja "Confirmado"''',
+        '''Deve retornar um Failure quando o status atual não for "Confirmado"''',
         () async {
           final scheduling = serviceScheduling08as09.copyWith(
               serviceStatus: ServiceStatus(
@@ -948,6 +948,57 @@ void main() {
 
           final either =
               await schedulingService.schedulingInService(schedulingId: scheduling.id);
+
+          expect(either.isRight, isTrue);
+          expect(either.right is Unit, isTrue);
+        },
+      );
+    },
+  );
+
+  group(
+    'performScheduling',
+    () {
+      test(
+        '''Deve retornar um Failure quando o status atual não for "Em atendimento"''',
+        () async {
+          final scheduling = serviceScheduling08as09.copyWith(
+              serviceStatus: ServiceStatus(
+            code: ServiceStatus.confirmCode,
+            name: 'Confirmado',
+          ));
+
+          when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
+              .thenAnswer((_) async => Either.right(scheduling));
+
+          final either = await schedulingService.performScheduling(
+            schedulingId: scheduling.id,
+          );
+
+          expect(either.isLeft, isTrue);
+        },
+      );
+
+      test(
+        '''Deve retornar um Unit quando o status atual for "Confirmado"''',
+        () async {
+          final scheduling = serviceScheduling08as09.copyWith(
+            serviceStatus: ServiceStatus(
+              code: ServiceStatus.inServiceCode,
+              name: 'Em atendimento',
+            ),
+          );
+
+          when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
+              .thenAnswer((_) async => Either.right(scheduling));
+
+          when(onlineMockSchedulingRepository.changeStatus(
+            schedulingId: scheduling.id,
+            statusCode: ServiceStatus.servicePerformCode,
+          )).thenAnswer((_) async => Either.right(unit));
+
+          final either =
+              await schedulingService.performScheduling(schedulingId: scheduling.id);
 
           expect(either.isRight, isTrue);
           expect(either.right is Unit, isTrue);

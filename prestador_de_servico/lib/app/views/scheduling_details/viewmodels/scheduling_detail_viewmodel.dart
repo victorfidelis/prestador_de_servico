@@ -99,4 +99,16 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       await refreshServiceScheduling();
     }
   }
+
+  Future<void> performScheduling() async {
+    _emitState(SchedulingDetailLoading());
+    final either = await schedulingService.performScheduling(schedulingId: scheduling.id);
+
+    if (either.isLeft) {
+      _emitState(SchedulingDetailError(message: either.left!.message));
+    } else {
+      hasChange = true;
+      await refreshServiceScheduling();
+    }
+  }
 }
