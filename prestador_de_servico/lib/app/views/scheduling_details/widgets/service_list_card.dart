@@ -134,7 +134,7 @@ class _ServiceListCardState extends State<ServiceListCard> {
           ),
         ),
         Text(
-          Formatters.formatPrice(serviceScheduling.totalPriceToPay),
+          Formatters.formatPrice(serviceScheduling.totalPriceCalculated),
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,

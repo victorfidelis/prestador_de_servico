@@ -171,33 +171,34 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
         floatingActionButton: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: ListenableBuilder(
-              listenable: editViewModel,
-              builder: (context, _) {
-                if (editViewModel.state is EditServicesAndPricesLoading) {
-                  return const CustomLoading();
-                }
-      
-                if (editViewModel.state is EditServicesAndPricesError) {
-                  final messageError = (editViewModel.state as EditServicesAndPricesError).message;
-                  WidgetsBinding.instance.addPostFrameCallback(
-                    (_) => notifications.showSnackBar(
-                      context: context,
-                      message: messageError,
-                    ),
-                  );
-                }
-      
-                if (editViewModel.state is EditServicesAndPricesUpdateSuccess) {
-                  WidgetsBinding.instance.addPostFrameCallback(
-                    (_) => Navigator.pop(context, true),
-                  );
-                }
-      
-                return CustomButton(
-                  label: 'Salvar',
-                  onTap: onSave,
+            listenable: editViewModel,
+            builder: (context, _) {
+              if (editViewModel.state is EditServicesAndPricesLoading) {
+                return const CustomLoading();
+              }
+
+              if (editViewModel.state is EditServicesAndPricesError) {
+                final messageError = (editViewModel.state as EditServicesAndPricesError).message;
+                WidgetsBinding.instance.addPostFrameCallback(
+                  (_) => notifications.showSnackBar(
+                    context: context,
+                    message: messageError,
+                  ),
                 );
-              }),
+              }
+
+              if (editViewModel.state is EditServicesAndPricesUpdateSuccess) {
+                WidgetsBinding.instance.addPostFrameCallback(
+                  (_) => Navigator.pop(context, true),
+                );
+              }
+
+              return CustomButton(
+                label: 'Salvar',
+                onTap: onSave,
+              );
+            },
+          ),
         ),
       ),
     );
@@ -236,7 +237,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
         ),
         const SizedBox(width: 6),
         Text(
-          Formatters.formatPrice(editViewModel.serviceScheduling.totalPriceToPay),
+          Formatters.formatPrice(editViewModel.serviceScheduling.totalPriceCalculated),
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w500,

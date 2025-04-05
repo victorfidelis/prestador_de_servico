@@ -26,7 +26,7 @@ class ServiceScheduling {
   final Address? address;
 
   double get needToPay => totalPrice + totalRate - totalDiscount - totalPaid;
-  double get totalPriceToPay => totalPrice + totalRate - totalDiscount;
+  double get totalPriceCalculated => totalPrice + totalRate - totalDiscount;
   int get serviceTime => endDateAndTime.difference(startDateAndTime).inMinutes;
   List<ScheduledService> get activeServices {
     return services.where((s) => !s.removed).toList();

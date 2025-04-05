@@ -88,7 +88,7 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
   }
 
   bool validateSave() {
-    if (serviceScheduling.totalPriceToPay < 0) {
+    if (serviceScheduling.totalPriceCalculated < 0) {
       discountError = 'Informe um valor válido';
       notifyListeners();
       return false;

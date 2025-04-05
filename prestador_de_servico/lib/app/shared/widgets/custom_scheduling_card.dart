@@ -41,7 +41,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
       serviceScheduling.endDateAndTime.hour,
       serviceScheduling.endDateAndTime.minute,
     );
-    final formatPriceToPay = Formatters.formatPrice(serviceScheduling.totalPriceToPay);
+    final formatPriceToPay = Formatters.formatPrice(serviceScheduling.totalPriceCalculated);
     Color statusColor = ColorsUtils.getColorFromStatus(context, serviceScheduling.serviceStatus);
     final finishedSealIcon = getFinishedSealIcon();
     final othersValues = getOtherValues();
