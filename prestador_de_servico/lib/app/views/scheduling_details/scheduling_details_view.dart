@@ -10,6 +10,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dar
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_light_buttom.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
+import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/scheduling_detail_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
@@ -29,12 +30,13 @@ class SchedulingDetailsView extends StatefulWidget {
 
 class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   late final SchedulingDetailViewModel schedulingDetailViewModel;
+  final notifications = CustomNotifications();
 
   @override
   void initState() {
     schedulingDetailViewModel = SchedulingDetailViewModel(
       schedulingService: context.read<SchedulingService>(),
-      serviceScheduling: widget.serviceScheduling,
+      scheduling: widget.serviceScheduling,
     );
     
     schedulingDetailViewModel.refreshServiceScheduling();
@@ -119,10 +121,10 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
 
                 Color statusColor = ColorsUtils.getColorFromStatus(
                   context,
-                  schedulingDetailViewModel.serviceScheduling.serviceStatus,
+                  schedulingDetailViewModel.scheduling.serviceStatus,
                 );
 
-                bool allowsEdit = !schedulingDetailViewModel.serviceScheduling.serviceStatus
+                bool allowsEdit = !schedulingDetailViewModel.scheduling.serviceStatus
                     .isBlockedChangeStatus();
 
                 return SliverToBoxAdapter(
@@ -133,7 +135,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          schedulingDetailViewModel.serviceScheduling.user.fullname,
+                          schedulingDetailViewModel.scheduling.user.fullname,
                           style: TextStyle(
                             color: statusColor,
                             fontSize: 24,
@@ -142,7 +144,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          schedulingDetailViewModel.serviceScheduling.serviceStatus.name,
+                          schedulingDetailViewModel.scheduling.serviceStatus.name,
                           style: TextStyle(
                             color: statusColor,
                             fontSize: 16,
@@ -154,19 +156,19 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         const SizedBox(height: 8),
                         DateAndTimeCard(
                           key: ValueKey(
-                              schedulingDetailViewModel.serviceScheduling.startDateAndTime),
+                              schedulingDetailViewModel.scheduling.startDateAndTime),
                           oldStartDateAndTime:
-                              schedulingDetailViewModel.serviceScheduling.oldStartDateAndTime,
+                              schedulingDetailViewModel.scheduling.oldStartDateAndTime,
                           oldEndDateAndTime:
-                              schedulingDetailViewModel.serviceScheduling.oldEndDateAndTime,
+                              schedulingDetailViewModel.scheduling.oldEndDateAndTime,
                           startDateAndTime:
-                              schedulingDetailViewModel.serviceScheduling.startDateAndTime,
+                              schedulingDetailViewModel.scheduling.startDateAndTime,
                           endDateAndTime:
-                              schedulingDetailViewModel.serviceScheduling.endDateAndTime,
+                              schedulingDetailViewModel.scheduling.endDateAndTime,
                           onEdit: allowsEdit ? onEditDateAndTime : null,
                           unavailable:
-                              schedulingDetailViewModel.serviceScheduling.schedulingUnavailable,
-                          inConflict: schedulingDetailViewModel.serviceScheduling.conflictScheduing,
+                              schedulingDetailViewModel.scheduling.schedulingUnavailable,
+                          inConflict: schedulingDetailViewModel.scheduling.conflictScheduing,
                         ),
                         const SizedBox(height: 8),
                         Divider(color: Theme.of(context).colorScheme.shadow),
@@ -176,8 +178,8 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         Divider(color: Theme.of(context).colorScheme.shadow),
                         const SizedBox(height: 8),
                         ServiceListCard(
-                          key: ValueKey(schedulingDetailViewModel.serviceScheduling.hashCode),
-                          serviceScheduling: schedulingDetailViewModel.serviceScheduling,
+                          key: ValueKey(schedulingDetailViewModel.scheduling.hashCode),
+                          serviceScheduling: schedulingDetailViewModel.scheduling,
                           onEdit: allowsEdit ? onEditScheduledServices : null,
                         ),
                         const SizedBox(height: 8),
@@ -201,7 +203,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     final hasChange = await Navigator.pushNamed(
       context,
       '/editDateAndTime',
-      arguments: {'serviceScheduling': schedulingDetailViewModel.serviceScheduling},
+      arguments: {'serviceScheduling': schedulingDetailViewModel.scheduling},
     );
     if (hasChange != null && (hasChange as bool)) {
       await schedulingDetailViewModel.onChangeScheduling();
@@ -212,31 +214,42 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     final hasChange = await Navigator.pushNamed(
       context,
       '/editScheduledServices',
-      arguments: {'serviceScheduling': schedulingDetailViewModel.serviceScheduling},
+      arguments: {'serviceScheduling': schedulingDetailViewModel.scheduling},
     );
     if (hasChange != null && (hasChange as bool)) {
       await schedulingDetailViewModel.onChangeScheduling();
     }
   }
 
+  void onConfirmScheduling() async {
+    await notifications.showQuestionAlert(
+      context: context,
+      title: 'Confirmar agendamento',
+      content: 'Tem certeza que deseja salvar as confirmar agendamento?',
+      confirmCallback: () {
+        schedulingDetailViewModel.confirmScheduling();
+      },
+    );
+  }
+
   Widget addressWidget() {
-    if (schedulingDetailViewModel.serviceScheduling.address == null) {
+    if (schedulingDetailViewModel.scheduling.address == null) {
       return const Text('Local não informado');
     }
-    return AddressCard(address: schedulingDetailViewModel.serviceScheduling.address!);
+    return AddressCard(address: schedulingDetailViewModel.scheduling.address!);
   }
 
   Widget actions() {
-    bool isPaid = schedulingDetailViewModel.serviceScheduling.isPaid;
-    ServiceStatus serviceStatus = schedulingDetailViewModel.serviceScheduling.serviceStatus;
+    bool isPaid = schedulingDetailViewModel.scheduling.isPaid;
+    ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
 
     List<Widget> buttons = [];
 
     if (serviceStatus.isPendingProvider()) {
       buttons.add(CustomLightButtom(
-        label: 'Aprovar',
+        label: 'Confirmar',
         labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
-        onTap: () {},
+        onTap: onConfirmScheduling,
       ));
     }
 

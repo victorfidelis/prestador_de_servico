@@ -6,11 +6,11 @@ import 'package:prestador_de_servico/app/views/scheduling_details/states/schedul
 
 class SchedulingDetailViewModel extends ChangeNotifier {
   SchedulingService schedulingService;
-  ServiceScheduling serviceScheduling;
+  ServiceScheduling scheduling;
   bool hasChange = false;
 
   SchedulingDetailViewModel({
-    required this.serviceScheduling,
+    required this.scheduling,
     required this.schedulingService,
   });
 
@@ -30,13 +30,25 @@ class SchedulingDetailViewModel extends ChangeNotifier {
     _emitState(SchedulingDetailLoading());
 
     final getEither =
-        await schedulingService.getServiceScheduling(serviceSchedulingId: serviceScheduling.id);
+        await schedulingService.getServiceScheduling(serviceSchedulingId: scheduling.id);
 
     if (getEither.isLeft) {
       _emitState(SchedulingDetailError(message: getEither.left!.message));
     } else {
-      serviceScheduling = getEither.right!;
+      scheduling = getEither.right!;
       _emitState(SchedulingDetailLoaded());
+    }
+  }
+
+  Future<void> confirmScheduling() async {
+    _emitState(SchedulingDetailLoading());
+    final either = await schedulingService.confirmScheduling(schedulingId: scheduling.id);
+
+    if (either.isLeft) {
+      _emitState(SchedulingDetailError(message: either.left!.message));
+    } else {
+      hasChange = true;
+      await refreshServiceScheduling();
     }
   }
 }
