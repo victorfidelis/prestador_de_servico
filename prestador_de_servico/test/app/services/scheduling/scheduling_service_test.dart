@@ -803,4 +803,55 @@ void main() {
       );
     },
   );
+
+  group(
+    'requestChangeScheduling',
+    () {
+      test(
+        '''Deve retornar um Failure quando o status atual não for pendente''',
+        () async {
+          final scheduling = serviceScheduling08as09.copyWith(
+              serviceStatus: ServiceStatus(
+            code: ServiceStatus.deniedCode,
+            name: 'Nagado',
+          ));
+
+          when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
+              .thenAnswer((_) async => Either.right(scheduling));
+
+          final either = await schedulingService.requestChangeScheduling(
+            schedulingId: scheduling.id,
+          );
+
+          expect(either.isLeft, isTrue);
+        },
+      );
+
+      test(
+        '''Deve retornar um Unit quando o status atual for pendente prestador''',
+        () async {
+          final scheduling = serviceScheduling08as09.copyWith(
+            serviceStatus: ServiceStatus(
+              code: ServiceStatus.pendingProvider,
+              name: 'Pendente Prestador',
+            ),
+          );
+
+          when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
+              .thenAnswer((_) async => Either.right(scheduling));
+
+          when(onlineMockSchedulingRepository.changeStatus(
+            schedulingId: scheduling.id,
+            statusCode: ServiceStatus.pendingClientCode,
+          )).thenAnswer((_) async => Either.right(unit));
+
+          final either =
+              await schedulingService.requestChangeScheduling(schedulingId: scheduling.id);
+
+          expect(either.isRight, isTrue);
+          expect(either.right is Unit, isTrue);
+        },
+      );
+    },
+  );
 }

@@ -310,4 +310,20 @@ class SchedulingService {
       statusCode: ServiceStatus.deniedCode,
     );
   }
+
+  Future<Either<Failure, Unit>> requestChangeScheduling({required String schedulingId}) async {
+    final either = await onlineRepository.getScheduling(schedulingId: schedulingId);
+    if (either.isLeft) {
+      return Either.left(either.left);
+    }
+
+    if (!either.right!.serviceStatus.isPendingProvider()) {
+      return Either.left(Failure('Status do agendamento inválido.'));
+    }
+
+    return await onlineRepository.changeStatus(
+      schedulingId: schedulingId,
+      statusCode: ServiceStatus.pendingClientCode,
+    );
+  }
 }

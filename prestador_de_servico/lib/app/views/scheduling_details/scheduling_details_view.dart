@@ -243,6 +243,17 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
+  void onRequestChangeScheduling() async {
+    await notifications.showQuestionAlert(
+      context: context,
+      title: 'Solicitar alterações',
+      content: 'Tem certeza que deseja solicitar alterações a cliente?',
+      confirmCallback: () {
+        schedulingDetailViewModel.requestChangeScheduling();
+      },
+    );
+  }
+
   Widget addressWidget() {
     if (schedulingDetailViewModel.scheduling.address == null) {
       return const Text('Local não informado');
@@ -284,7 +295,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       buttons.add(CustomLightButtom(
         label: 'Solicitar alterações',
         labelColor: Theme.of(context).extension<CustomColors>()!.pending!,
-        onTap: () {},
+        onTap: onRequestChangeScheduling,
       ));
     }
 
