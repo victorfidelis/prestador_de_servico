@@ -342,4 +342,20 @@ class SchedulingService {
       statusCode: ServiceStatus.canceledByProviderCode,
     );
   }
+
+  Future<Either<Failure, Unit>> schedulingInService({required String schedulingId}) async {
+    final either = await onlineRepository.getScheduling(schedulingId: schedulingId);
+    if (either.isLeft) {
+      return Either.left(either.left);
+    }
+
+    if (!either.right!.serviceStatus.isConfirm()) {
+      return Either.left(Failure('Status do agendamento inválido.'));
+    }
+
+    return await onlineRepository.changeStatus(
+      schedulingId: schedulingId,
+      statusCode: ServiceStatus.inServiceCode,
+    );
+  }
 }

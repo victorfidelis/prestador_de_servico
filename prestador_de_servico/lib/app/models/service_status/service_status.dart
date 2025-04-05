@@ -21,7 +21,7 @@ class ServiceStatus {
   static int get pendingProvider => 1;
   static int get pendingClientCode => 2;
   static int get confirmCode => 3;
-  static int get inAttendanceCode => 4;
+  static int get inServiceCode => 4;
   static int get servicePerformCode => 5;
   static int get deniedCode => 6;
   static int get canceledByProviderCode => 7;

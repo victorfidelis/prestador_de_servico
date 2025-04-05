@@ -38,9 +38,9 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       schedulingService: context.read<SchedulingService>(),
       scheduling: widget.serviceScheduling,
     );
-    
+
     schedulingDetailViewModel.refreshServiceScheduling();
-  
+
     super.initState();
   }
 
@@ -124,8 +124,8 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                   schedulingDetailViewModel.scheduling.serviceStatus,
                 );
 
-                bool allowsEdit = !schedulingDetailViewModel.scheduling.serviceStatus
-                    .isBlockedChangeStatus();
+                bool allowsEdit =
+                    !schedulingDetailViewModel.scheduling.serviceStatus.isBlockedChangeStatus();
 
                 return SliverToBoxAdapter(
                   child: Padding(
@@ -155,19 +155,14 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         Divider(color: Theme.of(context).colorScheme.shadow),
                         const SizedBox(height: 8),
                         DateAndTimeCard(
-                          key: ValueKey(
-                              schedulingDetailViewModel.scheduling.startDateAndTime),
+                          key: ValueKey(schedulingDetailViewModel.scheduling.startDateAndTime),
                           oldStartDateAndTime:
                               schedulingDetailViewModel.scheduling.oldStartDateAndTime,
-                          oldEndDateAndTime:
-                              schedulingDetailViewModel.scheduling.oldEndDateAndTime,
-                          startDateAndTime:
-                              schedulingDetailViewModel.scheduling.startDateAndTime,
-                          endDateAndTime:
-                              schedulingDetailViewModel.scheduling.endDateAndTime,
+                          oldEndDateAndTime: schedulingDetailViewModel.scheduling.oldEndDateAndTime,
+                          startDateAndTime: schedulingDetailViewModel.scheduling.startDateAndTime,
+                          endDateAndTime: schedulingDetailViewModel.scheduling.endDateAndTime,
                           onEdit: allowsEdit ? onEditDateAndTime : null,
-                          unavailable:
-                              schedulingDetailViewModel.scheduling.schedulingUnavailable,
+                          unavailable: schedulingDetailViewModel.scheduling.schedulingUnavailable,
                           inConflict: schedulingDetailViewModel.scheduling.conflictScheduing,
                         ),
                         const SizedBox(height: 8),
@@ -265,6 +260,17 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
+  void onSchedulingInService() async {
+    await notifications.showQuestionAlert(
+      context: context,
+      title: 'Agendamento em atendimento',
+      content: 'Tem certeza que deseja colocar o agendamento em atendimento?',
+      confirmCallback: () {
+        schedulingDetailViewModel.schedulingInService();
+      },
+    );
+  }
+
   Widget addressWidget() {
     if (schedulingDetailViewModel.scheduling.address == null) {
       return const Text('Local não informado');
@@ -290,11 +296,11 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       buttons.add(CustomLightButtom(
         label: 'Colocar em atendimento',
         labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
-        onTap: () {},
+        onTap: onSchedulingInService,
       ));
     }
 
-    if (serviceStatus.isInAttendance()) {
+    if (serviceStatus.isInService()) {
       buttons.add(CustomLightButtom(
         label: 'Marcar como realizado',
         labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
@@ -327,11 +333,13 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     }
 
     if (serviceStatus.allowCancel()) {
-      buttons.add(CustomLightButtom(
-        label: 'Cancelar',
-        labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,
-        onTap: onCancelScheduling,
-      ));
+      buttons.add(
+        CustomLightButtom(
+          label: 'Cancelar',
+          labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,
+          onTap: onCancelScheduling,
+        ),
+      );
     }
 
     return Column(
