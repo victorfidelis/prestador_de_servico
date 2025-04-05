@@ -326,9 +326,15 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     }
 
     try {
-      final docRef = FirebaseFirestore.instance.collection('serviceSchedules').doc(schedulingId);
+      final statusRef =
+          FirebaseFirestore.instance.collection('schedulingStatus').doc(statusCode.toString());
+      final status = await statusRef.get();
 
-      await docRef.update({'serviceStatusCode': statusCode});
+      final docRef = FirebaseFirestore.instance.collection('serviceSchedules').doc(schedulingId);
+      await docRef.update({
+        'serviceStatusCode': statusCode,
+        'serviceStatusName': status['name'],
+      });
 
       return Either.right(unit);
     } on FirebaseException catch (e) {

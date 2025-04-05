@@ -3,7 +3,7 @@ import 'package:prestador_de_servico/app/models/service_status/service_status.da
 extension ServiceStatusExtensions on ServiceStatus {
   bool causesConflict() =>
       ServiceStatus.pendingStatusCodes.contains(code) || ServiceStatus.acceptStatusCodes.contains(code);
-  bool isPendingProvider() => ServiceStatus.pendingProviderCode == code;
+  bool isPendingProvider() => ServiceStatus.pendingProvider == code;
   bool isPendingClient() => ServiceStatus.pendingClientCode == code;
   bool isPending() => ServiceStatus.pendingStatusCodes.contains(code);
   bool isConfirm() => ServiceStatus.confirmCode == code;

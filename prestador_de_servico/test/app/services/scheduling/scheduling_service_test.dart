@@ -89,7 +89,7 @@ void main() {
       user: User(name: 'Lucas', surname: 'Silva'),
       services: [service1],
       serviceStatus: ServiceStatus(
-        code: ServiceStatus.pendingProviderCode,
+        code: ServiceStatus.pendingProvider,
         name: 'Pendente prestador',
       ),
       startDateAndTime: DateTime(actualDate.year, actualDate.month, actualDate.day, 8, 0),
@@ -714,45 +714,93 @@ void main() {
     },
   );
 
-  group('confirmScheduling', () {
-    test(
-      '''Deve retornar um Failure quando o status atual não for pendente''',
-      () async {
-        final scheduling = serviceScheduling08as09.copyWith(
-            serviceStatus: ServiceStatus(code: ServiceStatus.confirmCode, name: 'Confirmado'));
+  group(
+    'confirmScheduling',
+    () {
+      test(
+        '''Deve retornar um Failure quando o status atual não for pendente''',
+        () async {
+          final scheduling = serviceScheduling08as09.copyWith(
+              serviceStatus: ServiceStatus(code: ServiceStatus.confirmCode, name: 'Confirmado'));
 
-        when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
-            .thenAnswer((_) async => Either.right(scheduling));
+          when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
+              .thenAnswer((_) async => Either.right(scheduling));
 
-        final either = await schedulingService.confirmScheduling(schedulingId: scheduling.id);
+          final either = await schedulingService.confirmScheduling(schedulingId: scheduling.id);
 
-        expect(either.isLeft, isTrue);
-      },
-    );
+          expect(either.isLeft, isTrue);
+        },
+      );
 
-    test(
-      '''Deve retornar um Unit quando o status atual for pendente''',
-      () async {
-        final scheduling = serviceScheduling08as09.copyWith(
-          serviceStatus: ServiceStatus(
-            code: ServiceStatus.pendingProviderCode,
-            name: 'Pendente Prestador',
-          ),
-        );
+      test(
+        '''Deve retornar um Unit quando o status atual for pendente''',
+        () async {
+          final scheduling = serviceScheduling08as09.copyWith(
+            serviceStatus: ServiceStatus(
+              code: ServiceStatus.pendingProvider,
+              name: 'Pendente Prestador',
+            ),
+          );
 
-        when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
-            .thenAnswer((_) async => Either.right(scheduling));
+          when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
+              .thenAnswer((_) async => Either.right(scheduling));
 
-        when(onlineMockSchedulingRepository.changeStatus(
-          schedulingId: scheduling.id,
-          statusCode: ServiceStatus.confirmCode,
-        )).thenAnswer((_) async => Either.right(unit));
+          when(onlineMockSchedulingRepository.changeStatus(
+            schedulingId: scheduling.id,
+            statusCode: ServiceStatus.confirmCode,
+          )).thenAnswer((_) async => Either.right(unit));
 
-        final either = await schedulingService.confirmScheduling(schedulingId: scheduling.id);
+          final either = await schedulingService.confirmScheduling(schedulingId: scheduling.id);
 
-        expect(either.isRight, isTrue);
-        expect(either.right is Unit, isTrue);
-      },
-    );
-  });
+          expect(either.isRight, isTrue);
+          expect(either.right is Unit, isTrue);
+        },
+      );
+    },
+  );
+
+  group(
+    'denyScheduling',
+    () {
+      test(
+        '''Deve retornar um Failure quando o status atual não for pendente''',
+        () async {
+          final scheduling = serviceScheduling08as09.copyWith(
+              serviceStatus: ServiceStatus(code: ServiceStatus.deniedCode, name: 'Negado'));
+
+          when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
+              .thenAnswer((_) async => Either.right(scheduling));
+
+          final either = await schedulingService.denyScheduling(schedulingId: scheduling.id);
+
+          expect(either.isLeft, isTrue);
+        },
+      );
+
+      test(
+        '''Deve retornar um Unit quando o status atual for pendente''',
+        () async {
+          final scheduling = serviceScheduling08as09.copyWith(
+            serviceStatus: ServiceStatus(
+              code: ServiceStatus.pendingProvider,
+              name: 'Pendente Prestador',
+            ),
+          );
+
+          when(onlineMockSchedulingRepository.getScheduling(schedulingId: scheduling.id))
+              .thenAnswer((_) async => Either.right(scheduling));
+
+          when(onlineMockSchedulingRepository.changeStatus(
+            schedulingId: scheduling.id,
+            statusCode: ServiceStatus.deniedCode,
+          )).thenAnswer((_) async => Either.right(unit));
+
+          final either = await schedulingService.denyScheduling(schedulingId: scheduling.id);
+
+          expect(either.isRight, isTrue);
+          expect(either.right is Unit, isTrue);
+        },
+      );
+    },
+  );
 }

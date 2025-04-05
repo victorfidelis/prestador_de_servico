@@ -225,9 +225,20 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Confirmar agendamento',
-      content: 'Tem certeza que deseja salvar as confirmar agendamento?',
+      content: 'Tem certeza que deseja confirmar agendamento?',
       confirmCallback: () {
         schedulingDetailViewModel.confirmScheduling();
+      },
+    );
+  }
+
+  void onDenyScheduling() async {
+    await notifications.showQuestionAlert(
+      context: context,
+      title: 'Recusar agendamento',
+      content: 'Tem certeza que deseja recusar agendamento?',
+      confirmCallback: () {
+        schedulingDetailViewModel.denyScheduling();
       },
     );
   }
@@ -289,7 +300,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       buttons.add(CustomLightButtom(
         label: 'Recusar',
         labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,
-        onTap: () {},
+        onTap: onDenyScheduling,
       ));
     }
 
