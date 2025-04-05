@@ -39,4 +39,9 @@ abstract class SchedulingRepository {
     required String schedulingId,
     required int statusCode,
   });
+  Future<Either<Failure, Unit>> receivePayment({
+    required String schedulingId,
+    required double totalPaid,
+    required bool isPaid,
+  });
 }
