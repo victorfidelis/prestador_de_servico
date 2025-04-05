@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:prestador_de_servico/app/models/address/address.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
+import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/shared/utils/general.dart';
 
@@ -27,9 +28,12 @@ class ServiceScheduling {
   double get needToPay => totalPrice + totalRate - totalDiscount - totalPaid;
   double get totalPriceToPay => totalPrice + totalRate - totalDiscount;
   int get serviceTime => endDateAndTime.difference(startDateAndTime).inMinutes;
-  List<ScheduledService> get activeServices  {
+  List<ScheduledService> get activeServices {
     return services.where((s) => !s.removed).toList();
   }
+
+  bool get hasMessage =>
+      schedulingUnavailable || conflictScheduing || isPaid || (!isPaid && serviceStatus.isAccept());
 
   ServiceScheduling({
     this.id = '',

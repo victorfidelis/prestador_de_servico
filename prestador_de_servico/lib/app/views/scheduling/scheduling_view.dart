@@ -12,7 +12,7 @@ import 'package:prestador_de_servico/app/shared/states/scheduling/service_schedu
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_horizontal_calendar.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_menu_calendar_type.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_month_calendar.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_service_scheduling_card.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_card.dart';
 import 'package:provider/provider.dart';
 
 class SchedulingView extends StatefulWidget {
@@ -188,7 +188,7 @@ class _SchedulingViewState extends State<SchedulingView> {
                         return const SizedBox(height: 150);
                       }
 
-                      return CustomServiceSchedulingCard(
+                      return CustomSchedulingCard(
                         serviceScheduling: serviceSchedules[index],
                         refreshOriginPage: refreshView,
                       );

@@ -12,7 +12,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dar
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_service_scheduling_card.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_card.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_data.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_filed_underline.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
@@ -340,7 +340,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                         return const SizedBox(height: 150);
                       }
       
-                      return CustomServiceSchedulingCard(
+                      return CustomSchedulingCard(
                         serviceScheduling: serviceSchedules[index],
                         isReadOnly: true,
                       );

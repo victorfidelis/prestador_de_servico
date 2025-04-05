@@ -4,13 +4,14 @@ import 'package:prestador_de_servico/app/models/service_scheduling/service_sched
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_message_widget.dart';
 
-class CustomServiceSchedulingCard extends StatefulWidget {
+class CustomSchedulingCard extends StatefulWidget {
   final ServiceScheduling serviceScheduling;
-  final Function()? refreshOriginPage; 
+  final Function()? refreshOriginPage;
   final bool isReadOnly;
 
-  const CustomServiceSchedulingCard({
+  const CustomSchedulingCard({
     super.key,
     required this.serviceScheduling,
     this.refreshOriginPage,
@@ -18,12 +19,10 @@ class CustomServiceSchedulingCard extends StatefulWidget {
   });
 
   @override
-  State<CustomServiceSchedulingCard> createState() =>
-      _CustomServiceSchedulingCardState();
+  State<CustomSchedulingCard> createState() => _CustomSchedulingCardState();
 }
 
-class _CustomServiceSchedulingCardState
-    extends State<CustomServiceSchedulingCard> {
+class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
   late ServiceScheduling serviceScheduling;
 
   @override
@@ -42,12 +41,10 @@ class _CustomServiceSchedulingCardState
       serviceScheduling.endDateAndTime.hour,
       serviceScheduling.endDateAndTime.minute,
     );
-    final formatPriceToPay =
-        Formatters.formatPrice(serviceScheduling.totalPriceToPay);
+    final formatPriceToPay = Formatters.formatPrice(serviceScheduling.totalPriceToPay);
     Color statusColor = ColorsUtils.getColorFromStatus(context, serviceScheduling.serviceStatus);
     final finishedSealIcon = getFinishedSealIcon();
     final othersValues = getOtherValues();
-    final message = messageWidget();
 
     return GestureDetector(
       onTap: onTap,
@@ -157,7 +154,7 @@ class _CustomServiceSchedulingCardState
                       ],
                     ),
                     const SizedBox(height: 6),
-                    message,
+                    CustomSchedulingMessageWidget(serviceScheduling: serviceScheduling),
                   ],
                 ),
               ),
@@ -183,7 +180,7 @@ class _CustomServiceSchedulingCardState
       widget.refreshOriginPage!();
     }
   }
- 
+
   Widget serviceItemList(Service service) {
     final formatPrice = Formatters.formatPrice(service.price);
 
@@ -209,47 +206,6 @@ class _CustomServiceSchedulingCardState
     );
   }
 
-  Widget messageWidget() {
-    Widget widgetReturn = Container();
-    if (serviceScheduling.schedulingUnavailable) {
-      widgetReturn = const Text(
-        'Horário indisponível',
-        style: TextStyle(
-          color: Color(0xffE70000),
-          fontWeight: FontWeight.w700,
-        ),
-      );
-    } else if (serviceScheduling.conflictScheduing) {
-      widgetReturn = const Text(
-        'Horário em conflito',
-        style: TextStyle(
-          color: Color(0xffE70000),
-          fontWeight: FontWeight.w700,
-        ),
-      );
-    } else if (serviceScheduling.isPaid) {
-      final totalPaid = Formatters.formatPrice(serviceScheduling.totalPaid);
-      widgetReturn = Text(
-        'Serviço pago ($totalPaid)',
-        style: const TextStyle(
-          color: Color(0xff00891E),
-          fontWeight: FontWeight.w700,
-        ),
-      );
-    } else if (!serviceScheduling.isPaid &&
-        serviceScheduling.serviceStatus.isAccept()) {
-      final needToPay = Formatters.formatPrice(serviceScheduling.needToPay);
-      widgetReturn = Text(
-        '$needToPay pendente',
-        style: const TextStyle(
-          color: Color(0xffEC942C),
-          fontWeight: FontWeight.w700,
-        ),
-      );
-    }
-    return widgetReturn;
-  }
-
   Widget getFinishedSealIcon() {
     Widget finishedSealIcon = Container();
 
@@ -265,8 +221,7 @@ class _CustomServiceSchedulingCardState
           ),
         ),
       );
-    } else if (serviceScheduling.serviceStatus.isServicePerform() &&
-        serviceScheduling.isPaid) {
+    } else if (serviceScheduling.serviceStatus.isServicePerform() && serviceScheduling.isPaid) {
       finishedSealIcon = ClipOval(
         child: Container(
           color: const Color(0xff00891E),
@@ -317,8 +272,7 @@ class _CustomServiceSchedulingCardState
 
     Widget totalDiscountWidget = Container();
     if (serviceScheduling.totalDiscount > 0) {
-      final formatDiscount =
-          Formatters.formatPrice(serviceScheduling.totalDiscount);
+      final formatDiscount = Formatters.formatPrice(serviceScheduling.totalDiscount);
       totalDiscountWidget = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -344,5 +298,4 @@ class _CustomServiceSchedulingCardState
       ],
     );
   }
-
 }
