@@ -386,4 +386,16 @@ class SchedulingService {
       isPaid: isPaid,
     );
   }
+
+  Future<Either<Failure, Unit>> addOrEditReview({
+    required String schedulingId,
+    required int review,
+    required String reviewDetails,
+  }) async {
+    return await onlineRepository.addOrEditReview(
+      schedulingId: schedulingId,
+      review: review,
+      reviewDetails: reviewDetails,
+    );
+  }
 }
