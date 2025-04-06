@@ -24,6 +24,8 @@ class ServiceScheduling {
   final bool isPaid;
   final DateTime creationDate;
   final Address? address;
+  final int? review;
+  final String? reviewDetails; 
 
   double get needToPay => totalPrice + totalRate - totalDiscount - totalPaid;
   double get totalPriceCalculated => totalPrice + totalRate - totalDiscount;
@@ -53,6 +55,8 @@ class ServiceScheduling {
     this.isPaid = false,
     required this.creationDate,
     this.address,
+    this.review,
+    this.reviewDetails,
   });
 
   ServiceScheduling copyWith({
@@ -72,6 +76,8 @@ class ServiceScheduling {
     bool? conflictScheduing,
     DateTime? creationDate,
     Address? address,
+    int? review,
+    String? reviewDetails,
   }) {
     return ServiceScheduling(
       id: id ?? this.id,
@@ -90,6 +96,8 @@ class ServiceScheduling {
       conflictScheduing: conflictScheduing ?? this.conflictScheduing,
       creationDate: creationDate ?? this.creationDate,
       address: address ?? this.address,
+      review: review ?? this.review,
+      reviewDetails: reviewDetails ?? this.reviewDetails,
     );
   }
 

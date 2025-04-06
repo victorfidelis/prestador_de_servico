@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
-import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_message_widget.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/edit_button.dart';

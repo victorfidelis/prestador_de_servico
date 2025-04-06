@@ -373,4 +373,32 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       }
     }
   }
+
+  @override
+  Future<Either<Failure, Unit>> addOrEditReview({
+    required String schedulingId,
+    required int review,
+    required String reviewDetails,
+  }) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    try {
+      final docRef = FirebaseFirestore.instance.collection('serviceSchedules').doc(schedulingId);
+      await docRef.update({
+        'review': review,
+        'reviewDetails': reviewDetails,
+      });
+
+      return Either.right(unit);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
+  }
 }

@@ -44,4 +44,9 @@ abstract class SchedulingRepository {
     required double totalPaid,
     required bool isPaid,
   });
+  Future<Either<Failure, Unit>> addOrEditReview({
+    required String schedulingId,
+    required int review,
+    required String reviewDetails,
+  });
 }

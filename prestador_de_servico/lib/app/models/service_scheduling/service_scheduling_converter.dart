@@ -28,6 +28,16 @@ class ServiceSchedulingConverter {
     DateTime? oldEndDateAndTime;
     if (map.containsKey('oldEndDateAndTime')) {
       oldEndDateAndTime = (map['oldEndDateAndTime'] as Timestamp).toDate();
+    } 
+
+    int? review;
+    if (map.containsKey('review')) {
+      review = map['review'];
+    }
+
+    String? reviewDetails;
+    if (map.containsKey('reviewDetails')) {
+      reviewDetails = map['reviewDetails'];
     }
 
     return ServiceScheduling(
@@ -46,6 +56,8 @@ class ServiceSchedulingConverter {
       isPaid: map['isPaid'],
       creationDate: (map['endDateAndTime'] as Timestamp).toDate(),
       address: AddressConverter.fromMap(map: map['address']),
+      review: review,
+      reviewDetails: reviewDetails,
     );
   }
 
