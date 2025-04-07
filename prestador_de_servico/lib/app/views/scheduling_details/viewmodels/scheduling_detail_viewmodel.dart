@@ -111,4 +111,22 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       await refreshServiceScheduling();
     }
   }
+
+  Future<void> reviewScheduling({
+    required int review,
+    required String reviewDetails,
+  }) async {
+    _emitState(SchedulingDetailLoading());
+    final either = await schedulingService.addOrEditReview(
+      schedulingId: scheduling.id,
+      review: review,
+      reviewDetails: reviewDetails,
+    );
+
+    if (either.isLeft) {
+      _emitState(SchedulingDetailError(message: either.left!.message));
+    } else {
+      await refreshServiceScheduling();
+    }
+  }
 }

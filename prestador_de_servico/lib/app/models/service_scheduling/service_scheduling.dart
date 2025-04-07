@@ -33,6 +33,7 @@ class ServiceScheduling {
   List<ScheduledService> get activeServices {
     return services.where((s) => !s.removed).toList();
   }
+  bool get hasReview => review != null;
 
   bool get hasMessage =>
       schedulingUnavailable || conflictScheduing || isPaid || (!isPaid && serviceStatus.isAccept());

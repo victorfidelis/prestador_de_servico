@@ -11,6 +11,7 @@ class CustomTextField extends StatelessWidget {
   final String? errorMessage;
   final List<TextInputFormatter> inputFormatters;
   final Function(String)? onChanged;
+  final int maxLines;
 
   CustomTextField({
     super.key,
@@ -23,6 +24,7 @@ class CustomTextField extends StatelessWidget {
     this.errorMessage,
     this.inputFormatters = const [],
     this.onChanged,
+    this.maxLines = 1,
   });
 
   final ValueNotifier<bool> obscureText = ValueNotifier(true);
@@ -112,6 +114,7 @@ class CustomTextField extends StatelessWidget {
                         keyboardType: textInputType,
                         inputFormatters: inputFormatters,
                         onChanged: onChanged,
+                        maxLines: maxLines,
                       ),
                     ),
                     Padding(

@@ -16,6 +16,8 @@ import 'package:prestador_de_servico/app/views/scheduling_details/states/schedul
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/address_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/date_and_time_card.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/widgets/review_sheet.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/widgets/review_stars.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/service_list_card.dart';
 import 'package:provider/provider.dart';
 
@@ -180,6 +182,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         const SizedBox(height: 8),
                         Divider(color: Theme.of(context).colorScheme.shadow),
                         const SizedBox(height: 8),
+                        reviewWidget(),
                         actions(),
                         const SizedBox(height: 50),
                       ],
@@ -291,6 +294,76 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
         schedulingDetailViewModel.performScheduling();
       },
     );
+  }
+
+  Widget reviewWidget() {
+    ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
+    if (!serviceStatus.isServicePerform()) {
+      return const SizedBox();
+    }
+
+    bool hasReviewDetail = false;
+    if (schedulingDetailViewModel.scheduling.reviewDetails != null &&
+        schedulingDetailViewModel.scheduling.reviewDetails!.trim().isNotEmpty) {
+      hasReviewDetail = true;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Avaliação do cliente',
+          style: TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ReviewStars(
+              review: schedulingDetailViewModel.scheduling.review ?? 0,
+              onMark: (review) => onAddOrEditReview(review),
+              allowSetState: false,
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        hasReviewDetail
+            ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        schedulingDetailViewModel.scheduling.reviewDetails ?? '',
+                      ),
+                    ),
+                  ],
+                ),
+            )
+            : const SizedBox(),
+        hasReviewDetail ? const SizedBox(height: 8) : const SizedBox(),
+        Divider(color: Theme.of(context).colorScheme.shadow),
+        const SizedBox(height: 8),
+      ],
+    );
+  }
+
+  void onAddOrEditReview(int review) async {
+    await showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ReviewSheet(
+          review: review,
+          reviewDetails: schedulingDetailViewModel.scheduling.reviewDetails ?? '',
+          onSave: onSaveReview,
+        );
+      },
+    );
+  }
+
+  void onSaveReview(int review, String reviewDetails) {
+    Navigator.pop(context);
+    schedulingDetailViewModel.reviewScheduling(review: review, reviewDetails: reviewDetails);
   }
 
   Widget addressWidget() {
