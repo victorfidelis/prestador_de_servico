@@ -121,6 +121,11 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                   );
                 }
 
+                if (schedulingDetailViewModel.scheduling.serviceStatus.isServicePerform() &&
+                    schedulingDetailViewModel.scheduling.review == null) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) => questionOfReview());
+                }
+
                 Color statusColor = ColorsUtils.getColorFromStatus(
                   context,
                   schedulingDetailViewModel.scheduling.serviceStatus,
@@ -329,8 +334,8 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
         const SizedBox(height: 16),
         hasReviewDetail
             ? Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Row(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: Row(
                   children: [
                     Expanded(
                       child: Text(
@@ -339,7 +344,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                     ),
                   ],
                 ),
-            )
+              )
             : const SizedBox(),
         hasReviewDetail ? const SizedBox(height: 8) : const SizedBox(),
         Divider(color: Theme.of(context).colorScheme.shadow),
@@ -348,9 +353,19 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
+  void questionOfReview() {
+    notifications.showQuestionAlert(
+      context: context,
+      title: 'Avalie o cliente',
+      content: 'Deseja realizar a avaliação da sessão do cliente?',
+      confirmCallback: () => onAddOrEditReview(1),
+    );
+  }
+
   void onAddOrEditReview(int review) async {
     await showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (context) {
         return ReviewSheet(
           review: review,

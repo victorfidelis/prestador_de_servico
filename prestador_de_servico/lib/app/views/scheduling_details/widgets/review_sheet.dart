@@ -43,6 +43,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
       padding: const EdgeInsets.symmetric(horizontal: 26, vertical: 32),
       child: Column(
         children: [
+          const SizedBox(height: 50),
           const Text(
             'Avalie o cliente',
             style: TextStyle(
@@ -50,19 +51,19 @@ class _ReviewSheetState extends State<ReviewSheet> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 50),
           ReviewStars(
             review: widget.review,
             onMark: (number) {
               review = number;
             },
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 50),
           CustomTextField(
             label: 'Detalhes e observações (opcional)',
             controller: detailsController,
             focusNode: detailsFocus,
-            maxLines: 5,
+            maxLines: 7,
           ),
           const Expanded(child: SizedBox()),
           CustomButton(
@@ -72,6 +73,7 @@ class _ReviewSheetState extends State<ReviewSheet> {
               detailsController.text.trim(),
             ),
           ),
+          const SizedBox(height: 50),
         ],
       ),
     );
