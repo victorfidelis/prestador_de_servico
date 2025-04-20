@@ -1,37 +1,28 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:prestador_de_servico/app/models/payment/payment.dart';
+import 'package:prestador_de_servico/app/repositories/payment/payment_repository.dart';
 import 'package:prestador_de_servico/app/services/payments/payment_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
-import '../../../helpers/payment/mock_payment_repository.dart';
+class MockPaymentRepository extends Mock implements PaymentRepository {}
 
 void main() {
-  late PaymentService paymentService;
+  final offlineMockPaymentRepository = MockPaymentRepository();
+  final onlineMockPaymentRepository = MockPaymentRepository();
+  late PaymentService paymentService = PaymentService(
+    offlineRepository: offlineMockPaymentRepository,
+    onlineRepository: onlineMockPaymentRepository,
+  );
 
-  late Payment payment1;
-
-  setUpValues() {
-    payment1 = Payment(
-      id: '1',
-      paymentType: PaymentType.money,
-      name: 'Dinheiro',
-      urlIcon: '',
-      isActive: true,
-    );
-  }
-
-  setUp(
-    () {
-      setUpMockPaymentRepository();
-      paymentService = PaymentService(
-        offlineRepository: offlineMockPaymentRepository,
-        onlineRepository: onlineMockPaymentRepository,
-      );
-      setUpValues();
-    },
+  final Payment payment1 = Payment(
+    id: '1',
+    paymentType: PaymentType.money,
+    name: 'Dinheiro',
+    urlIcon: '',
+    isActive: true,
   );
 
   group(
@@ -41,7 +32,7 @@ void main() {
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockPaymentRepository.update(payment: payment1))
+          when(() => onlineMockPaymentRepository.update(payment: payment1))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final updateEither = await paymentService.update(payment: payment1);
@@ -57,8 +48,9 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockPaymentRepository.update(payment: payment1)).thenAnswer((_) async => Either.right(unit));
-          when(offlineMockPaymentRepository.update(payment: payment1))
+          when(() => onlineMockPaymentRepository.update(payment: payment1))
+              .thenAnswer((_) async => Either.right(unit));
+          when(() => offlineMockPaymentRepository.update(payment: payment1))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final updateEither = await paymentService.update(payment: payment1);
@@ -73,8 +65,10 @@ void main() {
       test(
         '''Deve retornar um Payment quando a alteração do pagamento for feita com sucesso''',
         () async {
-          when(onlineMockPaymentRepository.update(payment: payment1)).thenAnswer((_) async => Either.right(unit));
-          when(offlineMockPaymentRepository.update(payment: payment1)).thenAnswer((_) async => Either.right(unit));
+          when(() => onlineMockPaymentRepository.update(payment: payment1))
+              .thenAnswer((_) async => Either.right(unit));
+          when(() => offlineMockPaymentRepository.update(payment: payment1))
+              .thenAnswer((_) async => Either.right(unit));
 
           final insertEither = await paymentService.update(payment: payment1);
 

@@ -1,38 +1,31 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
+import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
+import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
-import '../../../helpers/auth/mock_auth_repository.dart';
-import '../../../helpers/user/mock_user_repository.dart';
+
+class MockAuthRepository extends Mock implements AuthRepository {}
+
+class MockUserRepository extends Mock implements UserRepository {}
 
 void main() {
-  late AuthService authService;
+  final mockAuthRepository = MockAuthRepository();
+  final mockUserRepository = MockUserRepository();
+  final authService = AuthService(
+    authRepository: mockAuthRepository,
+    userRepository: mockUserRepository,
+  );
 
-  late User user1;
-
-  setUpValues() {
-    user1 = User(
-      email: 'victor@gmail.com',
-      name: 'Victor',
-      surname: 'Fidelis Correa',
-      password: '123466',
-      confirmPassword: '123466',
-    );
-  }
-
-  setUp(
-    () {
-      setUpMockAuthRepository();
-      setUpMockUserRepository();
-      authService = AuthService(
-        authRepository: mockAuthRepository,
-        userRepository: mockUserRepository,
-      );
-      setUpValues();
-    },
+  final User user1 = User(
+    email: 'victor@gmail.com',
+    name: 'Victor',
+    surname: 'Fidelis Correa',
+    password: '123466',
+    confirmPassword: '123466',
   );
 
   group(
@@ -42,7 +35,7 @@ void main() {
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockUserRepository.getByEmail(email: user1.email))
+          when(() => mockUserRepository.getByEmail(email: user1.email))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final createUserEither = await authService.createUserEmailPassword(user: user1);
@@ -58,9 +51,12 @@ void main() {
         '''Deve retornar um EmailAlreadyInUseFailure quando o email já estiver cadastrado''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockUserRepository.getByEmail(email: user1.email)).thenAnswer((_) async => Either.right(user1));
-          when(mockUserRepository.update(user: user1)).thenAnswer((_) async => Either.right(unit));
-          when(mockAuthRepository.createUserEmailPassword(email: user1.email, password: user1.password))
+          when(() => mockUserRepository.getByEmail(email: user1.email))
+              .thenAnswer((_) async => Either.right(user1));
+          when(() => mockUserRepository.update(user: user1))
+              .thenAnswer((_) async => Either.right(unit));
+          when(() => mockAuthRepository.createUserEmailPassword(
+                  email: user1.email, password: user1.password))
               .thenAnswer((_) async => Either.left(EmailAlreadyInUseFailure(failureMessage)));
 
           final createUserEither = await authService.createUserEmailPassword(user: user1);
@@ -76,12 +72,15 @@ void main() {
         '''Deve retornar um Unit quando o usuário for criado com sucesso''',
         () async {
           const userNotFoundMessage = 'Teste usuário não encontrado';
-          when(mockUserRepository.getByEmail(email: user1.email))
+          when(() => mockUserRepository.getByEmail(email: user1.email))
               .thenAnswer((_) async => Either.left(UserNotFoundFailure(userNotFoundMessage)));
-          when(mockAuthRepository.createUserEmailPassword(email: user1.email, password: user1.password))
+          when(() => mockAuthRepository.createUserEmailPassword(
+              email: user1.email,
+              password: user1.password)).thenAnswer((_) async => Either.right(unit));
+          when(() => mockUserRepository.insert(user: user1))
+              .thenAnswer((_) async => Either.right(user1.id));
+          when(() => mockAuthRepository.sendEmailVerificationForCurrentUser())
               .thenAnswer((_) async => Either.right(unit));
-          when(mockUserRepository.insert(user: user1)).thenAnswer((_) async => Either.right(user1.id));
-          when(mockAuthRepository.sendEmailVerificationForCurrentUser()).thenAnswer((_) async => Either.right(unit));
 
           final createUserEither = await authService.createUserEmailPassword(user: user1);
 
@@ -99,7 +98,7 @@ void main() {
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockUserRepository.getByEmail(email: user1.email))
+          when(() => mockUserRepository.getByEmail(email: user1.email))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final signInEither = await authService.signInEmailPasswordAndVerifyEmail(
@@ -118,7 +117,7 @@ void main() {
         '''Deve retornar um UserNotFoundFailure quando o email não estiver cadastrado''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockUserRepository.getByEmail(email: user1.email))
+          when(() => mockUserRepository.getByEmail(email: user1.email))
               .thenAnswer((_) async => Either.left(UserNotFoundFailure(failureMessage)));
 
           final signInEither = await authService.signInEmailPasswordAndVerifyEmail(
@@ -137,8 +136,10 @@ void main() {
         '''Deve retornar um InvalidCredentialFailure quando a senha estiver incorreta''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockUserRepository.getByEmail(email: user1.email)).thenAnswer((_) async => Either.right(user1));
-          when(mockAuthRepository.signInEmailPassword(email: user1.email, password: user1.password))
+          when(() => mockUserRepository.getByEmail(email: user1.email))
+              .thenAnswer((_) async => Either.right(user1));
+          when(() => mockAuthRepository.signInEmailPassword(
+                  email: user1.email, password: user1.password))
               .thenAnswer((_) async => Either.left(InvalidCredentialFailure(failureMessage)));
 
           final signInEither = await authService.signInEmailPasswordAndVerifyEmail(
@@ -158,8 +159,10 @@ void main() {
         tentativas incorretas''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockUserRepository.getByEmail(email: user1.email)).thenAnswer((_) async => Either.right(user1));
-          when(mockAuthRepository.signInEmailPassword(email: user1.email, password: user1.password))
+          when(() => mockUserRepository.getByEmail(email: user1.email))
+              .thenAnswer((_) async => Either.right(user1));
+          when(() => mockAuthRepository.signInEmailPassword(
+                  email: user1.email, password: user1.password))
               .thenAnswer((_) async => Either.left(TooManyRequestsFailure(failureMessage)));
 
           final signInEither = await authService.signInEmailPasswordAndVerifyEmail(
@@ -177,9 +180,11 @@ void main() {
       test(
         '''Deve retornar um User quando o login for executado com sucesso''',
         () async {
-          when(mockUserRepository.getByEmail(email: user1.email)).thenAnswer((_) async => Either.right(user1));
-          when(mockAuthRepository.signInEmailPassword(email: user1.email, password: user1.password))
-              .thenAnswer((_) async => Either.right(unit));
+          when(() => mockUserRepository.getByEmail(email: user1.email))
+              .thenAnswer((_) async => Either.right(user1));
+          when(() => mockAuthRepository.signInEmailPassword(
+              email: user1.email,
+              password: user1.password)).thenAnswer((_) async => Either.right(unit));
 
           final signInEither = await authService.signInEmailPasswordAndVerifyEmail(
             email: user1.email,
@@ -200,10 +205,11 @@ void main() {
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockAuthRepository.sendPasswordResetEmail(email: user1.email))
+          when(() => mockAuthRepository.sendPasswordResetEmail(email: user1.email))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
-          final resetPasswordEmailEither = await authService.sendPasswordResetEmail(email: user1.email);
+          final resetPasswordEmailEither =
+              await authService.sendPasswordResetEmail(email: user1.email);
 
           expect(resetPasswordEmailEither.isLeft, isTrue);
           expect(resetPasswordEmailEither.left is NetworkFailure, isTrue);
@@ -216,7 +222,7 @@ void main() {
         '''Deve retornar um Unit quando o envio de redefinição de senha for enviado 
         com sucesso''',
         () async {
-          when(mockAuthRepository.sendPasswordResetEmail(email: user1.email))
+          when(() => mockAuthRepository.sendPasswordResetEmail(email: user1.email))
               .thenAnswer((_) async => Either.right(unit));
 
           final resetPasswordEmailEither =
