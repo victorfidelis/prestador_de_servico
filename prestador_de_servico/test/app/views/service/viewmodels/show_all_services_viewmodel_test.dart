@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/show_all_services_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
@@ -9,66 +11,57 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/service/states/show_all_services_state.dart';
 
-import '../../../../helpers/image/mock_image_repository.dart';
-import '../../../../helpers/service/service/mock_service_repository.dart';
+class MockServiceRepository extends Mock implements ServiceRepository {}
+
+class MockImageRepository extends Mock implements ImageRepository {}
 
 void main() {
+  final offlineMockServiceRepository = MockServiceRepository();
+  final onlineMockServiceRepository = MockServiceRepository();
+  final mockImageRepository = MockImageRepository();
   late ShowAllServicesViewModel showAllServicesViewModel;
 
-  late ServiceCategory serviceCategory1;
+  final serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
 
-  late Service service1;
-  late Service service2;
-  late Service service3;
+  final service1 = Service(
+    id: '1',
+    serviceCategoryId: '1',
+    name: 'Hidratação',
+    price: 49.90,
+    hours: 1,
+    minutes: 30,
+    imageUrl: 'testeUrlImage',
+  );
+  final service2 = Service(
+    id: '2',
+    serviceCategoryId: '1',
+    name: 'Chapinha',
+    price: 49.90,
+    hours: 1,
+    minutes: 30,
+    imageUrl: 'testeUrlImage',
+  );
+  final service3 = Service(
+    id: '3',
+    serviceCategoryId: '1',
+    name: 'Escova ',
+    price: 69.90,
+    hours: 1,
+    minutes: 0,
+    imageUrl: 'testeUrlImage',
+  );
 
-  late ServicesByCategory servicesByCategory1;
-
-  setUpValues() {
-    serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
-
-    service1 = Service(
-      id: '1',
-      serviceCategoryId: '1',
-      name: 'Hidratação',
-      price: 49.90,
-      hours: 1,
-      minutes: 30,
-      imageUrl: 'testeUrlImage',
-    );
-    service2 = Service(
-      id: '2',
-      serviceCategoryId: '1',
-      name: 'Chapinha',
-      price: 49.90,
-      hours: 1,
-      minutes: 30,
-      imageUrl: 'testeUrlImage',
-    );
-    service3 = Service(
-      id: '3',
-      serviceCategoryId: '1',
-      name: 'Escova ',
-      price: 69.90,
-      hours: 1,
-      minutes: 0,
-      imageUrl: 'testeUrlImage',
-    );
-
-    servicesByCategory1 = ServicesByCategory(
-      serviceCategory: serviceCategory1,
-      services: [
-        service1,
-        service2,
-        service3,
-      ],
-    );
-  }
+  final servicesByCategory1 = ServicesByCategory(
+    serviceCategory: serviceCategory1,
+    services: [
+      service1,
+      service2,
+      service3,
+    ],
+  );
 
   setUp(
     () {
-      setUpValues();
-      setUpMockServiceRepository();
-      setUpMockImageRepository();
       final serviceService = ServiceService(
         offlineRepository: offlineMockServiceRepository,
         onlineRepository: onlineMockServiceRepository,
@@ -104,7 +97,7 @@ void main() {
         erro na exclusão da imagem e o estado ESTIVER carregado.''',
         () async {
           const failureMessage = 'Falha no teste';
-          when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl)).thenAnswer(
+          when(() => mockImageRepository.deleteImage(imageUrl: service1.imageUrl)).thenAnswer(
             (_) async => Either.left(Failure(failureMessage)),
           );
 
@@ -122,10 +115,10 @@ void main() {
         erro na exclusão e o estado ESTIVER carregado.''',
         () async {
           const failureMessage = 'Falha no teste';
-          when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl)).thenAnswer(
+          when(() => mockImageRepository.deleteImage(imageUrl: service1.imageUrl)).thenAnswer(
             (_) async => Either.right(unit),
           );
-          when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer(
+          when(() => onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer(
             (_) async => Either.left(Failure(failureMessage)),
           );
 
@@ -141,13 +134,13 @@ void main() {
       test(
         '''Deve alterar o estado deve manter ShowAllServicesLoaded quando nenhum erro ocorrer.''',
         () async {
-          when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl)).thenAnswer(
+          when(() => mockImageRepository.deleteImage(imageUrl: service1.imageUrl)).thenAnswer(
             (_) async => Either.right(unit),
           );
-          when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer(
+          when(() => onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer(
             (_) async => Either.right(unit),
           );
-          when(offlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer(
+          when(() => offlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer(
             (_) async => Either.right(unit),
           );
 

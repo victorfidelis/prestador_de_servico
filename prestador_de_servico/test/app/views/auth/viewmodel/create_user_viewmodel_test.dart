@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
+import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/create_user_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
@@ -7,11 +9,18 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/auth/states/create_user_state.dart';
 
-import '../../../../helpers/auth/mock_auth_repository.dart';
-import '../../../../helpers/user/mock_user_repository.dart';
+class MockAuthRepository extends Mock implements AuthRepository {}
+
+class MockUserRepository extends Mock implements UserRepository {}
 
 void main() {
-  late CreateUserViewModel createUserViewModel;
+  final mockAuthRepository = MockAuthRepository();
+  final mockUserRepository = MockUserRepository();
+  final authService = AuthService(
+    authRepository: mockAuthRepository,
+    userRepository: mockUserRepository,
+  );
+  final createUserViewModel = CreateUserViewModel(authService: authService);
 
   late User user1;
   late User userWithoutEmail;
@@ -21,68 +30,57 @@ void main() {
   late User userWithoutConfirmPassword;
   late User userInvalidConfirmPassword;
 
-  setUpValues() {
-    user1 = User(
-      email: 'victor@gmail.com',
-      name: 'Victor',
-      surname: 'Fidelis Correa',
-      password: '123466',
-      confirmPassword: '123466',
-    );
-    userWithoutEmail = User(
-      email: '',
-      name: 'Victor',
-      surname: 'Fidelis Correa',
-      password: '123466',
-      confirmPassword: '123466',
-    );
-    userWithoutName = User(
-      email: 'victor@gmail.com',
-      name: '',
-      surname: 'Fidelis Correa',
-      password: '123466',
-      confirmPassword: '123466',
-    );
-    userWithoutSurname = User(
-      email: 'victor@gmail.com',
-      name: 'Victor',
-      surname: '',
-      password: '123466',
-      confirmPassword: '123466',
-    );
-    userWithoutPassword = User(
-      email: 'victor@gmail.com',
-      name: 'Victor',
-      surname: 'Fidelis Correa',
-      password: '',
-      confirmPassword: '123466',
-    );
-    userWithoutConfirmPassword = User(
-      email: 'victor@gmail.com',
-      name: 'Victor',
-      surname: 'Fidelis Correa',
-      password: '123456',
-      confirmPassword: '',
-    );
-    userInvalidConfirmPassword = User(
-      email: 'victor@gmail.com',
-      name: 'Victor',
-      surname: 'Fidelis Correa',
-      password: '123456',
-      confirmPassword: '987654',
-    );
-  }
-
   setUp(
     () {
-      setUpMockAuthRepository();
-      setUpMockUserRepository();
-      AuthService authService = AuthService(
-        authRepository: mockAuthRepository,
-        userRepository: mockUserRepository,
+      user1 = User(
+        email: 'victor@gmail.com',
+        name: 'Victor',
+        surname: 'Fidelis Correa',
+        password: '123466',
+        confirmPassword: '123466',
       );
-      createUserViewModel = CreateUserViewModel(authService: authService);
-      setUpValues();
+      userWithoutEmail = User(
+        email: '',
+        name: 'Victor',
+        surname: 'Fidelis Correa',
+        password: '123466',
+        confirmPassword: '123466',
+      );
+      userWithoutName = User(
+        email: 'victor@gmail.com',
+        name: '',
+        surname: 'Fidelis Correa',
+        password: '123466',
+        confirmPassword: '123466',
+      );
+      userWithoutSurname = User(
+        email: 'victor@gmail.com',
+        name: 'Victor',
+        surname: '',
+        password: '123466',
+        confirmPassword: '123466',
+      );
+      userWithoutPassword = User(
+        email: 'victor@gmail.com',
+        name: 'Victor',
+        surname: 'Fidelis Correa',
+        password: '',
+        confirmPassword: '123466',
+      );
+      userWithoutConfirmPassword = User(
+        email: 'victor@gmail.com',
+        name: 'Victor',
+        surname: 'Fidelis Correa',
+        password: '123456',
+        confirmPassword: '',
+      );
+      userInvalidConfirmPassword = User(
+        email: 'victor@gmail.com',
+        name: 'Victor',
+        surname: 'Fidelis Correa',
+        password: '123456',
+        confirmPassword: '987654',
+      );
     },
   );
 
@@ -167,7 +165,7 @@ void main() {
         "genericMessage" quando não estiver acesso a internet''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockUserRepository.getByEmail(email: user1.email))
+          when(() => mockUserRepository.getByEmail(email: user1.email))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           await createUserViewModel.createUserEmailPassword(user: user1);
@@ -183,9 +181,12 @@ void main() {
         "emailMessage" quando o email já existir''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockUserRepository.getByEmail(email: user1.email)).thenAnswer((_) async => Either.right(user1));
-          when(mockUserRepository.update(user: user1)).thenAnswer((_) async => Either.right(unit));
-          when(mockAuthRepository.createUserEmailPassword(email: user1.email, password: user1.password))
+          when(() => mockUserRepository.getByEmail(email: user1.email))
+              .thenAnswer((_) async => Either.right(user1));
+          when(() => mockUserRepository.update(user: user1))
+              .thenAnswer((_) async => Either.right(unit));
+          when(() => mockAuthRepository.createUserEmailPassword(
+                  email: user1.email, password: user1.password))
               .thenAnswer((_) async => Either.left(EmailAlreadyInUseFailure(failureMessage)));
 
           await createUserViewModel.createUserEmailPassword(user: user1);
@@ -200,12 +201,15 @@ void main() {
         '''Deve definir o estado como UserCreated quando o User for válido''',
         () async {
           const userNotFoundMessage = 'Teste usuário não encontrado';
-          when(mockUserRepository.getByEmail(email: user1.email))
+          when(() => mockUserRepository.getByEmail(email: user1.email))
               .thenAnswer((_) async => Either.left(UserNotFoundFailure(userNotFoundMessage)));
-          when(mockAuthRepository.createUserEmailPassword(email: user1.email, password: user1.password))
+          when(() => mockAuthRepository.createUserEmailPassword(
+              email: user1.email,
+              password: user1.password)).thenAnswer((_) async => Either.right(unit));
+          when(() => mockUserRepository.insert(user: user1))
+              .thenAnswer((_) async => Either.right(user1.id));
+          when(() => mockAuthRepository.sendEmailVerificationForCurrentUser())
               .thenAnswer((_) async => Either.right(unit));
-          when(mockUserRepository.insert(user: user1)).thenAnswer((_) async => Either.right(user1.id));
-          when(mockAuthRepository.sendEmailVerificationForCurrentUser()).thenAnswer((_) async => Either.right(unit));
 
           await createUserViewModel.createUserEmailPassword(user: user1);
 

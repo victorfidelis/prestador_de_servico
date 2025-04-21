@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
@@ -7,23 +8,19 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/scheduling/states/days_state.dart';
 
-import '../../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
+class MockSchedulingRepository extends Mock implements SchedulingRepository {}
 
 void main() {
+  final onlineMockSchedulingRepository = MockSchedulingRepository();
   late DaysViewModel daysViewModel;
   DateTime actualDate = DateTime.now();
 
-  void setUpValues() {
+  setUp(() {
     daysViewModel = DaysViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
       ),
     );
-  }
-
-  setUp(() {
-    setUpMockServiceSchedulingRepository();
-    setUpValues();
   });
 
   group(
@@ -35,7 +32,7 @@ void main() {
         () async {
           const failureMessage = 'Teste de falha';
 
-          when(onlineMockSchedulingRepository.getDaysWithSchedules())
+          when(() => onlineMockSchedulingRepository.getDaysWithSchedules())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           await daysViewModel.load(actualDate);
@@ -51,7 +48,7 @@ void main() {
         () async {
           final List<SchedulingDay> schedulesPerDay = [];
 
-          when(onlineMockSchedulingRepository.getDaysWithSchedules())
+          when(() => onlineMockSchedulingRepository.getDaysWithSchedules())
               .thenAnswer((_) async => Either.right(schedulesPerDay));
 
           await daysViewModel.load(actualDate);

@@ -1,5 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/auth/auth_repository.dart';
+import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/password_reset_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
@@ -7,32 +9,28 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/auth/states/password_reset_state.dart';
 
-import '../../../../helpers/auth/mock_auth_repository.dart';
-import '../../../../helpers/user/mock_user_repository.dart';
+class MockAuthRepository extends Mock implements AuthRepository {}
+
+class MockUserRepository extends Mock implements UserRepository {}
 
 void main() {
-  late PasswordResetViewModel passwordResetViewModel;
+  final mockAuthRepository = MockAuthRepository();
+  final mockUserRepository = MockUserRepository();
+  final authService = AuthService(
+    authRepository: mockAuthRepository,
+    userRepository: mockUserRepository,
+  );
+  final passwordResetViewModel = PasswordResetViewModel(authService: authService);
 
   late User user1;
 
-  setUpValues() {
-    user1 = User(
-      email: 'victor@gmail.com',
-      name: 'Victor',
-      surname: 'Fidelis Correa',
-    );
-  }
-
   setUp(
     () {
-      setUpMockAuthRepository();
-      setUpMockUserRepository();
-      AuthService authService = AuthService(
-        authRepository: mockAuthRepository,
-        userRepository: mockUserRepository,
+      user1 = User(
+        email: 'victor@gmail.com',
+        name: 'Victor',
+        surname: 'Fidelis Correa',
       );
-      passwordResetViewModel = PasswordResetViewModel(authService: authService);
-      setUpValues();
     },
   );
 
@@ -43,7 +41,7 @@ void main() {
         '''Deve definir o estado como ErrorPasswordResetEmail quando não existir acesso a internet''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockAuthRepository.sendPasswordResetEmail(email: user1.email))
+          when(() => mockAuthRepository.sendPasswordResetEmail(email: user1.email))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           await passwordResetViewModel.sendPasswordResetEmail(email: user1.email);
@@ -57,7 +55,7 @@ void main() {
       test(
         '''Deve definir o estado como PasswordResetEmailSentSuccess quando a solicitação for válida''',
         () async {
-          when(mockAuthRepository.sendPasswordResetEmail(email: user1.email))
+          when(() => mockAuthRepository.sendPasswordResetEmail(email: user1.email))
               .thenAnswer((_) async => Either.right(unit));
 
           await passwordResetViewModel.sendPasswordResetEmail(email: user1.email);

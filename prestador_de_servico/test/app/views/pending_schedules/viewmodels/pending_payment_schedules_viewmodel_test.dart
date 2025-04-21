@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_payment_schedules_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
@@ -7,22 +8,18 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/states/pending_schedules_state.dart';
 
-import '../../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
+class MockSchedulingRepository extends Mock implements SchedulingRepository {}
 
 void main() {
+  final onlineMockSchedulingRepository = MockSchedulingRepository();
   late PendingPaymentSchedulesViewModel pendingPaymentSchedulesViewModel;
 
-  void setUpValues() {
+  setUp(() {
     pendingPaymentSchedulesViewModel = PendingPaymentSchedulesViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
       ),
     );
-  }
-
-  setUp(() {
-    setUpMockServiceSchedulingRepository();
-    setUpValues();
   });
 
   group(
@@ -34,7 +31,7 @@ void main() {
         () async {
           const failureMessage = 'Teste de falha';
 
-          when(onlineMockSchedulingRepository.getPendingPaymentSchedules())
+          when(() => onlineMockSchedulingRepository.getPendingPaymentSchedules())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           await pendingPaymentSchedulesViewModel.load();
@@ -50,7 +47,7 @@ void main() {
         () async {
           final List<ServiceScheduling> serviceSchedules = [];
 
-          when(onlineMockSchedulingRepository.getPendingPaymentSchedules())
+          when(() => onlineMockSchedulingRepository.getPendingPaymentSchedules())
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
           await pendingPaymentSchedulesViewModel.load();

@@ -1,6 +1,6 @@
-
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
@@ -8,23 +8,18 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/states/pending_schedules_state.dart';
 
-import '../../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
+class MockSchedulingRepository extends Mock implements SchedulingRepository {}
 
 void main() {
-  
+  final onlineMockSchedulingRepository = MockSchedulingRepository();
   late PendingProviderSchedulesViewModel pendingProviderSchedulesViewModel;
 
-  void setUpValues() {
+  setUp(() {
     pendingProviderSchedulesViewModel = PendingProviderSchedulesViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
       ),
     );
-  }
-
-  setUp(() {
-    setUpMockServiceSchedulingRepository();
-    setUpValues();
   });
 
   group(
@@ -36,7 +31,7 @@ void main() {
         () async {
           const failureMessage = 'Teste de falha';
 
-          when(onlineMockSchedulingRepository.getPendingProviderSchedules())
+          when(() => onlineMockSchedulingRepository.getPendingProviderSchedules())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           await pendingProviderSchedulesViewModel.load();
@@ -52,7 +47,7 @@ void main() {
         () async {
           final List<ServiceScheduling> serviceSchedules = [];
 
-          when(onlineMockSchedulingRepository.getPendingProviderSchedules())
+          when(() => onlineMockSchedulingRepository.getPendingProviderSchedules())
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
           await pendingProviderSchedulesViewModel.load();
@@ -62,7 +57,7 @@ void main() {
       );
     },
   );
-  
+
   group(
     'exit',
     () {

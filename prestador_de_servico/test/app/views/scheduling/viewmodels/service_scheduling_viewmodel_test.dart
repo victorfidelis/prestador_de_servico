@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
@@ -7,23 +8,18 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/shared/states/scheduling/service_scheduling_state.dart';
 
-import '../../../../helpers/service_schedulingk/mock_scheduling_repository.dart';
+class MockSchedulingRepository extends Mock implements SchedulingRepository {}
 
 void main() {
-  
+  final onlineMockSchedulingRepository = MockSchedulingRepository();
   late ServiceSchedulingViewModel serviceSchedulingViewModel;
 
-  void setUpValues() {
+  setUp(() {
     serviceSchedulingViewModel = ServiceSchedulingViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
       ),
     );
-  }
-
-  setUp(() {
-    setUpMockServiceSchedulingRepository();
-    setUpValues();
   });
 
   group(
@@ -35,7 +31,8 @@ void main() {
         () async {
           const failureMessage = 'Teste de falha';
 
-          when(onlineMockSchedulingRepository.getAllSchedulesByDay(dateTime: anyNamed('dateTime')))
+          when(() => onlineMockSchedulingRepository.getAllSchedulesByDay(
+                  dateTime: any(named: 'dateTime')))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           await serviceSchedulingViewModel.load(dateTime: DateTime.now());
@@ -51,7 +48,8 @@ void main() {
         () async {
           final List<ServiceScheduling> serviceSchedules = [];
 
-          when(onlineMockSchedulingRepository.getAllSchedulesByDay(dateTime: anyNamed('dateTime')))
+          when(() => onlineMockSchedulingRepository.getAllSchedulesByDay(
+                  dateTime: any(named: 'dateTime')))
               .thenAnswer((_) async => Either.right(serviceSchedules));
 
           await serviceSchedulingViewModel.load(dateTime: DateTime.now());
@@ -61,7 +59,7 @@ void main() {
       );
     },
   );
-  
+
   group(
     'exit',
     () {

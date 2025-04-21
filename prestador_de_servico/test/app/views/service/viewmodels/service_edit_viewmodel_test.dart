@@ -1,7 +1,9 @@
 import 'dart:io';
-
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
+import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
@@ -10,81 +12,72 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/service/states/service_edit_state.dart';
 
-import '../../../../helpers/image/mock_image_repository.dart';
-import '../../../../helpers/offline_image/mock_offline_image_service.dart';
-import '../../../../helpers/service/service/mock_service_repository.dart';
+class MockServiceRepository extends Mock implements ServiceRepository {}
+
+class MockImageRepository extends Mock implements ImageRepository {}
+
+class MockOfflineImageService extends Mock implements OfflineImageService {}
 
 void main() {
+  final onlineMockServiceRepository = MockServiceRepository();
+  final offlineMockServiceRepository = MockServiceRepository();
+  final mockImageRepository = MockImageRepository();
+  final mockOfflineImageService = MockOfflineImageService();
   late ServiceEditViewModel serviceEditViewModel;
 
-  late ServiceCategory serviceCategory1;
+  final serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
 
-  late Service service1;
-  late Service serviceWithoutName;
-  late Service serviceWithoutPrice;
-  late Service serviceWithoutHoursAndMinutes;
+  final service1 = Service(
+    id: '1',
+    serviceCategoryId: '1',
+    name: 'Chapinha',
+    price: 50.90,
+    hours: 0,
+    minutes: 30,
+    imageUrl: '',
+  );
 
-  void setUpValues() {
-    serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
+  final serviceWithoutName = Service(
+    id: '1',
+    serviceCategoryId: '1',
+    name: '',
+    price: 50.90,
+    hours: 0,
+    minutes: 30,
+    imageUrl: '',
+  );
 
-    service1 = Service(
-      id: '1',
-      serviceCategoryId: '1',
-      name: 'Chapinha',
-      price: 50.90,
-      hours: 0,
-      minutes: 30,
-      imageUrl: '',
-    );
+  final serviceWithoutPrice = Service(
+    id: '1',
+    serviceCategoryId: '1',
+    name: 'Chapinha',
+    price: 0,
+    hours: 0,
+    minutes: 30,
+    imageUrl: '',
+  );
 
-    serviceWithoutName = Service(
-      id: '1',
-      serviceCategoryId: '1',
-      name: '',
-      price: 50.90,
-      hours: 0,
-      minutes: 30,
-      imageUrl: '',
-    );
-
-    serviceWithoutPrice = Service(
-      id: '1',
-      serviceCategoryId: '1',
-      name: 'Chapinha',
-      price: 0,
-      hours: 0,
-      minutes: 30,
-      imageUrl: '',
-    );
-
-    serviceWithoutHoursAndMinutes = Service(
-      id: '1',
-      serviceCategoryId: '1',
-      name: 'Chapinha',
-      price: 50.90,
-      hours: 0,
-      minutes: 0,
-      imageUrl: '',
-    );
-  }
+  final serviceWithoutHoursAndMinutes = Service(
+    id: '1',
+    serviceCategoryId: '1',
+    name: 'Chapinha',
+    price: 50.90,
+    hours: 0,
+    minutes: 0,
+    imageUrl: '',
+  );
 
   setUp(
     () {
-      setUpMockServiceRepository();
-      setUpMockImageRepository();
       ServiceService serviceService = ServiceService(
         onlineRepository: onlineMockServiceRepository,
         offlineRepository: offlineMockServiceRepository,
         imageRepository: mockImageRepository,
       );
-
-      setUpMockOfflineImageService();
-
       serviceEditViewModel = ServiceEditViewModel(
         serviceService: serviceService,
         offlineImageService: mockOfflineImageService,
       );
-      setUpValues();
     },
   );
 
@@ -162,7 +155,7 @@ void main() {
         "genericMessage" quando não estiver acesso a internet.''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(onlineMockServiceRepository.insert(service: service1))
+          when(() => onlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.left((NetworkFailure(failureMessage))));
 
           await serviceEditViewModel.validateAndInsert(service: service1);
@@ -177,9 +170,9 @@ void main() {
         '''Deve alterar o estado para ServiceEditSuccess com o Service inserido
         quando a inserção for válida..''',
         () async {
-          when(onlineMockServiceRepository.insert(service: service1))
+          when(() => onlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.right(service1.id));
-          when(offlineMockServiceRepository.insert(service: service1))
+          when(() => offlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.right(service1.id));
 
           await serviceEditViewModel.validateAndInsert(service: service1);
@@ -236,7 +229,7 @@ void main() {
         "genericMessage" quando não estiver acesso a internet.''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(onlineMockServiceRepository.update(service: service1))
+          when(() => onlineMockServiceRepository.update(service: service1))
               .thenAnswer((_) async => Either.left((NetworkFailure(failureMessage))));
 
           await serviceEditViewModel.validateAndUpdate(service: service1);
@@ -251,8 +244,10 @@ void main() {
         '''Deve alterar o estado para ServiceEditSuccess com o Service atualizado
         quando a atualização for válida.''',
         () async {
-          when(onlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
+          when(() => onlineMockServiceRepository.update(service: service1))
+              .thenAnswer((_) async => Either.right(unit));
+          when(() => offlineMockServiceRepository.update(service: service1))
+              .thenAnswer((_) async => Either.right(unit));
 
           await serviceEditViewModel.validateAndUpdate(service: service1);
 
@@ -263,7 +258,6 @@ void main() {
       );
     },
   );
-  
 
   group(
     'pickImageFromGallery',
@@ -273,7 +267,7 @@ void main() {
         quando uma falha ocorrer na captura de imagem.''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockOfflineImageService.pickImageFromGallery())
+          when(() => mockOfflineImageService.pickImageFromGallery())
               .thenAnswer((_) async => Either.left(PickImageFailure(failureMessage)));
 
           await serviceEditViewModel.pickImageFromGallery();
@@ -289,7 +283,7 @@ void main() {
         quando a captura da imagem ocorrer normalmente.''',
         () async {
           final file = File('caminho da imagem selecionada');
-          when(mockOfflineImageService.pickImageFromGallery())
+          when(() => mockOfflineImageService.pickImageFromGallery())
               .thenAnswer((_) async => Either.right(file));
 
           await serviceEditViewModel.pickImageFromGallery();

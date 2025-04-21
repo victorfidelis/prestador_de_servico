@@ -1,5 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/services_by_category/services_by_category_repository.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
@@ -11,115 +15,99 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/service/states/service_state.dart';
 
-import '../../../../helpers/image/mock_image_repository.dart';
-import '../../../../helpers/service/service/mock_service_repository.dart';
-import '../../../../helpers/service/service_category/mock_service_category_repository.dart';
-import '../../../../helpers/service/services_by_category/mock_services_by_category_repository.dart';
+class MockServiceCategoryRepository extends Mock implements ServiceCategoryRepository {}
+
+class MockServiceRepository extends Mock implements ServiceRepository {}
+
+class MockImageRepository extends Mock implements ImageRepository {}
+
+class MockServicesByCategoryRepository extends Mock implements ServicesByCategoryRepository {}
 
 void main() {
+  final offlineMockServiceCategoryRepository = MockServiceCategoryRepository();
+  final onlineMockServiceCategoryRepository = MockServiceCategoryRepository();
+  final offlineMockServiceRepository = MockServiceRepository();
+  final onlineMockServiceRepository = MockServiceRepository();
+  final mockImageRepository = MockImageRepository();
+  final offlineMockServicesByCategoryRepository = MockServicesByCategoryRepository();
   late ServiceViewModel serviceViewModel;
 
-  late ServiceCategory serviceCategory1;
-  late ServiceCategory serviceCategory2;
-  late ServiceCategory serviceCategory3;
+  final serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
+  final serviceCategory2 = ServiceCategory(id: '2', name: 'Manicure');
+  final serviceCategory3 = ServiceCategory(id: '3', name: 'Pedicure');
 
-  late Service service1;
-  late Service service2;
-  late Service service3;
-  late Service service4;
-  late Service service5;
-  late Service service6;
+  final service1 = Service(
+    id: '1',
+    serviceCategoryId: '1',
+    name: 'Luzes',
+    price: 49.90,
+    hours: 1,
+    minutes: 30,
+    imageUrl: 'testeUrlImage',
+  );
+  final service2 = Service(
+    id: '2',
+    serviceCategoryId: '1',
+    name: 'Chapinha',
+    price: 49.90,
+    hours: 1,
+    minutes: 30,
+    imageUrl: 'testeUrlImage',
+  );
+  final service3 = Service(
+    id: '3',
+    serviceCategoryId: '2',
+    name: 'Francezinha',
+    price: 49.90,
+    hours: 1,
+    minutes: 30,
+    imageUrl: 'testeUrlImage',
+  );
+  final service4 = Service(
+    id: '4',
+    serviceCategoryId: '2',
+    name: 'Limpeza',
+    price: 49.90,
+    hours: 1,
+    minutes: 30,
+    imageUrl: 'testeUrlImage',
+  );
+  final service5 = Service(
+    id: '5',
+    serviceCategoryId: '3',
+    name: 'Francezinha',
+    price: 49.90,
+    hours: 1,
+    minutes: 30,
+    imageUrl: 'testeUrlImage',
+  );
+  final service6 = Service(
+    id: '6',
+    serviceCategoryId: '3',
+    name: 'Limpeza',
+    price: 49.90,
+    hours: 1,
+    minutes: 30,
+    imageUrl: 'testeUrlImage',
+  );
 
-  late ServicesByCategory servicesByCategory1;
-  late ServicesByCategory servicesByCategory2;
-  late ServicesByCategory servicesByCategory3;
+  final servicesByCategory1 = ServicesByCategory(
+    serviceCategory: serviceCategory1,
+    services: [service1, service2],
+  );
 
-  setUpValues() {
-    serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
-    serviceCategory2 = ServiceCategory(id: '2', name: 'Manicure');
-    serviceCategory3 = ServiceCategory(id: '3', name: 'Pedicure');
+  final servicesByCategory2 = ServicesByCategory(
+    serviceCategory: serviceCategory2,
+    services: [service3, service4],
+  );
 
-    service1 = Service(
-      id: '1',
-      serviceCategoryId: '1',
-      name: 'Luzes',
-      price: 49.90,
-      hours: 1,
-      minutes: 30,
-      imageUrl: 'testeUrlImage',
-    );
-    service2 = Service(
-      id: '2',
-      serviceCategoryId: '1',
-      name: 'Chapinha',
-      price: 49.90,
-      hours: 1,
-      minutes: 30,
-      imageUrl: 'testeUrlImage',
-    );
-
-    service3 = Service(
-      id: '3',
-      serviceCategoryId: '2',
-      name: 'Francezinha',
-      price: 49.90,
-      hours: 1,
-      minutes: 30,
-      imageUrl: 'testeUrlImage',
-    );
-
-    service4 = Service(
-      id: '4',
-      serviceCategoryId: '2',
-      name: 'Limpeza',
-      price: 49.90,
-      hours: 1,
-      minutes: 30,
-      imageUrl: 'testeUrlImage',
-    );
-
-    service5 = Service(
-      id: '5',
-      serviceCategoryId: '3',
-      name: 'Francezinha',
-      price: 49.90,
-      hours: 1,
-      minutes: 30,
-      imageUrl: 'testeUrlImage',
-    );
-
-    service6 = Service(
-      id: '6',
-      serviceCategoryId: '3',
-      name: 'Limpeza',
-      price: 49.90,
-      hours: 1,
-      minutes: 30,
-      imageUrl: 'testeUrlImage',
-    );
-
-    servicesByCategory1 = ServicesByCategory(
-      serviceCategory: serviceCategory1,
-      services: [service1, service2],
-    );
-
-    servicesByCategory2 = ServicesByCategory(
-      serviceCategory: serviceCategory2,
-      services: [service3, service4],
-    );
-
-    servicesByCategory3 = ServicesByCategory(
-      serviceCategory: serviceCategory3,
-      services: [service5, service6],
-    );
-  }
+  final servicesByCategory3 = ServicesByCategory(
+    serviceCategory: serviceCategory3,
+    services: [service5, service6],
+  );
 
   setUp(
     () {
-      setUpMockServiceCategoryRepository();
-      setUpMockServiceRepository();
-      setUpMockServicesByCategoryRepository();
-      setUpMockImageRepository();
       final serviceCategoryService = ServiceCategoryService(
         onlineRepository: onlineMockServiceCategoryRepository,
         offlineRepository: offlineMockServiceCategoryRepository,
@@ -137,7 +125,6 @@ void main() {
         serviceService: serviceService,
         servicesByCategoryService: servicesByCategoryService,
       );
-      setUpValues();
     },
   );
 
@@ -149,7 +136,7 @@ void main() {
         "message" quando um erro ocorrer no Service/Repository.''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
           await serviceViewModel.load();
@@ -166,7 +153,7 @@ void main() {
         () async {
           final servicesByCategories = <ServicesByCategory>[];
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
           await serviceViewModel.load();
@@ -187,7 +174,7 @@ void main() {
             servicesByCategory3,
           ];
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
           await serviceViewModel.load();
@@ -209,18 +196,22 @@ void main() {
             servicesByCategory3,
           ];
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
           await serviceViewModel.load();
 
           expect(serviceViewModel.state is ServiceLoaded, isTrue);
 
-          final servicesByCategoriesActual = (serviceViewModel.state as ServiceLoaded).servicesByCategories;
+          final servicesByCategoriesActual =
+              (serviceViewModel.state as ServiceLoaded).servicesByCategories;
 
           expect(servicesByCategoriesActual.length, equals(servicesByCategories.length));
-          expect(servicesByCategoriesActual[0].services.length, equals(servicesByCategories[0].services.length));
-          expect(servicesByCategoriesActual[1].services.length, equals(servicesByCategories[1].services.length));
-          expect(servicesByCategoriesActual[2].services.length, equals(servicesByCategories[2].services.length));
+          expect(servicesByCategoriesActual[0].services.length,
+              equals(servicesByCategories[0].services.length));
+          expect(servicesByCategoriesActual[1].services.length,
+              equals(servicesByCategories[1].services.length));
+          expect(servicesByCategoriesActual[2].services.length,
+              equals(servicesByCategories[2].services.length));
         },
       );
     },
@@ -247,7 +238,7 @@ void main() {
             servicesByCategory3,
           ];
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
           await serviceViewModel.load();
 
@@ -270,7 +261,7 @@ void main() {
             servicesByCategory3,
           ];
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
           await serviceViewModel.load();
 
@@ -292,7 +283,7 @@ void main() {
             servicesByCategory3,
           ];
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
           await serviceViewModel.load();
 
@@ -314,7 +305,7 @@ void main() {
             servicesByCategory3,
           ];
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
           await serviceViewModel.load();
 
@@ -336,7 +327,7 @@ void main() {
             servicesByCategory3,
           ];
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
           await serviceViewModel.load();
 
@@ -358,7 +349,7 @@ void main() {
             servicesByCategory3,
           ];
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
           await serviceViewModel.load();
 
@@ -372,7 +363,8 @@ void main() {
           expect((serviceViewModel.state is ServiceLoaded), isTrue);
           expect((serviceViewModel.state is! ServiceFiltered), isTrue);
           final showAllServicesState = (serviceViewModel.state as ServiceLoaded);
-          expect(showAllServicesState.servicesByCategories.length, equals(servicesByCategories.length));
+          expect(showAllServicesState.servicesByCategories.length,
+              equals(servicesByCategories.length));
         },
       );
     },
@@ -388,12 +380,12 @@ void main() {
           const failureMessage = 'Teste de falha';
           final servicesByCategories = <ServicesByCategory>[];
 
-          when(onlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+          when(() => onlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
-          when(offlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+          when(() => offlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
           await serviceViewModel.deleteCategory(serviceCategory: serviceCategory1);
@@ -413,12 +405,12 @@ void main() {
             servicesByCategory3,
           ];
 
-          when(onlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+          when(() => onlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
               .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+          when(() => offlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
               .thenAnswer((_) async => Either.right(unit));
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
           final state = serviceViewModel.state;
@@ -441,10 +433,10 @@ void main() {
           const failureMessage = 'Teste de falha';
           final servicesByCategories = <ServicesByCategory>[];
 
-          when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl))
+          when(() => mockImageRepository.deleteImage(imageUrl: service1.imageUrl))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
           await serviceViewModel.deleteService(service: service1);
@@ -463,14 +455,14 @@ void main() {
           const failureMessage = 'Teste de falha';
           final servicesByCategories = <ServicesByCategory>[];
 
-          when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl))
+          when(() => mockImageRepository.deleteImage(imageUrl: service1.imageUrl))
               .thenAnswer((_) async => Either.right(unit));
-          when(onlineMockServiceRepository.deleteById(id: service1.id))
+          when(() => onlineMockServiceRepository.deleteById(id: service1.id))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
-          when(offlineMockServiceRepository.deleteById(id: service1.id))
+          when(() => offlineMockServiceRepository.deleteById(id: service1.id))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
           await serviceViewModel.deleteService(service: service1);
@@ -490,12 +482,14 @@ void main() {
             servicesByCategory3,
           ];
 
-          when(mockImageRepository.deleteImage(imageUrl: service1.imageUrl))
+          when(() => mockImageRepository.deleteImage(imageUrl: service1.imageUrl))
               .thenAnswer((_) async => Either.right(unit));
-          when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
+          when(() => onlineMockServiceRepository.deleteById(id: service1.id))
+              .thenAnswer((_) async => Either.right(unit));
+          when(() => offlineMockServiceRepository.deleteById(id: service1.id))
+              .thenAnswer((_) async => Either.right(unit));
 
-          when(offlineMockServicesByCategoryRepository.getAll())
+          when(() => offlineMockServicesByCategoryRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesByCategories));
 
           final state = serviceViewModel.state;

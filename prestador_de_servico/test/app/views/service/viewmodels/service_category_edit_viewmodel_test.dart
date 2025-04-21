@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/service_category_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
@@ -7,22 +8,18 @@ import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/service/states/service_category_edit_state.dart';
 
-import '../../../../helpers/service/service_category/mock_service_category_repository.dart';
+class MockServiceCategoryRepository extends Mock implements ServiceCategoryRepository {}
 
 void main() {
+  final onlineMockServiceCategoryRepository = MockServiceCategoryRepository();
+  final offlineMockServiceCategoryRepository = MockServiceCategoryRepository();
   late ServiceCategoryEditViewModel serviceCategoryEditViewModel;
 
-  late ServiceCategory serviceCategory1;
-  late ServiceCategory serviceCategoryWithoutName;
-
-  void setUpValues() {
-    serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
-    serviceCategoryWithoutName = ServiceCategory(id: '100', name: '');
-  }
+  final serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
+  final serviceCategoryWithoutName = ServiceCategory(id: '100', name: '');
 
   setUp(
     () {
-      setUpMockServiceCategoryRepository();
       ServiceCategoryService serviceCategoryService = ServiceCategoryService(
         onlineRepository: onlineMockServiceCategoryRepository,
         offlineRepository: offlineMockServiceCategoryRepository,
@@ -31,7 +28,6 @@ void main() {
       serviceCategoryEditViewModel = ServiceCategoryEditViewModel(
         serviceCategoryService: serviceCategoryService,
       );
-      setUpValues();
     },
   );
 
@@ -42,7 +38,8 @@ void main() {
         '''Deve alterar o estado para ServiceCategoryEditError e definir uma mensagem de erro 
         no campo "nameMessage" quando o campo "name" estiver vazio.''',
         () async {
-          await serviceCategoryEditViewModel.validateAndInsert(serviceCategory: serviceCategoryWithoutName);
+          await serviceCategoryEditViewModel.validateAndInsert(
+              serviceCategory: serviceCategoryWithoutName);
 
           expect(serviceCategoryEditViewModel.state is ServiceCategoryEditError, isTrue);
           final state = (serviceCategoryEditViewModel.state as ServiceCategoryEditError);
@@ -55,7 +52,7 @@ void main() {
         "genericMessagequando" quando não estiver acesso a internet.''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
+          when(() => onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.left((NetworkFailure(failureMessage))));
 
           await serviceCategoryEditViewModel.validateAndInsert(serviceCategory: serviceCategory1);
@@ -70,9 +67,9 @@ void main() {
         '''Deve alterar o estado para ServiceCategoryEditSuccess com o ServiceCategory inserido
         quando a inserção for válida..''',
         () async {
-          when(onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
+          when(() => onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.right(serviceCategory1.id));
-          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
+          when(() => offlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.right(serviceCategory1.id));
 
           await serviceCategoryEditViewModel.validateAndInsert(serviceCategory: serviceCategory1);
@@ -92,7 +89,8 @@ void main() {
         '''Deve alterar o estado para ServiceCategoryEditError e definir uma mensagem de erro no 
         campo "nameMessage" quando o campo "name" estiver vazio.''',
         () async {
-          await serviceCategoryEditViewModel.validateAndUpdate(serviceCategory: serviceCategoryWithoutName);
+          await serviceCategoryEditViewModel.validateAndUpdate(
+              serviceCategory: serviceCategoryWithoutName);
 
           expect(serviceCategoryEditViewModel.state is ServiceCategoryEditError, isTrue);
           final state = (serviceCategoryEditViewModel.state as ServiceCategoryEditError);
@@ -105,7 +103,7 @@ void main() {
         "genericMessage" quando não estiver acesso a internet.''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          when(() => onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           await serviceCategoryEditViewModel.validateAndUpdate(serviceCategory: serviceCategory1);
@@ -120,9 +118,9 @@ void main() {
         '''Deve alterar o estado para ServiceCategoryEditSuccess com o ServiceCategory alterado 
         quando a alteração for válida.''',
         () async {
-          when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          when(() => onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          when(() => offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
               .thenAnswer((_) async => Either.right(unit));
 
           await serviceCategoryEditViewModel.validateAndUpdate(serviceCategory: serviceCategory1);
