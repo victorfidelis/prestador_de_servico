@@ -1,68 +1,58 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
+import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
+import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
-import '../../../helpers/image/mock_image_repository.dart';
-import '../../../helpers/service/service/mock_service_repository.dart';
+class MockServiceRepository extends Mock implements ServiceRepository {}
+class MockImageRepository extends Mock implements ImageRepository {}
 
 void main() {
-  late ServiceService serviceService;
+  final offlineMockServiceRepository = MockServiceRepository();
+  final onlineMockServiceRepository = MockServiceRepository();
+  final mockImageRepository = MockImageRepository();
+  final serviceService = ServiceService(
+    offlineRepository: offlineMockServiceRepository,
+    onlineRepository: onlineMockServiceRepository,
+    imageRepository: mockImageRepository,
+  );
 
-  late Service service1;
-  late Service serviceWithImageFile;
-  late Service serviceWithImageUrl;
+  final service1 = Service(
+    id: '1',
+    serviceCategoryId: '1',
+    name: 'Luzes',
+    price: 49.90,
+    hours: 1,
+    minutes: 30,
+    imageUrl: '',
+  );
 
-  setUpValues() {
-    service1 = Service(
-      id: '1',
-      serviceCategoryId: '1',
-      name: 'Luzes',
-      price: 49.90,
-      hours: 1,
-      minutes: 30,
-      imageUrl: '',
-    );
+  final serviceWithImageFile = Service(
+    id: '1',
+    serviceCategoryId: '1',
+    name: 'Luzes',
+    price: 49.90,
+    hours: 1,
+    minutes: 30,
+    imageUrl: '',
+    imageFile: File('caminho imagem'),
+  );
 
-    serviceWithImageFile = Service(
-      id: '1',
-      serviceCategoryId: '1',
-      name: 'Luzes',
-      price: 49.90,
-      hours: 1,
-      minutes: 30,
-      imageUrl: '',
-      imageFile: File('caminho imagem'),
-    );
-
-    serviceWithImageUrl = Service(
-      id: '1',
-      serviceCategoryId: '1',
-      name: 'Luzes',
-      price: 49.90,
-      hours: 1,
-      minutes: 30,
-      imageUrl: 'prestador_de_servico.com/imagem_teste.jpg',
-      imageFile: null,
-    );
-  }
-
-  setUp(
-    () {
-      setUpMockServiceRepository();
-      setUpMockImageRepository();
-      serviceService = ServiceService(
-        offlineRepository: offlineMockServiceRepository,
-        onlineRepository: onlineMockServiceRepository,
-        imageRepository: mockImageRepository,
-      );
-      setUpValues();
-    },
+  final serviceWithImageUrl = Service(
+    id: '1',
+    serviceCategoryId: '1',
+    name: 'Luzes',
+    price: 49.90,
+    hours: 1,
+    minutes: 30,
+    imageUrl: 'prestador_de_servico.com/imagem_teste.jpg',
+    imageFile: null,
   );
 
   group(
@@ -72,7 +62,7 @@ void main() {
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockServiceRepository.insert(service: service1))
+          when(() => onlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final insertEither = await serviceService.insert(service: service1);
@@ -88,9 +78,9 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockServiceRepository.insert(service: service1))
+          when(() => onlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.right(service1.id));
-          when(offlineMockServiceRepository.insert(service: service1))
+          when(() => offlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final insertEither = await serviceService.insert(service: service1);
@@ -108,12 +98,12 @@ void main() {
         () async {
           const failureMessage = 'Falha de teste';
 
-          when(onlineMockServiceRepository.insert(service: serviceWithImageFile))
+          when(() => onlineMockServiceRepository.insert(service: serviceWithImageFile))
               .thenAnswer((_) async => Either.right(serviceWithImageFile.id));
-          when(offlineMockServiceRepository.insert(service: serviceWithImageFile))
+          when(() => offlineMockServiceRepository.insert(service: serviceWithImageFile))
               .thenAnswer((_) async => Either.right(serviceWithImageFile.id));
-          when(mockImageRepository.uploadImage(
-            imageFile: serviceWithImageFile.imageFile,
+          when(() => mockImageRepository.uploadImage(
+            imageFile: serviceWithImageFile.imageFile!,
             imageFileName: serviceWithImageFile.imageName,
           )).thenAnswer((_) async => Either.left(UploadImageFailure(failureMessage)));
 
@@ -129,9 +119,9 @@ void main() {
       test(
         '''Deve retornar um Unit quando a gravação do Service for feita com sucesso''',
         () async {
-          when(onlineMockServiceRepository.insert(service: service1))
+          when(() => onlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.right(service1.id));
-          when(offlineMockServiceRepository.insert(service: service1))
+          when(() => offlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.right(service1.id));
 
           final insertEither = await serviceService.insert(service: service1);
@@ -151,7 +141,7 @@ void main() {
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockServiceRepository.update(service: service1))
+          when(() => onlineMockServiceRepository.update(service: service1))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final insertEither = await serviceService.update(service: service1);
@@ -167,8 +157,9 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.update(service: service1))
+          when(() => onlineMockServiceRepository.update(service: service1))
+              .thenAnswer((_) async => Either.right(unit));
+          when(() => offlineMockServiceRepository.update(service: service1))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final insertEither = await serviceService.update(service: service1);
@@ -186,8 +177,8 @@ void main() {
         () async {
           const failureMessage = 'Falha de teste';
 
-          when(mockImageRepository.uploadImage(
-            imageFile: serviceWithImageFile.imageFile,
+          when(() => mockImageRepository.uploadImage(
+            imageFile: serviceWithImageFile.imageFile!,
             imageFileName: serviceWithImageFile.imageName,
           )).thenAnswer((_) async => Either.left(UploadImageFailure(failureMessage)));
 
@@ -203,8 +194,10 @@ void main() {
       test(
         '''Deve retornar um Service quando a gravação do Service for feita com sucesso''',
         () async {
-          when(onlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.update(service: service1)).thenAnswer((_) async => Either.right(unit));
+          when(() => onlineMockServiceRepository.update(service: service1))
+              .thenAnswer((_) async => Either.right(unit));
+          when(() => offlineMockServiceRepository.update(service: service1))
+              .thenAnswer((_) async => Either.right(unit));
 
           final insertEither = await serviceService.update(service: service1);
 
@@ -223,7 +216,7 @@ void main() {
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockServiceRepository.deleteById(id: service1.id))
+          when(() => onlineMockServiceRepository.deleteById(id: service1.id))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final insertEither = await serviceService.delete(service: service1);
@@ -239,8 +232,9 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.deleteById(id: service1.id))
+          when(() => onlineMockServiceRepository.deleteById(id: service1.id))
+              .thenAnswer((_) async => Either.right(unit));
+          when(() => offlineMockServiceRepository.deleteById(id: service1.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final insertEither = await serviceService.delete(service: service1);
@@ -256,7 +250,7 @@ void main() {
         '''Deve retornar um DeleteImageFailure quando um erro ocorrer ao excluir uma imagem''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(mockImageRepository.deleteImage(imageUrl: serviceWithImageUrl.imageUrl))
+          when(() => mockImageRepository.deleteImage(imageUrl: serviceWithImageUrl.imageUrl))
               .thenAnswer((_) async => Either.left(DeleteImageFailure(failureMessage)));
 
           final insertEither = await serviceService.delete(service: serviceWithImageUrl);
@@ -273,10 +267,12 @@ void main() {
         a mesma não existe''',
         () async {
           const failureMessage = 'Falha de teste';
-          when(mockImageRepository.deleteImage(imageUrl: serviceWithImageUrl.imageUrl))
+          when(() => mockImageRepository.deleteImage(imageUrl: serviceWithImageUrl.imageUrl))
               .thenAnswer((_) async => Either.left(ImageNotFoundFailure(failureMessage)));
-          when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
+          when(() => onlineMockServiceRepository.deleteById(id: service1.id))
+              .thenAnswer((_) async => Either.right(unit));
+          when(() => offlineMockServiceRepository.deleteById(id: service1.id))
+              .thenAnswer((_) async => Either.right(unit));
 
           final insertEither = await serviceService.delete(service: serviceWithImageUrl);
 
@@ -288,8 +284,10 @@ void main() {
       test(
         '''Deve retornar um Unit quando a gravação do Service for feita com sucesso''',
         () async {
-          when(onlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.deleteById(id: service1.id)).thenAnswer((_) async => Either.right(unit));
+          when(() => onlineMockServiceRepository.deleteById(id: service1.id))
+              .thenAnswer((_) async => Either.right(unit));
+          when(() => offlineMockServiceRepository.deleteById(id: service1.id))
+              .thenAnswer((_) async => Either.right(unit));
 
           final insertEither = await serviceService.delete(service: service1);
 

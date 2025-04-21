@@ -1,18 +1,27 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
+import 'package:prestador_de_servico/app/repositories/service_day/service_day_repository.dart';
+import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_day_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
-import '../../../helpers/service_day/mock_service_day_repository.dart';
-import '../../../helpers/sync/mock_sync_repository.dart';
+class MockSyncRepository extends Mock implements SyncRepository {}
 
+class MockServiceDayRepository extends Mock implements ServiceDayRepository {}
 
 void main() {
-  late SyncServiceDayService syncServiceDayService;
+  final mockSyncRepository = MockSyncRepository();
+  final offlineMockServiceDayRepository = MockServiceDayRepository();
+  final onlineMockServiceDayRepository = MockServiceDayRepository();
+  final syncServiceDayService = SyncServiceDayService(
+    syncRepository: mockSyncRepository,
+    offlineRepository: offlineMockServiceDayRepository,
+    onlineRepository: onlineMockServiceDayRepository,
+  );
 
   late Sync syncEmpty;
   late Sync syncServiceDay;
@@ -25,11 +34,11 @@ void main() {
   late ServiceDay serviceDay6;
   late ServiceDay serviceDay7;
   late ServiceDay serviceDay5Deleted;
-  
+
   late ServiceDay serviceDayLowestDate;
   late ServiceDay serviceDayIntermediateDate;
   late ServiceDay serviceDayBiggestDate;
-  
+
   late List<ServiceDay> serviceDaysGetAll;
   late List<ServiceDay> serviceDaysGetSync;
   late List<ServiceDay> serviceDaysGetHasDate;
@@ -38,19 +47,111 @@ void main() {
     syncEmpty = Sync();
     syncServiceDay = Sync(dateSyncServiceDay: DateTime(2024, 10, 10));
 
-    serviceDay1 = ServiceDay(id: '1', dayOfWeek: 1, name: 'Domingo', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
-    serviceDay2 = ServiceDay(id: '2', dayOfWeek: 2, name: 'Segunda-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
-    serviceDay3 = ServiceDay(id: '3', dayOfWeek: 3, name: 'Terça-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
-    serviceDay4 = ServiceDay(id: '4', dayOfWeek: 4, name: 'Quarta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
-    serviceDay5 = ServiceDay(id: '5', dayOfWeek: 5, name: 'Quinta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
-    serviceDay6 = ServiceDay(id: '6', dayOfWeek: 6, name: 'Sexta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
-    serviceDay7 = ServiceDay(id: '7', dayOfWeek: 7, name: 'Sábado', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0);
-    
-    serviceDay5Deleted = ServiceDay(id: '5', dayOfWeek: 5, name: 'Quinta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0, isDeleted: true);
-  
-    serviceDayLowestDate = ServiceDay(id: '3', dayOfWeek: 3, name: 'Terça-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0, syncDate: DateTime(2024, 11, 5));
-    serviceDayIntermediateDate = ServiceDay(id: '4', dayOfWeek: 4, name: 'Quarta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0, syncDate: DateTime(2024, 11, 10));
-    serviceDayBiggestDate = ServiceDay(id: '5', dayOfWeek: 5, name: 'Quinta-feira', isActive: true, openingHour: 0, openingMinute: 0, closingHour: 0, closingMinute: 0, syncDate: DateTime(2024, 11, 15));
+    serviceDay1 = ServiceDay(
+        id: '1',
+        dayOfWeek: 1,
+        name: 'Domingo',
+        isActive: true,
+        openingHour: 0,
+        openingMinute: 0,
+        closingHour: 0,
+        closingMinute: 0);
+    serviceDay2 = ServiceDay(
+        id: '2',
+        dayOfWeek: 2,
+        name: 'Segunda-feira',
+        isActive: true,
+        openingHour: 0,
+        openingMinute: 0,
+        closingHour: 0,
+        closingMinute: 0);
+    serviceDay3 = ServiceDay(
+        id: '3',
+        dayOfWeek: 3,
+        name: 'Terça-feira',
+        isActive: true,
+        openingHour: 0,
+        openingMinute: 0,
+        closingHour: 0,
+        closingMinute: 0);
+    serviceDay4 = ServiceDay(
+        id: '4',
+        dayOfWeek: 4,
+        name: 'Quarta-feira',
+        isActive: true,
+        openingHour: 0,
+        openingMinute: 0,
+        closingHour: 0,
+        closingMinute: 0);
+    serviceDay5 = ServiceDay(
+        id: '5',
+        dayOfWeek: 5,
+        name: 'Quinta-feira',
+        isActive: true,
+        openingHour: 0,
+        openingMinute: 0,
+        closingHour: 0,
+        closingMinute: 0);
+    serviceDay6 = ServiceDay(
+        id: '6',
+        dayOfWeek: 6,
+        name: 'Sexta-feira',
+        isActive: true,
+        openingHour: 0,
+        openingMinute: 0,
+        closingHour: 0,
+        closingMinute: 0);
+    serviceDay7 = ServiceDay(
+        id: '7',
+        dayOfWeek: 7,
+        name: 'Sábado',
+        isActive: true,
+        openingHour: 0,
+        openingMinute: 0,
+        closingHour: 0,
+        closingMinute: 0);
+
+    serviceDay5Deleted = ServiceDay(
+        id: '5',
+        dayOfWeek: 5,
+        name: 'Quinta-feira',
+        isActive: true,
+        openingHour: 0,
+        openingMinute: 0,
+        closingHour: 0,
+        closingMinute: 0,
+        isDeleted: true);
+
+    serviceDayLowestDate = ServiceDay(
+        id: '3',
+        dayOfWeek: 3,
+        name: 'Terça-feira',
+        isActive: true,
+        openingHour: 0,
+        openingMinute: 0,
+        closingHour: 0,
+        closingMinute: 0,
+        syncDate: DateTime(2024, 11, 5));
+    serviceDayIntermediateDate = ServiceDay(
+        id: '4',
+        dayOfWeek: 4,
+        name: 'Quarta-feira',
+        isActive: true,
+        openingHour: 0,
+        openingMinute: 0,
+        closingHour: 0,
+        closingMinute: 0,
+        syncDate: DateTime(2024, 11, 10));
+    serviceDayBiggestDate = ServiceDay(
+        id: '5',
+        dayOfWeek: 5,
+        name: 'Quinta-feira',
+        isActive: true,
+        openingHour: 0,
+        openingMinute: 0,
+        closingHour: 0,
+        closingMinute: 0,
+        syncDate: DateTime(2024, 11, 15));
 
     serviceDaysGetAll = [
       serviceDay1,
@@ -74,15 +175,11 @@ void main() {
     ];
   }
 
-  setUp(() {
-      setUpMockSyncRepository();
-      setUpMockServiceDayRepository();
-      syncServiceDayService = SyncServiceDayService(
-        syncRepository: mockSyncRepository,
-        offlineRepository: offlineMockServiceDayRepository,
-        onlineRepository: onlineMockServiceDayRepository,
-      );
+  setUp(
+    () {
       setUpValues();
+      registerFallbackValue(serviceDay1);
+      registerFallbackValue(syncEmpty);
     },
   );
 
@@ -93,7 +190,8 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
+          when(() => mockSyncRepository.get())
+              .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final loadEither = await syncServiceDayService.loadSyncInfo();
 
@@ -108,7 +206,7 @@ void main() {
         '''Deve retornar um Unit e carregar o campo "sync" sem dados em "dateSyncServiceDay"
         quando não houver sincronizações de ServiceDay anteriores''',
         () async {
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(syncEmpty));
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(syncEmpty));
 
           final loadEither = await syncServiceDayService.loadSyncInfo();
 
@@ -122,7 +220,7 @@ void main() {
         '''Deve retornar um Unit e carregar o campo "sync" com dados em "dateSyncServiceDays"
         quando houver sincronizações de ServiceDay anteriores''',
         () async {
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(syncServiceDay));
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(syncServiceDay));
 
           final loadEither = await syncServiceDayService.loadSyncInfo();
 
@@ -144,7 +242,7 @@ void main() {
         () async {
           const failureMessage = 'Teste de falha';
           syncServiceDayService.sync = syncEmpty;
-          when(onlineMockServiceDayRepository.getAll())
+          when(() => onlineMockServiceDayRepository.getAll())
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceDayService.loadUnsynced();
@@ -162,8 +260,8 @@ void main() {
         () async {
           const failureMessage = 'Teste de falha';
           syncServiceDayService.sync = syncServiceDay;
-          when(onlineMockServiceDayRepository.getUnsync(
-                  dateLastSync: syncServiceDay.dateSyncServiceDay))
+          when(() => onlineMockServiceDayRepository.getUnsync(
+                  dateLastSync: syncServiceDay.dateSyncServiceDay!))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceDayService.loadUnsynced();
@@ -180,7 +278,7 @@ void main() {
         ServiceDay cadastrados quando não tiver sincronização de ServiceDay anterior''',
         () async {
           syncServiceDayService.sync = syncEmpty;
-          when(onlineMockServiceDayRepository.getAll())
+          when(() => onlineMockServiceDayRepository.getAll())
               .thenAnswer((_) async => Either.right(serviceDaysGetAll));
 
           final loadUnsyncedEither = await syncServiceDayService.loadUnsynced();
@@ -200,8 +298,8 @@ void main() {
         de ServiceDay anterior''',
         () async {
           syncServiceDayService.sync = syncServiceDay;
-          when(onlineMockServiceDayRepository.getUnsync(
-                  dateLastSync: syncServiceDay.dateSyncServiceDay))
+          when(() => onlineMockServiceDayRepository.getUnsync(
+                  dateLastSync: syncServiceDay.dateSyncServiceDay!))
               .thenAnswer((_) async => Either.right(serviceDaysGetSync));
 
           final loadUnsyncedEither = await syncServiceDayService.loadUnsynced();
@@ -225,7 +323,7 @@ void main() {
         verificação da existência do ServiceDay''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
+          when(() => offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceDayService.syncServiceDay(serviceDay1);
@@ -242,9 +340,9 @@ void main() {
         inserção do ServiceDay''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
+          when(() => offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
               .thenAnswer((_) async => Either.right(false));
-          when(offlineMockServiceDayRepository.insert(serviceDay: serviceDay1))
+          when(() => offlineMockServiceDayRepository.insert(serviceDay: serviceDay1))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceDayService.syncServiceDay(serviceDay1);
@@ -261,9 +359,9 @@ void main() {
         alteração do ServiceDay''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
+          when(() => offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceDayRepository.update(serviceDay: serviceDay1))
+          when(() => offlineMockServiceDayRepository.update(serviceDay: serviceDay1))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceDayService.syncServiceDay(serviceDay1);
@@ -280,7 +378,7 @@ void main() {
         exclusão do ServiceDay''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceDayRepository.deleteById(id: serviceDay5Deleted.id))
+          when(() => offlineMockServiceDayRepository.deleteById(id: serviceDay5Deleted.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceDayService.syncServiceDay(serviceDay5Deleted);
@@ -295,9 +393,9 @@ void main() {
       test(
         '''Deve retornar um Unit quando a inserção de um ServiceDay for feita com sucesso''',
         () async {
-          when(offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
+          when(() => offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
               .thenAnswer((_) async => Either.right(false));
-          when(offlineMockServiceDayRepository.insert(serviceDay: serviceDay1))
+          when(() => offlineMockServiceDayRepository.insert(serviceDay: serviceDay1))
               .thenAnswer((_) async => Either.right(serviceDay1.id));
 
           final unsyncedEither = await syncServiceDayService.syncServiceDay(serviceDay1);
@@ -310,9 +408,9 @@ void main() {
       test(
         '''Deve retornar um Unit quando a alteração de um ServiceDay for feita com sucesso''',
         () async {
-          when(offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
+          when(() => offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceDayRepository.update(serviceDay: serviceDay1))
+          when(() => offlineMockServiceDayRepository.update(serviceDay: serviceDay1))
               .thenAnswer((_) async => Either.right(unit));
 
           final unsyncedEither = await syncServiceDayService.syncServiceDay(serviceDay1);
@@ -325,7 +423,7 @@ void main() {
       test(
         '''Deve retornar um Unit quando a exclusão de um ServiceDay for feita com sucesso''',
         () async {
-          when(offlineMockServiceDayRepository.deleteById(id: serviceDay5Deleted.id))
+          when(() => offlineMockServiceDayRepository.deleteById(id: serviceDay5Deleted.id))
               .thenAnswer((_) async => Either.right(unit));
 
           final unsyncedEither = await syncServiceDayService.syncServiceDay(serviceDay5Deleted);
@@ -345,7 +443,7 @@ void main() {
         () async {
           syncServiceDayService.serviceDaysToSync = serviceDaysGetAll;
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
+          when(() => offlineMockServiceDayRepository.existsById(id: serviceDay1.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final uncyncedEither = await syncServiceDayService.syncUnsynced();
@@ -361,15 +459,15 @@ void main() {
         '''Deve retornar um Unit''',
         () async {
           syncServiceDayService.serviceDaysToSync = serviceDaysGetAll;
-          when(offlineMockServiceDayRepository.deleteById(id: anyNamed('id')))
+          when(() => offlineMockServiceDayRepository.deleteById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceDayRepository.existsById(id: anyNamed('id')))
+          when(() => offlineMockServiceDayRepository.existsById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.right(false));
-          when(offlineMockServiceDayRepository.insert(serviceDay: anyNamed('serviceDay')))
+          when(() => offlineMockServiceDayRepository.insert(serviceDay: any(named: 'serviceDay')))
               .thenAnswer((_) async => Either.right(serviceDay1.id));
-          when(offlineMockServiceDayRepository.existsById(id: anyNamed('id')))
+          when(() => offlineMockServiceDayRepository.existsById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceDayRepository.update(serviceDay: anyNamed('serviceDay')))
+          when(() => offlineMockServiceDayRepository.update(serviceDay: any(named: 'serviceDay')))
               .thenAnswer((_) async => Either.right(unit));
 
           final uncyncedEither = await syncServiceDayService.syncUnsynced();
@@ -450,7 +548,8 @@ void main() {
             serviceDayBiggestDate,
           ];
           const failureMessage = 'Teste de falha';
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
+          when(() => mockSyncRepository.exists())
+              .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final updateEither = await syncServiceDayService.updateSyncDate();
 
@@ -472,8 +571,8 @@ void main() {
             serviceDayBiggestDate,
           ];
           const failureMessage = 'Teste de falha';
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
-          when(mockSyncRepository.insert(sync: anyNamed('sync')))
+          when(() => mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
+          when(() => mockSyncRepository.insert(sync: any(named: 'sync')))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final updateEither = await syncServiceDayService.updateSyncDate();
@@ -496,8 +595,8 @@ void main() {
             serviceDayBiggestDate,
           ];
           const failureMessage = 'Teste de falha';
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
-          when(mockSyncRepository.updateServiceDay(syncDate: anyNamed('syncDate')))
+          when(() => mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
+          when(() => mockSyncRepository.updateServiceDay(syncDate: any(named: 'syncDate')))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final updateEither = await syncServiceDayService.updateSyncDate();
@@ -532,8 +631,9 @@ void main() {
             serviceDayBiggestDate,
           ];
 
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
-          when(mockSyncRepository.insert(sync: anyNamed('sync'))).thenAnswer((_) async => Either.right(unit));
+          when(() => mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
+          when(() => mockSyncRepository.insert(sync: any(named: 'sync')))
+              .thenAnswer((_) async => Either.right(unit));
 
           final updateEither = await syncServiceDayService.updateSyncDate();
 
@@ -553,8 +653,8 @@ void main() {
             serviceDayBiggestDate,
           ];
 
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
-          when(mockSyncRepository.updateServiceDay(syncDate: anyNamed('syncDate')))
+          when(() => mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
+          when(() => mockSyncRepository.updateServiceDay(syncDate: any(named: 'syncDate')))
               .thenAnswer((_) async => Either.right(unit));
 
           final updateEither = await syncServiceDayService.updateSyncDate();
@@ -574,7 +674,8 @@ void main() {
         ao consultar os dados de sincronização''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
+          when(() => mockSyncRepository.get())
+              .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final syncEither = await syncServiceDayService.synchronize();
 
@@ -589,8 +690,8 @@ void main() {
         ServiceDay a serem sincronizados''',
         () async {
           const failureMessage = '';
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceDayRepository.getAll())
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(() => onlineMockServiceDayRepository.getAll())
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final syncEither = await syncServiceDayService.synchronize();
@@ -606,9 +707,10 @@ void main() {
         verificar se o ServiceDay existe''',
         () async {
           const failureMessage = 'Falha syncUnsynced';
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceDayRepository.getAll()).thenAnswer((_) async => Either.right(serviceDaysGetAll));
-          when(offlineMockServiceDayRepository.existsById(id: anyNamed('id')))
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(() => onlineMockServiceDayRepository.getAll())
+              .thenAnswer((_) async => Either.right(serviceDaysGetAll));
+          when(() => offlineMockServiceDayRepository.existsById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final syncEither = await syncServiceDayService.synchronize();
@@ -624,13 +726,15 @@ void main() {
         verificar existe alguma sincronização anterior''',
         () async {
           const failureMessage = 'Falha updateSyncDate';
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceDayRepository.getAll()).thenAnswer((_) async => Either.right(serviceDaysGetHasDate));
-          when(offlineMockServiceDayRepository.existsById(id: anyNamed('id')))
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(() => onlineMockServiceDayRepository.getAll())
+              .thenAnswer((_) async => Either.right(serviceDaysGetHasDate));
+          when(() => offlineMockServiceDayRepository.existsById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceDayRepository.update(serviceDay: anyNamed('serviceDay')))
+          when(() => offlineMockServiceDayRepository.update(serviceDay: any(named: 'serviceDay')))
               .thenAnswer((_) async => Either.right(unit));
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
+          when(() => mockSyncRepository.exists())
+              .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final syncEither = await syncServiceDayService.synchronize();
 
@@ -643,14 +747,15 @@ void main() {
       test(
         '''Deve retornar um Unit quando a sincronização for realizada com sucesso''',
         () async {
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceDayRepository.getAll()).thenAnswer((_) async => Either.right(serviceDaysGetHasDate));
-          when(offlineMockServiceDayRepository.existsById(id: anyNamed('id')))
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(() => onlineMockServiceDayRepository.getAll())
+              .thenAnswer((_) async => Either.right(serviceDaysGetHasDate));
+          when(() => offlineMockServiceDayRepository.existsById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceDayRepository.update(serviceDay: anyNamed('serviceDay')))
+          when(() => offlineMockServiceDayRepository.update(serviceDay: any(named: 'serviceDay')))
               .thenAnswer((_) async => Either.right(unit));
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
-          when(mockSyncRepository.updateServiceDay(syncDate: anyNamed('syncDate')))
+          when(() => mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
+          when(() => mockSyncRepository.updateServiceDay(syncDate: any(named: 'syncDate')))
               .thenAnswer((_) async => Either.right(unit));
 
           final syncEither = await syncServiceDayService.synchronize();

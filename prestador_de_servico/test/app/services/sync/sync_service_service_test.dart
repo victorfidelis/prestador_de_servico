@@ -1,17 +1,27 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/sync/sync.dart';
+import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
+import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
-import '../../../helpers/service/service/mock_service_repository.dart';
-import '../../../helpers/sync/mock_sync_repository.dart';
+class MockSyncRepository extends Mock implements SyncRepository {}
+
+class MockServiceRepository extends Mock implements ServiceRepository {}
 
 void main() {
-  late SyncServiceService syncServiceService;
+  final mockSyncRepository = MockSyncRepository();
+  final offlineMockServiceRepository = MockServiceRepository();
+  final onlineMockServiceRepository = MockServiceRepository();
+  final syncServiceService = SyncServiceService(
+    syncRepository: mockSyncRepository,
+    offlineRepository: offlineMockServiceRepository,
+    onlineRepository: onlineMockServiceRepository,
+  );
 
   late Sync syncEmpty;
   late Sync syncService;
@@ -21,11 +31,11 @@ void main() {
   late Service service3;
   late Service service4;
   late Service service5Deleted;
-  
+
   late Service serviceLowestDate;
   late Service serviceIntermediateDate;
   late Service serviceBiggestDate;
-  
+
   late List<Service> servicesGetAll;
   late List<Service> servicesGetSync;
   late List<Service> servicesGetHasDate;
@@ -34,16 +44,76 @@ void main() {
     syncEmpty = Sync();
     syncService = Sync(dateSyncService: DateTime(2024, 10, 10));
 
-    service1 = Service(id: '1', serviceCategoryId: '1', name: 'Luzes', price: 80, hours: 1, minutes: 15, imageUrl: 'imageurlluzes.jpg');
-    service2 = Service(id: '2', serviceCategoryId: '1', name: 'Chapinha', price: 40, hours: 0, minutes: 35, imageUrl: 'imageurlchapinha.jpg');
-    service3 = Service(id: '3', serviceCategoryId: '1', name: 'Escova', price: 40, hours: 0, minutes: 45, imageUrl: 'imageurlescova.jpg');
-    service4 = Service(id: '4', serviceCategoryId: '1', name: 'Platinado', price: 50, hours: 1, minutes: 40, imageUrl: 'imageurlplatinado.jpg');
-    service5Deleted = Service(id: '4', serviceCategoryId: '1', name: 'Degradê', price: 30, hours: 0, minutes: 45, imageUrl: 'imageurldegrade.jpg', isDeleted: true);
-  
-    serviceLowestDate = Service(id: '1', serviceCategoryId: '1', name: 'Luzes', price: 80, hours: 1, minutes: 15, imageUrl: 'imageurlluzes.jpg', syncDate: DateTime(2024, 11, 5));
-    serviceIntermediateDate = Service(id: '2', serviceCategoryId: '1', name: 'Chapinha', price: 40, hours: 0, minutes: 35, imageUrl: 'imageurlchapinha.jpg', syncDate: DateTime(2024, 11, 10));
-    serviceBiggestDate = Service(id: '3', serviceCategoryId: '1', name: 'Escova', price: 40, hours: 0, minutes: 45, imageUrl: 'imageurlescova.jpg', syncDate: DateTime(2024, 11, 15));
-    
+    service1 = Service(
+        id: '1',
+        serviceCategoryId: '1',
+        name: 'Luzes',
+        price: 80,
+        hours: 1,
+        minutes: 15,
+        imageUrl: 'imageurlluzes.jpg');
+    service2 = Service(
+        id: '2',
+        serviceCategoryId: '1',
+        name: 'Chapinha',
+        price: 40,
+        hours: 0,
+        minutes: 35,
+        imageUrl: 'imageurlchapinha.jpg');
+    service3 = Service(
+        id: '3',
+        serviceCategoryId: '1',
+        name: 'Escova',
+        price: 40,
+        hours: 0,
+        minutes: 45,
+        imageUrl: 'imageurlescova.jpg');
+    service4 = Service(
+        id: '4',
+        serviceCategoryId: '1',
+        name: 'Platinado',
+        price: 50,
+        hours: 1,
+        minutes: 40,
+        imageUrl: 'imageurlplatinado.jpg');
+    service5Deleted = Service(
+        id: '4',
+        serviceCategoryId: '1',
+        name: 'Degradê',
+        price: 30,
+        hours: 0,
+        minutes: 45,
+        imageUrl: 'imageurldegrade.jpg',
+        isDeleted: true);
+
+    serviceLowestDate = Service(
+        id: '1',
+        serviceCategoryId: '1',
+        name: 'Luzes',
+        price: 80,
+        hours: 1,
+        minutes: 15,
+        imageUrl: 'imageurlluzes.jpg',
+        syncDate: DateTime(2024, 11, 5));
+    serviceIntermediateDate = Service(
+        id: '2',
+        serviceCategoryId: '1',
+        name: 'Chapinha',
+        price: 40,
+        hours: 0,
+        minutes: 35,
+        imageUrl: 'imageurlchapinha.jpg',
+        syncDate: DateTime(2024, 11, 10));
+    serviceBiggestDate = Service(
+        id: '3',
+        serviceCategoryId: '1',
+        name: 'Escova',
+        price: 40,
+        hours: 0,
+        minutes: 45,
+        imageUrl: 'imageurlescova.jpg',
+        syncDate: DateTime(2024, 11, 15));
+
     servicesGetAll = [
       service1,
       service2,
@@ -64,15 +134,11 @@ void main() {
     ];
   }
 
-  setUp(() {
-      setUpMockSyncRepository();
-      setUpMockServiceRepository();
-      syncServiceService = SyncServiceService(
-        syncRepository: mockSyncRepository,
-        offlineRepository: offlineMockServiceRepository,
-        onlineRepository: onlineMockServiceRepository,
-      );
+  setUp(
+    () {
       setUpValues();
+      registerFallbackValue(syncEmpty);
+      registerFallbackValue(service1);
     },
   );
 
@@ -83,7 +149,8 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando ocorrer uma falha no banco offline''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
+          when(() => mockSyncRepository.get())
+              .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final loadEither = await syncServiceService.loadSyncInfo();
 
@@ -98,7 +165,7 @@ void main() {
         '''Deve retornar um Unit e carregar o campo "sync" sem dados em "dateSyncServices"
         quando não houver sincronizações de ServiceCategory anteriores''',
         () async {
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(syncEmpty));
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(syncEmpty));
 
           final loadEither = await syncServiceService.loadSyncInfo();
 
@@ -112,14 +179,13 @@ void main() {
         '''Deve retornar um Unit e carregar o campo "sync" com dados em "dateSyncServices"
         quando houver sincronizações de Service anteriores''',
         () async {
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(syncService));
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(syncService));
 
           final loadEither = await syncServiceService.loadSyncInfo();
 
           expect(loadEither.isRight, isTrue);
           expect(loadEither.right is Unit, isTrue);
-          expect(syncServiceService.sync.dateSyncService,
-              equals(syncService.dateSyncService));
+          expect(syncServiceService.sync.dateSyncService, equals(syncService.dateSyncService));
         },
       );
     },
@@ -134,7 +200,7 @@ void main() {
         () async {
           const failureMessage = 'Teste de falha';
           syncServiceService.sync = syncEmpty;
-          when(onlineMockServiceRepository.getAll())
+          when(() => onlineMockServiceRepository.getAll())
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceService.loadUnsynced();
@@ -152,8 +218,7 @@ void main() {
         () async {
           const failureMessage = 'Teste de falha';
           syncServiceService.sync = syncService;
-          when(onlineMockServiceRepository.getUnsync(
-                  dateLastSync: syncService.dateSyncService))
+          when(() => onlineMockServiceRepository.getUnsync(dateLastSync: syncService.dateSyncService!))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceService.loadUnsynced();
@@ -170,7 +235,7 @@ void main() {
         Service cadastrados quando não tiver sincronização de Service anterior''',
         () async {
           syncServiceService.sync = syncEmpty;
-          when(onlineMockServiceRepository.getAll())
+          when(() => onlineMockServiceRepository.getAll())
               .thenAnswer((_) async => Either.right(servicesGetAll));
 
           final loadUnsyncedEither = await syncServiceService.loadUnsynced();
@@ -190,8 +255,7 @@ void main() {
         de Service anterior''',
         () async {
           syncServiceService.sync = syncService;
-          when(onlineMockServiceRepository.getUnsync(
-                  dateLastSync: syncService.dateSyncService))
+          when(() => onlineMockServiceRepository.getUnsync(dateLastSync: syncService.dateSyncService!))
               .thenAnswer((_) async => Either.right(servicesGetSync));
 
           final loadUnsyncedEither = await syncServiceService.loadUnsynced();
@@ -215,7 +279,7 @@ void main() {
         verificação da existência do Service''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceRepository.existsById(id: service1.id))
+          when(() => offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceService.syncService(service1);
@@ -232,9 +296,9 @@ void main() {
         inserção do Service''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceRepository.existsById(id: service1.id))
+          when(() => offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.right(false));
-          when(offlineMockServiceRepository.insert(service: service1))
+          when(() => offlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceService.syncService(service1);
@@ -251,9 +315,9 @@ void main() {
         alteração do Service''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceRepository.existsById(id: service1.id))
+          when(() => offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceRepository.update(service: service1))
+          when(() => offlineMockServiceRepository.update(service: service1))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceService.syncService(service1);
@@ -270,7 +334,7 @@ void main() {
         exclusão do Service''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceRepository.deleteById(id: service5Deleted.id))
+          when(() => offlineMockServiceRepository.deleteById(id: service5Deleted.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final unsyncedEither = await syncServiceService.syncService(service5Deleted);
@@ -285,9 +349,9 @@ void main() {
       test(
         '''Deve retornar um Unit quando a inserção de um Service for feita com sucesso''',
         () async {
-          when(offlineMockServiceRepository.existsById(id: service1.id))
+          when(() => offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.right(false));
-          when(offlineMockServiceRepository.insert(service: service1))
+          when(() => offlineMockServiceRepository.insert(service: service1))
               .thenAnswer((_) async => Either.right(service1.id));
 
           final unsyncedEither = await syncServiceService.syncService(service1);
@@ -300,9 +364,9 @@ void main() {
       test(
         '''Deve retornar um Unit quando a alteração de um Service for feita com sucesso''',
         () async {
-          when(offlineMockServiceRepository.existsById(id: service1.id))
+          when(() => offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceRepository.update(service: service1))
+          when(() => offlineMockServiceRepository.update(service: service1))
               .thenAnswer((_) async => Either.right(unit));
 
           final unsyncedEither = await syncServiceService.syncService(service1);
@@ -315,7 +379,7 @@ void main() {
       test(
         '''Deve retornar um Unit quando a exclusão de um Service for feitas com sucesso''',
         () async {
-          when(offlineMockServiceRepository.deleteById(id: service5Deleted.id))
+          when(() => offlineMockServiceRepository.deleteById(id: service5Deleted.id))
               .thenAnswer((_) async => Either.right(unit));
 
           final unsyncedEither = await syncServiceService.syncService(service5Deleted);
@@ -335,7 +399,7 @@ void main() {
         () async {
           syncServiceService.servicesToSync = servicesGetAll;
           const failureMessage = 'Teste de falha';
-          when(offlineMockServiceRepository.existsById(id: service1.id))
+          when(() => offlineMockServiceRepository.existsById(id: service1.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final uncyncedEither = await syncServiceService.syncUnsynced();
@@ -351,15 +415,15 @@ void main() {
         '''Deve retornar um Unit''',
         () async {
           syncServiceService.servicesToSync = servicesGetAll;
-          when(offlineMockServiceRepository.deleteById(id: anyNamed('id')))
+          when(() => offlineMockServiceRepository.deleteById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceRepository.existsById(id: anyNamed('id')))
+          when(() => offlineMockServiceRepository.existsById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.right(false));
-          when(offlineMockServiceRepository.insert(service: anyNamed('service')))
+          when(() => offlineMockServiceRepository.insert(service: any(named: 'service')))
               .thenAnswer((_) async => Either.right(service1.id));
-          when(offlineMockServiceRepository.existsById(id: anyNamed('id')))
+          when(() => offlineMockServiceRepository.existsById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceRepository.update(service: anyNamed('service')))
+          when(() => offlineMockServiceRepository.update(service: any(named: 'service')))
               .thenAnswer((_) async => Either.right(unit));
 
           final uncyncedEither = await syncServiceService.syncUnsynced();
@@ -440,7 +504,8 @@ void main() {
             serviceBiggestDate,
           ];
           const failureMessage = 'Teste de falha';
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
+          when(() => mockSyncRepository.exists())
+              .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final updateEither = await syncServiceService.updateSyncDate();
 
@@ -462,8 +527,8 @@ void main() {
             serviceBiggestDate,
           ];
           const failureMessage = 'Teste de falha';
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
-          when(mockSyncRepository.insert(sync: anyNamed('sync')))
+          when(() => mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
+          when(() => mockSyncRepository.insert(sync: any(named: 'sync')))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final updateEither = await syncServiceService.updateSyncDate();
@@ -486,8 +551,8 @@ void main() {
             serviceBiggestDate,
           ];
           const failureMessage = 'Teste de falha';
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
-          when(mockSyncRepository.updateService(syncDate: anyNamed('syncDate')))
+          when(() => mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
+          when(() => mockSyncRepository.updateService(syncDate: any(named: 'syncDate')))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final updateEither = await syncServiceService.updateSyncDate();
@@ -522,8 +587,9 @@ void main() {
             serviceBiggestDate,
           ];
 
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
-          when(mockSyncRepository.insert(sync: anyNamed('sync'))).thenAnswer((_) async => Either.right(unit));
+          when(() => mockSyncRepository.exists()).thenAnswer((_) async => Either.right(false));
+          when(() => mockSyncRepository.insert(sync: any(named: 'sync')))
+              .thenAnswer((_) async => Either.right(unit));
 
           final updateEither = await syncServiceService.updateSyncDate();
 
@@ -543,8 +609,8 @@ void main() {
             serviceBiggestDate,
           ];
 
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
-          when(mockSyncRepository.updateService(syncDate: anyNamed('syncDate')))
+          when(() => mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
+          when(() => mockSyncRepository.updateService(syncDate: any(named: 'syncDate')))
               .thenAnswer((_) async => Either.right(unit));
 
           final updateEither = await syncServiceService.updateSyncDate();
@@ -564,7 +630,8 @@ void main() {
         ao consultar os dados de sincronização''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
+          when(() => mockSyncRepository.get())
+              .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final syncEither = await syncServiceService.synchronize();
 
@@ -579,8 +646,8 @@ void main() {
         ServiceCategory a serem sincronizados''',
         () async {
           const failureMessage = '';
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceRepository.getAll())
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(() => onlineMockServiceRepository.getAll())
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
           final syncEither = await syncServiceService.synchronize();
@@ -596,9 +663,10 @@ void main() {
         verificar se o Service existe''',
         () async {
           const failureMessage = 'Falha syncUnsynced';
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceRepository.getAll()).thenAnswer((_) async => Either.right(servicesGetAll));
-          when(offlineMockServiceRepository.existsById(id: anyNamed('id')))
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(() => onlineMockServiceRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesGetAll));
+          when(() => offlineMockServiceRepository.existsById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final syncEither = await syncServiceService.synchronize();
@@ -614,13 +682,15 @@ void main() {
         verificar existe alguma sincronização anterior''',
         () async {
           const failureMessage = 'Falha updateSyncDate';
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceRepository.getAll()).thenAnswer((_) async => Either.right(servicesGetHasDate));
-          when(offlineMockServiceRepository.existsById(id: anyNamed('id')))
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(() => onlineMockServiceRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesGetHasDate));
+          when(() => offlineMockServiceRepository.existsById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceRepository.update(service: anyNamed('service')))
+          when(() => offlineMockServiceRepository.update(service: any(named: 'service')))
               .thenAnswer((_) async => Either.right(unit));
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
+          when(() => mockSyncRepository.exists())
+              .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
           final syncEither = await syncServiceService.synchronize();
 
@@ -633,14 +703,15 @@ void main() {
       test(
         '''Deve retornar um Unit quando a sincronização for realizada com sucesso''',
         () async {
-          when(mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
-          when(onlineMockServiceRepository.getAll()).thenAnswer((_) async => Either.right(servicesGetHasDate));
-          when(offlineMockServiceRepository.existsById(id: anyNamed('id')))
+          when(() => mockSyncRepository.get()).thenAnswer((_) async => Either.right(Sync()));
+          when(() => onlineMockServiceRepository.getAll())
+              .thenAnswer((_) async => Either.right(servicesGetHasDate));
+          when(() => offlineMockServiceRepository.existsById(id: any(named: 'id')))
               .thenAnswer((_) async => Either.right(true));
-          when(offlineMockServiceRepository.update(service: anyNamed('service')))
+          when(() => offlineMockServiceRepository.update(service: any(named: 'service')))
               .thenAnswer((_) async => Either.right(unit));
-          when(mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
-          when(mockSyncRepository.updateService(syncDate: anyNamed('syncDate')))
+          when(() => mockSyncRepository.exists()).thenAnswer((_) async => Either.right(true));
+          when(() => mockSyncRepository.updateService(syncDate: any(named: 'syncDate')))
               .thenAnswer((_) async => Either.right(unit));
 
           final syncEither = await syncServiceService.synchronize();

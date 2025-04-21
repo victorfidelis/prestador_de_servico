@@ -1,32 +1,21 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
+import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
-import '../../../helpers/service/service_category/mock_service_category_repository.dart';
+class MockServiceCategoryRepository extends Mock implements ServiceCategoryRepository {}
 
 void main() {
-  late ServiceCategoryService serviceCategoryService;
-
-  late ServiceCategory serviceCategory1;
-
-  setUpValues() {
-    serviceCategory1 = ServiceCategory(id: '1', name: 'Cabelo');
-  }
-
-  setUp(
-    () {
-      setUpMockServiceCategoryRepository();
-      serviceCategoryService = ServiceCategoryService(
-        onlineRepository: onlineMockServiceCategoryRepository,
-        offlineRepository: offlineMockServiceCategoryRepository,
-      );
-      setUpValues();
-    },
-  );
+  final offlineMockServiceCategoryRepository = MockServiceCategoryRepository();
+  final onlineMockServiceCategoryRepository = MockServiceCategoryRepository();
+  final serviceCategoryService = ServiceCategoryService(
+      offlineRepository: offlineMockServiceCategoryRepository,
+      onlineRepository: onlineMockServiceCategoryRepository);
+  final ServiceCategory serviceCategory = ServiceCategory(id: '1', name: 'Cabelo');
 
   group(
     'insert',
@@ -35,10 +24,11 @@ void main() {
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
+          when(() => onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
-          final serviceCategoryEither = await serviceCategoryService.insert(serviceCategory: serviceCategory1);
+          final serviceCategoryEither =
+              await serviceCategoryService.insert(serviceCategory: serviceCategory);
 
           expect(serviceCategoryEither.isLeft, isTrue);
           expect(serviceCategoryEither.left is NetworkFailure, isTrue);
@@ -51,12 +41,13 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando uma falha ocorrer no banco offline''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
-              .thenAnswer((_) async => Either.right(serviceCategory1.id));
-          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
+          when(() => onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory))
+              .thenAnswer((_) async => Either.right(serviceCategory.id));
+          when(() => offlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final serviceCategoryEither = await serviceCategoryService.insert(serviceCategory: serviceCategory1);
+          final serviceCategoryEither =
+              await serviceCategoryService.insert(serviceCategory: serviceCategory);
 
           expect(serviceCategoryEither.isLeft, isTrue);
           expect(serviceCategoryEither.left is GetDatabaseFailure, isTrue);
@@ -68,15 +59,16 @@ void main() {
       test(
         '''Deve retornar um ServiceCategory quando o ServiceCategory for gravado com sucesso''',
         () async {
-          when(onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
-              .thenAnswer((_) async => Either.right(serviceCategory1.id));
-          when(offlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory1))
-              .thenAnswer((_) async => Either.right(serviceCategory1.id));
+          when(() => onlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory))
+              .thenAnswer((_) async => Either.right(serviceCategory.id));
+          when(() => offlineMockServiceCategoryRepository.insert(serviceCategory: serviceCategory))
+              .thenAnswer((_) async => Either.right(serviceCategory.id));
 
-          final serviceCategoryEither = await serviceCategoryService.insert(serviceCategory: serviceCategory1);
+          final serviceCategoryEither =
+              await serviceCategoryService.insert(serviceCategory: serviceCategory);
 
           expect(serviceCategoryEither.isRight, isTrue);
-          expect(serviceCategoryEither.right, equals(serviceCategory1));
+          expect(serviceCategoryEither.right, equals(serviceCategory));
         },
       );
     },
@@ -89,10 +81,11 @@ void main() {
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          when(() => onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
-          final serviceCategoryEither = await serviceCategoryService.update(serviceCategory: serviceCategory1);
+          final serviceCategoryEither =
+              await serviceCategoryService.update(serviceCategory: serviceCategory);
 
           expect(serviceCategoryEither.isLeft, isTrue);
           expect(serviceCategoryEither.left is NetworkFailure, isTrue);
@@ -105,12 +98,13 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando uma falha ocorrer no banco offline''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          when(() => onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory))
               .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          when(() => offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final serviceCategoryEither = await serviceCategoryService.update(serviceCategory: serviceCategory1);
+          final serviceCategoryEither =
+              await serviceCategoryService.update(serviceCategory: serviceCategory);
 
           expect(serviceCategoryEither.isLeft, isTrue);
           expect(serviceCategoryEither.left is GetDatabaseFailure, isTrue);
@@ -122,12 +116,13 @@ void main() {
       test(
         '''Deve retornar um Unit quando o ServiceCategory for gravado com sucesso''',
         () async {
-          when(onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          when(() => onlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory))
               .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory1))
+          when(() => offlineMockServiceCategoryRepository.update(serviceCategory: serviceCategory))
               .thenAnswer((_) async => Either.right(unit));
 
-          final serviceCategoryEither = await serviceCategoryService.update(serviceCategory: serviceCategory1);
+          final serviceCategoryEither =
+              await serviceCategoryService.update(serviceCategory: serviceCategory);
 
           expect(serviceCategoryEither.isRight, isTrue);
           expect(serviceCategoryEither.right is Unit, isTrue);
@@ -143,10 +138,11 @@ void main() {
         '''Deve retornar um NetworkFailure quando não tiver acesso a internet''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(onlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+          when(() => onlineMockServiceCategoryRepository.deleteById(id: serviceCategory.id))
               .thenAnswer((_) async => Either.left(NetworkFailure(failureMessage)));
 
-          final serviceCategoryEither = await serviceCategoryService.delete(serviceCategory: serviceCategory1);
+          final serviceCategoryEither =
+              await serviceCategoryService.delete(serviceCategory: serviceCategory);
 
           expect(serviceCategoryEither.isLeft, isTrue);
           expect(serviceCategoryEither.left is NetworkFailure, isTrue);
@@ -159,12 +155,13 @@ void main() {
         '''Deve retornar um GetDatabaseFailure quando uma falha ocorrer no banco offline''',
         () async {
           const failureMessage = 'Teste de falha';
-          when(onlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+          when(() => onlineMockServiceCategoryRepository.deleteById(id: serviceCategory.id))
               .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+          when(() => offlineMockServiceCategoryRepository.deleteById(id: serviceCategory.id))
               .thenAnswer((_) async => Either.left(GetDatabaseFailure(failureMessage)));
 
-          final serviceCategoryEither = await serviceCategoryService.delete(serviceCategory: serviceCategory1);
+          final serviceCategoryEither =
+              await serviceCategoryService.delete(serviceCategory: serviceCategory);
 
           expect(serviceCategoryEither.isLeft, isTrue);
           expect(serviceCategoryEither.left is GetDatabaseFailure, isTrue);
@@ -176,12 +173,13 @@ void main() {
       test(
         '''Deve retornar um Unit quando o ServiceCategory for gravado com sucesso''',
         () async {
-          when(onlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+          when(() => onlineMockServiceCategoryRepository.deleteById(id: serviceCategory.id))
               .thenAnswer((_) async => Either.right(unit));
-          when(offlineMockServiceCategoryRepository.deleteById(id: serviceCategory1.id))
+          when(() => offlineMockServiceCategoryRepository.deleteById(id: serviceCategory.id))
               .thenAnswer((_) async => Either.right(unit));
 
-          final serviceCategoryEither = await serviceCategoryService.delete(serviceCategory: serviceCategory1);
+          final serviceCategoryEither =
+              await serviceCategoryService.delete(serviceCategory: serviceCategory);
 
           expect(serviceCategoryEither.isRight, isTrue);
           expect(serviceCategoryEither.right is Unit, isTrue);
