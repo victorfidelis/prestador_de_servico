@@ -9,6 +9,7 @@ import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_light_buttom.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
@@ -16,6 +17,7 @@ import 'package:prestador_de_servico/app/views/scheduling_details/states/schedul
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/address_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/date_and_time_card.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/service_images_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/review_sheet.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/review_stars.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/service_list_card.dart';
@@ -187,6 +189,10 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         const SizedBox(height: 8),
                         Divider(color: Theme.of(context).colorScheme.shadow),
                         const SizedBox(height: 8),
+                        imagesWidget(),
+                        const SizedBox(height: 8),
+                        Divider(color: Theme.of(context).colorScheme.shadow),
+                        const SizedBox(height: 8),
                         reviewWidget(),
                         actions(),
                         const SizedBox(height: 50),
@@ -297,6 +303,54 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       content: 'Tem certeza que deseja colocar o agendamento como "Realizado"?',
       confirmCallback: () {
         schedulingDetailViewModel.performScheduling();
+      },
+    );
+  }
+
+  Widget imagesWidget() {
+    ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
+    if (!serviceStatus.isInService() && !serviceStatus.isServicePerform()) {
+      return const SizedBox();
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            const Expanded(
+              child: Text(
+                'Imagens',
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+            CustomLink(label: 'Adicionar', onTap: onAddOrEditImages)
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Nenhuma imagem cadastrada',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.shadow,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void onAddOrEditImages() async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return const ServiceImagesView();
       },
     );
   }
