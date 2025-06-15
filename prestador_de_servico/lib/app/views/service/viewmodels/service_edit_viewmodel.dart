@@ -9,17 +9,24 @@ import 'package:prestador_de_servico/app/views/service/states/service_edit_state
 class ServiceEditViewModel extends ChangeNotifier {
   final ServiceService serviceService;
   final OfflineImageService offlineImageService;
+  bool _dispose = false;
 
   ServiceEditViewModel({
     required this.serviceService,
     required this.offlineImageService,
   });
 
+  @override
+  void dispose() {
+    _dispose = true;
+    super.dispose();
+  }
+
   ServiceEditState _state = ServiceEditInitial();
   ServiceEditState get state => _state;
   void _emitState(ServiceEditState currentState) {
     _state = currentState;
-    notifyListeners();
+    if (!_dispose) notifyListeners();
   }
 
   void initInsert({required ServiceCategory serviceCategory}) {

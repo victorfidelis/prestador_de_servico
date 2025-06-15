@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
+import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_empty_list.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/service_images_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class ServiceImagesView extends StatefulWidget {
   const ServiceImagesView({super.key});
@@ -13,6 +17,23 @@ class ServiceImagesView extends StatefulWidget {
 }
 
 class _ServiceImagesViewState extends State<ServiceImagesView> {
+  late ServiceImagesViewModel serviceImagesViewModel;
+
+  @override
+  void initState() {
+    serviceImagesViewModel = ServiceImagesViewModel(
+      schedulingService: context.read<SchedulingService>(),
+      offlineImageService: context.read<OfflineImageService>(),
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    serviceImagesViewModel.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +83,7 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
   Widget _buildBody() {
     return CustomEmptyList(
       label: 'Nenhuma imagem cadastrada',
-      action: () {},
+      action: serviceImagesViewModel.pickImageFromGallery,
       labelAction: 'Adicionar primeira imagem',
     );
 

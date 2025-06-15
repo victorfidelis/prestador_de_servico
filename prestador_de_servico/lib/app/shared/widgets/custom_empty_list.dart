@@ -53,7 +53,7 @@ class _CustomEmptyListState extends State<CustomEmptyList> {
       mainAxisSize: MainAxisSize.min,
       children: [
         const SizedBox(height: 24),
-        SmallCustomButton(label: 'Adicionar imagem', onTap: () {}, icon: Icons.add),
+        SmallCustomButton(label: 'Adicionar imagem', onTap: widget.action!, icon: Icons.add),
       ],
     );
   }
