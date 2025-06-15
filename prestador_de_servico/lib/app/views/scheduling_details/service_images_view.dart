@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_empty_list.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
-import 'package:prestador_de_servico/app/shared/widgets/image_card.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 
 class ServiceImagesView extends StatefulWidget {
@@ -53,17 +53,23 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
               ),
             ),
           ),
-          SliverToBoxAdapter(child: _buildBody())
+          SliverFillRemaining(child: _buildBody())
         ],
       ),
     );
   }
 
   Widget _buildBody() {
-    return const Column(
-      children: [
-        ImageCard(defaultFileImage: 'assets/images/adicionar_imagem.jpg'),
-      ],
+    return CustomEmptyList(
+      label: 'Nenhuma imagem cadastrada',
+      action: () {},
+      labelAction: 'Adicionar primeira imagem',
     );
+
+    // return const Column(
+    //   children: [
+    //     ImageCard(defaultFileImage: 'assets/images/adicionar_imagem.jpg'),
+    //   ],
+    // );
   }
 }
