@@ -5,16 +5,22 @@ import 'package:prestador_de_servico/app/shared/states/scheduling/service_schedu
 
 class ServiceSchedulingViewModel extends ChangeNotifier {
   final SchedulingService schedulingService;
+  bool _dispose = false;
 
   ServiceSchedulingState _state = ServiceSchedulingInitial();
   ServiceSchedulingState get state => _state;
   void _emitState(ServiceSchedulingState currentState) {
     _state = currentState;
-    notifyListeners();
+    if (!_dispose) notifyListeners();
   }
 
   void _changeState(ServiceSchedulingState currentState) {
     _state = currentState;
+  }
+
+  @override void dispose() {
+    _dispose = true;
+    super.dispose();
   }
 
   ServiceSchedulingViewModel({required this.schedulingService}); 

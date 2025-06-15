@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/utils/network/network_helpers.dart';
+import 'package:prestador_de_servico/app/shared/widgets/image_card.dart';
 
 class ServiceCard extends StatefulWidget {
   final Function() onTap;
@@ -30,16 +31,6 @@ class _ServiceCardState extends State<ServiceCard> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.service.imageUrl.isNotEmpty) {
-      image.value = Image.asset(
-        'assets/images/tres_pontos_transparente.png',
-        fit: BoxFit.cover,
-      );
-      getImageFromNetwotk();
-    } else {
-      image.value = Image.asset('assets/images/sem_imagem.jpg', fit: BoxFit.cover);
-    }
-
     return SizeTransition(
       sizeFactor: widget.animation,
       child: GestureDetector(
@@ -51,29 +42,9 @@ class _ServiceCardState extends State<ServiceCard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                height: 136,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Theme.of(context).colorScheme.shadow,
-                      offset: const Offset(0, 4),
-                      blurStyle: BlurStyle.normal,
-                      blurRadius: 4,
-                    )
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.all(Radius.circular(12)),
-                  child: ListenableBuilder(
-                    listenable: image,
-                    builder: (context, _) {
-                      return image.value;
-                    },
-                  ),
-                ),
+              ImageCard(
+                imageUrl: widget.service.imageUrl,
+                defaultFileImage: 'assets/images/sem_imagem.jpg',
               ),
               const SizedBox(height: 8),
               Container(
@@ -93,7 +64,8 @@ class _ServiceCardState extends State<ServiceCard> {
                       children: [
                         Expanded(
                           child: Text(
-                            Formatters.formatHoursAndMinutes(widget.service.hours, widget.service.minutes),
+                            Formatters.formatHoursAndMinutes(
+                                widget.service.hours, widget.service.minutes),
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -118,17 +90,5 @@ class _ServiceCardState extends State<ServiceCard> {
         ),
       ),
     );
-  }
-
-  Future<void> getImageFromNetwotk() async {
-    if (await networkHelpers.isImageLinkOnline(widget.service.imageUrl)) {
-      image.value = FadeInImage.assetNetwork(
-        placeholder: 'assets/images/tres_pontos_transparente.png',
-        image: widget.service.imageUrl,
-        fit: BoxFit.cover,
-      );
-    } else  {
-      image.value = Image.asset('assets/images/imagem_indisponivel.jpg', fit: BoxFit.cover);
-    }
   }
 }

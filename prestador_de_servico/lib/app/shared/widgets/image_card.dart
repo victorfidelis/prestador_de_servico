@@ -1,0 +1,72 @@
+import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/shared/utils/network/network_helpers.dart';
+
+class ImageCard extends StatefulWidget {
+  final String imageUrl;
+  final String defaultFileImage;
+  const ImageCard({
+    super.key,
+    this.imageUrl = '',
+    this.defaultFileImage = 'assets/images/sem_imagem.jpg',
+  });
+
+  @override
+  State<ImageCard> createState() => _ImageCardState();
+}
+
+class _ImageCardState extends State<ImageCard> {
+  final NetworkHelpers networkHelpers = NetworkHelpers();
+  ValueNotifier<Widget> image = ValueNotifier(
+    Image.asset('assets/images/sem_imagem.jpg', fit: BoxFit.cover),
+  );
+
+  @override
+  void initState() {
+    _loadImage();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 136,
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+        boxShadow: [
+          BoxShadow(
+            color: Theme.of(context).colorScheme.shadow,
+            offset: const Offset(0, 4),
+            blurStyle: BlurStyle.normal,
+            blurRadius: 4,
+          )
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+        child: ListenableBuilder(
+          listenable: image,
+          builder: (context, _) {
+            return image.value;
+          }
+        ),
+      ),
+    );
+  }
+
+  Future<void> _loadImage() async {
+    image.value = Image.asset(
+      'assets/images/tres_pontos_transparente.png',
+      fit: BoxFit.cover,
+    );
+    if (await networkHelpers.isImageLinkOnline(widget.imageUrl)) {
+      image.value = FadeInImage.assetNetwork(
+        placeholder: 'assets/images/tres_pontos_transparente.png',
+        image: widget.imageUrl,
+        fit: BoxFit.cover,
+      );
+    } else {
+      image.value = Image.asset('assets/images/imagem_indisponivel.jpg', fit: BoxFit.cover);
+    }
+  }
+}

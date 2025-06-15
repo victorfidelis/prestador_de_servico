@@ -15,6 +15,7 @@ import 'package:prestador_de_servico/app/views/scheduling_details/edit_date_and_
 import 'package:prestador_de_servico/app/views/scheduling_details/edit_scheduled_services_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/payment_scheduling_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/scheduling_details_view.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/service_images_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_view.dart';
@@ -133,6 +134,9 @@ Route<dynamic>? getRoute(RouteSettings settings) {
       settings,
       PaymentSchedulingView(serviceScheduling: serviceScheduling),
     );
+  }
+  if (settings.name == '/serviceImages') {
+    return _buildRoute(settings, const ServiceImagesView());
   }
 
   return null;

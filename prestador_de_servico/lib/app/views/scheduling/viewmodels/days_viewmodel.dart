@@ -5,12 +5,19 @@ import 'package:prestador_de_servico/app/views/scheduling/states/days_state.dart
 
 class DaysViewModel extends ChangeNotifier {
   final SchedulingService schedulingService;
+  bool _dispose = false;
 
   DaysState _state = DaysInitial();
   DaysState get state => _state;
   void _emitState(DaysState currentState) {
     _state = currentState;
-    notifyListeners();
+    if (!_dispose) notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _dispose = true;
+    super.dispose();
   }
 
   DaysViewModel({required this.schedulingService});

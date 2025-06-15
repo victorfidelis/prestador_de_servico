@@ -17,7 +17,6 @@ import 'package:prestador_de_servico/app/views/scheduling_details/states/schedul
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/address_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/date_and_time_card.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/service_images_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/review_sheet.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/review_stars.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/service_list_card.dart';
@@ -346,13 +345,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   }
 
   void onAddOrEditImages() async {
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return const ServiceImagesView();
-      },
-    );
+    Navigator.pushNamed(context, '/serviceImages');
   }
 
   Widget reviewWidget() {
