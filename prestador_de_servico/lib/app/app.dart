@@ -111,6 +111,7 @@ class App extends StatelessWidget {
         Provider<SchedulingService>(
           create: (context) => SchedulingService(
             onlineRepository: SchedulingRepository.createOnline(),
+            imageRepository: ImageRepository.create(),
           ),
         ),
       ],

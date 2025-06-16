@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
@@ -9,9 +10,11 @@ import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/scheduling/states/days_state.dart';
 
 class MockSchedulingRepository extends Mock implements SchedulingRepository {}
+class MockImageRepository extends Mock implements ImageRepository {}
 
 void main() {
   final onlineMockSchedulingRepository = MockSchedulingRepository();
+  final mockImageRepository = MockImageRepository();
   late DaysViewModel daysViewModel;
   DateTime actualDate = DateTime.now();
 
@@ -19,6 +22,7 @@ void main() {
     daysViewModel = DaysViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
+        imageRepository: mockImageRepository,
       ),
     );
   });

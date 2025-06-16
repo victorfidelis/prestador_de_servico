@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/states/scheduling/service_scheduling_state.dart';
@@ -47,7 +48,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
       schedulingService: context.read<SchedulingService>(),
     );
     editDateAndTimeViewModel = EditDateAndTimeViewModel(
-      schedulingService: SchedulingService(onlineRepository: SchedulingRepository.createOnline()),
+      schedulingService: SchedulingService(onlineRepository: SchedulingRepository.createOnline(), imageRepository: ImageRepository.create()),
     );
     editDateAndTimeViewModel.setServiceTime(serviceScheduling.serviceTime);
     editDateAndTimeViewModel.setSchedulingId(serviceScheduling.id);

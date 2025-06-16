@@ -6,7 +6,6 @@ import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_da
 
 class EditDateAndTimeViewModel extends ChangeNotifier {
   final SchedulingService schedulingService;
-
   int serviceTimeInMinutes = 0;
 
   late String schedulingId;

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
@@ -9,15 +10,18 @@ import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/shared/states/scheduling/service_scheduling_state.dart';
 
 class MockSchedulingRepository extends Mock implements SchedulingRepository {}
+class MockImageRepository extends Mock implements ImageRepository {}
 
 void main() {
   final onlineMockSchedulingRepository = MockSchedulingRepository();
+  final mockImageRepository = MockImageRepository();
   late ServiceSchedulingViewModel serviceSchedulingViewModel;
 
   setUp(() {
     serviceSchedulingViewModel = ServiceSchedulingViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
+        imageRepository: mockImageRepository,
       ),
     );
   });

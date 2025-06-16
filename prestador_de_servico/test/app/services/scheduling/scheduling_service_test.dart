@@ -6,6 +6,7 @@ import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.da
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
+import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
@@ -13,10 +14,15 @@ import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.d
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 
 class MockSchedulingRepository extends Mock implements SchedulingRepository {}
+class MockImageRepository extends Mock implements ImageRepository {}
 
 void main() {
   final onlineMockSchedulingRepository = MockSchedulingRepository();
-  final schedulingService = SchedulingService(onlineRepository: onlineMockSchedulingRepository);
+  final mockImageRepository = MockImageRepository();
+  final schedulingService = SchedulingService(
+    onlineRepository: onlineMockSchedulingRepository,
+    imageRepository: mockImageRepository,
+  );
 
   final actualDateTime = DateTime.now();
   final actualDate = DateTime(actualDateTime.year, actualDateTime.month, actualDateTime.day);
