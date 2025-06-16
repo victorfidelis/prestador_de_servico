@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_converter.dart';
+import 'package:prestador_de_servico/app/models/service/service_converter.dart';
+import 'package:prestador_de_servico/app/models/service_scheduling/service_image.dart';
+import 'package:prestador_de_servico/app/models/service_scheduling/service_image_converter.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling_converter.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
@@ -38,8 +41,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
   }
 
   @override
-  Future<Either<Failure, List<ServiceScheduling>>> getAllSchedulesByDay(
-      {required DateTime dateTime}) async {
+  Future<Either<Failure, List<ServiceScheduling>>> getAllSchedulesByDay({required DateTime dateTime}) async {
     final startDate = DateTime(dateTime.year, dateTime.month, dateTime.day);
     final endDate = startDate.add(const Duration(days: 1));
 
@@ -49,9 +51,8 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
           .where('startDateAndTime', isGreaterThanOrEqualTo: startDate)
           .where('startDateAndTime', isLessThan: endDate)
           .get();
-      List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
-          .map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc))
-          .toList();
+      List<ServiceScheduling> serviceSchedules =
+          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc)).toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -63,8 +64,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
   }
 
   @override
-  Future<Either<Failure, List<ServiceScheduling>>> getAllSchedulesByUserId(
-      {required String userId}) async {
+  Future<Either<Failure, List<ServiceScheduling>>> getAllSchedulesByUserId({required String userId}) async {
     final initializeEither = await _firebaseInitializer.initialize();
     if (initializeEither.isLeft) {
       return Either.left(initializeEither.left);
@@ -72,11 +72,9 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
 
     try {
       final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
-      QuerySnapshot snapServiceSchedules =
-          await serviceSchedulesCollection.where('user.id', isEqualTo: userId).get();
-      List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
-          .map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc))
-          .toList();
+      QuerySnapshot snapServiceSchedules = await serviceSchedulesCollection.where('user.id', isEqualTo: userId).get();
+      List<ServiceScheduling> serviceSchedules =
+          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc)).toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -97,9 +95,8 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     try {
       final schedulesPerDayCollection = FirebaseFirestore.instance.collection('schedulesPerDay');
       QuerySnapshot snapSchedulesPerDay = await schedulesPerDayCollection.get();
-      List<SchedulingDay> schedulesPerDay = snapSchedulesPerDay.docs
-          .map((doc) => SchedulingDayConverter.fromDocumentSnapshot(doc: doc))
-          .toList();
+      List<SchedulingDay> schedulesPerDay =
+          snapSchedulesPerDay.docs.map((doc) => SchedulingDayConverter.fromDocumentSnapshot(doc: doc)).toList();
 
       return Either.right(schedulesPerDay);
     } on FirebaseException catch (e) {
@@ -122,9 +119,8 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       final serviceSchedulesCollection = FirebaseFirestore.instance.collection('serviceSchedules');
       QuerySnapshot snapServiceSchedules =
           await serviceSchedulesCollection.where('serviceStatusCode', isEqualTo: 1).get();
-      List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
-          .map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc))
-          .toList();
+      List<ServiceScheduling> serviceSchedules =
+          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc)).toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -148,9 +144,8 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
           .where('serviceStatusCode', isEqualTo: ServiceStatus.servicePerformCode)
           .where('isPaid', isEqualTo: false)
           .get();
-      List<ServiceScheduling> serviceSchedules = snapServiceSchedules.docs
-          .map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc))
-          .toList();
+      List<ServiceScheduling> serviceSchedules =
+          snapServiceSchedules.docs.map((doc) => ServiceSchedulingConverter.fromFirebaseDoc(doc: doc)).toList();
       return Either.right(serviceSchedules);
     } on FirebaseException catch (e) {
       if (e.code == 'unavailable') {
@@ -301,9 +296,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
           .where("endDateAndTime", isGreaterThan: startDateTimestamp)
           .get();
 
-      var schedules = docs.docs
-          .map((schedule) => ServiceSchedulingConverter.fromFirebaseDoc(doc: schedule))
-          .toList();
+      var schedules = docs.docs.map((schedule) => ServiceSchedulingConverter.fromFirebaseDoc(doc: schedule)).toList();
 
       return Either.right(schedules);
     } on FirebaseException catch (e) {
@@ -326,8 +319,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     }
 
     try {
-      final statusRef =
-          FirebaseFirestore.instance.collection('schedulingStatus').doc(statusCode.toString());
+      final statusRef = FirebaseFirestore.instance.collection('schedulingStatus').doc(statusCode.toString());
       final status = await statusRef.get();
 
       final docRef = FirebaseFirestore.instance.collection('serviceSchedules').doc(schedulingId);
@@ -391,6 +383,39 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
         'review': review,
         'reviewDetails': reviewDetails,
       });
+
+      return Either.right(unit);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
+  }
+
+  @override
+  Future<Either<Failure, Unit>> addImage({required String schedulingId, required ServiceImage serviceImage}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    try {
+      final docRef = FirebaseFirestore.instance.collection('serviceSchedules').doc(schedulingId);
+      final docSnap = await docRef.get();
+      List<dynamic> existingImages = docSnap.get('images') ?? [];
+
+      List<Map<String, dynamic>> imagesToSend = [];
+      for (var item in existingImages) {
+        if (item is Map<String, dynamic>) {
+          imagesToSend.add(item);
+        }
+      }
+
+      imagesToSend.add(ServiceImageConverter.toMap(serviceImage));
+
+      await docRef.update({'images': imagesToSend});
 
       return Either.right(unit);
     } on FirebaseException catch (e) {

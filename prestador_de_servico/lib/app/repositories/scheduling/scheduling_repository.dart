@@ -1,5 +1,6 @@
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
+import 'package:prestador_de_servico/app/models/service_scheduling/service_image.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/firebase_scheduling_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
@@ -49,4 +50,8 @@ abstract class SchedulingRepository {
     required int review,
     required String reviewDetails,
   });
+  Future<Either<Failure, Unit>> addImage({
+    required String schedulingId,
+    required ServiceImage serviceImage,
+    });
 }

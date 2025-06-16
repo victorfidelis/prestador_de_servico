@@ -400,4 +400,8 @@ class SchedulingService {
       reviewDetails: reviewDetails,
     );
   }
+
+  Future<Either<Failure, Unit>> addImage({required int schedulingId, required String imageName, required imageFile}) {
+    
+  }
 }

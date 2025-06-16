@@ -44,7 +44,7 @@ class ServiceEditViewModel extends ChangeNotifier {
 
     _emitState(ServiceEditLoading());
 
-    final validation = _validade(service: service);
+    final validation = _validate(service: service);
     if (validation is ServiceEditError) {
       _emitState(validation);
       return;
@@ -66,7 +66,7 @@ class ServiceEditViewModel extends ChangeNotifier {
 
     _emitState(ServiceEditLoading());
 
-    final validation = _validade(service: service);
+    final validation = _validate(service: service);
     if (validation is ServiceEditError) {
       _emitState(validation);
       return;
@@ -81,7 +81,7 @@ class ServiceEditViewModel extends ChangeNotifier {
     _emitState(ServiceEditSuccess(service: updateEither.right!));
   }
 
-  ServiceEditState _validade({required Service service}) {
+  ServiceEditState _validate({required Service service}) {
     if (service.name.trim().isEmpty) {
       return ServiceEditError(nameMessage: 'Necessário informar o nome');
     }
