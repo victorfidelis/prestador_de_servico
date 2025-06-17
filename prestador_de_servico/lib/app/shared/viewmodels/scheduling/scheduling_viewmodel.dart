@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/states/scheduling/service_scheduling_state.dart';
+import 'package:prestador_de_servico/app/shared/states/scheduling/scheduling_state.dart';
 
-class ServiceSchedulingViewModel extends ChangeNotifier {
+class SchedulingViewModel extends ChangeNotifier {
   final SchedulingService schedulingService;
   bool _dispose = false;
 
-  ServiceSchedulingState _state = ServiceSchedulingInitial();
-  ServiceSchedulingState get state => _state;
-  void _emitState(ServiceSchedulingState currentState) {
+  SchedulingState _state = SchedulingInitial();
+  SchedulingState get state => _state;
+  void _emitState(SchedulingState currentState) {
     _state = currentState;
     if (!_dispose) notifyListeners();
   }
 
-  void _changeState(ServiceSchedulingState currentState) {
+  void _changeState(SchedulingState currentState) {
     _state = currentState;
   }
 
@@ -23,20 +23,20 @@ class ServiceSchedulingViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  ServiceSchedulingViewModel({required this.schedulingService}); 
+  SchedulingViewModel({required this.schedulingService}); 
 
   Future<void> load({required DateTime dateTime}) async {
-    _emitState(ServiceSchedulingLoading());
+    _emitState(SchedulingLoading());
 
     final servicesSchedulesEither = await schedulingService.getAllServicesByDay(dateTime: dateTime);
     if (servicesSchedulesEither.isLeft) {
-      _emitState(ServiceSchedulingError(servicesSchedulesEither.left!.message));
+      _emitState(SchedulingError(servicesSchedulesEither.left!.message));
     } else {
-      _emitState(ServiceSchedulingLoaded(serviceSchedules: servicesSchedulesEither.right!));
+      _emitState(SchedulingLoaded(schedules: servicesSchedulesEither.right!));
     }
   }
 
   void exit() {
-    _changeState(ServiceSchedulingInitial());
+    _changeState(SchedulingInitial());
   }
 }

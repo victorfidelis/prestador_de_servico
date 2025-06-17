@@ -23,14 +23,14 @@ class SchedulingDetailViewModel extends ChangeNotifier {
 
   Future<void> onChangeScheduling() async {
     hasChange = true;
-    await refreshServiceScheduling();
+    await refreshScheduling();
   }
 
-  Future<void> refreshServiceScheduling() async {
+  Future<void> refreshScheduling() async {
     _emitState(SchedulingDetailLoading());
 
     final getEither =
-        await schedulingService.getServiceScheduling(serviceSchedulingId: scheduling.id);
+        await schedulingService.getScheduling(schedulingId: scheduling.id);
 
     if (getEither.isLeft) {
       _emitState(SchedulingDetailError(message: getEither.left!.message));
@@ -48,7 +48,7 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       _emitState(SchedulingDetailError(message: either.left!.message));
     } else {
       hasChange = true;
-      await refreshServiceScheduling();
+      await refreshScheduling();
     }
   }
 
@@ -60,7 +60,7 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       _emitState(SchedulingDetailError(message: either.left!.message));
     } else {
       hasChange = true;
-      await refreshServiceScheduling();
+      await refreshScheduling();
     }
   }
 
@@ -72,7 +72,7 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       _emitState(SchedulingDetailError(message: either.left!.message));
     } else {
       hasChange = true;
-      await refreshServiceScheduling();
+      await refreshScheduling();
     }
   }
 
@@ -84,7 +84,7 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       _emitState(SchedulingDetailError(message: either.left!.message));
     } else {
       hasChange = true;
-      await refreshServiceScheduling();
+      await refreshScheduling();
     }
   }
 
@@ -96,7 +96,7 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       _emitState(SchedulingDetailError(message: either.left!.message));
     } else {
       hasChange = true;
-      await refreshServiceScheduling();
+      await refreshScheduling();
     }
   }
 
@@ -108,7 +108,7 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       _emitState(SchedulingDetailError(message: either.left!.message));
     } else {
       hasChange = true;
-      await refreshServiceScheduling();
+      await refreshScheduling();
     }
   }
 
@@ -126,7 +126,7 @@ class SchedulingDetailViewModel extends ChangeNotifier {
     if (either.isLeft) {
       _emitState(SchedulingDetailError(message: either.left!.message));
     } else {
-      await refreshServiceScheduling();
+      await refreshScheduling();
     }
   }
 }

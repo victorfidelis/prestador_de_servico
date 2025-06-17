@@ -18,31 +18,31 @@ class SchedulingService {
 
   SchedulingService({required this.onlineRepository, required this.imageRepository});
 
-  Future<Either<Failure, Scheduling>> getServiceScheduling({required String serviceSchedulingId}) async {
-    final getEither = await onlineRepository.getScheduling(schedulingId: serviceSchedulingId);
+  Future<Either<Failure, Scheduling>> getScheduling({required String schedulingId}) async {
+    final getEither = await onlineRepository.getScheduling(schedulingId: schedulingId);
     if (getEither.isLeft) {
       return Either.left(getEither.left);
     }
 
-    var serviceScheduling = getEither.right!;
-    if (!serviceScheduling.serviceStatus.isPending()) {
-      return Either.right(serviceScheduling);
+    var scheduling = getEither.right!;
+    if (!scheduling.serviceStatus.isPending()) {
+      return Either.right(scheduling);
     }
 
     final conflictsEither = await onlineRepository.getConflicts(
-      startDate: serviceScheduling.startDateAndTime,
-      endDate: serviceScheduling.endDateAndTime,
+      startDate: scheduling.startDateAndTime,
+      endDate: scheduling.endDateAndTime,
     );
     if (conflictsEither.isLeft) {
       return Either.left(conflictsEither.left);
     }
 
     var schedules = conflictsEither.right!;
-    schedules.removeWhere((schedule) => schedule.id == serviceSchedulingId);
-    serviceScheduling = serviceScheduling.copyWith(
+    schedules.removeWhere((schedule) => schedule.id == schedulingId);
+    scheduling = scheduling.copyWith(
         conflictScheduing: schedules.isNotEmpty, schedulingUnavailable: isUnavailable(schedules));
 
-    return Either.right(serviceScheduling);
+    return Either.right(scheduling);
   }
 
   bool isUnavailable(List<Scheduling> schedules) {
@@ -212,21 +212,21 @@ class SchedulingService {
     return Either.right(groupSchedulesByDay(pendingPaymentEither.right!));
   }
 
-  List<SchedulesByDay> groupSchedulesByDay(List<Scheduling> serviceSchedules) {
-    serviceSchedules.sort((s1, s2) => s1.startDateAndTime.compareTo(s2.startDateAndTime));
+  List<SchedulesByDay> groupSchedulesByDay(List<Scheduling> schedules) {
+    schedules.sort((s1, s2) => s1.startDateAndTime.compareTo(s2.startDateAndTime));
     List<SchedulesByDay> schedulesByDays = [];
-    for (Scheduling serviceScheduling in serviceSchedules) {
+    for (Scheduling scheduling in schedules) {
       final day = DateTime(
-        serviceScheduling.startDateAndTime.year,
-        serviceScheduling.startDateAndTime.month,
-        serviceScheduling.startDateAndTime.day,
+        scheduling.startDateAndTime.year,
+        scheduling.startDateAndTime.month,
+        scheduling.startDateAndTime.day,
       );
       var index = schedulesByDays.indexWhere((s) => s.day == day);
       if (index == -1) {
         schedulesByDays.add(SchedulesByDay(day: day, serviceSchedules: []));
         index = schedulesByDays.length - 1;
       }
-      schedulesByDays[index].serviceSchedules.add(serviceScheduling);
+      schedulesByDays[index].serviceSchedules.add(scheduling);
     }
     return schedulesByDays;
   }

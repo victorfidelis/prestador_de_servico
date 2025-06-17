@@ -3,11 +3,11 @@ import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
-import 'package:prestador_de_servico/app/shared/states/scheduling/service_scheduling_state.dart';
+import 'package:prestador_de_servico/app/shared/states/scheduling/scheduling_state.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/time_text_input_formatter.dart';
-import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
+import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
@@ -32,7 +32,7 @@ class EditDateAndTimeView extends StatefulWidget {
 
 class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   late EditDateAndTimeViewModel editDateAndTimeViewModel;
-  late ServiceSchedulingViewModel serviceSchedulingViewModel;
+  late SchedulingViewModel schedulingViewModel;
   final CustomNotifications customNotifications = CustomNotifications();
 
   late Scheduling scheduling;
@@ -44,7 +44,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   @override
   void initState() {
     scheduling = widget.scheduling;
-    serviceSchedulingViewModel = ServiceSchedulingViewModel(
+    schedulingViewModel = SchedulingViewModel(
       schedulingService: context.read<SchedulingService>(),
     );
     editDateAndTimeViewModel = EditDateAndTimeViewModel(
@@ -58,7 +58,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   @override
   void dispose() {
     editDateAndTimeViewModel.dispose();
-    serviceSchedulingViewModel.dispose();
+    schedulingViewModel.dispose();
     dateController.dispose();
     timeController.dispose();
     dateFocus.dispose();
@@ -299,20 +299,20 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 6)),
             ListenableBuilder(
-              listenable: serviceSchedulingViewModel,
+              listenable: schedulingViewModel,
               builder: (context, _) {
-                if (serviceSchedulingViewModel.state is ServiceSchedulingInitial) {
+                if (schedulingViewModel.state is SchedulingInitial) {
                   return const SliverToBoxAdapter();
                 }
       
-                if (serviceSchedulingViewModel.state is ServiceSchedulingLoading) {
+                if (schedulingViewModel.state is SchedulingLoading) {
                   return const SliverToBoxAdapter(
                     child: Center(child: CustomLoading()),
                   );
                 }
       
                 final serviceSchedules =
-                    (serviceSchedulingViewModel.state as ServiceSchedulingLoaded).serviceSchedules;
+                    (schedulingViewModel.state as SchedulingLoaded).schedules;
       
                 if (serviceSchedules.isEmpty) {
                   return SliverToBoxAdapter(
@@ -342,7 +342,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                       }
       
                       return CustomSchedulingCard(
-                        serviceScheduling: serviceSchedules[index],
+                        scheduling: serviceSchedules[index],
                         isReadOnly: true,
                       );
                     },
@@ -412,7 +412,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
       return;
     }
     dateController.text = Formatters.defaultFormatDate(newDate);
-    serviceSchedulingViewModel.load(dateTime: newDate);
+    schedulingViewModel.load(dateTime: newDate);
     editDateAndTimeViewModel.setSchedulingDate(newDate);
   }
 

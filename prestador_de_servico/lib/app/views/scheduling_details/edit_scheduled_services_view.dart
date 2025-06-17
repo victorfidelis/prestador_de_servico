@@ -19,8 +19,8 @@ import 'package:prestador_de_servico/app/views/scheduling_details/widgets/edit_s
 import 'package:provider/provider.dart';
 
 class EditScheduledServicesView extends StatefulWidget {
-  final Scheduling serviceScheduling;
-  const EditScheduledServicesView({super.key, required this.serviceScheduling});
+  final Scheduling scheduling;
+  const EditScheduledServicesView({super.key, required this.scheduling});
 
   @override
   State<EditScheduledServicesView> createState() => _EditScheduledServicesViewState();
@@ -39,18 +39,18 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
 
   @override
   void initState() {
-    final serviceScheduling = widget.serviceScheduling;
+    final scheduling = widget.scheduling;
     editViewModel = EditScheduledServicesViewmodel(
       schedulingService: context.read<SchedulingService>(),
-      serviceScheduling: serviceScheduling.copyWith(
-        services: List.from(serviceScheduling.services),
+      scheduling: scheduling.copyWith(
+        services: List.from(scheduling.services),
       ),
     );
-    if (serviceScheduling.totalRate > 0) {
-      rateController.text = serviceScheduling.totalRate.toString();
+    if (scheduling.totalRate > 0) {
+      rateController.text = scheduling.totalRate.toString();
     }
-    if (serviceScheduling.totalDiscount > 0) {
-      discountController.text = serviceScheduling.totalDiscount.toString();
+    if (scheduling.totalDiscount > 0) {
+      discountController.text = scheduling.totalDiscount.toString();
     }
     super.initState();
   }
@@ -205,7 +205,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
   }
 
   Widget servicesCard() {
-    final services = editViewModel.serviceScheduling.services;
+    final services = editViewModel.scheduling.services;
     List<Widget> servicesWidgets = [];
     for (int i = 0; i < services.length; i++) {
       servicesWidgets.add(
@@ -237,7 +237,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
         ),
         const SizedBox(width: 6),
         Text(
-          Formatters.formatPrice(editViewModel.serviceScheduling.totalPriceCalculated),
+          Formatters.formatPrice(editViewModel.scheduling.totalPriceCalculated),
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w500,
@@ -262,7 +262,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
             ),
           ),
           Text(
-            Formatters.formatPrice(editViewModel.serviceScheduling.totalPrice),
+            Formatters.formatPrice(editViewModel.scheduling.totalPrice),
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,
@@ -277,7 +277,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
   void onLongPressService(int index) {
     removeFocus();
 
-    final service = editViewModel.serviceScheduling.services[index];
+    final service = editViewModel.scheduling.services[index];
     if (service.removed) {
       onReturnService(index);
     } else {
@@ -293,7 +293,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
         content: 'Não é permitido excluir todos os serviços do agendamento.',
       );
     } else {
-      final service = editViewModel.serviceScheduling.services[index];
+      final service = editViewModel.scheduling.services[index];
       notifications.showQuestionAlert(
         context: context,
         title: 'Remover serviço',
@@ -306,7 +306,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
   }
 
   void onReturnService(int index) {
-    final service = editViewModel.serviceScheduling.services[index];
+    final service = editViewModel.scheduling.services[index];
     notifications.showQuestionAlert(
       context: context,
       title: 'Readicionar serviço',

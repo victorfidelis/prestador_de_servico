@@ -52,7 +52,7 @@ class _SchedulesByDayCardState extends State<SchedulesByDayCard> {
     return schedulesByDay.serviceSchedules
         .map(
           (serviceScheduling) => CustomSchedulingCard(
-            serviceScheduling: serviceScheduling,
+            scheduling: serviceScheduling,
             refreshOriginPage: widget.refreshOriginPage,
           ),
         )

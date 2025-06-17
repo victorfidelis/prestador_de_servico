@@ -105,38 +105,40 @@ Route<dynamic>? getRoute(RouteSettings settings) {
   }
   if (settings.name == '/schedulingDetails') {
     final arguments = (settings.arguments as Map);
-    final serviceScheduling = (arguments['serviceScheduling']) as Scheduling;
+    final scheduling = (arguments['scheduling']) as Scheduling;
     return _buildRoute(
       settings,
-      SchedulingDetailsView(serviceScheduling: serviceScheduling),
+      SchedulingDetailsView(scheduling: scheduling),
     );
   }
   if (settings.name == '/editDateAndTime') {
     final arguments = (settings.arguments as Map);
-    final serviceScheduling = (arguments['serviceScheduling']) as Scheduling;
+    final scheduling = (arguments['scheduling']) as Scheduling;
     return _buildRoute(
       settings,
-      EditDateAndTimeView(scheduling: serviceScheduling),
+      EditDateAndTimeView(scheduling: scheduling),
     );
   }
   if (settings.name == '/editScheduledServices') {
     final arguments = (settings.arguments as Map);
-    final serviceScheduling = (arguments['serviceScheduling']) as Scheduling;
+    final scheduling = (arguments['scheduling']) as Scheduling;
     return _buildRoute(
       settings,
-      EditScheduledServicesView(serviceScheduling: serviceScheduling),
+      EditScheduledServicesView(scheduling: scheduling),
     );
   }
   if (settings.name == '/paymentScheduling') {
     final arguments = (settings.arguments as Map);
-    final serviceScheduling = (arguments['serviceScheduling']) as Scheduling;
+    final scheduling = (arguments['scheduling']) as Scheduling;
     return _buildRoute(
       settings,
-      PaymentSchedulingView(serviceScheduling: serviceScheduling),
+      PaymentSchedulingView(scheduling: scheduling),
     );
   }
   if (settings.name == '/serviceImages') {
-    return _buildRoute(settings, const ServiceImagesView());
+    final arguments = (settings.arguments as Map);
+    final scheduling = (arguments['scheduling']) as Scheduling;
+    return _buildRoute(settings, ServiceImagesView(scheduling: scheduling));
   }
 
   return null;

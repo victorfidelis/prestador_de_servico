@@ -7,13 +7,13 @@ import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart
 import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_message_widget.dart';
 
 class CustomSchedulingCard extends StatefulWidget {
-  final Scheduling serviceScheduling;
+  final Scheduling scheduling;
   final Function()? refreshOriginPage;
   final bool isReadOnly;
 
   const CustomSchedulingCard({
     super.key,
-    required this.serviceScheduling,
+    required this.scheduling,
     this.refreshOriginPage,
     this.isReadOnly = false,
   });
@@ -23,26 +23,26 @@ class CustomSchedulingCard extends StatefulWidget {
 }
 
 class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
-  late Scheduling serviceScheduling;
+  late Scheduling scheduling;
 
   @override
   void initState() {
-    serviceScheduling = widget.serviceScheduling;
+    scheduling = widget.scheduling;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     final startHour = Formatters.defaultFormatHoursAndMinutes(
-      serviceScheduling.startDateAndTime.hour,
-      serviceScheduling.startDateAndTime.minute,
+      scheduling.startDateAndTime.hour,
+      scheduling.startDateAndTime.minute,
     );
     final endHour = Formatters.defaultFormatHoursAndMinutes(
-      serviceScheduling.endDateAndTime.hour,
-      serviceScheduling.endDateAndTime.minute,
+      scheduling.endDateAndTime.hour,
+      scheduling.endDateAndTime.minute,
     );
-    final formatPriceToPay = Formatters.formatPrice(serviceScheduling.totalPriceCalculated);
-    Color statusColor = ColorsUtils.getColorFromStatus(context, serviceScheduling.serviceStatus);
+    final formatPriceToPay = Formatters.formatPrice(scheduling.totalPriceCalculated);
+    Color statusColor = ColorsUtils.getColorFromStatus(context, scheduling.serviceStatus);
     final finishedSealIcon = getFinishedSealIcon();
     final othersValues = getOtherValues();
 
@@ -103,7 +103,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                serviceScheduling.user.fullname,
+                                scheduling.user.fullname,
                                 style: TextStyle(
                                   color: statusColor,
                                   fontWeight: FontWeight.w700,
@@ -113,7 +113,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
                               Padding(
                                 padding: const EdgeInsets.only(left: 8.0),
                                 child: Text(
-                                  serviceScheduling.serviceStatus.name,
+                                  scheduling.serviceStatus.name,
                                   style: TextStyle(
                                     color: statusColor,
                                     fontWeight: FontWeight.w700,
@@ -132,7 +132,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
                       padding: const EdgeInsets.only(left: 16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: serviceScheduling.activeServices
+                        children: scheduling.activeServices
                             .map((e) => serviceItemList(e))
                             .toList(),
                       ),
@@ -154,7 +154,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    CustomSchedulingMessageWidget(serviceScheduling: serviceScheduling),
+                    CustomSchedulingMessageWidget(scheduling: scheduling),
                   ],
                 ),
               ),
@@ -173,7 +173,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
     final bool hasChange = await Navigator.pushNamed(
       context,
       '/schedulingDetails',
-      arguments: {'serviceScheduling': serviceScheduling},
+      arguments: {'scheduling': scheduling},
     ) as bool;
 
     if (hasChange && widget.refreshOriginPage != null) {
@@ -209,7 +209,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
   Widget getFinishedSealIcon() {
     Widget finishedSealIcon = Container();
 
-    if (serviceScheduling.serviceStatus.isCancelled()) {
+    if (scheduling.serviceStatus.isCancelled()) {
       finishedSealIcon = ClipOval(
         child: Container(
           color: const Color(0xffE70000),
@@ -221,7 +221,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
           ),
         ),
       );
-    } else if (serviceScheduling.serviceStatus.isServicePerform() && serviceScheduling.isPaid) {
+    } else if (scheduling.serviceStatus.isServicePerform() && scheduling.isPaid) {
       finishedSealIcon = ClipOval(
         child: Container(
           color: const Color(0xff00891E),
@@ -239,7 +239,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
   }
 
   Widget getOtherValues() {
-    final prices = serviceScheduling.services.map((s) => s.price).toList();
+    final prices = scheduling.services.map((s) => s.price).toList();
     final totalServicesPrice = prices.reduce((s1, s2) => s1 + s2);
     final formatServicesPrice = Formatters.formatPrice(totalServicesPrice);
     Widget subTotalWidget = Row(
@@ -255,8 +255,8 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
     );
 
     Widget totalRateWidget = Container();
-    if (serviceScheduling.totalRate > 0) {
-      final formatRate = Formatters.formatPrice(serviceScheduling.totalRate);
+    if (scheduling.totalRate > 0) {
+      final formatRate = Formatters.formatPrice(scheduling.totalRate);
       totalRateWidget = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -271,8 +271,8 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
     }
 
     Widget totalDiscountWidget = Container();
-    if (serviceScheduling.totalDiscount > 0) {
-      final formatDiscount = Formatters.formatPrice(serviceScheduling.totalDiscount);
+    if (scheduling.totalDiscount > 0) {
+      final formatDiscount = Formatters.formatPrice(scheduling.totalDiscount);
       totalDiscountWidget = Row(
         mainAxisSize: MainAxisSize.min,
         children: [

@@ -23,9 +23,9 @@ import 'package:prestador_de_servico/app/views/scheduling_details/widgets/servic
 import 'package:provider/provider.dart';
 
 class SchedulingDetailsView extends StatefulWidget {
-  final Scheduling serviceScheduling;
+  final Scheduling scheduling;
 
-  const SchedulingDetailsView({super.key, required this.serviceScheduling});
+  const SchedulingDetailsView({super.key, required this.scheduling});
 
   @override
   State<SchedulingDetailsView> createState() => _SchedulingDetailsViewState();
@@ -39,10 +39,10 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   void initState() {
     schedulingDetailViewModel = SchedulingDetailViewModel(
       schedulingService: context.read<SchedulingService>(),
-      scheduling: widget.serviceScheduling,
+      scheduling: widget.scheduling,
     );
 
-    schedulingDetailViewModel.refreshServiceScheduling();
+    schedulingDetailViewModel.refreshScheduling();
 
     super.initState();
   }
@@ -182,7 +182,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         const SizedBox(height: 8),
                         ServiceListCard(
                           key: ValueKey(schedulingDetailViewModel.scheduling.hashCode),
-                          serviceScheduling: schedulingDetailViewModel.scheduling,
+                          scheduling: schedulingDetailViewModel.scheduling,
                           onEdit: allowsEdit ? onEditScheduledServices : null,
                         ),
                         const SizedBox(height: 8),
@@ -211,7 +211,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     final hasChange = await Navigator.pushNamed(
       context,
       '/editDateAndTime',
-      arguments: {'serviceScheduling': schedulingDetailViewModel.scheduling},
+      arguments: {'scheduling': schedulingDetailViewModel.scheduling},
     );
     if (hasChange != null && (hasChange as bool)) {
       await schedulingDetailViewModel.onChangeScheduling();
@@ -222,7 +222,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     final hasChange = await Navigator.pushNamed(
       context,
       '/editScheduledServices',
-      arguments: {'serviceScheduling': schedulingDetailViewModel.scheduling},
+      arguments: {'scheduling': schedulingDetailViewModel.scheduling},
     );
     if (hasChange != null && (hasChange as bool)) {
       await schedulingDetailViewModel.onChangeScheduling();
@@ -233,7 +233,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     final hasChange = await Navigator.pushNamed(
       context,
       '/paymentScheduling',
-      arguments: {'serviceScheduling': schedulingDetailViewModel.scheduling},
+      arguments: {'scheduling': schedulingDetailViewModel.scheduling},
     );
     if (hasChange != null && (hasChange as bool)) {
       await schedulingDetailViewModel.onChangeScheduling();

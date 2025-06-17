@@ -17,8 +17,8 @@ import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/pay
 import 'package:provider/provider.dart';
 
 class PaymentSchedulingView extends StatefulWidget {
-  final Scheduling serviceScheduling;
-  const PaymentSchedulingView({super.key, required this.serviceScheduling});
+  final Scheduling scheduling;
+  const PaymentSchedulingView({super.key, required this.scheduling});
 
   @override
   State<PaymentSchedulingView> createState() => _PaymentSchedulingViewState();
@@ -36,7 +36,7 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
   void initState() {
     paymentViewModel = PaymentSchedulingViewModel(
       schedulingService: context.read<SchedulingService>(),
-      serviceScheduling: widget.serviceScheduling,
+      scheduling: widget.scheduling,
     );
     super.initState();
   }
@@ -55,9 +55,9 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
     final customColor = Theme.of(context).extension<CustomColors>()!;
 
     final totalPrice =
-        Formatters.formatPrice(paymentViewModel.serviceScheduling.totalPriceCalculated);
-    final needToPay = Formatters.formatPrice(paymentViewModel.serviceScheduling.needToPay);
-    final totalPaid = Formatters.formatPrice(paymentViewModel.serviceScheduling.totalPaid);
+        Formatters.formatPrice(paymentViewModel.scheduling.totalPriceCalculated);
+    final needToPay = Formatters.formatPrice(paymentViewModel.scheduling.needToPay);
+    final totalPaid = Formatters.formatPrice(paymentViewModel.scheduling.totalPaid);
 
     return Scaffold(
       body: CustomScrollView(

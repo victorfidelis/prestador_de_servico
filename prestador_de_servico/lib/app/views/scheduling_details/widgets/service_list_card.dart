@@ -6,12 +6,12 @@ import 'package:prestador_de_servico/app/views/scheduling_details/widgets/edit_b
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/service_item_card.dart';
 
 class ServiceListCard extends StatefulWidget {
-  final Scheduling serviceScheduling;
+  final Scheduling scheduling;
   final Function()? onEdit;
 
   const ServiceListCard({
     super.key,
-    required this.serviceScheduling,
+    required this.scheduling,
     required this.onEdit,
   });
 
@@ -20,20 +20,20 @@ class ServiceListCard extends StatefulWidget {
 }
 
 class _ServiceListCardState extends State<ServiceListCard> {
-  late Scheduling serviceScheduling;
+  late Scheduling scheduling;
   late bool hasEditButtom;
 
   @override
   void initState() {
-    serviceScheduling = widget.serviceScheduling;
+    scheduling = widget.scheduling;
     hasEditButtom = widget.onEdit != null;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    bool hasDiscount = serviceScheduling.totalDiscount > 0;
-    bool hasRate = serviceScheduling.totalRate > 0;
+    bool hasDiscount = scheduling.totalDiscount > 0;
+    bool hasRate = scheduling.totalRate > 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,16 +50,16 @@ class _ServiceListCardState extends State<ServiceListCard> {
               const SizedBox(height: 6),
               servicesCard(),
               const SizedBox(height: 12),
-              otherValuesCard('Subtotal', serviceScheduling.totalPrice),
+              otherValuesCard('Subtotal', scheduling.totalPrice),
               hasRate ? const SizedBox(height: 8) : const SizedBox(),
-              hasRate ? otherValuesCard('Taxas', serviceScheduling.totalRate) : const SizedBox(),
+              hasRate ? otherValuesCard('Taxas', scheduling.totalRate) : const SizedBox(),
               hasDiscount ? const SizedBox(height: 8) : const SizedBox(),
               hasDiscount
-                  ? otherValuesCard('Descontos', serviceScheduling.totalDiscount)
+                  ? otherValuesCard('Descontos', scheduling.totalDiscount)
                   : const SizedBox(),
               const SizedBox(height: 8),
               totalCard(),
-              serviceScheduling.hasMessage || hasEditButtom
+              scheduling.hasMessage || hasEditButtom
                   ? const SizedBox(height: 8)
                   : const SizedBox(),
               Row(
@@ -67,7 +67,7 @@ class _ServiceListCardState extends State<ServiceListCard> {
                 children: [
                   Expanded(
                     child: CustomSchedulingMessageWidget(
-                      serviceScheduling: serviceScheduling,
+                      scheduling: scheduling,
                       fontSize: 16,
                     ),
                   ),
@@ -83,13 +83,13 @@ class _ServiceListCardState extends State<ServiceListCard> {
 
   Widget servicesCard() {
     List<Widget> services = [];
-    final quantityServices = serviceScheduling.services.length;
+    final quantityServices = scheduling.services.length;
     for (int i = 0; i < quantityServices; i++) {
       final isLastService = (i == quantityServices - 1);
       services.add(
         Column(
           children: [
-            ServiceItemCard(service: serviceScheduling.services[i]),
+            ServiceItemCard(service: scheduling.services[i]),
             isLastService
                 ? const SizedBox()
                 : Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
@@ -133,7 +133,7 @@ class _ServiceListCardState extends State<ServiceListCard> {
           ),
         ),
         Text(
-          Formatters.formatPrice(serviceScheduling.totalPriceCalculated),
+          Formatters.formatPrice(scheduling.totalPriceCalculated),
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,

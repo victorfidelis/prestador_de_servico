@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
-import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
+import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/views/scheduling/states/days_state.dart';
-import 'package:prestador_de_servico/app/shared/states/scheduling/service_scheduling_state.dart';
+import 'package:prestador_de_servico/app/shared/states/scheduling/scheduling_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_horizontal_calendar.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_menu_calendar_type.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_month_calendar.dart';
@@ -24,14 +24,14 @@ class SchedulingView extends StatefulWidget {
 
 class _SchedulingViewState extends State<SchedulingView> {
   late final DaysViewModel daysViewModel;
-  late final ServiceSchedulingViewModel serviceSchedulingViewModel;
+  late final SchedulingViewModel schedulingViewModel;
 
   ValueNotifier<DateTime> selectedDay = ValueNotifier(DateTime.now());
 
   @override
   void initState() {
     daysViewModel = DaysViewModel(schedulingService: context.read<SchedulingService>());
-    serviceSchedulingViewModel = ServiceSchedulingViewModel(
+    schedulingViewModel = SchedulingViewModel(
       schedulingService: context.read<SchedulingService>(),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -44,7 +44,7 @@ class _SchedulingViewState extends State<SchedulingView> {
   @override
   void dispose() {
     daysViewModel.dispose();
-    serviceSchedulingViewModel.dispose();
+    schedulingViewModel.dispose();
     selectedDay.dispose();
     super.dispose();
   }
@@ -155,19 +155,19 @@ class _SchedulingViewState extends State<SchedulingView> {
           ),
           const SizedBox(height: 6),
           ListenableBuilder(
-            listenable: serviceSchedulingViewModel,
+            listenable: schedulingViewModel,
             builder: (context, _) {
-              if (serviceSchedulingViewModel.state is ServiceSchedulingInitial) {
+              if (schedulingViewModel.state is SchedulingInitial) {
                 return Container();
               }
 
-              if (serviceSchedulingViewModel.state is ServiceSchedulingError) {
+              if (schedulingViewModel.state is SchedulingError) {
                 return Center(
-                  child: Text((serviceSchedulingViewModel.state as ServiceSchedulingError).message),
+                  child: Text((schedulingViewModel.state as SchedulingError).message),
                 );
               }
 
-              if (serviceSchedulingViewModel.state is ServiceSchedulingLoading) {
+              if (schedulingViewModel.state is SchedulingLoading) {
                 return Container(
                   padding: const EdgeInsets.only(top: 28),
                   child: const Center(child: CustomLoading()),
@@ -175,7 +175,7 @@ class _SchedulingViewState extends State<SchedulingView> {
               }
 
               final serviceSchedules =
-                  (serviceSchedulingViewModel.state as ServiceSchedulingLoaded).serviceSchedules;
+                  (schedulingViewModel.state as SchedulingLoaded).schedules;
 
               return Expanded(
                 child: Container(
@@ -189,7 +189,7 @@ class _SchedulingViewState extends State<SchedulingView> {
                       }
 
                       return CustomSchedulingCard(
-                        serviceScheduling: serviceSchedules[index],
+                        scheduling: serviceSchedules[index],
                         refreshOriginPage: refreshView,
                       );
                     },
@@ -206,17 +206,17 @@ class _SchedulingViewState extends State<SchedulingView> {
   void loadToday() {
     final actualDateTime = DateTime.now();
     selectedDay.value = DateTime(actualDateTime.year, actualDateTime.month, actualDateTime.day);
-    serviceSchedulingViewModel.load(dateTime: selectedDay.value);
+    schedulingViewModel.load(dateTime: selectedDay.value);
   }
 
   void onChangeSelectedDay(DateTime date) {
     selectedDay.value = date;
-    serviceSchedulingViewModel.load(dateTime: selectedDay.value);
+    schedulingViewModel.load(dateTime: selectedDay.value);
     daysViewModel.changeSelectedDay(date);
   }
 
   void refreshView() {
     daysViewModel.load(selectedDay.value);
-    serviceSchedulingViewModel.load(dateTime: selectedDay.value);
+    schedulingViewModel.load(dateTime: selectedDay.value);
   }
 }

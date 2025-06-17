@@ -2,12 +2,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
-import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/service_scheduling_viewmodel.dart';
+import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
-import 'package:prestador_de_servico/app/shared/states/scheduling/service_scheduling_state.dart';
+import 'package:prestador_de_servico/app/shared/states/scheduling/scheduling_state.dart';
 
 class MockSchedulingRepository extends Mock implements SchedulingRepository {}
 class MockImageRepository extends Mock implements ImageRepository {}
@@ -15,10 +15,10 @@ class MockImageRepository extends Mock implements ImageRepository {}
 void main() {
   final onlineMockSchedulingRepository = MockSchedulingRepository();
   final mockImageRepository = MockImageRepository();
-  late ServiceSchedulingViewModel serviceSchedulingViewModel;
+  late SchedulingViewModel serviceSchedulingViewModel;
 
   setUp(() {
-    serviceSchedulingViewModel = ServiceSchedulingViewModel(
+    serviceSchedulingViewModel = SchedulingViewModel(
       schedulingService: SchedulingService(
         onlineRepository: onlineMockSchedulingRepository,
         imageRepository: mockImageRepository,
@@ -41,8 +41,8 @@ void main() {
 
           await serviceSchedulingViewModel.load(dateTime: DateTime.now());
 
-          expect(serviceSchedulingViewModel.state is ServiceSchedulingError, isTrue);
-          final state = (serviceSchedulingViewModel.state as ServiceSchedulingError);
+          expect(serviceSchedulingViewModel.state is SchedulingError, isTrue);
+          final state = (serviceSchedulingViewModel.state as SchedulingError);
           expect(state.message, equals(failureMessage));
         },
       );
@@ -58,7 +58,7 @@ void main() {
 
           await serviceSchedulingViewModel.load(dateTime: DateTime.now());
 
-          expect(serviceSchedulingViewModel.state is ServiceSchedulingLoaded, isTrue);
+          expect(serviceSchedulingViewModel.state is SchedulingLoaded, isTrue);
         },
       );
     },
@@ -72,7 +72,7 @@ void main() {
         () {
           serviceSchedulingViewModel.exit();
 
-          expect(serviceSchedulingViewModel.state is ServiceSchedulingInitial, isTrue);
+          expect(serviceSchedulingViewModel.state is SchedulingInitial, isTrue);
         },
       );
     },

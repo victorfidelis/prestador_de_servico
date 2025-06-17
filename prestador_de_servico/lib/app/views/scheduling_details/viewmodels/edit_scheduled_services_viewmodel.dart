@@ -8,7 +8,7 @@ import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_se
 
 class EditScheduledServicesViewmodel extends ChangeNotifier {
   final SchedulingService schedulingService;
-  Scheduling serviceScheduling;
+  Scheduling scheduling;
   late List<ScheduledService> scheduledServicesOriginal;
   String? discountError;
 
@@ -21,33 +21,33 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
 
   EditScheduledServicesViewmodel({
     required this.schedulingService,
-    required this.serviceScheduling,
+    required this.scheduling,
   }) {
-    scheduledServicesOriginal = List.from(serviceScheduling.services);
+    scheduledServicesOriginal = List.from(scheduling.services);
   }
 
   void removeService({required int index}) {
-    final service = serviceScheduling.services[index];
+    final service = scheduling.services[index];
 
     if (scheduledServicesOriginal.contains(service)) {
-      serviceScheduling.services[index] = service.copyWith(removed: true);
+      scheduling.services[index] = service.copyWith(removed: true);
     } else {
-      serviceScheduling.services.remove(service);
+      scheduling.services.remove(service);
     }
 
-    serviceScheduling = serviceScheduling.copyWith(
-      totalPrice: serviceScheduling.totalPrice - service.price,
+    scheduling = scheduling.copyWith(
+      totalPrice: scheduling.totalPrice - service.price,
     );
 
     notifyListeners();
   }
 
   void returnService({required int index}) {
-    final service = serviceScheduling.services[index];
+    final service = scheduling.services[index];
 
-    serviceScheduling.services[index] = service.copyWith(removed: false);
-    serviceScheduling = serviceScheduling.copyWith(
-      totalPrice: serviceScheduling.totalPrice + service.price,
+    scheduling.services[index] = service.copyWith(removed: false);
+    scheduling = scheduling.copyWith(
+      totalPrice: scheduling.totalPrice + service.price,
     );
     notifyListeners();
   }
@@ -66,29 +66,29 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
       removed: false,
     );
 
-    serviceScheduling.services.add(scheduledService);
-    serviceScheduling = serviceScheduling.copyWith(
-      totalPrice: serviceScheduling.totalPrice + service.price,
+    scheduling.services.add(scheduledService);
+    scheduling = scheduling.copyWith(
+      totalPrice: scheduling.totalPrice + service.price,
     );
     notifyListeners();
   }
 
   void changeRate(double rate) {
-    serviceScheduling = serviceScheduling.copyWith(totalRate: rate);
+    scheduling = scheduling.copyWith(totalRate: rate);
     notifyListeners();
   }
 
   void changeDicount(double discount) {
-    serviceScheduling = serviceScheduling.copyWith(totalDiscount: discount);
+    scheduling = scheduling.copyWith(totalDiscount: discount);
     notifyListeners();
   }
 
   int quantityOfActiveServices() {
-    return serviceScheduling.services.where((s) => !s.removed).length;
+    return scheduling.services.where((s) => !s.removed).length;
   }
 
   bool validateSave() {
-    if (serviceScheduling.totalPriceCalculated < 0) {
+    if (scheduling.totalPriceCalculated < 0) {
       discountError = 'Informe um valor válido';
       notifyListeners();
       return false;
@@ -99,7 +99,7 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
 
   int getNextScheduledServiceId() {
     return 1 +
-        serviceScheduling.services
+        scheduling.services
             .map((s) => s.scheduledServiceId)
             .reduce((id1, id2) => id1 > id2 ? id1 : id2);
   }
@@ -107,20 +107,20 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
   Future<void> save() async {
     _emitState(EditServicesAndPricesLoading());
 
-    serviceScheduling = serviceScheduling.copyWith(
+    scheduling = scheduling.copyWith(
       endDateAndTime: schedulingService.calculateEndDate(
-        serviceScheduling.services,
-        serviceScheduling.startDateAndTime,
+        scheduling.services,
+        scheduling.startDateAndTime,
       ),
     );
 
     final editEither = await schedulingService.editServicesAndPricesOfScheduling(
-      schedulingId: serviceScheduling.id,
-      totalRate: serviceScheduling.totalRate,
-      totalDiscount: serviceScheduling.totalDiscount,
-      totalPrice: serviceScheduling.totalPrice,
-      scheduledServices: serviceScheduling.services,
-      newEndDate: serviceScheduling.endDateAndTime,
+      schedulingId: scheduling.id,
+      totalRate: scheduling.totalRate,
+      totalDiscount: scheduling.totalDiscount,
+      totalPrice: scheduling.totalPrice,
+      scheduledServices: scheduling.services,
+      newEndDate: scheduling.endDateAndTime,
     );
 
     if (editEither.isLeft) {

@@ -13,7 +13,7 @@ class SchedulingConverter {
     final List<Map<String, dynamic>> servicesMap =
         (map['services'] as List).map((e) => e as Map<String, dynamic>).toList();
     final List<ScheduledService> services =
-        servicesMap.map((e) => ScheduledServiceConverter.fromServiceSchedulingMap(map: e)).toList();
+        servicesMap.map((e) => ScheduledServiceConverter.fromSchedulingMap(map: e)).toList();
 
     final user = User(id: map['userId'], name: map['userName'], surname: map['userSurname']);
 

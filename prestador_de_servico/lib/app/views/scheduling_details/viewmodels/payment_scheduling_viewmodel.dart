@@ -7,11 +7,11 @@ import 'package:prestador_de_servico/app/views/scheduling_details/states/payment
 class PaymentSchedulingViewModel extends ChangeNotifier {
   PaymentSchedulingViewModel({
     required this.schedulingService,
-    required this.serviceScheduling,
+    required this.scheduling,
   });
 
   final SchedulingService schedulingService;
-  final Scheduling serviceScheduling;
+  final Scheduling scheduling;
 
   double valueToPay = 0;
   ValueNotifier<String?> valueToPayError = ValueNotifier(null);
@@ -39,11 +39,11 @@ class PaymentSchedulingViewModel extends ChangeNotifier {
   Future<void> receivePayment() async {
     _emitState(PaymentLoading());
 
-    final totalPaid = serviceScheduling.totalPaid + valueToPay;
-    final isPaid = (totalPaid >= serviceScheduling.totalPriceCalculated);
+    final totalPaid = scheduling.totalPaid + valueToPay;
+    final isPaid = (totalPaid >= scheduling.totalPriceCalculated);
 
     final either = await schedulingService.receivePayment(
-      schedulingId: serviceScheduling.id,
+      schedulingId: scheduling.id,
       totalPaid: totalPaid,
       isPaid: isPaid,
     ); 

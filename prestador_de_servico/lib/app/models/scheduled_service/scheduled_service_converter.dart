@@ -1,7 +1,7 @@
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 
 class ScheduledServiceConverter {
-  static ScheduledService fromServiceSchedulingMap({required Map map}) {
+  static ScheduledService fromSchedulingMap({required Map map}) {
     return ScheduledService(
       scheduledServiceId: map['scheduledServiceId'],
       id: map['id'],

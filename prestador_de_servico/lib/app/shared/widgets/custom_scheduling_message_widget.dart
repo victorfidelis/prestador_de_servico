@@ -5,11 +5,11 @@ import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 
 class CustomSchedulingMessageWidget extends StatelessWidget {
-  final Scheduling serviceScheduling;
+  final Scheduling scheduling;
   final double fontSize;
   const CustomSchedulingMessageWidget({
     super.key,
-    required this.serviceScheduling,
+    required this.scheduling,
     this.fontSize = 14,
   });
 
@@ -17,7 +17,7 @@ class CustomSchedulingMessageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final customColors = Theme.of(context).extension<CustomColors>();
 
-    if (serviceScheduling.schedulingUnavailable) {
+    if (scheduling.schedulingUnavailable) {
       return Text(
         'Horário indisponível',
         style: TextStyle(
@@ -26,7 +26,7 @@ class CustomSchedulingMessageWidget extends StatelessWidget {
           fontSize: fontSize,
         ),
       );
-    } else if (serviceScheduling.conflictScheduing) {
+    } else if (scheduling.conflictScheduing) {
       return Text(
         'Horário em conflito',
         style: TextStyle(
@@ -35,8 +35,8 @@ class CustomSchedulingMessageWidget extends StatelessWidget {
           fontSize: fontSize,
         ),
       );
-    } else if (serviceScheduling.isPaid) {
-      final totalPaid = Formatters.formatPrice(serviceScheduling.totalPaid);
+    } else if (scheduling.isPaid) {
+      final totalPaid = Formatters.formatPrice(scheduling.totalPaid);
       return Text(
         'Serviço pago ($totalPaid)',
         style: TextStyle(
@@ -45,8 +45,8 @@ class CustomSchedulingMessageWidget extends StatelessWidget {
           fontSize: fontSize,
         ),
       );
-    } else if (!serviceScheduling.isPaid && serviceScheduling.serviceStatus.isAccept()) {
-      final needToPay = Formatters.formatPrice(serviceScheduling.needToPay);
+    } else if (!scheduling.isPaid && scheduling.serviceStatus.isAccept()) {
+      final needToPay = Formatters.formatPrice(scheduling.needToPay);
       return Text(
         '$needToPay pendente',
         style: TextStyle(

@@ -100,8 +100,8 @@ void main() {
                   schedulingId: serviceScheduling08as09.id))
               .thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          final getEither = await schedulingService.getServiceScheduling(
-              serviceSchedulingId: serviceScheduling08as09.id);
+          final getEither = await schedulingService.getScheduling(
+              schedulingId: serviceScheduling08as09.id);
 
           expect(getEither.isLeft, isTrue);
           expect(getEither.left!.message, equals(failureMessage));
@@ -122,8 +122,8 @@ void main() {
                 endDate: serviceSchedulingTest.endDateAndTime,
               )).thenAnswer((_) async => Either.left(Failure(failureMessage)));
 
-          final getEither = await schedulingService.getServiceScheduling(
-              serviceSchedulingId: serviceSchedulingTest.id);
+          final getEither = await schedulingService.getScheduling(
+              schedulingId: serviceSchedulingTest.id);
 
           expect(getEither.isLeft, isTrue);
           expect(getEither.left!.message, equals(failureMessage));
@@ -153,8 +153,8 @@ void main() {
                 endDate: serviceScheduling09as11.endDateAndTime,
               )).thenAnswer((_) async => Either.right([serviceScheduling10as12]));
 
-          final getEither = await schedulingService.getServiceScheduling(
-              serviceSchedulingId: serviceScheduling.id);
+          final getEither = await schedulingService.getScheduling(
+              schedulingId: serviceScheduling.id);
 
           expect(getEither.isRight, isTrue);
           final serviceSchedulingReturn = getEither.right!;
@@ -186,8 +186,8 @@ void main() {
               endDate: serviceScheduling09as11.endDateAndTime,
             )).thenAnswer((_) async => Either.right([serviceSchedulingUnavailable]));
 
-        final getEither = await schedulingService.getServiceScheduling(
-            serviceSchedulingId: serviceScheduling09as11.id);
+        final getEither = await schedulingService.getScheduling(
+            schedulingId: serviceScheduling09as11.id);
 
         expect(getEither.isRight, isTrue);
         expect(getEither.right!.conflictScheduing, isTrue);
@@ -209,8 +209,8 @@ void main() {
               endDate: serviceScheduling09as11.endDateAndTime,
             )).thenAnswer((_) async => Either.right([]));
 
-        final getEither = await schedulingService.getServiceScheduling(
-            serviceSchedulingId: serviceScheduling09as11.id);
+        final getEither = await schedulingService.getScheduling(
+            schedulingId: serviceScheduling09as11.id);
 
         expect(getEither.isRight, isTrue);
         expect(getEither.right!.conflictScheduing, isFalse);
@@ -239,8 +239,8 @@ void main() {
               endDate: serviceScheduling09as11.endDateAndTime,
             )).thenAnswer((_) async => Either.right([serviceScheduling10as12]));
 
-        final getEither = await schedulingService.getServiceScheduling(
-            serviceSchedulingId: serviceScheduling09as11.id);
+        final getEither = await schedulingService.getScheduling(
+            schedulingId: serviceScheduling09as11.id);
 
         expect(getEither.isRight, isTrue);
         expect(getEither.right!.conflictScheduing, isFalse);
