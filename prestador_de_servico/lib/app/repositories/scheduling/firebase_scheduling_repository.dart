@@ -2,9 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_converter.dart';
-import 'package:prestador_de_servico/app/models/service/service_converter.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_image.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_image_converter.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling_converter.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
@@ -395,7 +392,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
   }
 
   @override
-  Future<Either<Failure, Unit>> addImage({required String schedulingId, required ServiceImage serviceImage}) async {
+  Future<Either<Failure, Unit>> addImage({required String schedulingId, required String imageUrl}) async {
     final initializeEither = await _firebaseInitializer.initialize();
     if (initializeEither.isLeft) {
       return Either.left(initializeEither.left);
@@ -404,18 +401,9 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     try {
       final docRef = FirebaseFirestore.instance.collection('serviceSchedules').doc(schedulingId);
       final docSnap = await docRef.get();
-      List<dynamic> existingImages = docSnap.get('images') ?? [];
-
-      List<Map<String, dynamic>> imagesToSend = [];
-      for (var item in existingImages) {
-        if (item is Map<String, dynamic>) {
-          imagesToSend.add(item);
-        }
-      }
-
-      imagesToSend.add(ServiceImageConverter.toMap(serviceImage));
-
-      await docRef.update({'images': imagesToSend});
+      List<String> images = docSnap.get('images') ?? [];
+      images.add(imageUrl);
+      await docRef.update({'images': images});
 
       return Either.right(unit);
     } on FirebaseException catch (e) {

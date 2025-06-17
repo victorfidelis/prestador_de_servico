@@ -18,8 +18,7 @@ class SchedulingService {
 
   SchedulingService({required this.onlineRepository, required this.imageRepository});
 
-  Future<Either<Failure, ServiceScheduling>> getServiceScheduling(
-      {required String serviceSchedulingId}) async {
+  Future<Either<Failure, ServiceScheduling>> getServiceScheduling({required String serviceSchedulingId}) async {
     final getEither = await onlineRepository.getScheduling(schedulingId: serviceSchedulingId);
     if (getEither.isLeft) {
       return Either.left(getEither.left);
@@ -61,8 +60,7 @@ class SchedulingService {
     return Either.right(flagServicesWithConflictAndUnavailability(getEither.right!));
   }
 
-  List<ServiceScheduling> flagServicesWithConflictAndUnavailability(
-      List<ServiceScheduling> servicesSchedules) {
+  List<ServiceScheduling> flagServicesWithConflictAndUnavailability(List<ServiceScheduling> servicesSchedules) {
     for (int i = 0; i < servicesSchedules.length; i++) {
       final scheduling = servicesSchedules[i];
       if (!scheduling.serviceStatus.isPending()) {
@@ -97,8 +95,7 @@ class SchedulingService {
     return servicesSchedules;
   }
 
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId(
-      {required String userId}) async {
+  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId({required String userId}) async {
     return await onlineRepository.getAllSchedulesByUserId(userId: userId);
   }
 
@@ -187,9 +184,7 @@ class SchedulingService {
         schedulingDay = daysWithService[index];
       }
 
-      if (date.year == selectedDay.year &&
-          date.month == selectedDay.month &&
-          date.day == selectedDay.day) {
+      if (date.year == selectedDay.year && date.month == selectedDay.month && date.day == selectedDay.day) {
         schedulingDay = schedulingDay.copyWith(isSelected: true, isToday: true);
       }
 
@@ -401,7 +396,23 @@ class SchedulingService {
     );
   }
 
-  Future<Either<Failure, Unit>> addImage({required int schedulingId, required String imageName, required imageFile}) {
-    
+  Future<Either<Failure, String>> addImage({
+    required String schedulingId,
+    required imageFile,
+  }) async {
+    final imageName = 'images/scheduling/$schedulingId/${DateTime.now().millisecondsSinceEpoch}.png';
+    final uploadImageEither = await imageRepository.uploadImage(imageFileName: imageName, imageFile: imageFile);
+    if (uploadImageEither.isLeft) {
+      return Either.left(uploadImageEither.left);
+    }
+    final imageUrl = uploadImageEither.right!;
+    final addImageEither =
+        await onlineRepository.addImage(schedulingId: schedulingId, imageUrl: imageUrl);
+
+    if (addImageEither.isLeft) {
+      return Either.left(addImageEither.left!);
+    } else {
+      return Either.right(imageUrl);
+    }
   }
 }
