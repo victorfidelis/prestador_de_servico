@@ -311,10 +311,10 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                   );
                 }
       
-                final serviceSchedules =
+                final schedules =
                     (schedulingViewModel.state as SchedulingLoaded).schedules;
       
-                if (serviceSchedules.isEmpty) {
+                if (schedules.isEmpty) {
                   return SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.only(top: 40),
@@ -335,14 +335,14 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                 return SliverPadding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   sliver: SliverList.builder(
-                    itemCount: serviceSchedules.length + 1,
+                    itemCount: schedules.length + 1,
                     itemBuilder: (context, index) {
-                      if (index == serviceSchedules.length) {
+                      if (index == schedules.length) {
                         return const SizedBox(height: 150);
                       }
       
                       return CustomSchedulingCard(
-                        scheduling: serviceSchedules[index],
+                        scheduling: schedules[index],
                         isReadOnly: true,
                       );
                     },

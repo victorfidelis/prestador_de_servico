@@ -3,20 +3,20 @@ import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 
 class SchedulesByDay {
   DateTime day; 
-  List<Scheduling> serviceSchedules;
+  List<Scheduling> schedules;
 
   SchedulesByDay({
     required this.day,
-    required this.serviceSchedules,
+    required this.schedules,
   });
 
   SchedulesByDay copyWith({
     DateTime? day,
-    List<Scheduling>? serviceSchedules,
+    List<Scheduling>? schedules,
   }) {
     return SchedulesByDay(
       day: day ?? this.day,
-      serviceSchedules: serviceSchedules ?? this.serviceSchedules,
+      schedules: schedules ?? this.schedules,
     );
   }
 }

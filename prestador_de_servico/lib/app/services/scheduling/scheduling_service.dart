@@ -223,10 +223,10 @@ class SchedulingService {
       );
       var index = schedulesByDays.indexWhere((s) => s.day == day);
       if (index == -1) {
-        schedulesByDays.add(SchedulesByDay(day: day, serviceSchedules: []));
+        schedulesByDays.add(SchedulesByDay(day: day, schedules: []));
         index = schedulesByDays.length - 1;
       }
-      schedulesByDays[index].serviceSchedules.add(scheduling);
+      schedulesByDays[index].schedules.add(scheduling);
     }
     return schedulesByDays;
   }

@@ -42,14 +42,14 @@ class _SchedulesByDayCardState extends State<SchedulesByDayCard> {
         ),
         Column(
           mainAxisSize: MainAxisSize.min,
-          children: serviceScheduleschedulesCard(),
+          children: schedulesCard(),
         )
       ],
     );
   }
 
-  List<CustomSchedulingCard> serviceScheduleschedulesCard() {
-    return schedulesByDay.serviceSchedules
+  List<CustomSchedulingCard> schedulesCard() {
+    return schedulesByDay.schedules
         .map(
           (scheduling) => CustomSchedulingCard(
             scheduling: scheduling,

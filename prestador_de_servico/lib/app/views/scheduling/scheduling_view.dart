@@ -174,7 +174,7 @@ class _SchedulingViewState extends State<SchedulingView> {
                 );
               }
 
-              final serviceSchedules =
+              final schedules =
                   (schedulingViewModel.state as SchedulingLoaded).schedules;
 
               return Expanded(
@@ -182,14 +182,14 @@ class _SchedulingViewState extends State<SchedulingView> {
                   padding: const EdgeInsets.symmetric(horizontal: 18),
                   child: ListView.builder(
                     padding: EdgeInsets.zero,
-                    itemCount: serviceSchedules.length + 1,
+                    itemCount: schedules.length + 1,
                     itemBuilder: (context, index) {
-                      if (index == serviceSchedules.length) {
+                      if (index == schedules.length) {
                         return const SizedBox(height: 150);
                       }
 
                       return CustomSchedulingCard(
-                        scheduling: serviceSchedules[index],
+                        scheduling: schedules[index],
                         refreshOriginPage: refreshView,
                       );
                     },

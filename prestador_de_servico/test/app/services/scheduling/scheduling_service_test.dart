@@ -619,14 +619,14 @@ void main() {
           DateTime day3 = actualDate.add(const Duration(days: 2));
 
           final List<SchedulesByDay> schedulesByDays = [
-            SchedulesByDay(day: day1, serviceSchedules: [serviceSchedulingDay1das08as09]),
+            SchedulesByDay(day: day1, schedules: [serviceSchedulingDay1das08as09]),
             SchedulesByDay(
               day: day2,
-              serviceSchedules: [serviceSchedulingDay2das08as09, serviceSchedulingDay2das09as11],
+              schedules: [serviceSchedulingDay2das08as09, serviceSchedulingDay2das09as11],
             ),
             SchedulesByDay(
               day: day3,
-              serviceSchedules: [serviceSchedulingDay3das08as09, serviceSchedulingDay3das09as11],
+              schedules: [serviceSchedulingDay3das08as09, serviceSchedulingDay3das09as11],
             ),
           ];
 
@@ -640,8 +640,8 @@ void main() {
           expect(either.right!.length, equals(schedulesByDays.length));
           expect(either.right![1].day, schedulesByDays[1].day);
           expect(
-            either.right![1].serviceSchedules.length,
-            schedulesByDays[1].serviceSchedules.length,
+            either.right![1].schedules.length,
+            schedulesByDays[1].schedules.length,
           );
         },
       );
@@ -727,14 +727,14 @@ void main() {
           DateTime day3 = actualDate.add(const Duration(days: 2));
 
           final List<SchedulesByDay> schedulesByDays = [
-            SchedulesByDay(day: day1, serviceSchedules: [serviceSchedulingDay1das08as09]),
+            SchedulesByDay(day: day1, schedules: [serviceSchedulingDay1das08as09]),
             SchedulesByDay(
               day: day2,
-              serviceSchedules: [serviceSchedulingDay2das08as09, serviceSchedulingDay2das09as11],
+              schedules: [serviceSchedulingDay2das08as09, serviceSchedulingDay2das09as11],
             ),
             SchedulesByDay(
               day: day3,
-              serviceSchedules: [serviceSchedulingDay3das08as09, serviceSchedulingDay3das09as11],
+              schedules: [serviceSchedulingDay3das08as09, serviceSchedulingDay3das09as11],
             ),
           ];
 
@@ -748,8 +748,8 @@ void main() {
           expect(either.right!.length, equals(schedulesByDays.length));
           expect(either.right![1].day, schedulesByDays[1].day);
           expect(
-            either.right![1].serviceSchedules.length,
-            schedulesByDays[1].serviceSchedules.length,
+            either.right![1].schedules.length,
+            schedulesByDays[1].schedules.length,
           );
         },
       );
