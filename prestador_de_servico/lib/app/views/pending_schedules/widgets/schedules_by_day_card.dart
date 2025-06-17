@@ -51,8 +51,8 @@ class _SchedulesByDayCardState extends State<SchedulesByDayCard> {
   List<CustomSchedulingCard> serviceScheduleschedulesCard() {
     return schedulesByDay.serviceSchedules
         .map(
-          (serviceScheduling) => CustomSchedulingCard(
-            scheduling: serviceScheduling,
+          (scheduling) => CustomSchedulingCard(
+            scheduling: scheduling,
             refreshOriginPage: widget.refreshOriginPage,
           ),
         )
