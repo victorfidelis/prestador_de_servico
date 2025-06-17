@@ -87,7 +87,7 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
   Widget _buildBody() {
     return CustomEmptyList(
       label: 'Nenhuma imagem cadastrada',
-      action: serviceImagesViewModel.pickImageFromGallery,
+      action: serviceImagesViewModel.addImageFromGallery,
       labelAction: 'Adicionar primeira imagem',
     );
 

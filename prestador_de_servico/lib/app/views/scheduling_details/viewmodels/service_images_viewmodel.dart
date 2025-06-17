@@ -31,7 +31,7 @@ class ServiceImagesViewModel extends ChangeNotifier {
     if (!_dispose) notifyListeners();
   }
 
-  Future<void> pickImageFromGallery() async {
+  Future<void> addImageFromGallery() async {
     final eitherPickImage = await offlineImageService.pickImageFromGallery();
     if (eitherPickImage.isLeft) {
       _emitState(ServiceImagesError(eitherPickImage.left!.message));

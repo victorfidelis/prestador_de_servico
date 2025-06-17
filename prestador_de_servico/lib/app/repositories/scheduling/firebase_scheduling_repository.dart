@@ -43,7 +43,7 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     final endDate = startDate.add(const Duration(days: 1));
 
     try {
-      final schedulesCollection = FirebaseFirestore.instance.collection('Schedules');
+      final schedulesCollection = FirebaseFirestore.instance.collection('schedules');
       QuerySnapshot snapSchedules = await schedulesCollection
           .where('startDateAndTime', isGreaterThanOrEqualTo: startDate)
           .where('startDateAndTime', isLessThan: endDate)
