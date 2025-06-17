@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
@@ -17,7 +17,7 @@ import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/pay
 import 'package:provider/provider.dart';
 
 class PaymentSchedulingView extends StatefulWidget {
-  final ServiceScheduling serviceScheduling;
+  final Scheduling serviceScheduling;
   const PaymentSchedulingView({super.key, required this.serviceScheduling});
 
   @override

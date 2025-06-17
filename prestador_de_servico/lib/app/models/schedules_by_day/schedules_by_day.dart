@@ -1,9 +1,9 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 
 class SchedulesByDay {
   DateTime day; 
-  List<ServiceScheduling> serviceSchedules;
+  List<Scheduling> serviceSchedules;
 
   SchedulesByDay({
     required this.day,
@@ -12,7 +12,7 @@ class SchedulesByDay {
 
   SchedulesByDay copyWith({
     DateTime? day,
-    List<ServiceScheduling>? serviceSchedules,
+    List<Scheduling>? serviceSchedules,
   }) {
     return SchedulesByDay(
       day: day ?? this.day,

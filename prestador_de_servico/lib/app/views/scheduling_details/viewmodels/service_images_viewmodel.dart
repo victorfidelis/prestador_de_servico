@@ -8,6 +8,9 @@ import 'package:prestador_de_servico/app/views/scheduling_details/states/service
 class ServiceImagesViewModel extends ChangeNotifier {
   final SchedulingService schedulingService;
   final OfflineImageService offlineImageService;
+  late String schedulingId;
+  List<String> images = [];
+
   bool _dispose = false;
 
   ServiceImagesViewModel({
@@ -31,9 +34,20 @@ class ServiceImagesViewModel extends ChangeNotifier {
   Future<void> pickImageFromGallery() async {
     final eitherPickImage = await offlineImageService.pickImageFromGallery();
     if (eitherPickImage.isLeft) {
-      _emitState(PickImageError(eitherPickImage.left!.message));
-    } else {
-      _emitState(PickImageSuccess(eitherPickImage.right!));
+      _emitState(ServiceImagesError(eitherPickImage.left!.message));
+    } 
+    
+    _emitState(ServiceImagesLoading());
+
+    final imageFile = eitherPickImage.right!;
+    final addImageEither = await schedulingService.addImage(schedulingId: schedulingId, imageFile: imageFile);
+    if (addImageEither.isLeft) {
+      _emitState(ServiceImagesError(addImageEither.left!.message));
     }
+
+    final imageUrl = addImageEither.right!;
+    images.add(imageUrl);
+
+    _emitState(ServiceImagesLoaded());
   }
 }

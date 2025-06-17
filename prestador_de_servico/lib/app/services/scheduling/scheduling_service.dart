@@ -2,7 +2,7 @@ import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_serv
 import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
@@ -18,7 +18,7 @@ class SchedulingService {
 
   SchedulingService({required this.onlineRepository, required this.imageRepository});
 
-  Future<Either<Failure, ServiceScheduling>> getServiceScheduling({required String serviceSchedulingId}) async {
+  Future<Either<Failure, Scheduling>> getServiceScheduling({required String serviceSchedulingId}) async {
     final getEither = await onlineRepository.getScheduling(schedulingId: serviceSchedulingId);
     if (getEither.isLeft) {
       return Either.left(getEither.left);
@@ -45,11 +45,11 @@ class SchedulingService {
     return Either.right(serviceScheduling);
   }
 
-  bool isUnavailable(List<ServiceScheduling> schedules) {
+  bool isUnavailable(List<Scheduling> schedules) {
     return schedules.where((s) => s.serviceStatus.isAccept()).isNotEmpty;
   }
 
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByDay({
+  Future<Either<Failure, List<Scheduling>>> getAllServicesByDay({
     required DateTime dateTime,
   }) async {
     final getEither = await onlineRepository.getAllSchedulesByDay(dateTime: dateTime);
@@ -60,7 +60,7 @@ class SchedulingService {
     return Either.right(flagServicesWithConflictAndUnavailability(getEither.right!));
   }
 
-  List<ServiceScheduling> flagServicesWithConflictAndUnavailability(List<ServiceScheduling> servicesSchedules) {
+  List<Scheduling> flagServicesWithConflictAndUnavailability(List<Scheduling> servicesSchedules) {
     for (int i = 0; i < servicesSchedules.length; i++) {
       final scheduling = servicesSchedules[i];
       if (!scheduling.serviceStatus.isPending()) {
@@ -95,7 +95,7 @@ class SchedulingService {
     return servicesSchedules;
   }
 
-  Future<Either<Failure, List<ServiceScheduling>>> getAllServicesByUserId({required String userId}) async {
+  Future<Either<Failure, List<Scheduling>>> getAllServicesByUserId({required String userId}) async {
     return await onlineRepository.getAllSchedulesByUserId(userId: userId);
   }
 
@@ -212,10 +212,10 @@ class SchedulingService {
     return Either.right(groupSchedulesByDay(pendingPaymentEither.right!));
   }
 
-  List<SchedulesByDay> groupSchedulesByDay(List<ServiceScheduling> serviceSchedules) {
+  List<SchedulesByDay> groupSchedulesByDay(List<Scheduling> serviceSchedules) {
     serviceSchedules.sort((s1, s2) => s1.startDateAndTime.compareTo(s2.startDateAndTime));
     List<SchedulesByDay> schedulesByDays = [];
-    for (ServiceScheduling serviceScheduling in serviceSchedules) {
+    for (Scheduling serviceScheduling in serviceSchedules) {
       final day = DateTime(
         serviceScheduling.startDateAndTime.year,
         serviceScheduling.startDateAndTime.month,

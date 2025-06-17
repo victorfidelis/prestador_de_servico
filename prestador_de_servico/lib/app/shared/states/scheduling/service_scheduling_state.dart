@@ -1,4 +1,4 @@
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 
 abstract class ServiceSchedulingState {}
 
@@ -12,7 +12,7 @@ class ServiceSchedulingError extends ServiceSchedulingState {
 }
 
 class ServiceSchedulingLoaded extends ServiceSchedulingState {
-  final List<ServiceScheduling> serviceSchedules;
+  final List<Scheduling> serviceSchedules;
   final String message;
 
   ServiceSchedulingLoaded({required this.serviceSchedules, this.message = ''});

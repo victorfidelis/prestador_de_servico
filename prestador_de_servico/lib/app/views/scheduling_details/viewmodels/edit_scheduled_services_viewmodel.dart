@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_services_and_prices_state.dart';
 
 class EditScheduledServicesViewmodel extends ChangeNotifier {
   final SchedulingService schedulingService;
-  ServiceScheduling serviceScheduling;
+  Scheduling serviceScheduling;
   late List<ScheduledService> scheduledServicesOriginal;
   String? discountError;
 

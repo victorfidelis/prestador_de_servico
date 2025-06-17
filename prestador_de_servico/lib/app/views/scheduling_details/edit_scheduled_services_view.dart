@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
@@ -19,7 +19,7 @@ import 'package:prestador_de_servico/app/views/scheduling_details/widgets/edit_s
 import 'package:provider/provider.dart';
 
 class EditScheduledServicesView extends StatefulWidget {
-  final ServiceScheduling serviceScheduling;
+  final Scheduling serviceScheduling;
   const EditScheduledServicesView({super.key, required this.serviceScheduling});
 
   @override

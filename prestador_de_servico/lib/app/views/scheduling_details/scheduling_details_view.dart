@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
@@ -23,7 +23,7 @@ import 'package:prestador_de_servico/app/views/scheduling_details/widgets/servic
 import 'package:provider/provider.dart';
 
 class SchedulingDetailsView extends StatefulWidget {
-  final ServiceScheduling serviceScheduling;
+  final Scheduling serviceScheduling;
 
   const SchedulingDetailsView({super.key, required this.serviceScheduling});
 
@@ -323,7 +323,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                 style: TextStyle(fontSize: 16),
               ),
             ),
-            CustomLink(label: 'Adicionar', onTap: onAddOrEditImages)
+            CustomLink(label: 'Abrir', onTap: onAddOrEditImages)
           ],
         ),
         const SizedBox(height: 12),

@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:prestador_de_servico/app/models/address/address_converter.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service_converter.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 
-class ServiceSchedulingConverter {
-  static ServiceScheduling fromFirebaseDoc({required DocumentSnapshot doc}) {
+class SchedulingConverter {
+  static Scheduling fromFirebaseDoc({required DocumentSnapshot doc}) {
     Map<String, dynamic> map = (doc.data() as Map<String, dynamic>);
 
     final List<Map<String, dynamic>> servicesMap =
@@ -39,8 +39,12 @@ class ServiceSchedulingConverter {
     if (map.containsKey('reviewDetails')) {
       reviewDetails = map['reviewDetails'];
     }
+    List<String> images = [];
+    if (map.containsKey('images')) {
+      images = map['images'];
+    }
 
-    return ServiceScheduling(
+    return Scheduling(
       id: doc.id,
       user: user,
       services: services,
@@ -58,6 +62,7 @@ class ServiceSchedulingConverter {
       address: AddressConverter.fromMap(map: map['address']),
       review: review,
       reviewDetails: reviewDetails,
+      images: images,
     );
   }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/payment_scheduling_state.dart';
@@ -11,7 +11,7 @@ class PaymentSchedulingViewModel extends ChangeNotifier {
   });
 
   final SchedulingService schedulingService;
-  final ServiceScheduling serviceScheduling;
+  final Scheduling serviceScheduling;
 
   double valueToPay = 0;
   ValueNotifier<String?> valueToPayError = ValueNotifier(null);

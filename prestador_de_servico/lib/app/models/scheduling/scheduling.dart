@@ -6,7 +6,7 @@ import 'package:prestador_de_servico/app/models/service_status/service_status_ex
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/shared/utils/general.dart';
 
-class ServiceScheduling {
+class Scheduling {
   final String id;
   final User user;
   final List<ScheduledService> services;
@@ -26,6 +26,7 @@ class ServiceScheduling {
   final Address? address;
   final int? review;
   final String? reviewDetails; 
+  final List<String> images;
 
   double get needToPay => totalPrice + totalRate - totalDiscount - totalPaid;
   double get totalPriceCalculated => totalPrice + totalRate - totalDiscount;
@@ -38,7 +39,7 @@ class ServiceScheduling {
   bool get hasMessage =>
       schedulingUnavailable || conflictScheduing || isPaid || (!isPaid && serviceStatus.isAccept());
 
-  ServiceScheduling({
+  Scheduling({
     this.id = '',
     required this.user,
     required this.services,
@@ -58,9 +59,10 @@ class ServiceScheduling {
     this.address,
     this.review,
     this.reviewDetails,
+    this.images = const [],
   });
 
-  ServiceScheduling copyWith({
+  Scheduling copyWith({
     String? id,
     User? user,
     List<ScheduledService>? services,
@@ -79,8 +81,9 @@ class ServiceScheduling {
     Address? address,
     int? review,
     String? reviewDetails,
+    List<String>? images,
   }) {
-    return ServiceScheduling(
+    return Scheduling(
       id: id ?? this.id,
       user: user ?? this.user,
       services: services ?? this.services,
@@ -99,11 +102,12 @@ class ServiceScheduling {
       address: address ?? this.address,
       review: review ?? this.review,
       reviewDetails: reviewDetails ?? this.reviewDetails,
+      images: images ?? this.images,
     );
   }
 
   @override
-  bool operator ==(covariant ServiceScheduling other) {
+  bool operator ==(covariant Scheduling other) {
     return id == other.id &&
         user == other.user &&
         listEquals(services, other.services) &&

@@ -3,7 +3,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
@@ -66,7 +66,7 @@ void main() {
     removed: false,
   );
 
-  final serviceScheduling = ServiceScheduling(
+  final serviceScheduling = Scheduling(
     id: '1',
     user: User(name: 'Lucas', surname: 'Silva'),
     services: [service1, service2, service3],
@@ -562,7 +562,7 @@ void main() {
       test(
         '''Deve retornar uma lista de SchedulesByDay vazia quando não houver pendências''',
         () async {
-          final List<ServiceScheduling> servicesSchedules = [];
+          final List<Scheduling> servicesSchedules = [];
 
           when(() => onlineMockSchedulingRepository.getPendingProviderSchedules()).thenAnswer(
             (_) async => Either.right(servicesSchedules),
@@ -606,7 +606,7 @@ void main() {
             endDateAndTime: actualDate.copyWith(hour: 11, minute: 0).add(const Duration(days: 2)),
           );
 
-          final List<ServiceScheduling> servicesSchedules = [
+          final List<Scheduling> servicesSchedules = [
             serviceSchedulingDay1das08as09,
             serviceSchedulingDay2das08as09,
             serviceSchedulingDay2das09as11,
@@ -670,7 +670,7 @@ void main() {
       test(
         '''Deve retornar uma lista de SchedulesByDay vazia quando não houver pendências''',
         () async {
-          final List<ServiceScheduling> servicesSchedules = [];
+          final List<Scheduling> servicesSchedules = [];
 
           when(() => onlineMockSchedulingRepository.getPendingPaymentSchedules()).thenAnswer(
             (_) async => Either.right(servicesSchedules),
@@ -714,7 +714,7 @@ void main() {
             endDateAndTime: actualDate.copyWith(hour: 11, minute: 0).add(const Duration(days: 2)),
           );
 
-          final List<ServiceScheduling> servicesSchedules = [
+          final List<Scheduling> servicesSchedules = [
             serviceSchedulingDay1das08as09,
             serviceSchedulingDay2das08as09,
             serviceSchedulingDay2das09as11,

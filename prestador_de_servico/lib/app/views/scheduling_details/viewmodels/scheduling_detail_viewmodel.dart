@@ -1,12 +1,12 @@
 import 'package:flutter/foundation.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/scheduling_detail_state.dart';
 
 class SchedulingDetailViewModel extends ChangeNotifier {
   SchedulingService schedulingService;
-  ServiceScheduling scheduling;
+  Scheduling scheduling;
   bool hasChange = false;
 
   SchedulingDetailViewModel({

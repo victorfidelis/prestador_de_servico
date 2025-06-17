@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_message_widget.dart';
 
 class CustomSchedulingCard extends StatefulWidget {
-  final ServiceScheduling serviceScheduling;
+  final Scheduling serviceScheduling;
   final Function()? refreshOriginPage;
   final bool isReadOnly;
 
@@ -23,7 +23,7 @@ class CustomSchedulingCard extends StatefulWidget {
 }
 
 class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
-  late ServiceScheduling serviceScheduling;
+  late Scheduling serviceScheduling;
 
   @override
   void initState() {

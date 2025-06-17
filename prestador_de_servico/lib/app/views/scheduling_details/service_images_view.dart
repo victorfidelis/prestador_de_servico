@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
@@ -10,7 +11,8 @@ import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/ser
 import 'package:provider/provider.dart';
 
 class ServiceImagesView extends StatefulWidget {
-  const ServiceImagesView({super.key});
+  final Scheduling scheduling;
+  const ServiceImagesView({super.key, required this.scheduling});
 
   @override
   State<ServiceImagesView> createState() => _ServiceImagesViewState();
@@ -25,6 +27,8 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
       schedulingService: context.read<SchedulingService>(),
       offlineImageService: context.read<OfflineImageService>(),
     );
+    serviceImagesViewModel.schedulingId = widget.scheduling.id;
+    serviceImagesViewModel.images = widget.scheduling.images;
     super.initState();
   }
 

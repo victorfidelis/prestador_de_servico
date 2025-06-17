@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
@@ -105,7 +105,7 @@ Route<dynamic>? getRoute(RouteSettings settings) {
   }
   if (settings.name == '/schedulingDetails') {
     final arguments = (settings.arguments as Map);
-    final serviceScheduling = (arguments['serviceScheduling']) as ServiceScheduling;
+    final serviceScheduling = (arguments['serviceScheduling']) as Scheduling;
     return _buildRoute(
       settings,
       SchedulingDetailsView(serviceScheduling: serviceScheduling),
@@ -113,15 +113,15 @@ Route<dynamic>? getRoute(RouteSettings settings) {
   }
   if (settings.name == '/editDateAndTime') {
     final arguments = (settings.arguments as Map);
-    final serviceScheduling = (arguments['serviceScheduling']) as ServiceScheduling;
+    final serviceScheduling = (arguments['serviceScheduling']) as Scheduling;
     return _buildRoute(
       settings,
-      EditDateAndTimeView(serviceScheduling: serviceScheduling),
+      EditDateAndTimeView(scheduling: serviceScheduling),
     );
   }
   if (settings.name == '/editScheduledServices') {
     final arguments = (settings.arguments as Map);
-    final serviceScheduling = (arguments['serviceScheduling']) as ServiceScheduling;
+    final serviceScheduling = (arguments['serviceScheduling']) as Scheduling;
     return _buildRoute(
       settings,
       EditScheduledServicesView(serviceScheduling: serviceScheduling),
@@ -129,7 +129,7 @@ Route<dynamic>? getRoute(RouteSettings settings) {
   }
   if (settings.name == '/paymentScheduling') {
     final arguments = (settings.arguments as Map);
-    final serviceScheduling = (arguments['serviceScheduling']) as ServiceScheduling;
+    final serviceScheduling = (arguments['serviceScheduling']) as Scheduling;
     return _buildRoute(
       settings,
       PaymentSchedulingView(serviceScheduling: serviceScheduling),

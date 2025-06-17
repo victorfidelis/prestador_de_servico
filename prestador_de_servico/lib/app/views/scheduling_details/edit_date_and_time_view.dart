@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/models/service_scheduling/service_scheduling.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
@@ -23,8 +23,8 @@ import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/edi
 import 'package:provider/provider.dart';
 
 class EditDateAndTimeView extends StatefulWidget {
-  final ServiceScheduling serviceScheduling;
-  const EditDateAndTimeView({super.key, required this.serviceScheduling});
+  final Scheduling scheduling;
+  const EditDateAndTimeView({super.key, required this.scheduling});
 
   @override
   State<EditDateAndTimeView> createState() => _EditDateAndTimeViewState();
@@ -35,7 +35,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   late ServiceSchedulingViewModel serviceSchedulingViewModel;
   final CustomNotifications customNotifications = CustomNotifications();
 
-  late ServiceScheduling serviceScheduling;
+  late Scheduling scheduling;
   final TextEditingController dateController = TextEditingController();
   final FocusNode dateFocus = FocusNode();
   final TextEditingController timeController = TextEditingController();
@@ -43,15 +43,15 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
 
   @override
   void initState() {
-    serviceScheduling = widget.serviceScheduling;
+    scheduling = widget.scheduling;
     serviceSchedulingViewModel = ServiceSchedulingViewModel(
       schedulingService: context.read<SchedulingService>(),
     );
     editDateAndTimeViewModel = EditDateAndTimeViewModel(
       schedulingService: SchedulingService(onlineRepository: SchedulingRepository.createOnline(), imageRepository: ImageRepository.create()),
     );
-    editDateAndTimeViewModel.setServiceTime(serviceScheduling.serviceTime);
-    editDateAndTimeViewModel.setSchedulingId(serviceScheduling.id);
+    editDateAndTimeViewModel.setServiceTime(scheduling.serviceTime);
+    editDateAndTimeViewModel.setSchedulingId(scheduling.id);
     super.initState();
   }
 
@@ -68,7 +68,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
 
   @override
   Widget build(BuildContext context) {
-    Color statusColor = ColorsUtils.getColorFromStatus(context, serviceScheduling.serviceStatus);
+    Color statusColor = ColorsUtils.getColorFromStatus(context, scheduling.serviceStatus);
 
     return PopScope(
       canPop: false,
@@ -121,7 +121,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      serviceScheduling.user.fullname,
+                      scheduling.user.fullname,
                       style: TextStyle(
                         color: statusColor,
                         fontSize: 24,
@@ -130,7 +130,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      serviceScheduling.serviceStatus.name,
+                      scheduling.serviceStatus.name,
                       style: TextStyle(
                         color: statusColor,
                         fontSize: 16,
@@ -150,7 +150,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            Formatters.defaultFormatDate(serviceScheduling.startDateAndTime),
+                            Formatters.defaultFormatDate(scheduling.startDateAndTime),
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w700,
@@ -166,8 +166,8 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                               const SizedBox(width: 6),
                               Text(
                                 Formatters.defaultFormatHoursAndMinutes(
-                                  serviceScheduling.startDateAndTime.hour,
-                                  serviceScheduling.startDateAndTime.minute,
+                                  scheduling.startDateAndTime.hour,
+                                  scheduling.startDateAndTime.minute,
                                 ),
                                 style: const TextStyle(fontSize: 18),
                               ),
@@ -179,8 +179,8 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                               const SizedBox(width: 6),
                               Text(
                                 Formatters.defaultFormatHoursAndMinutes(
-                                  serviceScheduling.endDateAndTime.hour,
-                                  serviceScheduling.endDateAndTime.minute,
+                                  scheduling.endDateAndTime.hour,
+                                  scheduling.endDateAndTime.minute,
                                 ),
                                 style: const TextStyle(fontSize: 18),
                               ),
