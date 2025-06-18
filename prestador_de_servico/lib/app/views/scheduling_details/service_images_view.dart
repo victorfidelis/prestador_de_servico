@@ -6,7 +6,10 @@ import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_empty_list.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
+import 'package:prestador_de_servico/app/shared/widgets/image_card.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/states/service_images_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/service_images_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -78,23 +81,45 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
               ),
             ),
           ),
-          SliverFillRemaining(child: _buildBody())
+          SliverFillRemaining(
+            child: ListenableBuilder(
+              listenable: serviceImagesViewModel,
+              builder: (context, _) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: _buildBody(),
+                );
+              }
+            ),
+          ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: serviceImagesViewModel.addImageFromGallery,
+        child: const Icon(Icons.add),
       ),
     );
   }
 
   Widget _buildBody() {
-    return CustomEmptyList(
-      label: 'Nenhuma imagem cadastrada',
-      action: serviceImagesViewModel.addImageFromGallery,
-      labelAction: 'Adicionar primeira imagem',
-    );
+    if (serviceImagesViewModel.state is ServiceImagesLoading) {
+      return const Center(child: CustomLoading());
+    }
 
-    // return const Column(
-    //   children: [
-    //     ImageCard(defaultFileImage: 'assets/images/adicionar_imagem.jpg'),
-    //   ],
-    // );
+    if (serviceImagesViewModel.images.isEmpty) {
+      return CustomEmptyList(
+        label: 'Nenhuma imagem cadastrada',
+        action: serviceImagesViewModel.addImageFromGallery,
+        labelAction: 'Adicionar primeira imagem',
+      );
+    }
+
+    return Wrap(
+      children: serviceImagesViewModel.images.map((e) => _buildImageCard(e)).toList(),
+    );
+  }
+
+  Widget _buildImageCard(String url) {
+    return Padding(padding: const EdgeInsets.all(8), child: ImageCard(imageUrl: url));
   }
 }
