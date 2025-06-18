@@ -3,6 +3,7 @@ import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/animated_collections_helpers/animated_list_helper.dart';
+import 'package:prestador_de_servico/app/shared/widgets/animated_horizontal_list.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_card.dart';
@@ -42,8 +43,10 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     vsync: this,
     value: 1.0,
   );
-  final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey<AnimatedListState>();
-  late AnimatedListHelper<Service> _listServicesCategoryCard;
+
+  // final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey<AnimatedListState>();
+  AnimatedListHelper<Service>? _serviceListHelper;
+
   final _scrollController = ScrollController();
   final _customNotifications = CustomNotifications();
 
@@ -64,11 +67,11 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   build(BuildContext context) {
     final hasService = servicesByCategory.services.isNotEmpty;
 
-    _listServicesCategoryCard = AnimatedListHelper<Service>(
-      listKey: _animatedListKey,
-      removedItemBuilder: buildRemovedItem,
-      initialItems: servicesByCategory.services,
-    );
+    // _serviceListHelper = AnimatedListHelper<Service>(
+    //   listKey: _animatedListKey,
+    //   removedItemBuilder: buildRemovedItem,
+    //   initialItems: servicesByCategory.services,
+    // );
 
     return SizeTransition(
       sizeFactor: widget.animation,
@@ -99,8 +102,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       : IconButton(
                           onPressed: () {
                             widget.onRemoveCategory(
-                                serviceCategory: servicesByCategory.serviceCategory,
-                                index: widget.index);
+                                serviceCategory: servicesByCategory.serviceCategory, index: widget.index);
                           },
                           icon: Icon(
                             Icons.delete,
@@ -111,7 +113,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       ? const SizedBox()
                       : IconButton(
                           onPressed: () {
-                            onEdit();
+                            _onEdit();
                           },
                           icon: Icon(
                             Icons.edit,
@@ -132,18 +134,42 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       ),
                     ),
                   ),
-            hasService
-                ? SizedBox(
-                    height: 190,
-                    child: AnimatedList(
-                      key: _animatedListKey,
-                      controller: _scrollController,
-                      scrollDirection: Axis.horizontal,
-                      initialItemCount: _listServicesCategoryCard.length + 2,
-                      itemBuilder: itemBuilder,
-                    ),
-                  )
-                : Container(),
+            AnimatedHorizontalList<Service>(
+              key: ValueKey(servicesByCategory.serviceCategory.id),
+              initialItems: servicesByCategory.services,
+              scrollController: _scrollController,
+              itemBuilder: (context, service, index, animation) {
+                return ServiceCard(
+                  key: ValueKey(service.id),
+                  onTap: () {
+                    if (widget.isSelectionView) {
+                      widget.onSelectedService(service);
+                    } else {
+                      _onEditService(
+                        serviceCategory: servicesByCategory.serviceCategory,
+                        service: service,
+                      );
+                    }
+                  },
+                  onLongPress: () {
+                    _onRemoveService(service: service);
+                  },
+                  service: service,
+                  animation: animation,
+                );
+              },
+              removedItemBuilder: (
+                Service service,
+                BuildContext context,
+                Animation<double> animation,
+              ) {
+                return ServiceCard(onTap: () {}, onLongPress: () {}, service: service, animation: animation);
+              },
+              onListHelperReady: (helper) => _serviceListHelper = helper,
+              listHeight: 190,
+              firstItemPadding: 16,
+              lastItemPadding: 190,
+            ),
             const SizedBox(height: 6),
             widget.isSelectionView
                 ? const SizedBox()
@@ -155,12 +181,12 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                             child: CustomLink(
                           label: 'Adicionar novo',
                           onTap: () {
-                            onAddService(serviceCategory: servicesByCategory.serviceCategory);
+                            _onAddService(serviceCategory: servicesByCategory.serviceCategory);
                           },
                         )),
                         CustomLink(
                           label: 'Mostrar tudo',
-                          onTap: onShowAll,
+                          onTap: _onShowAll,
                         ),
                       ],
                     ),
@@ -176,22 +202,21 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     );
   }
 
-  void onShowAll() {
-    final servicesByCategoryToShowAll =
-        servicesByCategory.copyWith(services: List.from(servicesByCategory.services));
+  void _onShowAll() {
+    final servicesByCategoryToShowAll = servicesByCategory.copyWith(services: List.from(servicesByCategory.services));
 
     Navigator.of(context).pushNamed(
       '/showAllServices',
       arguments: {
         'servicesByCategory': servicesByCategoryToShowAll,
-        'removeServiceOfOtherScreen': removeServiceOfScreen,
-        'addServiceOfOtherScreen': addServiceOfScreenWithoutScrool,
-        'editServiceOfOtherScreen': editServiceOfScreen
+        'removeServiceOfOtherScreen': _removeServiceOfScreen,
+        'addServiceOfOtherScreen': _addServiceOfScreenWithoutScrool,
+        'editServiceOfOtherScreen': _editServiceOfScreen
       },
     );
   }
 
-  Future<void> onEdit() async {
+  Future<void> _onEdit() async {
     final result = await Navigator.of(context).pushNamed(
       '/serviceCategoryEdit',
       arguments: {'serviceCategory': servicesByCategory.serviceCategory},
@@ -203,48 +228,48 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     }
   }
 
-  Future<void> onAddService({required ServiceCategory serviceCategory}) async {
+  Future<void> _onAddService({required ServiceCategory serviceCategory}) async {
     widget.removeFocusOfWidgets();
     final result = await Navigator.of(context).pushNamed(
       '/serviceEdit',
       arguments: {'serviceCategory': serviceCategory},
     );
     if (result != null) {
-      addServiceOfScreen(service: result as Service);
+      _addServiceOfScreen(service: result as Service);
     }
   }
 
-  Future<void> addServiceOfScreen({
+  Future<void> _addServiceOfScreen({
     required Service service,
   }) async {
-    final hasService = _listServicesCategoryCard.length > 0;
+    final hasService = _serviceListHelper!.length > 0;
 
-    if (hasService) await scrollToEnd();
+    if (hasService) await _scrollToEnd();
 
     servicesByCategory.services.add(service);
 
     if (hasService) {
-      _listServicesCategoryCard.insert(service);
+      _serviceListHelper!.insert(service);
     } else {
       setState(() {});
     }
   }
 
-  void addServiceOfScreenWithoutScrool({
+  void _addServiceOfScreenWithoutScrool({
     required Service service,
   }) async {
-    final hasService = _listServicesCategoryCard.length > 0;
+    final hasService = _serviceListHelper!.length > 0;
 
     servicesByCategory.services.add(service);
 
     if (hasService) {
-      _listServicesCategoryCard.insert(service);
+      _serviceListHelper!.insert(service);
     } else {
       setState(() {});
     }
   }
 
-  Future<void> onEditService({
+  Future<void> _onEditService({
     required ServiceCategory serviceCategory,
     required Service service,
   }) async {
@@ -259,31 +284,31 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     );
 
     if (result != null) {
-      editServiceOfScreen(service: result as Service);
+      _editServiceOfScreen(service: result as Service);
     }
   }
 
-  void editServiceOfScreen({required Service service}) {
+  void _editServiceOfScreen({required Service service}) {
     final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
     servicesByCategory.services[index] = service;
 
-    _listServicesCategoryCard.removeAt(index, 0);
-    _listServicesCategoryCard.insertAt(index, service);
+    _serviceListHelper!.removeAt(index, 0);
+    _serviceListHelper!.insertAt(index, service);
   }
 
-  void onRemoveService({required Service service}) {
+  void _onRemoveService({required Service service}) {
     _customNotifications.showQuestionAlert(
       context: context,
       title: 'Excluir serviço',
       content: 'Tem certeza que deseja excluir serviço?',
       confirmCallback: () {
         widget.onRemoveService(service: service);
-        removeServiceOfScreen(service: service);
+        _removeServiceOfScreen(service: service);
       },
     );
   }
 
-  void removeServiceOfScreen({required Service service}) {
+  void _removeServiceOfScreen({required Service service}) {
     final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
 
     if (index < 0) {
@@ -292,8 +317,8 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
     widget.removeFocusOfWidgets();
     servicesByCategory.services.removeAt(index);
-    _listServicesCategoryCard.removeAt(index);
-    if (_listServicesCategoryCard.length == 0) {
+    _serviceListHelper!.removeAt(index);
+    if (_serviceListHelper!.length == 0) {
       setState(() {});
     }
   }
@@ -304,53 +329,53 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     await controller.animateTo(1, curve: Curves.easeIn);
   }
 
-  Widget buildRemovedItem(
-    Service service,
-    BuildContext context,
-    Animation<double> animation,
-  ) {
-    return ServiceCard(onTap: () {}, onLongPress: () {}, service: service, animation: animation);
-  }
+  // Widget _buildRemovedItem(
+  //   Service service,
+  //   BuildContext context,
+  //   Animation<double> animation,
+  // ) {
+  //   return ServiceCard(onTap: () {}, onLongPress: () {}, service: service, animation: animation);
+  // }
 
-  Widget itemBuilder(
-    BuildContext context,
-    int index,
-    Animation<double> animation,
-  ) {
-    index--;
-    if (index == -1) {
-      return const SizedBox(
-        key: ValueKey('first space'),
-        width: 16,
-      );
-    }
-    if (index == _listServicesCategoryCard.length) {
-      return const SizedBox(
-        key: ValueKey('last space'),
-        width: 190,
-      );
-    }
-    return ServiceCard(
-      key: ValueKey(_listServicesCategoryCard[index].id),
-      onTap: () {
-        if (widget.isSelectionView) {
-          widget.onSelectedService(_listServicesCategoryCard[index]);
-        } else {
-          onEditService(
-            serviceCategory: servicesByCategory.serviceCategory,
-            service: _listServicesCategoryCard[index],
-          );
-        }
-      },
-      onLongPress: () {
-        onRemoveService(service: _listServicesCategoryCard[index]);
-      },
-      service: _listServicesCategoryCard[index],
-      animation: animation,
-    );
-  }
+  // Widget _itemBuilder(
+  //   BuildContext context,
+  //   int index,
+  //   Animation<double> animation,
+  // ) {
+  //   index--;
+  //   if (index == -1) {
+  //     return const SizedBox(
+  //       key: ValueKey('first space'),
+  //       width: 16,
+  //     );
+  //   }
+  //   if (index == _serviceListHelper.length) {
+  //     return const SizedBox(
+  //       key: ValueKey('last space'),
+  //       width: 190,
+  //     );
+  //   }
+  //   return ServiceCard(
+  //     key: ValueKey(_serviceListHelper[index].id),
+  //     onTap: () {
+  //       if (widget.isSelectionView) {
+  //         widget.onSelectedService(_serviceListHelper[index]);
+  //       } else {
+  //         _onEditService(
+  //           serviceCategory: servicesByCategory.serviceCategory,
+  //           service: _serviceListHelper[index],
+  //         );
+  //       }
+  //     },
+  //     onLongPress: () {
+  //       _onRemoveService(service: _serviceListHelper[index]);
+  //     },
+  //     service: _serviceListHelper[index],
+  //     animation: animation,
+  //   );
+  // }
 
-  Future<void> scrollToEnd() async {
+  Future<void> _scrollToEnd() async {
     await _scrollController.animateTo(
       _scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 300),

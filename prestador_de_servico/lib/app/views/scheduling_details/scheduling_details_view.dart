@@ -132,8 +132,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                   schedulingDetailViewModel.scheduling.serviceStatus,
                 );
 
-                bool allowsEdit =
-                    !schedulingDetailViewModel.scheduling.serviceStatus.isBlockedChangeStatus();
+                bool allowsEdit = !schedulingDetailViewModel.scheduling.serviceStatus.isBlockedChangeStatus();
 
                 return SliverToBoxAdapter(
                   child: Padding(
@@ -164,8 +163,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         const SizedBox(height: 8),
                         DateAndTimeCard(
                           key: ValueKey(schedulingDetailViewModel.scheduling.startDateAndTime),
-                          oldStartDateAndTime:
-                              schedulingDetailViewModel.scheduling.oldStartDateAndTime,
+                          oldStartDateAndTime: schedulingDetailViewModel.scheduling.oldStartDateAndTime,
                           oldEndDateAndTime: schedulingDetailViewModel.scheduling.oldEndDateAndTime,
                           startDateAndTime: schedulingDetailViewModel.scheduling.startDateAndTime,
                           endDateAndTime: schedulingDetailViewModel.scheduling.endDateAndTime,
@@ -327,18 +325,22 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
           ],
         ),
         const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Nenhuma imagem cadastrada',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.shadow,
-              ),
-            ),
-          ],
+        _buildEmptyListImages(),
+      ],
+    );
+  }
+
+  Widget _buildEmptyListImages() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Nenhuma imagem cadastrada',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Theme.of(context).colorScheme.shadow,
+          ),
         ),
       ],
     );
