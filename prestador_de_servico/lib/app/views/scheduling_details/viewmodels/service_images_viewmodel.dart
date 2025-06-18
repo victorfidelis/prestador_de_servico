@@ -35,6 +35,7 @@ class ServiceImagesViewModel extends ChangeNotifier {
     final eitherPickImage = await offlineImageService.pickImageFromGallery();
     if (eitherPickImage.isLeft) {
       _emitState(ServiceImagesError(eitherPickImage.left!.message));
+      return;
     } 
     
     _emitState(ServiceImagesLoading());
@@ -43,6 +44,7 @@ class ServiceImagesViewModel extends ChangeNotifier {
     final addImageEither = await schedulingService.addImage(schedulingId: schedulingId, imageFile: imageFile);
     if (addImageEither.isLeft) {
       _emitState(ServiceImagesError(addImageEither.left!.message));
+      return;
     }
 
     final imageUrl = addImageEither.right!;

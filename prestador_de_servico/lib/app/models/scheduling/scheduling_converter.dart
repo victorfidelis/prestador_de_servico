@@ -41,7 +41,7 @@ class SchedulingConverter {
     }
     List<String> images = [];
     if (map.containsKey('images')) {
-      images = map['images'];
+      images = (map['images'] as List<dynamic>).map((i) => i.toString()).toList();
     }
 
     return Scheduling(

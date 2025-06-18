@@ -401,7 +401,11 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
     try {
       final docRef = FirebaseFirestore.instance.collection('schedules').doc(schedulingId);
       final docSnap = await docRef.get();
-      List<String> images = docSnap.get('images') ?? [];
+      List<String> images = [];
+      if (docSnap.data()?.containsKey('images') ?? false) {
+        images = ((docSnap.get('images') ?? []) as List<dynamic>).map((i) => i.toString()).toList();
+      }
+
       images.add(imageUrl);
       await docRef.update({'images': images});
 
