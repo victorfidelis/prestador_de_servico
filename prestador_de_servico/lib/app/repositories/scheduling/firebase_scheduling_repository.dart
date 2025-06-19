@@ -418,4 +418,35 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       }
     }
   }
+  
+  @override
+  Future<Either<Failure, Unit>> removeImage({required String schedulingId, required String imageUrl}) async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    try {
+      final docRef = FirebaseFirestore.instance.collection('schedules').doc(schedulingId);
+      final docSnap = await docRef.get();
+      List<String> images = [];
+      if (docSnap.data()?.containsKey('images') ?? false) {
+        images = ((docSnap.get('images') ?? []) as List<dynamic>).map((i) => i.toString()).toList();
+      } else {
+        return Either.left(Failure('Imagem não encontrada'));
+      }
+
+      images.remove(imageUrl);
+
+      await docRef.update({'images': images});
+
+      return Either.right(unit);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
+  }
 }

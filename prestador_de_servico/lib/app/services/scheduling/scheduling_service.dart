@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
 import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
@@ -398,7 +400,7 @@ class SchedulingService {
 
   Future<Either<Failure, String>> addImage({
     required String schedulingId,
-    required imageFile,
+    required File imageFile,
   }) async {
     final imageName = 'images/scheduling/$schedulingId/${DateTime.now().millisecondsSinceEpoch}.png';
     final uploadImageEither = await imageRepository.uploadImage(imageFileName: imageName, imageFile: imageFile);
@@ -411,6 +413,25 @@ class SchedulingService {
 
     if (addImageEither.isLeft) {
       return Either.left(addImageEither.left!);
+    } else {
+      return Either.right(imageUrl);
+    }
+  }
+  
+  Future<Either<Failure, String>> removeImage({
+    required String schedulingId,
+    required String imageUrl,
+  }) async {
+    final deleteImageEither = await imageRepository.deleteImage(imageUrl: imageUrl);
+    if (deleteImageEither.isLeft && deleteImageEither.left is! ImageNotFoundFailure ) {
+      return Either.left(deleteImageEither.left!);
+    }
+
+    final removeImageEither =
+        await onlineRepository.removeImage(schedulingId: schedulingId, imageUrl: imageUrl);
+
+    if (removeImageEither.isLeft) {
+      return Either.left(removeImageEither.left!);
     } else {
       return Either.right(imageUrl);
     }

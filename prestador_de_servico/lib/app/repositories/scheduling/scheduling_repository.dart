@@ -53,4 +53,8 @@ abstract class SchedulingRepository {
     required String schedulingId,
     required String imageUrl,
     });
+  Future<Either<Failure, Unit>> removeImage({
+    required String schedulingId,
+    required String imageUrl,
+    });
 }

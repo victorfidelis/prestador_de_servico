@@ -129,4 +129,6 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       await refreshScheduling();
     }
   }
+
+  
 }

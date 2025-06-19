@@ -1,8 +1,11 @@
 
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
+import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/service_images_state.dart';
 
 class ServiceImagesViewModel extends ChangeNotifier {
@@ -49,6 +52,19 @@ class ServiceImagesViewModel extends ChangeNotifier {
 
     final imageUrl = addImageEither.right!;
     images.add(imageUrl);
+
+    _emitState(ServiceImagesLoaded());
+  }
+
+  Future<void> removeImage(String imageUrl) async {
+    _emitState(ServiceImagesLoading());
+
+    final removeImageEither = await schedulingService.removeImage(schedulingId: schedulingId, imageUrl: imageUrl);
+    if (removeImageEither.isLeft) {
+      _emitState(ServiceImagesError(removeImageEither.left!.message));
+    }
+
+    images.remove(imageUrl);
 
     _emitState(ServiceImagesLoaded());
   }

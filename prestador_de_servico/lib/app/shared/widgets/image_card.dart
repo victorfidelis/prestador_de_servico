@@ -4,10 +4,12 @@ import 'package:prestador_de_servico/app/shared/utils/network/network_helpers.da
 class ImageCard extends StatefulWidget {
   final String imageUrl;
   final String defaultFileImage;
+  final Function()? onLongPress;
   const ImageCard({
     super.key,
     this.imageUrl = '',
     this.defaultFileImage = 'assets/images/sem_imagem.jpg',
+    this.onLongPress,
   });
 
   @override
@@ -28,27 +30,30 @@ class _ImageCardState extends State<ImageCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 136,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface,
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
-        boxShadow: [
-          BoxShadow(
-            color: Theme.of(context).colorScheme.shadow,
-            offset: const Offset(0, 4),
-            blurStyle: BlurStyle.normal,
-            blurRadius: 4,
-          )
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
-        child: ListenableBuilder(
-          listenable: image,
-          builder: (context, _) {
-            return image.value;
-          }
+    return GestureDetector(
+      onLongPress: widget.onLongPress,
+      child: Container(
+        height: 136,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).colorScheme.shadow,
+              offset: const Offset(0, 4),
+              blurStyle: BlurStyle.normal,
+              blurRadius: 4,
+            )
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(12)),
+          child: ListenableBuilder(
+            listenable: image,
+            builder: (context, _) {
+              return image.value;
+            }
+          ),
         ),
       ),
     );

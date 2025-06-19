@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
+import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_empty_list.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/image_card.dart';
+import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/service_images_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/service_images_viewmodel.dart';
@@ -23,6 +25,7 @@ class ServiceImagesView extends StatefulWidget {
 
 class _ServiceImagesViewState extends State<ServiceImagesView> {
   late ServiceImagesViewModel serviceImagesViewModel;
+  final notifications = CustomNotifications();
 
   @override
   void initState() {
@@ -83,14 +86,13 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
           ),
           SliverFillRemaining(
             child: ListenableBuilder(
-              listenable: serviceImagesViewModel,
-              builder: (context, _) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: _buildBody(),
-                );
-              }
-            ),
+                listenable: serviceImagesViewModel,
+                builder: (context, _) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: _buildBody(),
+                  );
+                }),
           ),
         ],
       ),
@@ -106,6 +108,11 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
       return const Center(child: CustomLoading());
     }
 
+    if (serviceImagesViewModel.state is ServiceImagesError) {
+      final errorState = serviceImagesViewModel.state as ServiceImagesError;
+      return Center(child: Text(errorState.message));
+    }
+
     if (serviceImagesViewModel.images.isEmpty) {
       return CustomEmptyList(
         label: 'Nenhuma imagem cadastrada',
@@ -119,7 +126,22 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
     );
   }
 
-  Widget _buildImageCard(String url) {
-    return Padding(padding: const EdgeInsets.all(8), child: ImageCard(imageUrl: url));
+  Widget _buildImageCard(String imageUrl) {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: ImageCard(
+        imageUrl: imageUrl,
+        onLongPress: () => _onRemoveImage(imageUrl),
+      ),
+    );
+  }
+
+  void _onRemoveImage(String imageUrl) {
+    notifications.showQuestionAlert(
+      context: context,
+      title: 'Excluir imagem',
+      content: 'Tem certeza que deseja excluir a imagem?',
+      confirmCallback: () => serviceImagesViewModel.removeImage(imageUrl),
+    );
   }
 }
