@@ -44,7 +44,6 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     value: 1.0,
   );
 
-  // final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey<AnimatedListState>();
   AnimatedListHelper<Service>? _serviceListHelper;
 
   final _scrollController = ScrollController();
@@ -64,14 +63,8 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   }
 
   @override
-  build(BuildContext context) {
+  Widget build(BuildContext context) {
     final hasService = servicesByCategory.services.isNotEmpty;
-
-    // _serviceListHelper = AnimatedListHelper<Service>(
-    //   listKey: _animatedListKey,
-    //   removedItemBuilder: buildRemovedItem,
-    //   initialItems: servicesByCategory.services,
-    // );
 
     return SizeTransition(
       sizeFactor: widget.animation,
@@ -86,16 +79,17 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                 children: [
                   Expanded(
                     child: AnimatedBuilder(
-                        animation: controller,
-                        builder: (context, _) {
-                          return Opacity(
-                            opacity: controller.value,
-                            child: Text(
-                              servicesByCategory.serviceCategory.name,
-                              style: const TextStyle(fontSize: 18),
-                            ),
-                          );
-                        }),
+                      animation: controller,
+                      builder: (context, _) {
+                        return Opacity(
+                          opacity: controller.value,
+                          child: Text(
+                            servicesByCategory.serviceCategory.name,
+                            style: const TextStyle(fontSize: 18),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   hasService || widget.isSelectionView
                       ? const SizedBox()
@@ -151,9 +145,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       );
                     }
                   },
-                  onLongPress: () {
-                    _onRemoveService(service: service);
-                  },
+                  onLongPress: () => _onRemoveService(service: service),
                   service: service,
                   animation: animation,
                 );
@@ -166,7 +158,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                 return ServiceCard(onTap: () {}, onLongPress: () {}, service: service, animation: animation);
               },
               onListHelperReady: (helper) => _serviceListHelper = helper,
-              listHeight: 190,
+              listHeight: hasService ? 190 : 0,
               firstItemPadding: 16,
               lastItemPadding: 190,
             ),
@@ -239,29 +231,20 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     }
   }
 
-  Future<void> _addServiceOfScreen({
-    required Service service,
-  }) async {
+  Future<void> _addServiceOfScreen({required Service service}) async {
     final hasService = _serviceListHelper!.length > 0;
 
     if (hasService) await _scrollToEnd();
-
     servicesByCategory.services.add(service);
-
-    if (hasService) {
-      _serviceListHelper!.insert(service);
-    } else {
+    _serviceListHelper!.insert(service);
+    if (!hasService) {
       setState(() {});
     }
   }
 
-  void _addServiceOfScreenWithoutScrool({
-    required Service service,
-  }) async {
+  void _addServiceOfScreenWithoutScrool({required Service service}) async {
     final hasService = _serviceListHelper!.length > 0;
-
     servicesByCategory.services.add(service);
-
     if (hasService) {
       _serviceListHelper!.insert(service);
     } else {
@@ -328,52 +311,6 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     servicesByCategory = servicesByCategory.copyWith(serviceCategory: serviceCategory);
     await controller.animateTo(1, curve: Curves.easeIn);
   }
-
-  // Widget _buildRemovedItem(
-  //   Service service,
-  //   BuildContext context,
-  //   Animation<double> animation,
-  // ) {
-  //   return ServiceCard(onTap: () {}, onLongPress: () {}, service: service, animation: animation);
-  // }
-
-  // Widget _itemBuilder(
-  //   BuildContext context,
-  //   int index,
-  //   Animation<double> animation,
-  // ) {
-  //   index--;
-  //   if (index == -1) {
-  //     return const SizedBox(
-  //       key: ValueKey('first space'),
-  //       width: 16,
-  //     );
-  //   }
-  //   if (index == _serviceListHelper.length) {
-  //     return const SizedBox(
-  //       key: ValueKey('last space'),
-  //       width: 190,
-  //     );
-  //   }
-  //   return ServiceCard(
-  //     key: ValueKey(_serviceListHelper[index].id),
-  //     onTap: () {
-  //       if (widget.isSelectionView) {
-  //         widget.onSelectedService(_serviceListHelper[index]);
-  //       } else {
-  //         _onEditService(
-  //           serviceCategory: servicesByCategory.serviceCategory,
-  //           service: _serviceListHelper[index],
-  //         );
-  //       }
-  //     },
-  //     onLongPress: () {
-  //       _onRemoveService(service: _serviceListHelper[index]);
-  //     },
-  //     service: _serviceListHelper[index],
-  //     animation: animation,
-  //   );
-  // }
 
   Future<void> _scrollToEnd() async {
     await _scrollController.animateTo(
