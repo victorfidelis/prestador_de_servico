@@ -9,7 +9,6 @@ import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_light_buttom.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
@@ -17,6 +16,7 @@ import 'package:prestador_de_servico/app/views/scheduling_details/states/schedul
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/address_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/date_and_time_card.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/widgets/images_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/review_sheet.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/review_stars.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/service_list_card.dart';
@@ -55,6 +55,13 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
 
   @override
   Widget build(BuildContext context) {
+    
+    Widget imageCard = const SizedBox();
+    ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
+    if (serviceStatus.isInService() || serviceStatus.isServicePerform()) {
+      imageCard = ImagesCard(images: schedulingDetailViewModel.scheduling.images, onOpenAllImages: _onOpenAllImages);
+    }
+    
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -124,77 +131,59 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
 
                 if (schedulingDetailViewModel.scheduling.serviceStatus.isServicePerform() &&
                     schedulingDetailViewModel.scheduling.review == null) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) => questionOfReview());
+                  WidgetsBinding.instance.addPostFrameCallback((_) => _questionOfReview());
                 }
-
-                Color statusColor = ColorsUtils.getColorFromStatus(
-                  context,
-                  schedulingDetailViewModel.scheduling.serviceStatus,
-                );
 
                 bool allowsEdit = !schedulingDetailViewModel.scheduling.serviceStatus.isBlockedChangeStatus();
 
                 return SliverToBoxAdapter(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          schedulingDetailViewModel.scheduling.user.fullname,
-                          style: TextStyle(
-                            color: statusColor,
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          schedulingDetailViewModel.scheduling.serviceStatus.name,
-                          style: TextStyle(
-                            color: statusColor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Divider(color: Theme.of(context).colorScheme.shadow),
-                        const SizedBox(height: 8),
-                        DateAndTimeCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _buildHeader(),
+                      const SizedBox(height: 8),
+                      _buildDivider(),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: DateAndTimeCard(
                           key: ValueKey(schedulingDetailViewModel.scheduling.startDateAndTime),
                           oldStartDateAndTime: schedulingDetailViewModel.scheduling.oldStartDateAndTime,
                           oldEndDateAndTime: schedulingDetailViewModel.scheduling.oldEndDateAndTime,
                           startDateAndTime: schedulingDetailViewModel.scheduling.startDateAndTime,
                           endDateAndTime: schedulingDetailViewModel.scheduling.endDateAndTime,
-                          onEdit: allowsEdit ? onEditDateAndTime : null,
+                          onEdit: allowsEdit ? _onEditDateAndTime : null,
                           unavailable: schedulingDetailViewModel.scheduling.schedulingUnavailable,
                           inConflict: schedulingDetailViewModel.scheduling.conflictScheduing,
                         ),
-                        const SizedBox(height: 8),
-                        Divider(color: Theme.of(context).colorScheme.shadow),
-                        const SizedBox(height: 8),
-                        addressWidget(),
-                        const SizedBox(height: 8),
-                        Divider(color: Theme.of(context).colorScheme.shadow),
-                        const SizedBox(height: 8),
-                        ServiceListCard(
+                      ),
+                      const SizedBox(height: 8),
+                      _buildDivider(),
+                      const SizedBox(height: 8),
+                      _addressWidget(),
+                      const SizedBox(height: 8),
+                      _buildDivider(),
+                      const SizedBox(height: 8),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: ServiceListCard(
                           key: ValueKey(schedulingDetailViewModel.scheduling.hashCode),
                           scheduling: schedulingDetailViewModel.scheduling,
-                          onEdit: allowsEdit ? onEditScheduledServices : null,
+                          onEdit: allowsEdit ? _onEditScheduledServices : null,
                         ),
-                        const SizedBox(height: 8),
-                        Divider(color: Theme.of(context).colorScheme.shadow),
-                        const SizedBox(height: 8),
-                        imagesWidget(),
-                        const SizedBox(height: 8),
-                        Divider(color: Theme.of(context).colorScheme.shadow),
-                        const SizedBox(height: 8),
-                        reviewWidget(),
-                        actions(),
-                        const SizedBox(height: 50),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildDivider(),
+                      const SizedBox(height: 8),
+                      imageCard,
+                      const SizedBox(height: 8),
+                      _buildDivider(),
+                      const SizedBox(height: 8),
+                      _reviewWidget(),
+                      _actions(),
+                      const SizedBox(height: 50),
+                    ],
                   ),
                 );
               },
@@ -205,7 +194,46 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
-  void onEditDateAndTime() async {
+  Widget _buildHeader() {
+    Color statusColor = ColorsUtils.getColorFromStatus(
+      context,
+      schedulingDetailViewModel.scheduling.serviceStatus,
+    );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          Text(
+            schedulingDetailViewModel.scheduling.user.fullname,
+            style: TextStyle(
+              color: statusColor,
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            schedulingDetailViewModel.scheduling.serviceStatus.name,
+            style: TextStyle(
+              color: statusColor,
+              fontSize: 16,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDivider() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Divider(color: Theme.of(context).colorScheme.shadow),
+    );
+  }
+
+  void _onEditDateAndTime() async {
     final hasChange = await Navigator.pushNamed(
       context,
       '/editDateAndTime',
@@ -216,7 +244,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     }
   }
 
-  void onEditScheduledServices() async {
+  void _onEditScheduledServices() async {
     final hasChange = await Navigator.pushNamed(
       context,
       '/editScheduledServices',
@@ -227,7 +255,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     }
   }
 
-  void onReceivePayment() async {
+  void _onReceivePayment() async {
     final hasChange = await Navigator.pushNamed(
       context,
       '/paymentScheduling',
@@ -238,7 +266,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     }
   }
 
-  void onConfirmScheduling() async {
+  void _onConfirmScheduling() async {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Confirmar agendamento',
@@ -249,7 +277,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
-  void onDenyScheduling() async {
+  void _onDenyScheduling() async {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Recusar agendamento',
@@ -260,7 +288,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
-  void onRequestChangeScheduling() async {
+  void _onRequestChangeScheduling() async {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Solicitar alterações',
@@ -271,7 +299,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
-  void onCancelScheduling() async {
+  void _onCancelScheduling() async {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Cancelar agendamento',
@@ -282,7 +310,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
-  void onSchedulingInService() async {
+  void _onSchedulingInService() async {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Agendamento em atendimento',
@@ -293,7 +321,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
-  void onPerformScheduling() async {
+  void _onPerformScheduling() async {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Agendamento realizado',
@@ -304,53 +332,11 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
-  Widget imagesWidget() {
-    ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
-    if (!serviceStatus.isInService() && !serviceStatus.isServicePerform()) {
-      return const SizedBox();
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            const Expanded(
-              child: Text(
-                'Imagens',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-            CustomLink(label: 'Abrir', onTap: onAddOrEditImages)
-          ],
-        ),
-        const SizedBox(height: 12),
-        _buildEmptyListImages(),
-      ],
-    );
-  }
-
-  Widget _buildEmptyListImages() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Nenhuma imagem cadastrada',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.shadow,
-          ),
-        ),
-      ],
-    );
-  }
-
-  void onAddOrEditImages() async {
+  void _onOpenAllImages() async {
     Navigator.pushNamed(context, '/serviceImages', arguments: {'scheduling': schedulingDetailViewModel.scheduling});
   }
 
-  Widget reviewWidget() {
+  Widget _reviewWidget() {
     ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
     if (!serviceStatus.isServicePerform()) {
       return const SizedBox();
@@ -362,56 +348,59 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       hasReviewDetail = true;
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Avaliação do cliente',
-          style: TextStyle(fontSize: 16),
-        ),
-        const SizedBox(height: 12),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ReviewStars(
-              review: schedulingDetailViewModel.scheduling.review ?? 0,
-              onMark: (review) => onAddOrEditReview(review),
-              allowSetState: false,
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        hasReviewDetail
-            ? Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        schedulingDetailViewModel.scheduling.reviewDetails ?? '',
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Avaliação do cliente',
+            style: TextStyle(fontSize: 16),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ReviewStars(
+                review: schedulingDetailViewModel.scheduling.review ?? 0,
+                onMark: (review) => _onAddOrEditReview(review),
+                allowSetState: false,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          hasReviewDetail
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          schedulingDetailViewModel.scheduling.reviewDetails ?? '',
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )
-            : const SizedBox(),
-        hasReviewDetail ? const SizedBox(height: 8) : const SizedBox(),
-        Divider(color: Theme.of(context).colorScheme.shadow),
-        const SizedBox(height: 8),
-      ],
+                    ],
+                  ),
+                )
+              : const SizedBox(),
+          hasReviewDetail ? const SizedBox(height: 8) : const SizedBox(),
+          _buildDivider(),
+          const SizedBox(height: 8),
+        ],
+      ),
     );
   }
 
-  void questionOfReview() {
+  void _questionOfReview() {
     notifications.showQuestionAlert(
       context: context,
       title: 'Avalie o cliente',
       content: 'Deseja realizar a avaliação da sessão do cliente?',
-      confirmCallback: () => onAddOrEditReview(1),
+      confirmCallback: () => _onAddOrEditReview(1),
     );
   }
 
-  void onAddOrEditReview(int review) async {
+  void _onAddOrEditReview(int review) async {
     await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -419,25 +408,31 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
         return ReviewSheet(
           review: review,
           reviewDetails: schedulingDetailViewModel.scheduling.reviewDetails ?? '',
-          onSave: onSaveReview,
+          onSave: _onSaveReview,
         );
       },
     );
   }
 
-  void onSaveReview(int review, String reviewDetails) {
+  void _onSaveReview(int review, String reviewDetails) {
     Navigator.pop(context);
     schedulingDetailViewModel.reviewScheduling(review: review, reviewDetails: reviewDetails);
   }
 
-  Widget addressWidget() {
+  Widget _addressWidget() {
     if (schedulingDetailViewModel.scheduling.address == null) {
-      return const Text('Local não informado');
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Text('Local não informado'),
+      );
     }
-    return AddressCard(address: schedulingDetailViewModel.scheduling.address!);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: AddressCard(address: schedulingDetailViewModel.scheduling.address!),
+    );
   }
 
-  Widget actions() {
+  Widget _actions() {
     bool isPaid = schedulingDetailViewModel.scheduling.isPaid;
     ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
 
@@ -447,7 +442,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       buttons.add(CustomLightButtom(
         label: 'Confirmar',
         labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
-        onTap: onConfirmScheduling,
+        onTap: _onConfirmScheduling,
       ));
     }
 
@@ -455,7 +450,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       buttons.add(CustomLightButtom(
         label: 'Colocar em atendimento',
         labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
-        onTap: onSchedulingInService,
+        onTap: _onSchedulingInService,
       ));
     }
 
@@ -463,7 +458,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       buttons.add(CustomLightButtom(
         label: 'Marcar como realizado',
         labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
-        onTap: onPerformScheduling,
+        onTap: _onPerformScheduling,
       ));
     }
 
@@ -471,7 +466,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       buttons.add(CustomLightButtom(
         label: 'Solicitar alterações',
         labelColor: Theme.of(context).extension<CustomColors>()!.pending!,
-        onTap: onRequestChangeScheduling,
+        onTap: _onRequestChangeScheduling,
       ));
     }
 
@@ -479,7 +474,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       buttons.add(CustomLightButtom(
         label: 'Receber pagamentos',
         labelColor: Theme.of(context).extension<CustomColors>()!.money!,
-        onTap: onReceivePayment,
+        onTap: _onReceivePayment,
       ));
     }
 
@@ -487,7 +482,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       buttons.add(CustomLightButtom(
         label: 'Recusar',
         labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,
-        onTap: onDenyScheduling,
+        onTap: _onDenyScheduling,
       ));
     }
 
@@ -496,14 +491,17 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
         CustomLightButtom(
           label: 'Cancelar',
           labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,
-          onTap: onCancelScheduling,
+          onTap: _onCancelScheduling,
         ),
       );
     }
 
-    return Column(
-      spacing: 8,
-      children: buttons,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        spacing: 8,
+        children: buttons,
+      ),
     );
   }
 }
