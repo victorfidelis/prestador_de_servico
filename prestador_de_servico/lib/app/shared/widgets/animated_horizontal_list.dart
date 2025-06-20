@@ -32,7 +32,7 @@ class AnimatedHorizontalList<T> extends StatefulWidget {
 }
 
 class _AnimatedHorizontalListState<T> extends State<AnimatedHorizontalList<T>> {
-  final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey<AnimatedListState>();
+  final GlobalKey<AnimatedListState> _animatedListKey = GlobalKey<AnimatedListState>(debugLabel: 'mainImagesList');
   late AnimatedListHelper<T> _listHelper;
 
   @override

@@ -13,3 +13,13 @@ class SchedulingDetailError extends SchedulingDetailState {
 
   SchedulingDetailError({required this.message});
 }
+
+
+class ServiceImagesLoaded extends SchedulingDetailState {}
+
+class ServiceImagesLoading extends SchedulingDetailState {}
+
+class ServiceImagesError extends SchedulingDetailError {
+  ServiceImagesError({required super.message});
+}
+

@@ -16,11 +16,13 @@ import 'package:prestador_de_servico/app/views/scheduling_details/edit_scheduled
 import 'package:prestador_de_servico/app/views/scheduling_details/payment_scheduling_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/scheduling_details_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/service_images_view.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/service/service_category_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_view.dart';
 import 'package:prestador_de_servico/app/views/service/show_all_services_view.dart';
 import 'package:prestador_de_servico/app/views/service_day/service_day_view.dart';
+import 'package:provider/provider.dart';
 
 Route<dynamic>? getRoute(RouteSettings settings) {
   if (settings.name == '/signIn') {
@@ -79,12 +81,9 @@ Route<dynamic>? getRoute(RouteSettings settings) {
       settings,
       ShowAllServicesView(
         servicesByCategory: (arguments['servicesByCategory'] as ServicesByCategory),
-        removeServiceOfOtherScreen:
-            (arguments['removeServiceOfOtherScreen'] as Function({required Service service})),
-        addServiceOfOtherScreen:
-            (arguments['addServiceOfOtherScreen'] as Function({required Service service})),
-        editServiceOfOtherScreen:
-            (arguments['editServiceOfOtherScreen'] as Function({required Service service})),
+        removeServiceOfOtherScreen: (arguments['removeServiceOfOtherScreen'] as Function({required Service service})),
+        addServiceOfOtherScreen: (arguments['addServiceOfOtherScreen'] as Function({required Service service})),
+        editServiceOfOtherScreen: (arguments['editServiceOfOtherScreen'] as Function({required Service service})),
       ),
     );
   }
@@ -137,8 +136,8 @@ Route<dynamic>? getRoute(RouteSettings settings) {
   }
   if (settings.name == '/serviceImages') {
     final arguments = (settings.arguments as Map);
-    final scheduling = (arguments['scheduling']) as Scheduling;
-    return _buildRoute(settings, ServiceImagesView(scheduling: scheduling));
+    final schedulingDetailViewModel = (arguments['provider']) as SchedulingDetailViewModel;
+    return _buildRouteWithSchedulingDetailViewModel(schedulingDetailViewModel, settings, const ServiceImagesView());
   }
 
   return null;
@@ -148,5 +147,16 @@ MaterialPageRoute _buildRoute(RouteSettings settings, Widget builder) {
   return MaterialPageRoute(
     settings: settings,
     builder: (ctx) => builder,
+  );
+}
+
+MaterialPageRoute _buildRouteWithSchedulingDetailViewModel(
+    SchedulingDetailViewModel schedulingDetailViewModel, RouteSettings settings, Widget builder) {
+  return MaterialPageRoute(
+    settings: settings,
+    builder: (ctx) => ChangeNotifierProvider.value(
+      value: schedulingDetailViewModel,
+      child: builder,
+    ),
   );
 }

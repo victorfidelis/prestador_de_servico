@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
-import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
-import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
-import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_empty_list.dart';
@@ -11,38 +7,19 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/image_card.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/states/service_images_state.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/service_images_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/states/scheduling_detail_state.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 class ServiceImagesView extends StatefulWidget {
-  final Scheduling scheduling;
-  const ServiceImagesView({super.key, required this.scheduling});
+  const ServiceImagesView({super.key});
 
   @override
   State<ServiceImagesView> createState() => _ServiceImagesViewState();
 }
 
 class _ServiceImagesViewState extends State<ServiceImagesView> {
-  late ServiceImagesViewModel serviceImagesViewModel;
   final notifications = CustomNotifications();
-
-  @override
-  void initState() {
-    serviceImagesViewModel = ServiceImagesViewModel(
-      schedulingService: context.read<SchedulingService>(),
-      offlineImageService: context.read<OfflineImageService>(),
-    );
-    serviceImagesViewModel.schedulingId = widget.scheduling.id;
-    serviceImagesViewModel.images = widget.scheduling.images;
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    serviceImagesViewModel.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +48,7 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
                           ),
                           const Expanded(
                             child: CustomAppBarTitle(
-                              title: 'Agendamento',
+                              title: 'Imagens',
                               fontSize: 25,
                             ),
                           ),
@@ -84,45 +61,43 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
               ),
             ),
           ),
-          SliverFillRemaining(
-            child: ListenableBuilder(
-                listenable: serviceImagesViewModel,
-                builder: (context, _) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: _buildBody(),
-                  );
-                }),
-          ),
+          SliverFillRemaining(child: _buildBody()),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: serviceImagesViewModel.addImageFromGallery,
+        onPressed: context.read<SchedulingDetailViewModel>().addImageFromGallery,
         child: const Icon(Icons.add),
       ),
     );
   }
 
   Widget _buildBody() {
-    if (serviceImagesViewModel.state is ServiceImagesLoading) {
-      return const Center(child: CustomLoading());
-    }
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: Consumer<SchedulingDetailViewModel>(
+        builder: (context, viewModel, _) {
+          if (viewModel.state is SchedulingDetailLoading) {
+            return const Center(child: CustomLoading());
+          }
 
-    if (serviceImagesViewModel.state is ServiceImagesError) {
-      final errorState = serviceImagesViewModel.state as ServiceImagesError;
-      return Center(child: Text(errorState.message));
-    }
+          if (viewModel.state is ServiceImagesError) {
+            final errorState = viewModel.state as ServiceImagesError;
+            return Center(child: Text(errorState.message));
+          }
 
-    if (serviceImagesViewModel.images.isEmpty) {
-      return CustomEmptyList(
-        label: 'Nenhuma imagem cadastrada',
-        action: serviceImagesViewModel.addImageFromGallery,
-        labelAction: 'Adicionar primeira imagem',
-      );
-    }
+          if (viewModel.scheduling.images.isEmpty) {
+            return CustomEmptyList(
+              label: 'Nenhuma imagem cadastrada',
+              action: viewModel.addImageFromGallery,
+              labelAction: 'Adicionar primeira imagem',
+            );
+          }
 
-    return Wrap(
-      children: serviceImagesViewModel.images.map((e) => _buildImageCard(e)).toList(),
+          return Wrap(
+            children: viewModel.scheduling.images.map((e) => _buildImageCard(e)).toList(),
+          );
+        },
+      ),
     );
   }
 
@@ -141,7 +116,7 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
       context: context,
       title: 'Excluir imagem',
       content: 'Tem certeza que deseja excluir a imagem?',
-      confirmCallback: () => serviceImagesViewModel.removeImage(imageUrl),
+      confirmCallback: () => context.read<SchedulingDetailViewModel>().removeImage(imageUrl),
     );
   }
 }

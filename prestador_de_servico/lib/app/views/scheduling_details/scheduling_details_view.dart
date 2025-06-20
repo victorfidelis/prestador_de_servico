@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
+import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
@@ -12,6 +13,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_light_buttom.dart
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/service_images_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/scheduling_detail_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/address_card.dart';
@@ -38,8 +40,9 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   @override
   void initState() {
     schedulingDetailViewModel = SchedulingDetailViewModel(
-      schedulingService: context.read<SchedulingService>(),
       scheduling: widget.scheduling,
+      schedulingService: context.read<SchedulingService>(),
+      offlineImageService: context.read<OfflineImageService>(),
     );
 
     schedulingDetailViewModel.refreshScheduling();
@@ -55,140 +58,142 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    
     Widget imageCard = const SizedBox();
     ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
     if (serviceStatus.isInService() || serviceStatus.isServicePerform()) {
-      imageCard = ImagesCard(images: schedulingDetailViewModel.scheduling.images, onOpenAllImages: _onOpenAllImages);
+      imageCard = const ImagesCard();
     }
-    
-    return PopScope(
-      canPop: false,
-      onPopInvokedWithResult: (didPop, _) {
-        if (didPop) {
-          return;
-        }
-        Navigator.pop(context, schedulingDetailViewModel.hasChange);
-      },
-      child: Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            SliverPersistentHeader(
-              floating: true,
-              delegate: SliverAppBarDelegate(
-                minHeight: 120,
-                maxHeight: 120,
-                child: Stack(
-                  children: [
-                    CustomHeaderContainer(
-                      height: 100,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 28),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 60,
-                              child: BackNavigation(
-                                onTap: () => Navigator.pop(
-                                  context,
-                                  schedulingDetailViewModel.hasChange,
+
+    return ChangeNotifierProvider.value(
+      value: schedulingDetailViewModel,
+      child: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, _) {
+          if (didPop) {
+            return;
+          }
+          Navigator.pop(context, schedulingDetailViewModel.hasChange);
+        },
+        child: Scaffold(
+          body: CustomScrollView(
+            slivers: [
+              SliverPersistentHeader(
+                floating: true,
+                delegate: SliverAppBarDelegate(
+                  minHeight: 120,
+                  maxHeight: 120,
+                  child: Stack(
+                    children: [
+                      CustomHeaderContainer(
+                        height: 100,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 28),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 60,
+                                child: BackNavigation(
+                                  onTap: () => Navigator.pop(
+                                    context,
+                                    schedulingDetailViewModel.hasChange,
+                                  ),
                                 ),
                               ),
-                            ),
-                            const Expanded(
-                              child: CustomAppBarTitle(
-                                title: 'Agendamento',
-                                fontSize: 25,
+                              const Expanded(
+                                child: CustomAppBarTitle(
+                                  title: 'Agendamento',
+                                  fontSize: 25,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 60),
-                          ],
+                              const SizedBox(width: 60),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            ListenableBuilder(
-              listenable: schedulingDetailViewModel,
-              builder: (context, _) {
-                if (schedulingDetailViewModel.state is SchedulingDetailLoading) {
-                  return const SliverFillRemaining(
-                    child: Center(child: CustomLoading()),
-                  );
-                }
-
-                if (schedulingDetailViewModel.state is SchedulingDetailError) {
-                  var error = schedulingDetailViewModel.state as SchedulingDetailError;
-                  return SliverToBoxAdapter(
-                    child: Center(
-                      child: Text(error.message),
-                    ),
-                  );
-                }
-
-                if (schedulingDetailViewModel.scheduling.serviceStatus.isServicePerform() &&
-                    schedulingDetailViewModel.scheduling.review == null) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) => _questionOfReview());
-                }
-
-                bool allowsEdit = !schedulingDetailViewModel.scheduling.serviceStatus.isBlockedChangeStatus();
-
-                return SliverToBoxAdapter(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildHeader(),
-                      const SizedBox(height: 8),
-                      _buildDivider(),
-                      const SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: DateAndTimeCard(
-                          key: ValueKey(schedulingDetailViewModel.scheduling.startDateAndTime),
-                          oldStartDateAndTime: schedulingDetailViewModel.scheduling.oldStartDateAndTime,
-                          oldEndDateAndTime: schedulingDetailViewModel.scheduling.oldEndDateAndTime,
-                          startDateAndTime: schedulingDetailViewModel.scheduling.startDateAndTime,
-                          endDateAndTime: schedulingDetailViewModel.scheduling.endDateAndTime,
-                          onEdit: allowsEdit ? _onEditDateAndTime : null,
-                          unavailable: schedulingDetailViewModel.scheduling.schedulingUnavailable,
-                          inConflict: schedulingDetailViewModel.scheduling.conflictScheduing,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildDivider(),
-                      const SizedBox(height: 8),
-                      _addressWidget(),
-                      const SizedBox(height: 8),
-                      _buildDivider(),
-                      const SizedBox(height: 8),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: ServiceListCard(
-                          key: ValueKey(schedulingDetailViewModel.scheduling.hashCode),
-                          scheduling: schedulingDetailViewModel.scheduling,
-                          onEdit: allowsEdit ? _onEditScheduledServices : null,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildDivider(),
-                      const SizedBox(height: 8),
-                      imageCard,
-                      const SizedBox(height: 8),
-                      _buildDivider(),
-                      const SizedBox(height: 8),
-                      _reviewWidget(),
-                      _actions(),
-                      const SizedBox(height: 50),
                     ],
                   ),
-                );
-              },
-            ),
-          ],
+                ),
+              ),
+              ListenableBuilder(
+                listenable: schedulingDetailViewModel,
+                builder: (context, _) {
+                  if (schedulingDetailViewModel.state is SchedulingDetailLoading) {
+                    return const SliverFillRemaining(
+                      child: Center(child: CustomLoading()),
+                    );
+                  }
+
+                  if (schedulingDetailViewModel.state is SchedulingDetailError) {
+                    var error = schedulingDetailViewModel.state as SchedulingDetailError;
+                    return SliverToBoxAdapter(
+                      child: Center(
+                        child: Text(error.message),
+                      ),
+                    );
+                  }
+
+                  if (schedulingDetailViewModel.scheduling.serviceStatus.isServicePerform() &&
+                      schedulingDetailViewModel.scheduling.review == null) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) => _questionOfReview());
+                  }
+
+                  bool allowsEdit = !schedulingDetailViewModel.scheduling.serviceStatus.isBlockedChangeStatus();
+
+                  return SliverToBoxAdapter(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildHeader(),
+                        const SizedBox(height: 8),
+                        _buildDivider(),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: DateAndTimeCard(
+                            key: ValueKey(schedulingDetailViewModel.scheduling.startDateAndTime),
+                            oldStartDateAndTime: schedulingDetailViewModel.scheduling.oldStartDateAndTime,
+                            oldEndDateAndTime: schedulingDetailViewModel.scheduling.oldEndDateAndTime,
+                            startDateAndTime: schedulingDetailViewModel.scheduling.startDateAndTime,
+                            endDateAndTime: schedulingDetailViewModel.scheduling.endDateAndTime,
+                            onEdit: allowsEdit ? _onEditDateAndTime : null,
+                            unavailable: schedulingDetailViewModel.scheduling.schedulingUnavailable,
+                            inConflict: schedulingDetailViewModel.scheduling.conflictScheduing,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        _buildDivider(),
+                        const SizedBox(height: 8),
+                        _addressWidget(),
+                        const SizedBox(height: 8),
+                        _buildDivider(),
+                        const SizedBox(height: 8),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: ServiceListCard(
+                            key: ValueKey(schedulingDetailViewModel.scheduling.hashCode),
+                            scheduling: schedulingDetailViewModel.scheduling,
+                            onEdit: allowsEdit ? _onEditScheduledServices : null,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        _buildDivider(),
+                        const SizedBox(height: 8),
+                        imageCard,
+                        const SizedBox(height: 8),
+                        _buildDivider(),
+                        const SizedBox(height: 8),
+                        _reviewWidget(),
+                        _actions(),
+                        const SizedBox(height: 50),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -330,10 +335,6 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
         schedulingDetailViewModel.performScheduling();
       },
     );
-  }
-
-  void _onOpenAllImages() async {
-    Navigator.pushNamed(context, '/serviceImages', arguments: {'scheduling': schedulingDetailViewModel.scheduling});
   }
 
   Widget _reviewWidget() {

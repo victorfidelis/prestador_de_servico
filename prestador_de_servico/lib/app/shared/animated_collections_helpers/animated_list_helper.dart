@@ -13,12 +13,13 @@ class AnimatedListHelper<E> {
   final durationInsertAnimation = 500;
   final durationRemoveAnimation = 500;
 
-  AnimatedListState get _animatedList => listKey.currentState!;
+  AnimatedListState? get _animatedList => listKey.currentState;
 
   void insert(E item) {
     final index = _items.length;
     _items.insert(index, item);
-    _animatedList.insertItem(
+    if (_animatedList == null) return;
+    _animatedList!.insertItem(
       index,
       duration: Duration(milliseconds: durationInsertAnimation),
     );
@@ -26,7 +27,8 @@ class AnimatedListHelper<E> {
 
   void insertAt(int index, E item) {
     _items.insert(index, item);
-    _animatedList.insertItem(
+    if (_animatedList == null) return;
+    _animatedList!.insertItem(
       index,
       duration: Duration(milliseconds: durationInsertAnimation),
     );
@@ -34,8 +36,8 @@ class AnimatedListHelper<E> {
 
   E removeAt(int index, [int? durationMiliseconds]) {
     final E removedItem = _items.removeAt(index);
-    if (removedItem != null) {
-      _animatedList.removeItem(
+    if (removedItem != null && _animatedList != null) {
+      _animatedList!.removeItem(
         index,
         (BuildContext context, Animation<double> animation) => removedItemBuilder(removedItem, context, animation),
         duration: Duration(milliseconds: durationMiliseconds ?? durationRemoveAnimation),
