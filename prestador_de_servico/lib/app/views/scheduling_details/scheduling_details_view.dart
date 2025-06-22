@@ -13,7 +13,6 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_light_buttom.dart
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/service_images_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/scheduling_detail_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/address_card.dart';

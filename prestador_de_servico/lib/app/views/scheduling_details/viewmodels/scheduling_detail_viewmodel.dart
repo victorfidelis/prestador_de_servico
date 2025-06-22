@@ -152,6 +152,18 @@ class SchedulingDetailViewModel extends ChangeNotifier {
     } else {
       await refreshScheduling();
     }
+  } 
+
+  void setImageListHelper(AnimatedListHelper<String> value) {
+    imageListHelper = value;
+  }
+
+  void setToImageView() {
+    _changeState(ServiceImagesLoaded());
+  }
+
+  void setToSchedulingDetailView() {
+    _emitState(SchedulingDetailLoaded());
   }
 
   Future<void> addImageFromGallery() async {
@@ -161,7 +173,7 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       return;
     } 
     
-    _emitState(SchedulingDetailLoading());
+    _emitState(ServiceImagesLoading());
 
     final imageFile = eitherPickImage.right!;
     final addImageEither = await schedulingService.addImage(schedulingId: scheduling.id, imageFile: imageFile);
@@ -174,21 +186,17 @@ class SchedulingDetailViewModel extends ChangeNotifier {
     scheduling.images.add(imageUrl);
     imageListHelper!.insert(imageUrl);
 
-    _emitState(SchedulingDetailLoaded());
+    _emitState(ServiceImagesLoaded());
   }
 
   Future<void> removeImage(String imageUrl) async {
-    _emitState(SchedulingDetailLoading());
+    final index = scheduling.images.indexWhere((i) => i == imageUrl);
+    imageListHelper!.removeAt(index);
+    scheduling.images.remove(imageUrl);
 
     final removeImageEither = await schedulingService.removeImage(schedulingId: scheduling.id, imageUrl: imageUrl);
     if (removeImageEither.isLeft) {
       _emitState(ServiceImagesError(message: removeImageEither.left!.message));
     }
-
-    final index = scheduling.images.indexWhere((i) => i == imageUrl);
-    imageListHelper!.removeAt(index);
-    scheduling.images.remove(imageUrl);
-
-    _emitState(SchedulingDetailLoaded());
   }
 }

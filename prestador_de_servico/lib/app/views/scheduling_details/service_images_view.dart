@@ -76,13 +76,24 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Consumer<SchedulingDetailViewModel>(
         builder: (context, viewModel, _) {
-          if (viewModel.state is SchedulingDetailLoading) {
+          if (viewModel.state is ServiceImagesLoading) {
             return const Center(child: CustomLoading());
           }
 
           if (viewModel.state is ServiceImagesError) {
             final errorState = viewModel.state as ServiceImagesError;
-            return Center(child: Text(errorState.message));
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              notifications.showSnackBar(context: context, message: errorState.message);
+            });
+          }
+
+          if (viewModel.state is ServiceImagesLoaded) {
+            final state = (viewModel.state as ServiceImagesLoaded);
+            if (state.message != null) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                notifications.showSnackBar(context: context, message: state.message!);
+              });
+            }
           }
 
           if (viewModel.scheduling.images.isEmpty) {
