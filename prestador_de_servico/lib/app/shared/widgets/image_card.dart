@@ -1,5 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/shared/utils/network/network_helpers.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 
 class ImageCard extends StatefulWidget {
   final String imageUrl;
@@ -52,7 +54,7 @@ class _ImageCardState extends State<ImageCard> {
             listenable: image,
             builder: (context, _) {
               return image.value;
-            }
+            },
           ),
         ),
       ),
@@ -60,18 +62,16 @@ class _ImageCardState extends State<ImageCard> {
   }
 
   Future<void> _loadImage() async {
-    image.value = Image.asset(
-      'assets/images/tres_pontos_transparente.png',
+    image.value = CachedNetworkImage(
+      imageUrl: widget.imageUrl,
+      placeholder: (context, url) => const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 30.0),
+          child: CustomLoading(),
+        ),
+      ),
+      errorWidget: (context, url, error) => Image.asset('assets/images/imagem_indisponivel.jpg'),
       fit: BoxFit.cover,
     );
-    if (await networkHelpers.isImageLinkOnline(widget.imageUrl)) {
-      image.value = FadeInImage.assetNetwork(
-        placeholder: 'assets/images/tres_pontos_transparente.png',
-        image: widget.imageUrl,
-        fit: BoxFit.cover,
-      );
-    } else {
-      image.value = Image.asset('assets/images/imagem_indisponivel.jpg', fit: BoxFit.cover);
-    }
   }
 }
