@@ -58,9 +58,11 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   @override
   Widget build(BuildContext context) {
     Widget imageCard = const SizedBox();
+    bool showImageCard = false;
     ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
     if (serviceStatus.isInService() || serviceStatus.isServicePerform()) {
       imageCard = const ImagesCard();
+      showImageCard = true;
     }
 
     return ChangeNotifierProvider.value(
@@ -180,8 +182,8 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         _buildDivider(),
                         const SizedBox(height: 8),
                         imageCard,
-                        const SizedBox(height: 8),
-                        _buildDivider(),
+                        showImageCard ? const SizedBox(height: 8) : const SizedBox(),
+                        showImageCard ? _buildDivider() : const SizedBox(),
                         const SizedBox(height: 8),
                         _reviewWidget(),
                         _actions(),
@@ -207,6 +209,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             schedulingDetailViewModel.scheduling.user.fullname,

@@ -144,6 +144,7 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
                           controller: valueToPayController,
                           focusNode: valueToPayFocus,
                           errorMessage: paymentViewModel.valueToPayError.value,
+                          isNumeric: true,
                           inputFormatters: [MoneyTextInputFormatter()],
                           onChanged: onValueChanged,
                         );
