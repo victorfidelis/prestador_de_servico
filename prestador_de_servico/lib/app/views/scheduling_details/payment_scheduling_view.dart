@@ -54,8 +54,7 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
     final themeColor = Theme.of(context).colorScheme;
     final customColor = Theme.of(context).extension<CustomColors>()!;
 
-    final totalPrice =
-        Formatters.formatPrice(paymentViewModel.scheduling.totalPriceCalculated);
+    final totalPrice = Formatters.formatPrice(paymentViewModel.scheduling.totalPriceCalculated);
     final needToPay = Formatters.formatPrice(paymentViewModel.scheduling.needToPay);
     final totalPaid = Formatters.formatPrice(paymentViewModel.scheduling.totalPaid);
 
@@ -76,9 +75,7 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          SizedBox(
-                              width: 60,
-                              child: BackNavigation(onTap: () => Navigator.pop(context))),
+                          SizedBox(width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
                           const Expanded(
                             child: CustomAppBarTitle(
                               title: 'Pagamento de serviços',
@@ -137,18 +134,19 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
                   Divider(color: themeColor.shadow),
                   const SizedBox(height: 32),
                   ListenableBuilder(
-                      listenable: paymentViewModel.valueToPayError,
-                      builder: (context, _) {
-                        return CustomTextField(
-                          label: 'Valor à pagar',
-                          controller: valueToPayController,
-                          focusNode: valueToPayFocus,
-                          errorMessage: paymentViewModel.valueToPayError.value,
-                          isNumeric: true,
-                          inputFormatters: [MoneyTextInputFormatter()],
-                          onChanged: onValueChanged,
-                        );
-                      }),
+                    listenable: paymentViewModel.valueToPayError,
+                    builder: (context, _) {
+                      return CustomTextField(
+                        label: 'Valor à pagar',
+                        controller: valueToPayController,
+                        focusNode: valueToPayFocus,
+                        errorMessage: paymentViewModel.valueToPayError.value,
+                        isNumeric: true,
+                        inputFormatters: [MoneyTextInputFormatter()],
+                        onChanged: onValueChanged,
+                      );
+                    },
+                  ),
                 ],
               ),
             ),

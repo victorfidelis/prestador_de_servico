@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_empty_list.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_provider_schedules_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
@@ -95,6 +96,10 @@ class _PendingProviderSchedulesViewState extends State<PendingProviderSchedulesV
 
               final schedulesByDays =
                   (pendingProviderSchedulesViewModel.state as PendingLoaded).schedulesByDays;
+
+              if (schedulesByDays.isEmpty) {
+                return const SliverFillRemaining(child: CustomEmptyList(label: 'Nenhum agendamento pendente'));
+              }
 
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 18),

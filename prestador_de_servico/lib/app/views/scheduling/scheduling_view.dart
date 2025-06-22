@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_empty_list.dart';
 import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
@@ -23,29 +24,29 @@ class SchedulingView extends StatefulWidget {
 }
 
 class _SchedulingViewState extends State<SchedulingView> {
-  late final DaysViewModel daysViewModel;
-  late final SchedulingViewModel schedulingViewModel;
+  late final DaysViewModel _daysViewModel;
+  late final SchedulingViewModel _schedulingViewModel;
 
-  ValueNotifier<DateTime> selectedDay = ValueNotifier(DateTime.now());
+  final ValueNotifier<DateTime> _selectedDay = ValueNotifier(DateTime.now());
 
   @override
   void initState() {
-    daysViewModel = DaysViewModel(schedulingService: context.read<SchedulingService>());
-    schedulingViewModel = SchedulingViewModel(
+    _daysViewModel = DaysViewModel(schedulingService: context.read<SchedulingService>());
+    _schedulingViewModel = SchedulingViewModel(
       schedulingService: context.read<SchedulingService>(),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      daysViewModel.load(selectedDay.value);
-      loadToday();
+      _daysViewModel.load(_selectedDay.value);
+      _loadToday();
     });
     super.initState();
   }
 
   @override
   void dispose() {
-    daysViewModel.dispose();
-    schedulingViewModel.dispose();
-    selectedDay.dispose();
+    _daysViewModel.dispose();
+    _schedulingViewModel.dispose();
+    _selectedDay.dispose();
     super.dispose();
   }
 
@@ -73,7 +74,7 @@ class _SchedulingViewState extends State<SchedulingView> {
                       SizedBox(
                         width: 60,
                         child: CustomMenuCalendarType(
-                          onChangeTypeView: daysViewModel.changeTypeView,
+                          onChangeTypeView: _daysViewModel.changeTypeView,
                         ),
                       )
                     ],
@@ -84,38 +85,38 @@ class _SchedulingViewState extends State<SchedulingView> {
           ),
           const SizedBox(height: 10),
           ListenableBuilder(
-            listenable: daysViewModel,
+            listenable: _daysViewModel,
             builder: (context, _) {
-              if (daysViewModel.state is DaysInitial) {
+              if (_daysViewModel.state is DaysInitial) {
                 return Container();
               }
 
-              if (daysViewModel.state is DaysError) {
+              if (_daysViewModel.state is DaysError) {
                 return Center(
-                  child: Text((daysViewModel.state as DaysError).message),
+                  child: Text((_daysViewModel.state as DaysError).message),
                 );
               }
 
-              if (daysViewModel.state is DaysLoading) {
+              if (_daysViewModel.state is DaysLoading) {
                 return Container(
                   padding: const EdgeInsets.only(top: 28),
                   child: const Center(child: CustomLoading()),
                 );
               }
 
-              final loadedState = (daysViewModel.state as DaysLoaded);
+              final loadedState = (_daysViewModel.state as DaysLoaded);
               final schedulesPerDay = loadedState.dates;
 
               if (loadedState.typeView == TypeView.main) {
                 return CustomHorizontalCalendar(
                   schedulesPerDay: schedulesPerDay,
-                  initialDate: selectedDay.value,
-                  onChangeSelectedDay: onChangeSelectedDay,
+                  initialDate: _selectedDay.value,
+                  onChangeSelectedDay: _onChangeSelectedDay,
                 );
               } else {
                 return CustomMonthCalendar(
                   schedulesPerDay: schedulesPerDay,
-                  onChangeSelectedDay: onChangeSelectedDay,
+                  onChangeSelectedDay: _onChangeSelectedDay,
                 );
               }
             },
@@ -138,10 +139,10 @@ class _SchedulingViewState extends State<SchedulingView> {
                   ),
                 ),
                 ListenableBuilder(
-                  listenable: selectedDay,
+                  listenable: _selectedDay,
                   builder: (context, _) {
                     return Text(
-                      Formatters.defaultFormatDate(selectedDay.value),
+                      Formatters.defaultFormatDate(_selectedDay.value),
                       style: TextStyle(
                         fontSize: 24,
                         color: Theme.of(context).colorScheme.primary,
@@ -155,19 +156,19 @@ class _SchedulingViewState extends State<SchedulingView> {
           ),
           const SizedBox(height: 6),
           ListenableBuilder(
-            listenable: schedulingViewModel,
+            listenable: _schedulingViewModel,
             builder: (context, _) {
-              if (schedulingViewModel.state is SchedulingInitial) {
+              if (_schedulingViewModel.state is SchedulingInitial) {
                 return Container();
               }
 
-              if (schedulingViewModel.state is SchedulingError) {
+              if (_schedulingViewModel.state is SchedulingError) {
                 return Center(
-                  child: Text((schedulingViewModel.state as SchedulingError).message),
+                  child: Text((_schedulingViewModel.state as SchedulingError).message),
                 );
               }
 
-              if (schedulingViewModel.state is SchedulingLoading) {
+              if (_schedulingViewModel.state is SchedulingLoading) {
                 return Container(
                   padding: const EdgeInsets.only(top: 28),
                   child: const Center(child: CustomLoading()),
@@ -175,7 +176,11 @@ class _SchedulingViewState extends State<SchedulingView> {
               }
 
               final schedules =
-                  (schedulingViewModel.state as SchedulingLoaded).schedules;
+                  (_schedulingViewModel.state as SchedulingLoaded).schedules;
+
+              if (schedules.isEmpty) {
+                return const CustomEmptyList(label: 'Nenhum agendamento');
+              }
 
               return Expanded(
                 child: Container(
@@ -190,7 +195,7 @@ class _SchedulingViewState extends State<SchedulingView> {
 
                       return CustomSchedulingCard(
                         scheduling: schedules[index],
-                        refreshOriginPage: refreshView,
+                        refreshOriginPage: _refreshView,
                       );
                     },
                   ),
@@ -203,20 +208,20 @@ class _SchedulingViewState extends State<SchedulingView> {
     );
   }
 
-  void loadToday() {
+  void _loadToday() {
     final actualDateTime = DateTime.now();
-    selectedDay.value = DateTime(actualDateTime.year, actualDateTime.month, actualDateTime.day);
-    schedulingViewModel.load(dateTime: selectedDay.value);
+    _selectedDay.value = DateTime(actualDateTime.year, actualDateTime.month, actualDateTime.day);
+    _schedulingViewModel.load(dateTime: _selectedDay.value);
   }
 
-  void onChangeSelectedDay(DateTime date) {
-    selectedDay.value = date;
-    schedulingViewModel.load(dateTime: selectedDay.value);
-    daysViewModel.changeSelectedDay(date);
+  void _onChangeSelectedDay(DateTime date) {
+    _selectedDay.value = date;
+    _schedulingViewModel.load(dateTime: _selectedDay.value);
+    _daysViewModel.changeSelectedDay(date);
   }
 
-  void refreshView() {
-    daysViewModel.load(selectedDay.value);
-    schedulingViewModel.load(dateTime: selectedDay.value);
+  void _refreshView() {
+    _daysViewModel.load(_selectedDay.value);
+    _schedulingViewModel.load(dateTime: _selectedDay.value);
   }
 }

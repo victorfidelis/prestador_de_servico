@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_empty_list.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
@@ -95,6 +96,10 @@ class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesVie
               final schedulesByDays =
                   (pendingPaymentSchedulesViewModel.state as PendingLoaded).schedulesByDays;
 
+              if (schedulesByDays.isEmpty) {
+                return const SliverFillRemaining(child: CustomEmptyList(label: 'Nenhum pagamento pendente'));
+              }
+              
               return SliverPadding(
                 padding: const EdgeInsets.symmetric(horizontal: 18),
                 sliver: SliverList.builder(
