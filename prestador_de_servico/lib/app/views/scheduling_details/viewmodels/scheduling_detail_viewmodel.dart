@@ -199,4 +199,17 @@ class SchedulingDetailViewModel extends ChangeNotifier {
       _emitState(ServiceImagesError(message: removeImageEither.left!.message));
     }
   }
+
+  Future<void> removeImageFromServiceimagesView(String imageUrl) async {
+    final index = scheduling.images.indexWhere((i) => i == imageUrl);
+    imageListHelper!.removeAt(index);
+    scheduling.images.remove(imageUrl);
+
+    _emitState(ServiceImagesLoaded(message: 'Imagem removida.'));
+
+    final removeImageEither = await schedulingService.removeImage(schedulingId: scheduling.id, imageUrl: imageUrl);
+    if (removeImageEither.isLeft) {
+      _emitState(ServiceImagesError(message: removeImageEither.left!.message));
+    }
+  }
 }

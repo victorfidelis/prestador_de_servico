@@ -127,7 +127,7 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
       context: context,
       title: 'Excluir imagem',
       content: 'Tem certeza que deseja excluir a imagem?',
-      confirmCallback: () => context.read<SchedulingDetailViewModel>().removeImage(imageUrl),
+      confirmCallback: () => context.read<SchedulingDetailViewModel>().removeImageFromServiceimagesView(imageUrl),
     );
   }
 }
