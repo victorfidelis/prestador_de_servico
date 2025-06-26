@@ -1,30 +1,30 @@
 
 import { onDocumentCreated, onDocumentDeleted, onDocumentUpdated } from "firebase-functions/v2/firestore";
-import { SchedulesPerDayService } from "../services/schedulesPerDayService.js";
+import { Scheduling } from "../models/scheduling.js";
+import { SchedulesService } from "../services/schedulesService.js";
+
 
 export const onSchedulingCreated = onDocumentCreated('/schedules/{documentId}',
-    async (event) => {
-        const timeStampDate = event.data.data().startDateAndTime;
-        const schedulesPerDayService = new SchedulesPerDayService();
-        await schedulesPerDayService.addScheduling(timeStampDate);
+    (event) => {
+        const schedulesService = new SchedulesService();
+        schedulesService.schedulingCreated(Scheduling.fromDocumentFirestore(event.data.data()));
     }
 );
 
 export const onSchedulingDeleted = onDocumentDeleted('/schedules/{documentId}',
-    async (event) => {
-        const timeStampDate = event.data.data().startDateAndTime;
-        const schedulesPerDayService = new SchedulesPerDayService();
-        await schedulesPerDayService.removeScheduling(timeStampDate);
+    (event) => {
+        const schedulesService = new SchedulesService();
+        schedulesService.schedulingDeleted(Scheduling.fromDocumentFirestore(event.data.data()));
     }
 );
 
 export const onSchedulingUpdated = onDocumentUpdated('/schedules/{documentId}',
-    async (event) => {
-        const beforeTimeStampDate = event.data.before.data().startDateAndTime;
-        const afterTimeStampDate = event.data.after.data().startDateAndTime;
-        const schedulesPerDayService = new SchedulesPerDayService();
-
-        await schedulesPerDayService.updateScheduling(beforeTimeStampDate, afterTimeStampDate);
+    (event) => {
+        const schedulesService = new SchedulesService();
+        schedulesService.schedulingUpdated(
+            Scheduling.fromDocumentFirestore(event.data.before.data()),
+            Scheduling.fromDocumentFirestore(event.data.after.data()),
+        );
     }
 );
 
