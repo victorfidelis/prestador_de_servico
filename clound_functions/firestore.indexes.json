@@ -1,0 +1,19 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "serviceSchedules",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "endDateAndTime",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "startDateAndTime",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

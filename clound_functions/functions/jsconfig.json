@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    // Apenas para informar ao VS Code a versão do JS que você está usando
+    "target": "es2020",
+    "module": "esnext",
+    "moduleResolution": "node", // Forma como o Node.js resolve módulos
+    "allowSyntheticDefaultImports": true,
+    // A chave "baseUrl" diz ao VS Code que o ponto de partida para imports é o diretório atual
+    "baseUrl": "." 
+  },
+  // Inclui todos os arquivos .js no projeto, exceto os de fora
+  "include": [
+    "**/*.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
