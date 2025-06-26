@@ -1,5 +1,6 @@
 import { getFirestore } from "firebase-admin/firestore";
-import { SchedulesPerDay } from "../models/schedulesPerDay";
+import { SchedulesPerDay } from "../models/schedulesPerDay.js";
+import formatDate from "../utils/date_utils.js";
 
 export class SchedulesPerDayService {
     async addScheduling(timeStampDate) {

@@ -1,6 +1,6 @@
 
 import { onDocumentCreated, onDocumentDeleted, onDocumentUpdated } from "firebase-functions/v2/firestore";
-import { SchedulesPerDayService } from "src/services/schedulesPerDayService";
+import { SchedulesPerDayService } from "../services/schedulesPerDayService.js";
 
 export const onSchedulingCreated = onDocumentCreated('/schedules/{documentId}',
     async (event) => {
