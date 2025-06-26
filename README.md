@@ -91,6 +91,13 @@ O projeto conta com testes unitários que foram desenvolvidos utilizando TDD. Os
 
 ---
 
+## Configurando Clound Functions no ambiente de desenvolvimento
+
+- Instale o **Node.Js** e o seu gerenciador de pacotes **npm**
+- Execute o comando `npm install -g firebase-tools` para efetuar o dawnload CLI do Firebase globalmente eu seu sistema
+- Execute o comando `firebase login` para logar em sua conta firebase
+- Execute `firebase login` após o login e verifique se sua conta foi logada
+
 ## 📃 Licença
 
 Este projeto está sob licença. Consulte o arquivo https://github.com/victorfidelis/prestador_de_servico/blob/master/LICENSE.TXT para mais informações.
