@@ -173,9 +173,6 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       final DateTime oldStartDateAndTime = (map['startDateAndTime'] as Timestamp).toDate();
       final DateTime oldEndDateAndTime = (map['endDateAndTime'] as Timestamp).toDate();
 
-      await removeSchedulingPerDay(oldStartDateAndTime);
-      await addSchedulingPerDay(startDateAndTime);
-
       await docRef.update(SchedulingConverter.toEditDateAndTimeFirebaseMap(
         startDateAndTime: startDateAndTime,
         endDateAndTime: endDateAndTime,
@@ -190,47 +187,6 @@ class FirebaseSchedulingRepository implements SchedulingRepository {
       } else {
         return Either.left(Failure('Firestore error: ${e.message}'));
       }
-    }
-  }
-
-  Future<void> removeSchedulingPerDay(DateTime date) async {
-    final String schedulesPerDayId = Formatters.formatDateISO8601(date);
-    final schedulesPerDayCollection = FirebaseFirestore.instance.collection('schedulesPerDay');
-    final docRef = schedulesPerDayCollection.doc(schedulesPerDayId);
-
-    final snapshot = await docRef.get();
-    final map = snapshot.data() as Map<String, dynamic>;
-    int numberOfServices = (map['numberOfServices'] as int);
-    numberOfServices -= 1;
-    final bool hasService = numberOfServices > 0;
-
-    await docRef.update({
-      'hasService': hasService,
-      'numberOfServices': numberOfServices,
-    });
-  }
-
-  Future<void> addSchedulingPerDay(DateTime date) async {
-    final String schedulesPerDayId = Formatters.formatDateISO8601(date);
-    final schedulesPerDayCollection = FirebaseFirestore.instance.collection('schedulesPerDay');
-    final docRef = schedulesPerDayCollection.doc(schedulesPerDayId);
-
-    final snapshot = await docRef.get();
-    if (snapshot.exists) {
-      final map = snapshot.data() as Map<String, dynamic>;
-      int numberOfServices = (map['numberOfServices'] as int);
-      numberOfServices += 1;
-      await docRef.update({
-        'hasService': true,
-        'numberOfServices': numberOfServices,
-      });
-    } else {
-      await schedulesPerDayCollection.doc(schedulesPerDayId).set(
-        {
-          'hasService': true,
-          'numberOfServices': 1,
-        },
-      );
     }
   }
 
