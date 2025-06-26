@@ -97,11 +97,6 @@ O projeto conta com testes unitários que foram desenvolvidos utilizando TDD. Os
 - Execute o comando `npm install -g firebase-tools` para efetuar o dawnload CLI do Firebase globalmente eu seu sistema
 - Execute o comando `firebase login` para logar em sua conta firebase
 - Execute `firebase login` após o login e verifique se sua conta foi logada
-- Vá até o diretório que queira criar novas functions
-- Execute `firebase init firestore`
-   - Neste processe pode criar um projeto firebase novo ou usar um já existente
-- Executer `firebase init functions`
-   - Fique atento ao uso do ESLint. Normalmente não estou utilizando para não bloquear o o deploy de functions por formatação incorreta.
 
 ## 📃 Licença
 
