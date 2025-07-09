@@ -1,4 +1,5 @@
 import { SchedulesPerDayRepository } from "../repositories/schedulePerDayRepository.js";
+import { SchedulingRepository } from "../repositories/schedulingRepository.js";
 import { UserRepository } from "../repositories/userRepository.js";
 import formatDate from "../utils/date_utils.js";
 
@@ -6,6 +7,7 @@ export class SchedulesService {
     constructor() {
         this.schedulesPerDayRepository = new SchedulesPerDayRepository();
         this.userRepository = new UserRepository();
+        this.schedulingRepository = new SchedulingRepository();
     }
 
     async schedulingCreated(scheduling) {
@@ -23,20 +25,44 @@ export class SchedulesService {
 
         let user = await this.userRepository.get(scheduling.userId);
         user = this.#decreaseStatusCount(user, scheduling.serviceStatusCode);
+        if (scheduling.review > 0) {
+            user.averageRating = await this.schedulingRepository.getAverageRatingByUser(user.userId);
+        }
         await this.userRepository.update(user);
     }
 
     async schedulingUpdated(schedulingBefore, schedulingAfter) {
+        await this.#updateSchedulesPerDay(schedulingBefore, schedulingAfter);
+        await this.#updateUser(schedulingBefore, schedulingAfter);
+    }
+
+    async #updateSchedulesPerDay(schedulingBefore, schedulingAfter) {
         const dateFormattedBefore = formatDate(schedulingBefore.startDateAndTime);
         const dateFormattedAfter = formatDate(schedulingAfter.startDateAndTime);
-        await this.schedulesPerDayRepository.updateScheduling(dateFormattedBefore, dateFormattedAfter); 
+        if (dateFormattedBefore !== dateFormattedAfter) {
+            await this.schedulesPerDayRepository.removeSchedulingInDay(dateFormattedBefore);
+            await this.schedulesPerDayRepository.addSchedulingInDay(dateFormattedAfter);
+        }
+    }
+
+    async #updateUser(schedulingBefore, schedulingAfter) {
+        if (schedulingBefore.serviceStatusCode === schedulingAfter.serviceStatusCode &&
+            schedulingBefore.review === schedulingAfter.review) {
+            return;
+        }
+
+        let user = await this.userRepository.get(schedulingBefore.userId);
 
         if (schedulingBefore.serviceStatusCode !== schedulingAfter.serviceStatusCode) {
-            let user = await this.userRepository.get(schedulingBefore.userId);
             user = this.#decreaseStatusCount(user, schedulingBefore.serviceStatusCode);
             user = this.#increaseStatusCount(user, schedulingAfter.serviceStatusCode);
-            await this.userRepository.update(user);
         }
+
+        if (schedulingBefore.review != schedulingAfter.review) {
+            user.averageRating = await this.schedulingRepository.getAverageRatingByUser(user.userId);
+        }
+
+        await this.userRepository.update(user);
     }
 
     #increaseStatusCount(user, status) {
@@ -59,6 +85,7 @@ export class SchedulesService {
         } else if (status == 9) {
             user.expiredSchedules += 1;
         }
+        return user;
     }
 
     #decreaseStatusCount(user, status) {
@@ -81,5 +108,6 @@ export class SchedulesService {
         } else if (status == 9 && user.expiredSchedules > 0) {
             user.expiredSchedules -= 1;
         }
+        return user;
     }
 }

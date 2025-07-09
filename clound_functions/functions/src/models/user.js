@@ -1,7 +1,7 @@
 export class User {
     constructor(
         userId,
-        rating,
+        averageRating,
         pendingProviderSchedules,
         pendingClientSchedules,
         confirmedSchedules,
@@ -13,7 +13,7 @@ export class User {
         expiredSchedules,
     ) {
         this.userId = userId;
-        this.rating = rating;
+        this.averageRating = averageRating;
         this.pendingProviderSchedules = pendingProviderSchedules;
         this.pendingClientSchedules = pendingClientSchedules;
         this.confirmedSchedules = confirmedSchedules;
@@ -28,7 +28,7 @@ export class User {
     static fromDocumentFirestore(documentId, document) {
         return new User(
             documentId,
-            document.rating ?? 0,
+            document.averageRating ?? 0,
             document.pendingProviderSchedules ?? 0,
             document.pendingClientSchedules ?? 0,
             document.confirmedSchedules ?? 0,
@@ -43,7 +43,7 @@ export class User {
 
     toDocumentFirestore() {
         return {
-            rating: this.rating,
+            averageRating: this.averageRating,
             pendingProviderSchedules: this.pendingProviderSchedules,
             pendingClientSchedules: this.pendingClientSchedules,
             confirmedSchedules: this.confirmedSchedules,

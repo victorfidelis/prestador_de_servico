@@ -1,9 +1,10 @@
 export class Scheduling {
 
-    constructor(userId, startDateAndTime, serviceStatusCode) {
+    constructor(userId, startDateAndTime, serviceStatusCode, review) {
         this.userId = userId;
         this.startDateAndTime = startDateAndTime;
         this.serviceStatusCode = serviceStatusCode;
+        this.review = review;
     }
 
     static fromDocumentFirestore(document) {
@@ -11,6 +12,7 @@ export class Scheduling {
             document.userId, 
             document.startDateAndTime.toDate(), 
             document.serviceStatusCode,
+            document.review,
         );
     }
 }
