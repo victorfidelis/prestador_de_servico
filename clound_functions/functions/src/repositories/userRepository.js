@@ -5,7 +5,7 @@ export class UserRepository {
     async get(userId) {
         const docRef = getFirestore().collection("users").doc(userId);
         const userDoc = await docRef.get();
-        return User.fromDocumentFirestore(userId, userDoc);
+        return User.fromDocumentFirestore(userId, userDoc.data());
     }
 
     async update(user) {

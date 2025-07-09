@@ -1,4 +1,4 @@
-import { SchedulesPerDayRepository } from "../repositories/schedulePerDayRepository.js";
+import { SchedulesPerDayRepository } from "../repositories/schedulesPerDayRepository.js";
 import { SchedulingRepository } from "../repositories/schedulingRepository.js";
 import { UserRepository } from "../repositories/userRepository.js";
 import formatDate from "../utils/date_utils.js";
