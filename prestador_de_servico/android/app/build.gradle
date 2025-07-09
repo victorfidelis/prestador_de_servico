@@ -32,8 +32,8 @@ dependencies {
 
 android {
     namespace = "br.com.vfdesenvolvimento.prestador_de_servico"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973" //flutter.ndkVersion
+    compileSdk = 35
+    ndkVersion = "27.0.12077973" 
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8

@@ -1,9 +1,11 @@
+import { getFirestore } from "firebase-admin/firestore";
+import { SchedulesPerDay } from "../models/schedulesPerDay.js";
 
 export class SchedulesPerDayRepository {  
     async addSchedulingInDay(dateDocumentId) {
         const docRef = getFirestore().collection("schedulesPerDay").doc(dateDocumentId);
         const doc = await docRef.get();
-
+        
         if (doc.exists) {
             let schedulesPerDay = SchedulesPerDay.fromDocumentFirestore(doc.data());
             schedulesPerDay.addScheduling();
