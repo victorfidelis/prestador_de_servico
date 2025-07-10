@@ -12,6 +12,16 @@ class UserConverter {
       'email': user.email,
       'password': user.password,
       'confirmPassword': user.confirmPassword,
+      'averageRating': user.averageRating,
+      'pendingProviderSchedules': user.pendingProviderSchedules,
+      'pendingClientSchedules': user.pendingClientSchedules,
+      'confirmedSchedules': user.confirmedSchedules,
+      'inServiceSchedules': user.inServiceSchedules,
+      'performedSchedules': user.performedSchedules,
+      'deniedSchedules': user.deniedSchedules,
+      'canceledByProviderSchedules': user.canceledByProviderSchedules,
+      'canceledByClientSchedules': user.canceledByClientSchedules,
+      'expiredSchedules': user.expiredSchedules,
     };
   }
 
@@ -25,6 +35,17 @@ class UserConverter {
       phone: map['phone'],
       password: map.containsKey('password') ? map['password'] : '',
       confirmPassword: map.containsKey('confirmPassword') ? map['confirmPassword'] : '',
+      averageRating: map.containsKey('averageRating') ? map['averageRating'] : 0,
+      pendingProviderSchedules: map.containsKey('pendingProviderSchedules') ? map['pendingProviderSchedules'] : 0,
+      pendingClientSchedules: map.containsKey('pendingClientSchedules') ? map['pendingClientSchedules'] : 0,
+      confirmedSchedules: map.containsKey('confirmedSchedules') ? map['confirmedSchedules'] : 0,
+      inServiceSchedules: map.containsKey('inServiceSchedules') ? map['inServiceSchedules'] : 0,
+      performedSchedules: map.containsKey('performedSchedules') ? map['performedSchedules'] : 0,
+      deniedSchedules: map.containsKey('deniedSchedules') ? map['deniedSchedules'] : 0,
+      canceledByProviderSchedules:
+          map.containsKey('canceledByProviderSchedules') ? map['canceledByProviderSchedules'] : 0,
+      canceledByClientSchedules: map.containsKey('canceledByClientSchedules') ? map['canceledByClientSchedules'] : 0,
+      expiredSchedules: map.containsKey('expiredSchedules') ? map['expiredSchedules'] : 0,
     );
   }
 
@@ -34,7 +55,17 @@ class UserConverter {
       'isAdmin': user.isAdmin,
       'surname': user.surname,
       'phone': user.phone,
-      'email': user.email
+      'email': user.email,
+      'averageRating': user.averageRating,
+      'pendingProviderSchedules': user.pendingProviderSchedules,
+      'pendingClientSchedules': user.pendingClientSchedules,
+      'confirmedSchedules': user.confirmedSchedules,
+      'inServiceSchedules': user.inServiceSchedules,
+      'performedSchedules': user.performedSchedules,
+      'deniedSchedules': user.deniedSchedules,
+      'canceledByProviderSchedules': user.canceledByProviderSchedules,
+      'canceledByClientSchedules': user.canceledByClientSchedules,
+      'expiredSchedules': user.expiredSchedules,
     };
   }
 
@@ -49,6 +80,17 @@ class UserConverter {
       surname: map['surname'],
       phone: map['phone'],
       email: map['email'],
+      averageRating: map.containsKey('averageRating') ? map['averageRating'] : 0,
+      pendingProviderSchedules: map.containsKey('pendingProviderSchedules') ? map['pendingProviderSchedules'] : 0,
+      pendingClientSchedules: map.containsKey('pendingClientSchedules') ? map['pendingClientSchedules'] : 0,
+      confirmedSchedules: map.containsKey('confirmedSchedules') ? map['confirmedSchedules'] : 0,
+      inServiceSchedules: map.containsKey('inServiceSchedules') ? map['inServiceSchedules'] : 0,
+      performedSchedules: map.containsKey('performedSchedules') ? map['performedSchedules'] : 0,
+      deniedSchedules: map.containsKey('deniedSchedules') ? map['deniedSchedules'] : 0,
+      canceledByProviderSchedules:
+          map.containsKey('canceledByProviderSchedules') ? map['canceledByProviderSchedules'] : 0,
+      canceledByClientSchedules: map.containsKey('canceledByClientSchedules') ? map['canceledByClientSchedules'] : 0,
+      expiredSchedules: map.containsKey('expiredSchedules') ? map['expiredSchedules'] : 0,
     );
   }
 }

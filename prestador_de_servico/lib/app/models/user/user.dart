@@ -8,6 +8,16 @@ class User {
   final String phone;
   final String password;
   final String confirmPassword;
+  final double averageRating;
+  final int pendingProviderSchedules;
+  final int pendingClientSchedules;
+  final int confirmedSchedules;
+  final int inServiceSchedules;
+  final int performedSchedules;
+  final int deniedSchedules;
+  final int canceledByProviderSchedules;
+  final int canceledByClientSchedules;
+  final int expiredSchedules;
 
   User({
     this.id = '',
@@ -18,6 +28,16 @@ class User {
     this.phone = '',
     this.password = '',
     this.confirmPassword = '',
+    this.averageRating = 0,
+    this.pendingProviderSchedules = 0,
+    this.pendingClientSchedules = 0,
+    this.confirmedSchedules = 0,
+    this.inServiceSchedules = 0,
+    this.performedSchedules = 0,
+    this.deniedSchedules = 0,
+    this.canceledByProviderSchedules = 0,
+    this.canceledByClientSchedules = 0,
+    this.expiredSchedules = 0,
   });
 
   String get fullname => '$name $surname'; 
@@ -31,6 +51,16 @@ class User {
     String? phone,
     String? password,
     String? confirmPassword,
+    double? averageRating,
+    int? pendingProviderSchedules,
+    int? pendingClientSchedules,
+    int? confirmedSchedules,
+    int? inServiceSchedules,
+    int? performedSchedules,
+    int? deniedSchedules,
+    int? canceledByProviderSchedules,
+    int? canceledByClientSchedules,
+    int? expiredSchedules,
   }) {
     return User(
       id: id ?? this.id,
@@ -41,6 +71,16 @@ class User {
       phone: phone ?? this.phone,
       password: password ?? this.password,
       confirmPassword: confirmPassword ?? this.confirmPassword,
+      averageRating: averageRating ?? this.averageRating,
+      pendingProviderSchedules: pendingProviderSchedules ?? this.pendingProviderSchedules,
+      pendingClientSchedules: pendingClientSchedules ?? this.pendingClientSchedules,
+      confirmedSchedules: confirmedSchedules ?? this.confirmedSchedules,
+      inServiceSchedules: inServiceSchedules ?? this.inServiceSchedules,
+      performedSchedules: performedSchedules ?? this.performedSchedules,
+      deniedSchedules: deniedSchedules ?? this.deniedSchedules,
+      canceledByProviderSchedules: canceledByProviderSchedules ?? this.canceledByProviderSchedules,
+      canceledByClientSchedules: canceledByClientSchedules ?? this.canceledByClientSchedules,
+      expiredSchedules: expiredSchedules ?? this.expiredSchedules,
     );
   }
 

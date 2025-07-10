@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+import 'package:prestador_de_servico/app/services/client/client_service.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/sign_in_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/navigation/viewmodels/navigation_viewmodel.dart';
@@ -112,6 +114,11 @@ class App extends StatelessWidget {
           create: (context) => SchedulingService(
             onlineRepository: SchedulingRepository.createOnline(),
             imageRepository: ImageRepository.create(),
+          ),
+        ),
+        Provider<ClientService>(
+          create: (context) => ClientService(
+            userRepository: UserRepository.create(),
           ),
         ),
       ],
