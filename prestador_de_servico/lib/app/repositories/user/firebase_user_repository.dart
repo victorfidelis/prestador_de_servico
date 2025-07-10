@@ -121,4 +121,25 @@ class FirebaseUserRepository implements UserRepository {
       }
     }
   }
+  
+  @override
+  Future<Either<Failure, List<User>>> getClients() async {
+    final initializeEither = await _firebaseInitializer.initialize();
+    if (initializeEither.isLeft) {
+      return Either.left(initializeEither.left);
+    }
+
+    try {
+      final usersCollection = FirebaseFirestore.instance.collection('users');
+      final querySnap = await usersCollection.where('isAdmin', isEqualTo: false).get(); 
+      final clients = querySnap.docs.map((doc) => UserConverter.fromDocumentSnapshot(doc: doc)).toList();
+      return Either.right(clients);
+    } on FirebaseException catch (e) {
+      if (e.code == 'unavailable') {
+        return Either.left(NetworkFailure('Sem conexão com a internet'));
+      } else {
+        return Either.left(Failure('Firestore error: ${e.message}'));
+      }
+    }
+  }
 }

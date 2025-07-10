@@ -12,5 +12,6 @@ abstract class UserRepository {
   Future<Either<Failure, User>> getById({required String id});
   Future<Either<Failure, User>> getByEmail({required String email});
   Future<Either<Failure, Unit>> deleteById({required String id});
-  Future<Either<Failure, Unit>> update({required User user});
+  Future<Either<Failure, Unit>> update({required User user}); 
+  Future<Either<Failure, List<User>>> getClients();
 }
