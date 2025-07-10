@@ -6,6 +6,7 @@ import 'package:prestador_de_servico/app/models/services_by_category/services_by
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
 import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
+import 'package:prestador_de_servico/app/views/client/client_view.dart';
 import 'package:prestador_de_servico/app/views/navigation/navigation_view.dart';
 import 'package:prestador_de_servico/app/views/payment/payment_view.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/pending_payment_schedules_view.dart';
@@ -138,6 +139,9 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     final arguments = (settings.arguments as Map);
     final schedulingDetailViewModel = (arguments['provider']) as SchedulingDetailViewModel;
     return _buildRouteWithSchedulingDetailViewModel(schedulingDetailViewModel, settings, const ServiceImagesView());
+  }
+  if (settings.name == '/client') {
+    return _buildRoute(settings, const ClientView());
   }
 
   return null;

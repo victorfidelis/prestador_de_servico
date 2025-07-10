@@ -26,7 +26,7 @@ import 'package:prestador_de_servico/app/services/sync/sync_service_category_ser
 import 'package:prestador_de_servico/app/services/sync/sync_service_day_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/theme.dart';
-import 'package:prestador_de_servico/app/views/routes.dart';
+import 'package:prestador_de_servico/app/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 

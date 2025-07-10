@@ -43,6 +43,16 @@ class MenuView extends StatelessWidget {
               color: Theme.of(context).colorScheme.shadow,
             ),
             CustomMenuItem(
+              label: 'Clientes',
+              icon: Icons.people_alt_outlined,
+              onTap: () {
+                Navigator.of(context).pushNamed('/client');
+              },
+            ),
+            Divider(
+              color: Theme.of(context).colorScheme.shadow,
+            ),
+            CustomMenuItem(
               label: 'Agenda',
               icon: Icons.calendar_month,
               onTap: () {
