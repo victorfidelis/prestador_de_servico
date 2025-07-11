@@ -5,7 +5,13 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dar
 class CustomHeader extends StatelessWidget {
   final String title;
   final double height;
-  const CustomHeader({super.key, required this.title, this.height = 80});
+  final Widget action;
+  const CustomHeader({
+    super.key,
+    required this.title,
+    this.height = 80,
+    this.action = const SizedBox(),
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +28,7 @@ class CustomHeader extends StatelessWidget {
           Expanded(
             child: CustomAppBarTitle(title: title),
           ),
-          const SizedBox(width: 60),
+          SizedBox(width: 60, child: action),
         ],
       ),
     );

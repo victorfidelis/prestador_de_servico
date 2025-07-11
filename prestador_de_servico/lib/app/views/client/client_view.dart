@@ -33,55 +33,57 @@ class _ClientViewState extends State<ClientView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          const SliverFloatingHeader(child: CustomHeader(title: 'Clientes')),
-          ListenableBuilder(
-            listenable: clientViewModel,
-            builder: (context, _) {
-              if (clientViewModel.state is ClientInitial) {
-                return const SliverFillRemaining();
-              }
-
-              if (clientViewModel.state is ClientError) {
-                return SliverFillRemaining(
-                  child: Center(
-                    child: Text((clientViewModel.state as ClientError).message),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            const SliverFloatingHeader(child: CustomHeader(title: 'Clientes')),
+            ListenableBuilder(
+              listenable: clientViewModel,
+              builder: (context, _) {
+                if (clientViewModel.state is ClientInitial) {
+                  return const SliverFillRemaining();
+                }
+        
+                if (clientViewModel.state is ClientError) {
+                  return SliverFillRemaining(
+                    child: Center(
+                      child: Text((clientViewModel.state as ClientError).message),
+                    ),
+                  );
+                }
+        
+                if (clientViewModel.state is ClientLoading) {
+                  return SliverFillRemaining(
+                    child: Container(
+                      padding: const EdgeInsets.only(top: 28),
+                      child: const Center(child: CustomLoading()),
+                    ),
+                  );
+                }
+        
+                final clients = (clientViewModel.state as ClientLoaded).clients;
+        
+                if (clients.isEmpty) {
+                  return const SliverFillRemaining(child: CustomEmptyList(label: 'Nenhum pagamento pendente'));
+                }
+        
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  sliver: SliverList.builder(
+                    itemCount: clients.length + 10,
+                    itemBuilder: (context, index) {
+                      if (index >= clients.length) {
+                        return Container(height: 150, color: Colors.red,);
+                      }
+        
+                      return Text(clients[index].fullname);
+                    },
                   ),
                 );
-              }
-
-              if (clientViewModel.state is ClientLoading) {
-                return SliverFillRemaining(
-                  child: Container(
-                    padding: const EdgeInsets.only(top: 28),
-                    child: const Center(child: CustomLoading()),
-                  ),
-                );
-              }
-
-              final clients = (clientViewModel.state as ClientLoaded).clients;
-
-              if (clients.isEmpty) {
-                return const SliverFillRemaining(child: CustomEmptyList(label: 'Nenhum pagamento pendente'));
-              }
-
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                sliver: SliverList.builder(
-                  itemCount: clients.length + 1,
-                  itemBuilder: (context, index) {
-                    if (index == clients.length) {
-                      return const SizedBox(height: 150);
-                    }
-
-                    return Text(clients[index].fullname);
-                  },
-                ),
-              );
-            },
-          ),
-        ],
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
