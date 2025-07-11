@@ -3,17 +3,13 @@ import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/services/service/services_by_category_service.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_header_with_search.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
-import 'package:prestador_de_servico/app/shared/widgets/search_text_field.dart';
-import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 import 'package:prestador_de_servico/app/views/service/states/service_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_category_card.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +38,7 @@ class _ServiceViewState extends State<ServiceView> {
   void initState() {
     listServicesByCategories = SliverAnimatedListHelper<ServicesByCategory>(
       listKey: animatedListKey,
-      removedItemBuilder: buildRemovedItem,
+      removedItemBuilder: _buildRemovedItem,
       initialItems: [],
     );
 
@@ -73,95 +69,67 @@ class _ServiceViewState extends State<ServiceView> {
       title = 'Serviços';
     }
     return Scaffold(
-      body: CustomScrollView(
-        controller: scrollController,
-        slivers: [
-          SliverPersistentHeader(
-            floating: true,
-            delegate: SliverAppBarDelegate(
-              maxHeight: 144,
-              minHeight: 144,
-              child: Stack(
-                children: [
-                  CustomHeaderContainer(
-                    height: 120,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                              width: 60,
-                              child: BackNavigation(onTap: () => Navigator.pop(context))),
-                          Expanded(
-                            child: CustomAppBarTitle(title: title),
-                          ),
-                          const SizedBox(width: 60),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 94),
-                    child: SearchTextField(
-                      hintText: 'Pesquise por uma categoria',
-                      onChanged: onFilter,
-                      focusNode: focusNodeSearchText,
-                    ),
-                  ),
-                ],
+      body: SafeArea(
+        child: CustomScrollView(
+          controller: scrollController,
+          slivers: [
+            SliverFloatingHeader(
+              child: CustomHeaderWithSearch(
+                title: title,
+                searchTitle: 'Pesquise por uma categoria',
+                onSearch: _onSearch,
+                focusNode: focusNodeSearchText,
               ),
             ),
-          ),
-          ListenableBuilder(
-            listenable: serviceViewModel,
-            builder: (context, _) {
-              if (serviceViewModel.state is ServiceInitial) {
-                return const SliverFillRemaining();
-              }
-    
-              if (serviceViewModel.state is ServiceError) {
-                return SliverFillRemaining(
-                  child: Center(
-                    child: Text((serviceViewModel.state as ServiceError).message),
+            ListenableBuilder(
+              listenable: serviceViewModel,
+              builder: (context, _) {
+                if (serviceViewModel.state is ServiceInitial) {
+                  return const SliverFillRemaining();
+                }
+
+                if (serviceViewModel.state is ServiceError) {
+                  return SliverFillRemaining(
+                    child: Center(
+                      child: Text((serviceViewModel.state as ServiceError).message),
+                    ),
+                  );
+                }
+
+                if (serviceViewModel.state is ServiceLoading) {
+                  return const SliverFillRemaining(
+                    child: Center(
+                      child: CustomLoading(),
+                    ),
+                  );
+                }
+
+                final categories = (serviceViewModel.state as ServiceLoaded).servicesByCategories;
+                servicesByCategories = List.from(categories);
+
+                if (serviceViewModel.state is ServiceFiltered) {
+                  final categoriesFiltered = (serviceViewModel.state as ServiceFiltered).servicesByCategoriesFiltered;
+                  servicesByCategoriesInScreen = List.from(categoriesFiltered);
+                } else {
+                  servicesByCategoriesInScreen = List.from(servicesByCategories);
+                }
+
+                listServicesByCategories.removeAndInsertAll(servicesByCategoriesInScreen);
+
+                return SliverPadding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 6,
+                  ),
+                  sliver: SliverAnimatedList(
+                    key: animatedListKey,
+                    initialItemCount: listServicesByCategories.length + 1,
+                    itemBuilder: _itemBuilder,
                   ),
                 );
-              }
-    
-              if (serviceViewModel.state is ServiceLoading) {
-                return const SliverFillRemaining(
-                  child: Center(
-                    child: CustomLoading(),
-                  ),
-                );
-              }
-    
-              final categories = (serviceViewModel.state as ServiceLoaded).servicesByCategories;
-              servicesByCategories = List.from(categories);
-    
-              if (serviceViewModel.state is ServiceFiltered) {
-                final categoriesFiltered =
-                    (serviceViewModel.state as ServiceFiltered).servicesByCategoriesFiltered;
-                servicesByCategoriesInScreen = List.from(categoriesFiltered);
-              } else {
-                servicesByCategoriesInScreen = List.from(servicesByCategories);
-              }
-    
-              listServicesByCategories.removeAndInsertAll(servicesByCategoriesInScreen);
-    
-              return SliverPadding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 6,
-                ),
-                sliver: SliverAnimatedList(
-                  key: animatedListKey,
-                  initialItemCount: listServicesByCategories.length + 1,
-                  itemBuilder: itemBuilder,
-                ),
-              );
-            },
-          ),
-        ],
+              },
+            ),
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: widget.isSelectionView
@@ -173,13 +141,13 @@ class _ServiceViewState extends State<ServiceView> {
               ),
               child: CustomButton(
                 label: 'Nova categoria',
-                onTap: onAddServiceCategory,
+                onTap: _onAddServiceCategory,
               ),
             ),
     );
   }
 
-  Widget itemBuilder(
+  Widget _itemBuilder(
     BuildContext context,
     int index,
     Animation<double> animation,
@@ -199,18 +167,18 @@ class _ServiceViewState extends State<ServiceView> {
     return ServiceCategoryCard(
       key: ValueKey(listServicesByCategories[index].serviceCategory.id),
       servicesByCategory: listServicesByCategories[index],
-      onRemoveCategory: onRemoveServiceCategory,
-      onRemoveService: onRemoveService,
-      editServiceCategory: editServiceOfScreen,
+      onRemoveCategory: _onRemoveServiceCategory,
+      onRemoveService: _onRemoveService,
+      editServiceCategory: _editServiceOfScreen,
       index: index,
       animation: animation,
-      removeFocusOfWidgets: removeFocusOfWidgets,
+      removeFocusOfWidgets: _removeFocusOfWidgets,
       isSelectionView: widget.isSelectionView,
-      onSelectedService: onSelectedService,
+      onSelectedService: _onSelectedService,
     );
   }
 
-  Widget buildRemovedItem(
+  Widget _buildRemovedItem(
     ServicesByCategory servicesByCategory,
     BuildContext context,
     Animation<double> animation,
@@ -229,14 +197,14 @@ class _ServiceViewState extends State<ServiceView> {
     );
   }
 
-  Future<void> onAddServiceCategory() async {
+  Future<void> _onAddServiceCategory() async {
     final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
     if (result != null) {
-      addServiceCategoryInScreen(serviceCategory: result as ServiceCategory);
+      _addServiceCategoryInScreen(serviceCategory: result as ServiceCategory);
     }
   }
 
-  void addServiceCategoryInScreen({
+  void _addServiceCategoryInScreen({
     required ServiceCategory serviceCategory,
   }) async {
     final serviceByCategory = ServicesByCategory(serviceCategory: serviceCategory, services: []);
@@ -246,9 +214,8 @@ class _ServiceViewState extends State<ServiceView> {
     listServicesByCategories.insert(serviceByCategory);
   }
 
-  void editServiceOfScreen({required ServiceCategory serviceCategory}) {
-    final indexOfCompleteList =
-        servicesByCategories.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
+  void _editServiceOfScreen({required ServiceCategory serviceCategory}) {
+    final indexOfCompleteList = servicesByCategories.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
     servicesByCategories[indexOfCompleteList].serviceCategory = serviceCategory;
 
     final indexOfListInScreen =
@@ -256,7 +223,7 @@ class _ServiceViewState extends State<ServiceView> {
     servicesByCategoriesInScreen[indexOfListInScreen].serviceCategory = serviceCategory;
   }
 
-  void onRemoveServiceCategory({
+  void _onRemoveServiceCategory({
     required ServiceCategory serviceCategory,
     required int index,
   }) {
@@ -265,31 +232,30 @@ class _ServiceViewState extends State<ServiceView> {
       title: 'Excluir categoria de serviço',
       content: 'Tem certeza que deseja excluir a categoria de serviço?',
       confirmCallback: () {
-        removeServiceCategoryOfDatabase(serviceCategory: serviceCategory);
-        removeServiceCategoryOfScreen(serviceCategory: serviceCategory);
+        _removeServiceCategoryOfDatabase(serviceCategory: serviceCategory);
+        _removeServiceCategoryOfScreen(serviceCategory: serviceCategory);
       },
     );
   }
 
-  void onRemoveService({required Service service}) {
+  void _onRemoveService({required Service service}) {
     serviceViewModel.deleteService(service: service);
   }
 
-  void removeServiceCategoryOfScreen({required ServiceCategory serviceCategory}) {
+  void _removeServiceCategoryOfScreen({required ServiceCategory serviceCategory}) {
     servicesByCategories.removeWhere((s) => s.serviceCategory.id == serviceCategory.id);
 
-    final index =
-        servicesByCategoriesInScreen.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
-    removeFocusOfWidgets();
+    final index = servicesByCategoriesInScreen.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
+    _removeFocusOfWidgets();
     servicesByCategoriesInScreen.removeAt(index);
     listServicesByCategories.removeAt(index);
   }
 
-  void removeServiceCategoryOfDatabase({required ServiceCategory serviceCategory}) {
+  void _removeServiceCategoryOfDatabase({required ServiceCategory serviceCategory}) {
     serviceViewModel.deleteCategory(serviceCategory: serviceCategory);
   }
 
-  void onFilter(String textValue) {
+  void _onSearch(String textValue) {
     serviceViewModel.refreshValuesOfState(
       servicesByCategories: servicesByCategories,
       servicesByCategoriesFiltered: servicesByCategoriesInScreen,
@@ -298,7 +264,7 @@ class _ServiceViewState extends State<ServiceView> {
   }
 
   Future<void> _scrollToEnd() async {
-    removeFocusOfWidgets();
+    _removeFocusOfWidgets();
     await scrollController.animateTo(
       scrollController.position.maxScrollExtent,
       duration: const Duration(milliseconds: 300),
@@ -311,11 +277,11 @@ class _ServiceViewState extends State<ServiceView> {
     );
   }
 
-  void onSelectedService(Service service) {
+  void _onSelectedService(Service service) {
     Navigator.pop(context, service);
   }
 
-  void removeFocusOfWidgets() {
+  void _removeFocusOfWidgets() {
     focusNodeSearchText.unfocus();
   }
 }

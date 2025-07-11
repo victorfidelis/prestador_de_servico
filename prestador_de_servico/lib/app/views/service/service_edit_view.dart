@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
@@ -9,10 +10,7 @@ import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/hours
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/minutes_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_image_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text.dart';
@@ -68,7 +66,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
 
     isUpdate = (service != null);
     if (isUpdate) {
-      loadFieldsWithService(service: service!);
+      _loadFieldsWithService(service: service!);
     }
 
     super.initState();
@@ -91,23 +89,10 @@ class _ServiceEditViewState extends State<ServiceEditView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CustomHeaderContainer(
-              height: 80,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 10),
-                child: Row(
-                  children: [
-                    SizedBox(width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
-                    const Expanded(child: CustomAppBarTitle(title: 'Serviços')),
-                    const SizedBox(width: 60),
-                  ],
-                ),
-              ),
-            ),
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            const SliverFloatingHeader(child: CustomHeader(title: 'Serviços')),
             ListenableBuilder(
               listenable: serviceEditViewModel,
               builder: (context, _) {
@@ -118,13 +103,12 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                       Navigator.pop(context, service);
                     },
                   );
-                  return Container();
+                  return const SliverToBoxAdapter();
                 }
 
                 if (serviceEditViewModel.state is ServiceEditLoading) {
-                  return SizedBox(
-                    height: MediaQuery.of(context).size.height,
-                    child: const Center(
+                  return const SliverFillRemaining(
+                    child: Center(
                       child: CustomLoading(),
                     ),
                   );
@@ -134,8 +118,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                   final pickImageErroState = (serviceEditViewModel.state as PickImageError);
                   WidgetsBinding.instance.addPostFrameCallback(
                     (_) {
-                      notifications.showSnackBar(
-                          context: context, message: pickImageErroState.message);
+                      notifications.showSnackBar(context: context, message: pickImageErroState.message);
                     },
                   );
                 }
@@ -154,92 +137,93 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                 if (serviceEditViewModel.state is ServiceEditError) {
                   nameErrorMessage = (serviceEditViewModel.state as ServiceEditError).nameMessage;
                   priceErrorMessage = (serviceEditViewModel.state as ServiceEditError).priceMessage;
-                  hoursAndMinutesErrorMessage =
-                      (serviceEditViewModel.state as ServiceEditError).hoursAndMinutesMessage;
-                  genericErrorMessage =
-                      (serviceEditViewModel.state as ServiceEditError).genericMessage;
+                  hoursAndMinutesErrorMessage = (serviceEditViewModel.state as ServiceEditError).hoursAndMinutesMessage;
+                  genericErrorMessage = (serviceEditViewModel.state as ServiceEditError).genericMessage;
                   if (genericErrorMessage != null) {
                     genericErrorWidget = CustomTextError(message: genericErrorMessage);
                   }
                 }
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          CustomText(text: (isUpdate ? 'Alterando categoria' : 'Nova categoria')),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Column(
+                return SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+                    child: Column(
+                      children: [
+                        Row(
                           children: [
-                            isUpdate ? CustomTextName(text: service!.name) : Container(),
-                            isUpdate ? const SizedBox(height: 12) : Container(),
-                            CustomTextField(
-                              label: 'Nome',
-                              controller: nameController,
-                              focusNode: nameFocus,
-                              errorMessage: nameErrorMessage,
-                            ),
-                            const SizedBox(height: 20),
-                            CustomTextField(
-                              label: 'Valor',
-                              controller: priceController,
-                              focusNode: priceFocus,
-                              errorMessage: priceErrorMessage,
-                              isNumeric: true,
-                              inputFormatters: [MoneyTextInputFormatter()],
-                            ),
-                            const SizedBox(height: 20),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: CustomTextField(
-                                    label: 'Horas',
-                                    controller: hoursController,
-                                    focusNode: hoursFocus,
-                                    isNumeric: true,
-                                    inputFormatters: [HoursTextInputFormatter()],
-                                  ),
-                                ),
-                                const SizedBox(width: 20),
-                                Expanded(
-                                  child: CustomTextField(
-                                    label: 'Minutos',
-                                    controller: minutesController,
-                                    focusNode: minutesFocus,
-                                    isNumeric: true,
-                                    inputFormatters: [MinutesTextInputFormatter()],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            hoursAndMinutesErrorMessage == null
-                                ? Container()
-                                : Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      const SizedBox(height: 16),
-                                      CustomTextError(message: hoursAndMinutesErrorMessage),
-                                    ],
-                                  ),
-                            const SizedBox(height: 20),
-                            CustomImageField(
-                              onTap: onSelectImage,
-                              label: 'Imagem',
-                              imageUrl: imageUrl,
-                              imageFile: imageFile,
-                            ),
+                            CustomText(text: (isUpdate ? 'Alterando categoria' : 'Nova categoria')),
                           ],
                         ),
-                      ),
-                      genericErrorWidget,
-                    ],
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Column(
+                            children: [
+                              isUpdate ? CustomTextName(text: service!.name) : Container(),
+                              isUpdate ? const SizedBox(height: 12) : Container(),
+                              CustomTextField(
+                                label: 'Nome',
+                                controller: nameController,
+                                focusNode: nameFocus,
+                                errorMessage: nameErrorMessage,
+                              ),
+                              const SizedBox(height: 20),
+                              CustomTextField(
+                                label: 'Valor',
+                                controller: priceController,
+                                focusNode: priceFocus,
+                                errorMessage: priceErrorMessage,
+                                isNumeric: true,
+                                inputFormatters: [MoneyTextInputFormatter()],
+                              ),
+                              const SizedBox(height: 20),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: CustomTextField(
+                                      label: 'Horas',
+                                      controller: hoursController,
+                                      focusNode: hoursFocus,
+                                      isNumeric: true,
+                                      inputFormatters: [HoursTextInputFormatter()],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 20),
+                                  Expanded(
+                                    child: CustomTextField(
+                                      label: 'Minutos',
+                                      controller: minutesController,
+                                      focusNode: minutesFocus,
+                                      isNumeric: true,
+                                      inputFormatters: [MinutesTextInputFormatter()],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              hoursAndMinutesErrorMessage == null
+                                  ? Container()
+                                  : Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: [
+                                        const SizedBox(height: 16),
+                                        CustomTextError(message: hoursAndMinutesErrorMessage),
+                                      ],
+                                    ),
+                              const SizedBox(height: 20),
+                              CustomImageField(
+                                onTap: _onSelectImage,
+                                label: 'Imagem',
+                                imageUrl: imageUrl,
+                                imageFile: imageFile,
+                              ),
+                              const SizedBox(height: 150),
+                            ],
+                          ),
+                        ),
+                        genericErrorWidget,
+                      ],
+                    ),
                   ),
                 );
               },
@@ -251,9 +235,8 @@ class _ServiceEditViewState extends State<ServiceEditView> {
       floatingActionButton: ListenableBuilder(
         listenable: serviceEditViewModel,
         builder: (context, _) {
-          if (serviceEditViewModel.state is ServiceEditLoading ||
-              serviceEditViewModel.state is ServiceEditSuccess) {
-            return Container();
+          if (serviceEditViewModel.state is ServiceEditLoading || serviceEditViewModel.state is ServiceEditSuccess) {
+            return const SizedBox();
           }
 
           return Padding(
@@ -263,7 +246,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
             ),
             child: CustomButton(
               label: 'Salvar',
-              onTap: save,
+              onTap: _save,
             ),
           );
         },
@@ -271,7 +254,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
     );
   }
 
-  void loadFieldsWithService({required Service service}) {
+  void _loadFieldsWithService({required Service service}) {
     nameController.text = service.name;
     priceController.text = service.price.toString().replaceAll('.', ',');
     if (service.hours == 0) {
@@ -289,7 +272,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
     }
   }
 
-  void save() {
+  void _save() {
     Service serviceEdit = _createServiceObject();
 
     if (isUpdate) {
@@ -337,7 +320,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
     );
   }
 
-  void onSelectImage() {
+  void _onSelectImage() {
     serviceEditViewModel.pickImageFromGallery();
   }
 }
