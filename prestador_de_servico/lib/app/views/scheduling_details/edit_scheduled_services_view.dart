@@ -4,14 +4,11 @@ import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
-import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_services_and_prices_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/edit_scheduled_services_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/add_service_buttom.dart';
@@ -76,96 +73,67 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
         Navigator.pop(context, hasChange as bool?);
       },
       child: Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            SliverPersistentHeader(
-              floating: true,
-              delegate: SliverAppBarDelegate(
-                minHeight: 120,
-                maxHeight: 120,
-                child: Stack(
-                  children: [
-                    CustomHeaderContainer(
-                      height: 100,
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 28),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                                width: 60,
-                                child: BackNavigation(onTap: () => Navigator.pop(context))),
-                            const Expanded(
-                              child: CustomAppBarTitle(
-                                title: 'Alteração de Serviços',
-                                fontSize: 25,
-                              ),
-                            ),
-                            const SizedBox(width: 60),
-                          ],
-                        ),
+        body: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              const SliverFloatingHeader(child: CustomHeader(title: 'Alteração de Serviços', height: 100)),
+              ListenableBuilder(
+                listenable: editViewModel,
+                builder: (context, _) {
+                  return SliverPadding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          CustomTextField(
+                            label: 'Taxa',
+                            controller: rateController,
+                            focusNode: rateFocus,
+                            isNumeric: true,
+                            inputFormatters: [MoneyTextInputFormatter()],
+                            onChanged: (_) => _onChangeRate(),
+                          ),
+                          const SizedBox(height: 12),
+                          CustomTextField(
+                            label: 'Desconto',
+                            controller: discountController,
+                            focusNode: discountFocus,
+                            isNumeric: true,
+                            inputFormatters: [MoneyTextInputFormatter()],
+                            onChanged: (_) => _onChangeDicount(),
+                            errorMessage: editViewModel.discountError,
+                          ),
+                          const SizedBox(height: 20),
+                          Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
+                          const SizedBox(height: 18),
+                          const Text(
+                            'Serviços',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                          ),
+                          const SizedBox(height: 12),
+                          _servicesCard(),
+                          const SizedBox(height: 12),
+                          _totalProductsCard(),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              const Expanded(child: SizedBox()),
+                              AddServiceButtom(onTap: _onNewService),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
+                          const SizedBox(height: 12),
+                          _totalCard(),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
-            ),
-            ListenableBuilder(
-              listenable: editViewModel,
-              builder: (context, _) {
-                return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        CustomTextField(
-                          label: 'Taxa',
-                          controller: rateController,
-                          focusNode: rateFocus,
-                          isNumeric: true,
-                          inputFormatters: [MoneyTextInputFormatter()],
-                          onChanged: (_) => onChangeRate(),
-                        ),
-                        const SizedBox(height: 12),
-                        CustomTextField(
-                          label: 'Desconto',
-                          controller: discountController,
-                          focusNode: discountFocus,
-                          isNumeric: true,
-                          inputFormatters: [MoneyTextInputFormatter()],
-                          onChanged: (_) => onChangeDicount(),
-                          errorMessage: editViewModel.discountError,
-                        ),
-                        const SizedBox(height: 20),
-                        Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
-                        const SizedBox(height: 18),
-                        const Text(
-                          'Serviços',
-                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                        ),
-                        const SizedBox(height: 12),
-                        servicesCard(),
-                        const SizedBox(height: 12),
-                        totalProductsCard(),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            const Expanded(child: SizedBox()),
-                            AddServiceButtom(onTap: onNewService),
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
-                        const SizedBox(height: 12),
-                        totalCard(),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ],
+            ],
+          ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: Padding(
@@ -195,7 +163,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
 
               return CustomButton(
                 label: 'Salvar',
-                onTap: onSave,
+                onTap: _onSave,
               );
             },
           ),
@@ -204,7 +172,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     );
   }
 
-  Widget servicesCard() {
+  Widget _servicesCard() {
     final services = editViewModel.scheduling.services;
     List<Widget> servicesWidgets = [];
     for (int i = 0; i < services.length; i++) {
@@ -213,7 +181,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
             key: ValueKey(services[i].hashCode),
             service: services[i],
             index: i,
-            onLongPress: onLongPressService),
+            onLongPress: _onLongPressService),
       );
       if (i < services.length - 1) {
         servicesWidgets.add(const SizedBox(height: 10));
@@ -224,7 +192,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     );
   }
 
-  Widget totalCard() {
+  Widget _totalCard() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -247,7 +215,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     );
   }
 
-  Widget totalProductsCard() {
+  Widget _totalProductsCard() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14),
       child: Row(
@@ -274,18 +242,18 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     );
   }
 
-  void onLongPressService(int index) {
-    removeFocus();
+  void _onLongPressService(int index) {
+    _removeFocus();
 
     final service = editViewModel.scheduling.services[index];
     if (service.removed) {
-      onReturnService(index);
+      _onReturnService(index);
     } else {
-      onRemoveService(index);
+      _onRemoveService(index);
     }
   }
 
-  void onRemoveService(int index) {
+  void _onRemoveService(int index) {
     if (editViewModel.quantityOfActiveServices() == 1) {
       notifications.showSuccessAlert(
         context: context,
@@ -305,7 +273,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     }
   }
 
-  void onReturnService(int index) {
+  void _onReturnService(int index) {
     final service = editViewModel.scheduling.services[index];
     notifications.showQuestionAlert(
       context: context,
@@ -317,7 +285,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     );
   }
 
-  void onChangeRate() {
+  void _onChangeRate() {
     if (rateController.text.isEmpty) {
       editViewModel.changeRate(0);
     } else {
@@ -325,7 +293,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     }
   }
 
-  void onChangeDicount() {
+  void _onChangeDicount() {
     if (discountController.text.isEmpty) {
       editViewModel.changeDicount(0);
     } else {
@@ -333,8 +301,8 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     }
   }
 
-  void onNewService() async {
-    removeFocus();
+  void _onNewService() async {
+    _removeFocus();
 
     final result = await Navigator.pushNamed(
       context,
@@ -347,17 +315,17 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     }
   }
 
-  void onSave() {
-    removeFocus();
+  void _onSave() {
+    _removeFocus();
 
     if (!editViewModel.validateSave()) {
       return;
     }
 
-    confirmSave();
+    _confirmSave();
   }
 
-  Future<void> confirmSave() async {
+  Future<void> _confirmSave() async {
     await notifications.showQuestionAlert(
       context: context,
       title: 'Alterar serviços e preços',
@@ -368,7 +336,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     );
   }
 
-  void removeFocus() {
+  void _removeFocus() {
     rateFocus.unfocus();
     discountFocus.unfocus();
   }

@@ -4,14 +4,11 @@ import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.
 import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
 import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
-import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_app_bar_title.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_header_container.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/shared/widgets/sliver_app_bar_delegate.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/payment_scheduling_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/payment_scheduling_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -59,99 +56,73 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
     final totalPaid = Formatters.formatPrice(paymentViewModel.scheduling.totalPaid);
 
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          SliverPersistentHeader(
-            floating: true,
-            delegate: SliverAppBarDelegate(
-              minHeight: 120,
-              maxHeight: 120,
-              child: Stack(
-                children: [
-                  CustomHeaderContainer(
-                    height: 100,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 28),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
-                          const Expanded(
-                            child: CustomAppBarTitle(
-                              title: 'Pagamento de serviços',
-                              fontSize: 25,
+      body: SafeArea(
+        child: CustomScrollView(
+          slivers: [
+            const SliverFloatingHeader(child: CustomHeader(title: 'Pagamento de Serviços', height: 100)),
+            const SliverToBoxAdapter(child: SizedBox(height: 10)),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Valor total $totalPrice',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
                             ),
+                            textAlign: TextAlign.center,
                           ),
-                          const SizedBox(width: 60)
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Valor total $totalPrice',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black,
-                          ),
-                          textAlign: TextAlign.center,
                         ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      '$needToPay pendente',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: customColor.pending,
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    '$needToPay pendente',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: customColor.pending,
                     ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '$totalPaid pago',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                      color: customColor.money,
+                    const SizedBox(height: 8),
+                    Text(
+                      '$totalPaid pago',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        color: customColor.money,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 28),
-                  Divider(color: themeColor.shadow),
-                  const SizedBox(height: 32),
-                  ListenableBuilder(
-                    listenable: paymentViewModel.valueToPayError,
-                    builder: (context, _) {
-                      return CustomTextField(
-                        label: 'Valor à pagar',
-                        controller: valueToPayController,
-                        focusNode: valueToPayFocus,
-                        errorMessage: paymentViewModel.valueToPayError.value,
-                        isNumeric: true,
-                        inputFormatters: [MoneyTextInputFormatter()],
-                        onChanged: onValueChanged,
-                      );
-                    },
-                  ),
-                ],
+                    const SizedBox(height: 28),
+                    Divider(color: themeColor.shadow),
+                    const SizedBox(height: 32),
+                    ListenableBuilder(
+                      listenable: paymentViewModel.valueToPayError,
+                      builder: (context, _) {
+                        return CustomTextField(
+                          label: 'Valor à pagar',
+                          controller: valueToPayController,
+                          focusNode: valueToPayFocus,
+                          errorMessage: paymentViewModel.valueToPayError.value,
+                          isNumeric: true,
+                          inputFormatters: [MoneyTextInputFormatter()],
+                          onChanged: onValueChanged,
+                        );
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Padding(

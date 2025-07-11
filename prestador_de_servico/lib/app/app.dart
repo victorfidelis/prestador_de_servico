@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:prestador_de_servico/app/services/client/client_service.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/sign_in_viewmodel.dart';
