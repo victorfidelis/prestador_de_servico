@@ -43,11 +43,11 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
     );
     final formatPriceToPay = Formatters.formatPrice(scheduling.totalPriceCalculated);
     Color statusColor = ColorsUtils.getColorFromStatus(context, scheduling.serviceStatus);
-    final finishedSealIcon = getFinishedSealIcon();
-    final othersValues = getOtherValues();
+    final finishedSealIcon = _getFinishedSealIcon();
+    final othersValues = _getOtherValues();
 
     return GestureDetector(
-      onTap: onTap,
+      onTap: _onTap,
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -133,7 +133,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: scheduling.activeServices
-                            .map((e) => serviceItemList(e))
+                            .map((e) => _serviceItemList(e))
                             .toList(),
                       ),
                     ),
@@ -165,7 +165,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
     );
   }
 
-  void onTap() async {
+  void _onTap() async {
     if (widget.isReadOnly) {
       return;
     }
@@ -181,7 +181,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
     }
   }
 
-  Widget serviceItemList(Service service) {
+  Widget _serviceItemList(Service service) {
     final formatPrice = Formatters.formatPrice(service.price);
 
     return Row(
@@ -206,7 +206,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
     );
   }
 
-  Widget getFinishedSealIcon() {
+  Widget _getFinishedSealIcon() {
     Widget finishedSealIcon = Container();
 
     if (scheduling.serviceStatus.isCancelled()) {
@@ -238,7 +238,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
     return finishedSealIcon;
   }
 
-  Widget getOtherValues() {
+  Widget _getOtherValues() {
     final prices = scheduling.services.map((s) => s.price).toList();
     final totalServicesPrice = prices.reduce((s1, s2) => s1 + s2);
     final formatServicesPrice = Formatters.formatPrice(totalServicesPrice);

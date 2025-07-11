@@ -70,13 +70,13 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
           if (didPop) {
             return;
           }
-          Navigator.pop(context, schedulingDetailViewModel.hasChange);
+          _popNavigation();
         },
         child: Scaffold(
           body: SafeArea(
             child: CustomScrollView(
               slivers: [
-                const SliverFloatingHeader(child: CustomHeader(title: 'Agendamento')),
+                SliverFloatingHeader(child: CustomHeader(title: 'Agendamento', overridePop: _popNavigation)),
                 const SliverToBoxAdapter(child: SizedBox(height: 10)),
                 ListenableBuilder(
                   listenable: schedulingDetailViewModel,
@@ -86,7 +86,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         child: Center(child: CustomLoading()),
                       );
                     }
-            
+
                     if (schedulingDetailViewModel.state is SchedulingDetailError) {
                       var error = schedulingDetailViewModel.state as SchedulingDetailError;
                       return SliverFillRemaining(
@@ -95,14 +95,14 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         ),
                       );
                     }
-            
+
                     if (schedulingDetailViewModel.scheduling.serviceStatus.isServicePerform() &&
                         schedulingDetailViewModel.scheduling.review == null) {
                       WidgetsBinding.instance.addPostFrameCallback((_) => _questionOfReview());
                     }
-            
+
                     bool allowsEdit = !schedulingDetailViewModel.scheduling.serviceStatus.isBlockedChangeStatus();
-            
+
                     return SliverToBoxAdapter(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,6 +161,10 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
         ),
       ),
     );
+  }
+
+  void _popNavigation() {
+    Navigator.pop(context, schedulingDetailViewModel.hasChange);
   }
 
   Widget _buildHeader() {

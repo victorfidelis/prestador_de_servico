@@ -6,11 +6,14 @@ class CustomHeader extends StatelessWidget {
   final String title;
   final double height;
   final Widget action;
+  final Function()? overridePop;
+
   const CustomHeader({
     super.key,
     required this.title,
     this.height = 80,
     this.action = const SizedBox(),
+    this.overridePop,
   });
 
   @override
@@ -24,7 +27,11 @@ class CustomHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(width: 60, child: BackNavigation(onTap: () => Navigator.pop(context))),
+          SizedBox(
+              width: 60,
+              child: BackNavigation(
+                onTap: overridePop != null ? overridePop! : () => Navigator.pop(context),
+              )),
           Expanded(
             child: CustomAppBarTitle(title: title),
           ),
