@@ -23,7 +23,6 @@ import 'package:prestador_de_servico/app/services/sync/sync_service_category_ser
 import 'package:prestador_de_servico/app/services/sync/sync_service_day_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/auth/viewmodel/login_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/navigation/viewmodels/navigation_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/wrapper/viewmodel/wrapper_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -54,18 +53,6 @@ final providers = [
         onlineRepository: ServiceDayRepository.createOnline(),
       ),
     ),
-  ),
-  ChangeNotifierProvider<LoginViewModel>(
-    create: (context) {
-      final wrapperViewmModel = context.read<WrapperViewModel>();
-      return LoginViewModel(
-        authService: AuthService(
-          authRepository: AuthRepository.create(),
-          userRepository: UserRepository.create(),
-        ),
-        onLoginSuccessful: wrapperViewmModel.logIn,
-      );
-    },
   ),
   Provider<AuthService>(
     create: (context) => AuthService(

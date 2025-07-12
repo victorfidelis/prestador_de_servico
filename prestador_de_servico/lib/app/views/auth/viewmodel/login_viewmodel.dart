@@ -19,6 +19,13 @@ class LoginViewModel extends ChangeNotifier {
 
   LoginViewModel({required AuthService authService, required this.onLoginSuccessful}) : _authService = authService;
 
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   void _setLoginLoading(bool value) {
     isLoginLoading = value;
     notifyListeners();
