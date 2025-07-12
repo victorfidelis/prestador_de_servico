@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/login_viewmodel.dart';
-import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/sign_in_google_button.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/custom_sign_in_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
@@ -19,12 +18,6 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
-  @override
-  void initState() {
-    context.read<SyncViewModel>().syncData();
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

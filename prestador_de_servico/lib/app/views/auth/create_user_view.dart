@@ -68,7 +68,7 @@ class _CreateUserViewState extends State<CreateUserView> {
                       const Center(
                         child: CustomSecondSignInHeader(title: 'Criar\nConta'),
                       ),
-                      BackNavigation(onTap: backNavigation),
+                      BackNavigation(onTap: _backNavigation),
                     ],
                   ),
                 ),
@@ -162,7 +162,7 @@ class _CreateUserViewState extends State<CreateUserView> {
                                 )
                               : CustomButton(
                                   label: 'Criar',
-                                  onTap: createAccountWithEmailAndPassword,
+                                  onTap: _createAccountWithEmailAndPassword,
                                 ),
                           const SizedBox(height: 20),
                         ],
@@ -178,11 +178,11 @@ class _CreateUserViewState extends State<CreateUserView> {
     );
   }
 
-  void backNavigation() {
+  void _backNavigation() {
     Navigator.pop(context);
   }
 
-  void createAccountWithEmailAndPassword() {
+  void _createAccountWithEmailAndPassword() {
     User user = User(
       name: nameController.text.trim(),
       surname: surnameController.text.trim(),
