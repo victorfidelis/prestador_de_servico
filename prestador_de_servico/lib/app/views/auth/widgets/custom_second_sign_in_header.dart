@@ -27,7 +27,10 @@ class CustomSecondSignInHeader extends StatelessWidget {
               ),
             ),
           ),
-          const BackNavigation(color: Colors.white),
+          const Padding(
+            padding: EdgeInsets.only(left: 10, top: 10),
+            child: BackNavigation(color: Colors.white),
+          ),
         ],
       ),
     );
