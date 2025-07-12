@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/login_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
-import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/sign_in_google_button.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/custom_sign_in_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
@@ -52,19 +51,6 @@ class _LoginViewState extends State<LoginView> {
                       if (signInViewModel.isLoginLoading) {
                         return const Center(
                           child: CustomLoading(),
-                        );
-                      }
-
-                      if (signInViewModel.isLoginSuccessful) {
-                        WidgetsBinding.instance.addPostFrameCallback(
-                          (_) {
-                            CustomNotifications().showSnackBar(
-                              context: context,
-                              message: 'Usuário autenticado!',
-                            );
-
-                            _doMainView();
-                          },
                         );
                       }
 
@@ -142,9 +128,5 @@ class _LoginViewState extends State<LoginView> {
 
   void _doPasswordReset() {
     Navigator.pushNamed(context, '/passwordReset');
-  }
-
-  void _doMainView() {
-    Navigator.pushNamedAndRemoveUntil(context, '/navigation', (Route<dynamic> route) => false);
   }
 }

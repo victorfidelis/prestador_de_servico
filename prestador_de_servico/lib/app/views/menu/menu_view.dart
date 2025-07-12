@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/views/menu/widgets/custom_menu_item.dart';
+import 'package:prestador_de_servico/app/views/wrapper/viewmodel/wrapper_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class MenuView extends StatelessWidget {
   const MenuView({super.key});
@@ -7,7 +9,9 @@ class MenuView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Menu'),),
+      appBar: AppBar(
+        title: const Text('Menu'),
+      ),
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 18),
         child: Column(
@@ -78,6 +82,14 @@ class MenuView extends StatelessWidget {
               onTap: () {
                 Navigator.of(context).pushNamed('/pendingPaymentSchedules');
               },
+            ),
+            Divider(
+              color: Theme.of(context).colorScheme.shadow,
+            ),
+            CustomMenuItem(
+              label: 'Sair',
+              icon: Icons.logout,
+              onTap: context.read<WrapperViewModel>().logOut,
             ),
           ],
         ),

@@ -7,11 +7,16 @@ import 'package:prestador_de_servico/app/views/menu/menu_view.dart';
 import 'package:prestador_de_servico/app/views/navigation/widgets/custom_menu_buttom.dart';
 import 'package:provider/provider.dart';
 
-class NavigationView extends StatelessWidget {
-  final PageController _pageController = PageController(initialPage: 0);
-  
-  NavigationView({super.key});
+class NavigationView extends StatefulWidget {
 
+  const NavigationView({super.key});
+
+  @override
+  State<NavigationView> createState() => _NavigationViewState();
+}
+
+class _NavigationViewState extends State<NavigationView> {
+  final PageController _pageController = PageController(initialPage: 0);
 
   @override
   Widget build(BuildContext context) {

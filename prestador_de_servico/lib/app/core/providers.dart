@@ -25,9 +25,11 @@ import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart
 import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/login_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/navigation/viewmodels/navigation_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/wrapper/viewmodel/wrapper_viewmodel.dart';
 import 'package:provider/provider.dart';
 
 final providers = [
+  ChangeNotifierProvider<WrapperViewModel>(create: (context) => WrapperViewModel()),
   ChangeNotifierProvider<SyncViewModel>(
     create: (context) => SyncViewModel(
       networkService: NetworkService.create(),
@@ -54,12 +56,16 @@ final providers = [
     ),
   ),
   ChangeNotifierProvider<LoginViewModel>(
-    create: (context) => LoginViewModel(
-      authService: AuthService(
-        authRepository: AuthRepository.create(),
-        userRepository: UserRepository.create(),
-      ),
-    ),
+    create: (context) {
+      final wrapperViewmModel = context.read<WrapperViewModel>();
+      return LoginViewModel(
+        authService: AuthService(
+          authRepository: AuthRepository.create(),
+          userRepository: UserRepository.create(),
+        ),
+        onLoginSuccessful: wrapperViewmModel.logIn,
+      );
+    },
   ),
   Provider<AuthService>(
     create: (context) => AuthService(

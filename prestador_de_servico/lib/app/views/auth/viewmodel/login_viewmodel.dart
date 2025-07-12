@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 
 class LoginViewModel extends ChangeNotifier {
   final AuthService _authService;
+  final Function(User user) onLoginSuccessful;
 
   bool isLoginLoading = false;
   bool isLoginSuccessful = false;
@@ -15,11 +17,7 @@ class LoginViewModel extends ChangeNotifier {
   String? emailErrorMessage;
   String? passwordErrorMessage;
 
-  LoginViewModel({required AuthService authService}) : _authService = authService;
-
-  bool get isError {
-    return genericErrorMessage != null || emailErrorMessage != null || passwordErrorMessage != null;
-  }
+  LoginViewModel({required AuthService authService, required this.onLoginSuccessful}) : _authService = authService;
 
   void _setLoginLoading(bool value) {
     isLoginLoading = value;
@@ -35,9 +33,9 @@ class LoginViewModel extends ChangeNotifier {
       notifyListeners();
       return;
     }
-    
+
     _setLoginLoading(true);
-    
+
     final signInEither = await _authService.signInEmailPasswordAndVerifyEmail(
       email: emailController.text,
       password: passwordController.text,
@@ -47,6 +45,8 @@ class LoginViewModel extends ChangeNotifier {
       genericErrorMessage = signInEither.left!.message;
     } else {
       isLoginSuccessful = true;
+      onLoginSuccessful(signInEither.right!);
+      _cleanControllers();
     }
 
     _setLoginLoading(false);
@@ -73,5 +73,10 @@ class LoginViewModel extends ChangeNotifier {
     genericErrorMessage = null;
     emailErrorMessage = null;
     passwordErrorMessage = null;
+  } 
+
+  void _cleanControllers() {
+    emailController.clear();
+    passwordController.clear();
   }
 }

@@ -14,7 +14,7 @@ class App extends StatelessWidget {
       providers: providers,
       child: MaterialApp(
         theme: mainTheme,
-        initialRoute: '/signIn',
+        initialRoute: '/wrapper',
         onGenerateRoute: getRoute,
         locale: const Locale('pt', 'BR'),
         localizationsDelegates: const [

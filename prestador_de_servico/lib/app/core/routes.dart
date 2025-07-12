@@ -23,20 +23,18 @@ import 'package:prestador_de_servico/app/views/service/service_edit_view.dart';
 import 'package:prestador_de_servico/app/views/service/service_view.dart';
 import 'package:prestador_de_servico/app/views/service/show_all_services_view.dart';
 import 'package:prestador_de_servico/app/views/service_day/service_day_view.dart';
+import 'package:prestador_de_servico/app/views/wrapper/wrapper_view.dart';
 import 'package:provider/provider.dart';
 
 Route<dynamic>? getRoute(RouteSettings settings) {
-  if (settings.name == '/signIn') {
-    return _buildRoute(settings, const LoginView());
+  if (settings.name == '/wrapper') {
+    return _buildRoute(settings, const WrapperView());
   }
   if (settings.name == '/createAccount') {
     return _buildRoute(settings, const CreateUserView());
   }
   if (settings.name == '/passwordReset') {
     return _buildRoute(settings, const PasswordResetView());
-  }
-  if (settings.name == '/navigation') {
-    return _buildRoute(settings, NavigationView());
   }
   if (settings.name == '/service') {
     bool isSelectionView = false;
