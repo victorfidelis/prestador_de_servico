@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/create_user_viewmodel.dart';
-import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/views/auth/states/create_user_state.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_sign_in_header.dart';
+import 'package:prestador_de_servico/app/views/auth/widgets/user_created_success.dart';
 import 'package:provider/provider.dart';
 
 class CreateUserView extends StatefulWidget {
@@ -39,12 +37,6 @@ class _CreateUserViewState extends State<CreateUserView> {
   @override
   void dispose() {
     createUserViewModel.dispose();
-    nameController.dispose();
-    surnameController.dispose();
-    phoneController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
-    confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -63,12 +55,11 @@ class _CreateUserViewState extends State<CreateUserView> {
               children: [
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 5,
-                  child: Stack(
+                  child: const Stack(
                     children: [
-                      const Center(
+                      Center(
                         child: CustomSecondSignInHeader(title: 'Criar\nConta'),
                       ),
-                      BackNavigation(onTap: _backNavigation),
                     ],
                   ),
                 ),
@@ -78,40 +69,13 @@ class _CreateUserViewState extends State<CreateUserView> {
                   child: ListenableBuilder(
                     listenable: createUserViewModel,
                     builder: (context, _) {
-                      bool createUserLoading = createUserViewModel.state is LoadingUserCreation;
-
-                      if (createUserViewModel.state is UserCreated) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          Navigator.pop(context);
-                          notifications.showSuccessAlert(
-                            context: context,
-                            title: 'Usuário Cadastrado',
-                            content: 'Faça a confirmação de sua conta através do link enviado para o seu email.',
-                          );
-                        });
+                      if (createUserViewModel.userCreated) {
+                        return const UserCreatedSuccess();
                       }
 
                       Widget genericErrorWidget = const SizedBox(height: 18);
-                      String? nameMessage;
-                      String? surnameMessage;
-                      String? phoneMessage;
-                      String? emailMessage;
-                      String? passwordMessage;
-                      String? confirmPasswordMessage;
-                      String? genericMessage;
-
-                      if (createUserViewModel.state is ErrorUserCreation) {
-                        final errorState = (createUserViewModel.state as ErrorUserCreation);
-                        nameMessage = errorState.nameMessage;
-                        surnameMessage = errorState.surnameMessage;
-                        phoneMessage = errorState.phoneMessage;
-                        emailMessage = errorState.emailMessage;
-                        passwordMessage = errorState.passwordMessage;
-                        confirmPasswordMessage = errorState.confirmPasswordMessage;
-                        genericMessage = errorState.genericMessage;
-                        if (genericMessage != null) {
-                          genericErrorWidget = CustomTextError(message: genericMessage);
-                        }
+                      if (createUserViewModel.genericErrorMessage != null) {
+                        genericErrorWidget = CustomTextError(message: createUserViewModel.genericErrorMessage!);
                       }
 
                       return Column(
@@ -119,50 +83,50 @@ class _CreateUserViewState extends State<CreateUserView> {
                         children: [
                           CustomTextField(
                             label: 'Nome',
-                            controller: nameController,
-                            errorMessage: nameMessage,
+                            controller: createUserViewModel.nameController,
+                            errorMessage: createUserViewModel.nameErrorMessage,
                           ),
                           const SizedBox(height: 18),
                           CustomTextField(
                             label: 'Sobrenome',
-                            controller: surnameController,
-                            errorMessage: surnameMessage,
+                            controller: createUserViewModel.surnameController,
+                            errorMessage: createUserViewModel.surnameErrorMessage,
                           ),
                           const SizedBox(height: 18),
                           CustomTextField(
                             label: 'Telefone',
-                            controller: phoneController,
-                            errorMessage: phoneMessage,
+                            controller: createUserViewModel.phoneController,
+                            errorMessage: createUserViewModel.phoneErrorMessage,
                           ),
                           const SizedBox(height: 18),
                           CustomTextField(
                             label: 'Email',
-                            controller: emailController,
-                            errorMessage: emailMessage,
+                            controller: createUserViewModel.emailController,
+                            errorMessage: createUserViewModel.emailErrorMessage,
                           ),
                           const SizedBox(height: 18),
                           CustomTextField(
                             label: 'Senha',
-                            controller: passwordController,
+                            controller: createUserViewModel.passwordController,
                             isPassword: true,
-                            errorMessage: passwordMessage,
+                            errorMessage: createUserViewModel.passwordErrorMessage,
                           ),
                           const SizedBox(height: 18),
                           CustomTextField(
                             label: 'Confirmação de senha',
-                            controller: confirmPasswordController,
+                            controller: createUserViewModel.confirmPasswordController,
                             isPassword: true,
-                            errorMessage: confirmPasswordMessage,
+                            errorMessage: createUserViewModel.confirmPasswordErrorMessage,
                           ),
                           genericErrorWidget,
                           const SizedBox(height: 32),
-                          createUserLoading
+                          createUserViewModel.isCreateUserLoading
                               ? const Center(
                                   child: CustomLoading(),
                                 )
                               : CustomButton(
                                   label: 'Criar',
-                                  onTap: _createAccountWithEmailAndPassword,
+                                  onTap: createUserViewModel.createUserEmailPassword,
                                 ),
                           const SizedBox(height: 20),
                         ],
@@ -176,22 +140,5 @@ class _CreateUserViewState extends State<CreateUserView> {
         ),
       ),
     );
-  }
-
-  void _backNavigation() {
-    Navigator.pop(context);
-  }
-
-  void _createAccountWithEmailAndPassword() {
-    User user = User(
-      name: nameController.text.trim(),
-      surname: surnameController.text.trim(),
-      phone: phoneController.text.trim(),
-      email: emailController.text.trim().toLowerCase(),
-      password: passwordController.text.trim(),
-      confirmPassword: confirmPasswordController.text.trim(),
-    );
-
-    createUserViewModel.createUserEmailPassword(user: user);
   }
 }

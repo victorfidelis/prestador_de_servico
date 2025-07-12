@@ -48,12 +48,12 @@ class _PasswordResetViewState extends State<PasswordResetView> {
               children: [
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 5,
-                  child: Stack(
+                  child: const Stack(
                     children: [
-                      const Center(
+                      Center(
                         child: CustomSecondSignInHeader(title: 'Recuperação\nde senha'),
                       ),
-                      BackNavigation(onTap: backNavigation),
+                      BackNavigation(),
                     ],
                   ),
                 ),
@@ -76,7 +76,7 @@ class _PasswordResetViewState extends State<PasswordResetView> {
                               const SizedBox(height: 30),
                               CustomButton(
                                 label: 'Efetuar login',
-                                onTap: backNavigation,
+                                onTap: () => Navigator.pop(context)),
                               ),
                             ],
                           );
@@ -113,10 +113,6 @@ class _PasswordResetViewState extends State<PasswordResetView> {
         ),
       ),
     );
-  }
-
-  void backNavigation() {
-    Navigator.pop(context);
   }
 
   void sendPasswordResetEmail() {

@@ -26,7 +26,7 @@ class _CustomHeaderWithSearchState extends State<CustomHeaderWithSearch> {
     return Stack(
       children: [
         Container(
-          padding: const  EdgeInsets.only(bottom: 20),
+          padding: const EdgeInsets.only(bottom: 20),
           height: 84,
           decoration: BoxDecoration(
             color: Theme.of(context).colorScheme.surface,
@@ -37,11 +37,7 @@ class _CustomHeaderWithSearchState extends State<CustomHeaderWithSearch> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
-                  width: 60,
-                  child: BackNavigation(
-                    onTap: () => Navigator.pop(context),
-                  )),
+              const SizedBox(width: 60, child: BackNavigation()),
               Expanded(
                 child: CustomAppBarTitle(title: widget.title),
               ),

@@ -46,7 +46,7 @@ class LoginViewModel extends ChangeNotifier {
     } else {
       isLoginSuccessful = true;
       onLoginSuccessful(signInEither.right!);
-      _cleanControllers();
+      _clearControllers();
     }
 
     _setLoginLoading(false);
@@ -75,7 +75,7 @@ class LoginViewModel extends ChangeNotifier {
     passwordErrorMessage = null;
   } 
 
-  void _cleanControllers() {
+  void _clearControllers() {
     emailController.clear();
     passwordController.clear();
   }

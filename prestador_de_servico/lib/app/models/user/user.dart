@@ -6,8 +6,6 @@ class User {
   final String name;
   final String surname;
   final String phone;
-  final String password;
-  final String confirmPassword;
   final double averageRating;
   final int pendingProviderSchedules;
   final int pendingClientSchedules;
@@ -26,8 +24,6 @@ class User {
     required this.name,
     required this.surname,
     this.phone = '',
-    this.password = '',
-    this.confirmPassword = '',
     this.averageRating = 0,
     this.pendingProviderSchedules = 0,
     this.pendingClientSchedules = 0,
@@ -49,8 +45,6 @@ class User {
     String? name,
     String? surname,
     String? phone,
-    String? password,
-    String? confirmPassword,
     double? averageRating,
     int? pendingProviderSchedules,
     int? pendingClientSchedules,
@@ -69,8 +63,6 @@ class User {
       name: name ?? this.name,
       surname: surname ?? this.surname,
       phone: phone ?? this.phone,
-      password: password ?? this.password,
-      confirmPassword: confirmPassword ?? this.confirmPassword,
       averageRating: averageRating ?? this.averageRating,
       pendingProviderSchedules: pendingProviderSchedules ?? this.pendingProviderSchedules,
       pendingClientSchedules: pendingClientSchedules ?? this.pendingClientSchedules,

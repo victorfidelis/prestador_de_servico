@@ -56,7 +56,8 @@ class AuthService {
   }
 
   Future<Either<Failure, Unit>> createUserEmailPassword({
-    required User user,
+    required User user, 
+    required String password,
   }) async {
     final saveUserEither = await _saveUserData(user: user);
     if (saveUserEither.isLeft) {
@@ -65,7 +66,7 @@ class AuthService {
 
     final createUserEither = await authRepository.createUserEmailPassword(
       email: user.email,
-      password: user.password,
+      password: password,
     );
     if (createUserEither.isLeft) {
       return Either.left(createUserEither.left);
