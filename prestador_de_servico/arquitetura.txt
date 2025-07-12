@@ -28,10 +28,10 @@ lib
             widgets
             ...
         views
-            service
+            navigation
                 viewmodel
-                state
-                service_view.dart
+                    navigation_viewmodel.dart
+                navigation_view.dart
             auth
             scheduling
             ...

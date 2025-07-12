@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/views/navigation/states/navigation_state.dart';
+import 'package:prestador_de_servico/app/views/navigation/viewmodels/navigation_page.dart';
 
-class NavigationViewModel extends ChangeNotifier{
+class NavigationViewModel extends ChangeNotifier {
+  final PageController pageController = PageController(initialPage: NavigationPage.home);
+  int currentPage = NavigationPage.home;
 
-  NavigationState _state = HomeNavigationPage();
-  NavigationState get state => _state;
-  void _emitState({required NavigationState currentState}) {
-    _state = currentState;
-    notifyListeners();
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
   }
 
-  void changePage({required NavigationState navigationState}) {
-    _emitState(currentState: navigationState);
+  void changePage(int page) {
+    currentPage = page;
+    pageController.jumpToPage(currentPage);
+    notifyListeners();
   }
 }
