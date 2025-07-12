@@ -48,12 +48,12 @@ class _PasswordResetViewState extends State<PasswordResetView> {
               children: [
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 5,
-                  child: const Stack(
+                  child: Stack(
                     children: [
                       Center(
-                        child: CustomSecondSignInHeader(title: 'Recuperação\nde senha'),
+                        child: const CustomSecondSignInHeader(title: 'Recuperação\nde senha'),
                       ),
-                      BackNavigation(),
+                      const BackNavigation(),
                     ],
                   ),
                 ),
@@ -76,7 +76,7 @@ class _PasswordResetViewState extends State<PasswordResetView> {
                               const SizedBox(height: 30),
                               CustomButton(
                                 label: 'Efetuar login',
-                                onTap: () => Navigator.pop(context)),
+                                onTap: () => Navigator.pop(context),
                               ),
                             ],
                           );

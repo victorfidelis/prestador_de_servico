@@ -24,6 +24,17 @@ class CreateUserViewModel extends ChangeNotifier {
   String? genericErrorMessage;
 
   CreateUserViewModel({required this.authService});
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    surnameController.dispose();
+    phoneController.dispose();
+    emailController.dispose();
+    passwordController.dispose();
+    confirmPasswordController.dispose();
+    super.dispose();
+  }
   
   void _setCreateUserLoading(bool value) {
     isCreateUserLoading = value;

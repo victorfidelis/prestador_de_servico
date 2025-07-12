@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class BackNavigation extends StatefulWidget {
   final Function()? overridePop;
+  final Color color;
 
   const BackNavigation({
     super.key,
     this.overridePop,
+    this.color = Colors.black,
   });
 
   @override
@@ -29,10 +31,11 @@ class _BackNavigationState extends State<BackNavigation> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onPop,
-      child: const Padding(
-        padding: EdgeInsets.all(10),
+      child: Padding(
+        padding: const EdgeInsets.all(10),
         child: Icon(
           Icons.arrow_back_ios,
+          color: widget.color,
         ),
       ),
     );

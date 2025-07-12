@@ -17,9 +17,19 @@ class UserCreatedSuccess extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           const Text(
-            'Usuário cadastrado com sucesso!',
+            'Usuário criado com sucesso!',
             style: TextStyle(
               fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.black87,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Agora basta acessar seu email e confirmar sua conta antes do primeiro login',
+            style: TextStyle(
+              fontSize: 16,
               fontWeight: FontWeight.w600,
               color: Colors.black87,
             ),
