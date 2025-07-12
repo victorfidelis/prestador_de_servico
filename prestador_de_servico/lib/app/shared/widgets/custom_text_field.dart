@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final String label;
   final TextEditingController controller;
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
   final bool isPassword;
   final bool isEmail;
   final bool isNumeric;
@@ -13,11 +13,11 @@ class CustomTextField extends StatelessWidget {
   final Function(String)? onChanged;
   final int maxLines;
 
-  CustomTextField({
+  const CustomTextField({
     super.key,
     required this.label,
     required this.controller,
-    required this.focusNode,
+    this.focusNode,
     this.isPassword = false,
     this.isEmail = false,
     this.isNumeric = false,
@@ -27,14 +27,31 @@ class CustomTextField extends StatelessWidget {
     this.maxLines = 1,
   });
 
-  final ValueNotifier<bool> obscureText = ValueNotifier(true);
+  @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  final ValueNotifier<bool> _obscureText = ValueNotifier(true);
+  late final FocusNode _focusNode;
+
+  @override
+  void initState() {
+    if (widget.focusNode != null) {
+      _focusNode = widget.focusNode!;
+    } else {
+      _focusNode = FocusNode();
+    }
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final TextInputType textInputType;
-    if (isNumeric) {
+    if (widget.isNumeric) {
       textInputType = TextInputType.number;
-    } else if (isEmail) {
+    } else if (widget.isEmail) {
       textInputType = TextInputType.emailAddress;
     } else {
       textInputType = TextInputType.text;
@@ -42,7 +59,7 @@ class CustomTextField extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        focusNode.requestFocus();
+        _focusNode.requestFocus();
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -63,17 +80,17 @@ class CustomTextField extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              label,
+              widget.label,
               style: const TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 14,
               ),
             ),
             ListenableBuilder(
-              listenable: obscureText,
+              listenable: _obscureText,
               builder: (context, _) {
                 Widget suffixIcon = Container();
-                if (isPassword && obscureText.value) {
+                if (widget.isPassword && _obscureText.value) {
                   suffixIcon = GestureDetector(
                     onTap: _onChangeObscureText,
                     child: const Icon(
@@ -82,7 +99,7 @@ class CustomTextField extends StatelessWidget {
                       size: 22,
                     ),
                   );
-                } else if (isPassword) {
+                } else if (widget.isPassword) {
                   suffixIcon = GestureDetector(
                     onTap: _onChangeObscureText,
                     child: const Icon(
@@ -98,23 +115,22 @@ class CustomTextField extends StatelessWidget {
                   children: [
                     Expanded(
                       child: TextField(
-                        controller: controller,
-                        focusNode: focusNode,
+                        controller: widget.controller,
+                        focusNode: _focusNode,
                         decoration: InputDecoration(
                           border: InputBorder.none,
                           isDense: true,
-                          contentPadding:
-                              const EdgeInsets.symmetric(vertical: 6),
-                          errorText: errorMessage,
+                          contentPadding: const EdgeInsets.symmetric(vertical: 6),
+                          errorText: widget.errorMessage,
                         ),
                         style: const TextStyle(
                           fontSize: 16,
                         ),
-                        obscureText: isPassword && obscureText.value,
+                        obscureText: widget.isPassword && _obscureText.value,
                         keyboardType: textInputType,
-                        inputFormatters: inputFormatters,
-                        onChanged: onChanged,
-                        maxLines: maxLines,
+                        inputFormatters: widget.inputFormatters,
+                        onChanged: widget.onChanged,
+                        maxLines: widget.maxLines,
                       ),
                     ),
                     Padding(
@@ -132,6 +148,6 @@ class CustomTextField extends StatelessWidget {
   }
 
   void _onChangeObscureText() {
-    obscureText.value = !obscureText.value;
+    _obscureText.value = !_obscureText.value;
   }
 }

@@ -27,7 +27,6 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
   final notifications = CustomNotifications();
 
   final valueToPayController = TextEditingController();
-  final valueToPayFocus = FocusNode();
 
   @override
   void initState() {
@@ -42,7 +41,6 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
   void dispose() {
     paymentViewModel.dispose();
     valueToPayController.dispose();
-    valueToPayFocus.dispose();
     super.dispose();
   }
 
@@ -109,7 +107,6 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
                         return CustomTextField(
                           label: 'Valor à pagar',
                           controller: valueToPayController,
-                          focusNode: valueToPayFocus,
                           errorMessage: paymentViewModel.valueToPayError.value,
                           isNumeric: true,
                           inputFormatters: [MoneyTextInputFormatter()],

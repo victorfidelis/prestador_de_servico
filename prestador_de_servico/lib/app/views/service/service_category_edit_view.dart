@@ -23,7 +23,6 @@ class ServiceCategoryEditView extends StatefulWidget {
 class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
   late final ServiceCategoryEditViewModel serviceCategoryEditViewModel;
   final TextEditingController nameController = TextEditingController();
-  final FocusNode nameFocus = FocusNode();
   late bool isUpdate;
   ServiceCategory? serviceCategory;
 
@@ -46,7 +45,6 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
   void dispose() {
     serviceCategoryEditViewModel.dispose();
     nameController.dispose();
-    nameFocus.dispose();
     super.dispose();
   }
 
@@ -109,7 +107,6 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
                               CustomTextField(
                                 label: 'Nome',
                                 controller: nameController,
-                                focusNode: nameFocus,
                                 errorMessage: nameErrorMessage,
                               ),
                             ],

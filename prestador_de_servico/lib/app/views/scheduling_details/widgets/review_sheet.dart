@@ -21,7 +21,6 @@ class ReviewSheet extends StatefulWidget {
 class _ReviewSheetState extends State<ReviewSheet> {
   late int review;
   final detailsController = TextEditingController();
-  final detailsFocus = FocusNode();
 
   @override
   void initState() {
@@ -33,7 +32,6 @@ class _ReviewSheetState extends State<ReviewSheet> {
   @override
   void dispose() {
     detailsController.dispose();
-    detailsFocus.dispose();
     super.dispose();
   }
 
@@ -62,7 +60,6 @@ class _ReviewSheetState extends State<ReviewSheet> {
           CustomTextField(
             label: 'Detalhes e observações (opcional)',
             controller: detailsController,
-            focusNode: detailsFocus,
             maxLines: 7,
           ),
           const Expanded(child: SizedBox()),

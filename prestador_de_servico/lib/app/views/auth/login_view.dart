@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/views/auth/viewmodel/sign_in_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/login_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/auth/states/sign_in_state.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/sign_in_google_button.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/custom_sign_in_header.dart';
@@ -13,22 +12,14 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:provider/provider.dart';
 
-class SignInView extends StatefulWidget {
-  const SignInView({super.key});
+class LoginView extends StatefulWidget {
+  const LoginView({super.key});
 
   @override
-  State<SignInView> createState() => _SignInViewState();
+  State<LoginView> createState() => _LoginViewState();
 }
 
-class _SignInViewState extends State<SignInView> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-
-  final FocusNode _focusNodeEmail = FocusNode();
-  final FocusNode _focusNodePassword = FocusNode();
-
-  final CustomNotifications _notifications = CustomNotifications();
-
+class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     context.read<SyncViewModel>().syncData();
@@ -56,37 +47,30 @@ class _SignInViewState extends State<SignInView> {
                 Container(
                   height: 700,
                   padding: const EdgeInsets.symmetric(horizontal: 38),
-                  child: Consumer<SignInViewModel>(
+                  child: Consumer<LoginViewModel>(
                     builder: (context, signInViewModel, _) {
-                      if (signInViewModel.state is LoadingSignIn) {
+                      if (signInViewModel.isLoginLoading) {
                         return const Center(
                           child: CustomLoading(),
                         );
                       }
 
-                      if (signInViewModel.state is SignInSuccess) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _notifications.showSnackBar(
-                            context: context,
-                            message: 'Usuário autenticado!',
-                          );
+                      if (signInViewModel.isLoginSuccessful) {
+                        WidgetsBinding.instance.addPostFrameCallback(
+                          (_) {
+                            CustomNotifications().showSnackBar(
+                              context: context,
+                              message: 'Usuário autenticado!',
+                            );
 
-                          doMainView();
-                        });
+                            _doMainView();
+                          },
+                        );
                       }
 
                       Widget genericErrorWidget = const SizedBox(height: 18);
-                      String? emailMessage;
-                      String? passwordMessage;
-                      String? genericMessage;
-
-                      if (signInViewModel.state is SignInError) {
-                        emailMessage = (signInViewModel.state as SignInError).emailMessage;
-                        passwordMessage = (signInViewModel.state as SignInError).passwordMessage;
-                        genericMessage = (signInViewModel.state as SignInError).genericMessage;
-                        if (genericMessage != null) {
-                          genericErrorWidget = CustomTextError(message: genericMessage);
-                        }
+                      if (signInViewModel.genericErrorMessage != null) {
+                        genericErrorWidget = CustomTextError(message: signInViewModel.genericErrorMessage!);
                       }
 
                       return Column(
@@ -94,17 +78,15 @@ class _SignInViewState extends State<SignInView> {
                         children: [
                           CustomTextField(
                             label: 'Email',
-                            controller: _emailController,
-                            focusNode: _focusNodeEmail,
-                            errorMessage: emailMessage,
+                            controller: signInViewModel.emailController,
+                            errorMessage: signInViewModel.emailErrorMessage,
                           ),
                           const SizedBox(height: 18),
                           CustomTextField(
                             label: 'Senha',
-                            controller: _passwordController,
-                            focusNode: _focusNodePassword,
+                            controller: signInViewModel.passwordController,
                             isPassword: true,
-                            errorMessage: passwordMessage,
+                            errorMessage: signInViewModel.passwordErrorMessage,
                           ),
                           genericErrorWidget,
                           Row(
@@ -112,7 +94,7 @@ class _SignInViewState extends State<SignInView> {
                               Expanded(child: Container()),
                               CustomLink(
                                 label: 'Esqueci a senha',
-                                onTap: doPasswordReset,
+                                onTap: _doPasswordReset,
                                 undeline: true,
                               ),
                             ],
@@ -120,7 +102,7 @@ class _SignInViewState extends State<SignInView> {
                           const SizedBox(height: 32),
                           CustomButton(
                             label: 'Logar',
-                            onTap: signInEmailPassword,
+                            onTap: _signInEmailPassword,
                           ),
                           const SizedBox(height: 20),
                           const Text(
@@ -132,7 +114,7 @@ class _SignInViewState extends State<SignInView> {
                           const SizedBox(height: 20),
                           SignInGoogleButton(onTap: () {}),
                           const SizedBox(height: 40),
-                          RegisterLink(onTap: doCreateAccount),
+                          RegisterLink(onTap: _doCreateAccount),
                         ],
                       );
                     },
@@ -146,22 +128,23 @@ class _SignInViewState extends State<SignInView> {
     );
   }
 
-  void signInEmailPassword() {
-    context.read<SignInViewModel>().signInEmailPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim(),
-        );
+  void _signInEmailPassword() {
+    final loginViewModel = context.read<LoginViewModel>();
+    loginViewModel.signInEmailPassword(
+      email: loginViewModel.emailController.text.trim(),
+      password: loginViewModel.passwordController.text.trim(),
+    );
   }
 
-  void doCreateAccount() {
+  void _doCreateAccount() {
     Navigator.pushNamed(context, '/createAccount');
   }
 
-  void doPasswordReset() {
+  void _doPasswordReset() {
     Navigator.pushNamed(context, '/passwordReset');
   }
 
-  void doMainView() {
+  void _doMainView() {
     Navigator.pushNamedAndRemoveUntil(context, '/navigation', (Route<dynamic> route) => false);
   }
 }

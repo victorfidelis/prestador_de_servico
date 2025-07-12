@@ -23,7 +23,7 @@ import 'package:prestador_de_servico/app/services/sync/sync_service_category_ser
 import 'package:prestador_de_servico/app/services/sync/sync_service_day_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/sync/sync_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/auth/viewmodel/sign_in_viewmodel.dart';
+import 'package:prestador_de_servico/app/views/auth/viewmodel/login_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/navigation/viewmodels/navigation_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -53,8 +53,8 @@ final providers = [
       ),
     ),
   ),
-  ChangeNotifierProvider<SignInViewModel>(
-    create: (context) => SignInViewModel(
+  ChangeNotifierProvider<LoginViewModel>(
+    create: (context) => LoginViewModel(
       authService: AuthService(
         authRepository: AuthRepository.create(),
         userRepository: UserRepository.create(),

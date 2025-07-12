@@ -44,11 +44,6 @@ class _ServiceEditViewState extends State<ServiceEditView> {
   String? imageUrl;
   File? imageFile;
 
-  final FocusNode nameFocus = FocusNode();
-  final FocusNode priceFocus = FocusNode();
-  final FocusNode hoursFocus = FocusNode();
-  final FocusNode minutesFocus = FocusNode();
-
   late bool isUpdate;
 
   late ServiceCategory serviceCategory;
@@ -79,10 +74,6 @@ class _ServiceEditViewState extends State<ServiceEditView> {
     priceController.dispose();
     hoursController.dispose();
     minutesController.dispose();
-    nameFocus.dispose();
-    priceFocus.dispose();
-    hoursFocus.dispose();
-    minutesFocus.dispose();
     super.dispose();
   }
 
@@ -164,14 +155,12 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                               CustomTextField(
                                 label: 'Nome',
                                 controller: nameController,
-                                focusNode: nameFocus,
                                 errorMessage: nameErrorMessage,
                               ),
                               const SizedBox(height: 20),
                               CustomTextField(
                                 label: 'Valor',
                                 controller: priceController,
-                                focusNode: priceFocus,
                                 errorMessage: priceErrorMessage,
                                 isNumeric: true,
                                 inputFormatters: [MoneyTextInputFormatter()],
@@ -183,7 +172,6 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                                     child: CustomTextField(
                                       label: 'Horas',
                                       controller: hoursController,
-                                      focusNode: hoursFocus,
                                       isNumeric: true,
                                       inputFormatters: [HoursTextInputFormatter()],
                                     ),
@@ -193,7 +181,6 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                                     child: CustomTextField(
                                       label: 'Minutos',
                                       controller: minutesController,
-                                      focusNode: minutesFocus,
                                       isNumeric: true,
                                       inputFormatters: [MinutesTextInputFormatter()],
                                     ),

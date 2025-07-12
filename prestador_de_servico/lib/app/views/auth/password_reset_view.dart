@@ -20,8 +20,6 @@ class _PasswordResetViewState extends State<PasswordResetView> {
 
   final TextEditingController emailController = TextEditingController();
 
-  final FocusNode focusNodeEmail = FocusNode();
-
   @override
   void initState() {
     passwordResetViewModel = PasswordResetViewModel(authService: context.read<AuthService>());
@@ -32,7 +30,6 @@ class _PasswordResetViewState extends State<PasswordResetView> {
   void dispose() {
     passwordResetViewModel.dispose();
     emailController.dispose();
-    focusNodeEmail.dispose();
     super.dispose();
   }
 
@@ -69,8 +66,7 @@ class _PasswordResetViewState extends State<PasswordResetView> {
                         String? emailMessage;
 
                         if (passwordResetViewModel.state is ErrorPasswordResetEmail) {
-                          emailMessage =
-                              (passwordResetViewModel.state as ErrorPasswordResetEmail).message;
+                          emailMessage = (passwordResetViewModel.state as ErrorPasswordResetEmail).message;
                         } else if (passwordResetViewModel.state is PasswordResetEmailSentSuccess) {
                           return Column(
                             mainAxisSize: MainAxisSize.min,
@@ -99,7 +95,6 @@ class _PasswordResetViewState extends State<PasswordResetView> {
                               CustomTextField(
                                 label: 'Email',
                                 controller: emailController,
-                                focusNode: focusNodeEmail,
                                 errorMessage: emailMessage,
                               ),
                               const SizedBox(height: 30),

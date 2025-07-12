@@ -5,7 +5,7 @@ import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
-import 'package:prestador_de_servico/app/views/auth/sign_in_view.dart';
+import 'package:prestador_de_servico/app/views/auth/login_view.dart';
 import 'package:prestador_de_servico/app/views/client/client_view.dart';
 import 'package:prestador_de_servico/app/views/navigation/navigation_view.dart';
 import 'package:prestador_de_servico/app/views/payment/payment_view.dart';
@@ -27,7 +27,7 @@ import 'package:provider/provider.dart';
 
 Route<dynamic>? getRoute(RouteSettings settings) {
   if (settings.name == '/signIn') {
-    return _buildRoute(settings, const SignInView());
+    return _buildRoute(settings, const LoginView());
   }
   if (settings.name == '/createAccount') {
     return _buildRoute(settings, const CreateUserView());
