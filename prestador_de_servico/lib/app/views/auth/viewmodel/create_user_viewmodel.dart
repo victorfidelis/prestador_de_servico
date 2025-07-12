@@ -5,6 +5,7 @@ import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.d
 
 class CreateUserViewModel extends ChangeNotifier {
   final AuthService authService;
+
   bool isCreateUserLoading = false;
   bool userCreated = false;
 
@@ -42,7 +43,7 @@ class CreateUserViewModel extends ChangeNotifier {
   }
 
   Future<void> createUserEmailPassword() async {
-    _clearError();
+    _clearErrors();
     if (!_validateCreateUserEmailPassword()) {
       notifyListeners();
       return;
@@ -65,7 +66,7 @@ class CreateUserViewModel extends ChangeNotifier {
       userCreated = true;
     }
 
-    notifyListeners();
+    _setCreateUserLoading(false);
   }
 
   bool _validateCreateUserEmailPassword() {
@@ -106,7 +107,7 @@ class CreateUserViewModel extends ChangeNotifier {
     return isValid;
   } 
 
-  void _clearError() {
+  void _clearErrors() {
     nameErrorMessage = null;
     surnameErrorMessage = null;
     emailErrorMessage = null;

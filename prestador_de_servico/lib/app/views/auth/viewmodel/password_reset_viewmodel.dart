@@ -1,33 +1,66 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/views/auth/states/password_reset_state.dart';
 
 class PasswordResetViewModel extends ChangeNotifier {
   final AuthService authService;
 
-  PasswordResetState _state = WaitingUserSentEmail();
-  PasswordResetState get state => _state;
-  void _emitState(PasswordResetState currentState) {
-    _state = currentState;
-    notifyListeners();
-  }
+  bool isEmailSentLoading = false;
+  bool emailSentSuccess = false;
+
+  final TextEditingController emailController = TextEditingController();
+
+  String? emailErrorMessage;
+  String? genericErrorMessage;
 
   PasswordResetViewModel({required this.authService});
 
-  void init() {
-    _emitState(WaitingUserSentEmail());
+  @override
+  void dispose() {
+    emailController.dispose();
+    super.dispose();
   }
 
-  Future<void> sendPasswordResetEmail({required String email}) async {
-    _emitState(LoadingSentEmail());
+  void _setEmailSentLoading(bool value) {
+    isEmailSentLoading = value;
+    notifyListeners();
+  }
 
-    final passwordResetEither =
-        await authService.sendPasswordResetEmail(email: email);
+  Future<void> sendPasswordResetEmail() async {
+    _clearErrors();
+    if (!_validadeSendLink()) {
+      notifyListeners();
+      return;
+    }
 
-    passwordResetEither.fold(
-      (error) => _emitState(ErrorPasswordResetEmail(message: error.message)),
-      (value) => _emitState(PasswordResetEmailSentSuccess()),
-    );
+    _setEmailSentLoading(true);
+
+    final passwordResetEither = await authService.sendPasswordResetEmail(email: emailController.text);
+
+    if (passwordResetEither.isLeft) {
+      genericErrorMessage = passwordResetEither.left!.message;
+    } else {
+      emailSentSuccess = true;
+    }
+
+    _setEmailSentLoading(false);
+  }
+
+  bool _validadeSendLink() {
+    bool isValid = true;
+
+    emailController.text = emailController.text.trim();
+
+    if (emailController.text.isEmpty) {
+      emailErrorMessage = 'Necessário informar o email';
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  void _clearErrors() {
+    emailErrorMessage = null;
+    genericErrorMessage = null;
   }
 }

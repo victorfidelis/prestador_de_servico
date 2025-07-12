@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/auth/auth_service.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/views/auth/viewmodel/password_reset_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/back_navigation.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/views/auth/widgets/custom_second_sign_in_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/views/auth/states/password_reset_state.dart';
+import 'package:prestador_de_servico/app/views/auth/widgets/password_reset_success.dart';
 import 'package:provider/provider.dart';
 
 class PasswordResetView extends StatefulWidget {
@@ -18,8 +19,6 @@ class PasswordResetView extends StatefulWidget {
 class _PasswordResetViewState extends State<PasswordResetView> {
   late final PasswordResetViewModel passwordResetViewModel;
 
-  final TextEditingController emailController = TextEditingController();
-
   @override
   void initState() {
     passwordResetViewModel = PasswordResetViewModel(authService: context.read<AuthService>());
@@ -29,7 +28,6 @@ class _PasswordResetViewState extends State<PasswordResetView> {
   @override
   void dispose() {
     passwordResetViewModel.dispose();
-    emailController.dispose();
     super.dispose();
   }
 
@@ -48,12 +46,12 @@ class _PasswordResetViewState extends State<PasswordResetView> {
               children: [
                 SizedBox(
                   height: MediaQuery.of(context).size.height / 5,
-                  child: Stack(
+                  child: const Stack(
                     children: [
                       Center(
-                        child: const CustomSecondSignInHeader(title: 'Recuperação\nde senha'),
+                        child: CustomSecondSignInHeader(title: 'Recuperação\nde senha'),
                       ),
-                      const BackNavigation(),
+                      BackNavigation(),
                     ],
                   ),
                 ),
@@ -61,63 +59,45 @@ class _PasswordResetViewState extends State<PasswordResetView> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 38),
                   child: ListenableBuilder(
-                      listenable: passwordResetViewModel,
-                      builder: (context, _) {
-                        String? emailMessage;
+                    listenable: passwordResetViewModel,
+                    builder: (context, _) {
+                      if (passwordResetViewModel.emailSentSuccess) {
+                        return const PasswordResetSuccess();
+                      }
 
-                        if (passwordResetViewModel.state is ErrorPasswordResetEmail) {
-                          emailMessage = (passwordResetViewModel.state as ErrorPasswordResetEmail).message;
-                        } else if (passwordResetViewModel.state is PasswordResetEmailSentSuccess) {
-                          return Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(height: 100),
-                              const Text('Email para redefinição de senha enviado!'),
-                              const SizedBox(height: 30),
-                              CustomButton(
-                                label: 'Efetuar login',
-                                onTap: () => Navigator.pop(context),
-                              ),
-                            ],
-                          );
-                        }
-
-                        return Center(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(height: 100),
-                              const Text(
-                                'Digite seu e-mail e faça o envio do link de recuperação de senha',
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 30),
-                              CustomTextField(
-                                label: 'Email',
-                                controller: emailController,
-                                errorMessage: emailMessage,
-                              ),
-                              const SizedBox(height: 30),
-                              CustomButton(
-                                label: 'Enviar Link',
-                                onTap: sendPasswordResetEmail,
-                              ),
-                            ],
-                          ),
-                        );
-                      }),
+                      return Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(height: 100),
+                            const Text(
+                              'Digite seu e-mail e faça o envio do link de recuperação de senha',
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 30),
+                            CustomTextField(
+                              label: 'Email',
+                              controller: passwordResetViewModel.emailController,
+                              errorMessage: passwordResetViewModel.emailErrorMessage,
+                            ),
+                            const SizedBox(height: 30),
+                            passwordResetViewModel.isEmailSentLoading
+                                ? const Center(child: CustomLoading())
+                                : CustomButton(
+                                    label: 'Enviar Link',
+                                    onTap: passwordResetViewModel.sendPasswordResetEmail,
+                                  ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),
           ],
         ),
       ),
-    );
-  }
-
-  void sendPasswordResetEmail() {
-    passwordResetViewModel.sendPasswordResetEmail(
-      email: emailController.text.trim().toLowerCase(),
     );
   }
 }
