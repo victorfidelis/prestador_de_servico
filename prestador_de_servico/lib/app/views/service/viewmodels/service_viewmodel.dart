@@ -14,9 +14,11 @@ class ServiceViewModel extends ChangeNotifier {
   final ServicesByCategoryService servicesByCategoryService;
 
   bool serviceLoading = false;
+  bool serviceFiltered = false;
 
   List<ServicesByCategory> servicesByCategories = [];
   List<ServicesByCategory> servicesByCategoriesFiltered = [];
+  final scrollController = ScrollController();
 
   String? serviceErrorMessage;
 
@@ -26,11 +28,21 @@ class ServiceViewModel extends ChangeNotifier {
     required this.servicesByCategoryService,
   });
 
-  bool get serviceFiltered => servicesByCategoriesFiltered.isNotEmpty;
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
+  }
+
   bool get hasServiceError => serviceErrorMessage != null;
 
   void _setServiceLoading(bool value) {
     serviceLoading = value;
+    notifyListeners();
+  }
+
+  void _setServiceFiltered(bool value) {
+    serviceFiltered = value;
     notifyListeners();
   }
 
@@ -50,7 +62,7 @@ class ServiceViewModel extends ChangeNotifier {
   void filter({required String textFilter}) {
     if (textFilter.trim().isEmpty) {
       servicesByCategoriesFiltered = [];
-      notifyListeners();
+      _setServiceFiltered(false);
       return;
     }
 
@@ -64,10 +76,33 @@ class ServiceViewModel extends ChangeNotifier {
         )
         .toList();
 
-    notifyListeners();
+    _setServiceFiltered(true);
+  }
+
+  void addServiceByCategory({required ServicesByCategory serviceByCategory}) async {
+    servicesByCategories.add(serviceByCategory);
+    if (serviceFiltered) {
+      servicesByCategoriesFiltered.add(serviceByCategory);
+    }
+  }
+
+  void editServiceCategory({required ServiceCategory serviceCategory}) {
+    final index = servicesByCategories.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
+    servicesByCategories[index].serviceCategory = serviceCategory;
+
+    if (serviceFiltered) {
+      final indexOfFiltered =
+          servicesByCategoriesFiltered.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
+      servicesByCategoriesFiltered[indexOfFiltered].serviceCategory = serviceCategory;
+    }
   }
 
   Future<void> deleteCategory({required ServiceCategory serviceCategory}) async {
+    servicesByCategories.removeWhere((s) => s.serviceCategory.id == serviceCategory.id);
+    if (serviceFiltered) {
+      servicesByCategoriesFiltered.removeWhere((s) => s.serviceCategory.id == serviceCategory.id);
+    }
+
     final deleteEither = await serviceCategoryService.delete(serviceCategory: serviceCategory);
     if (deleteEither.isRight) {
       return;
