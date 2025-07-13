@@ -163,4 +163,9 @@ class FirebaseServiceCategoryRepository implements ServiceCategoryRepository {
   Future<Either<Failure, bool>> existsById({required String id}) {
     throw UnimplementedError();
   }
+  
+  @override
+  Future<Either<Failure, List<ServiceCategory>>> getAllWithServices() {
+    throw UnimplementedError();
+  }
 }

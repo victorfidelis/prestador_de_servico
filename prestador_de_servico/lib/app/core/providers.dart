@@ -4,7 +4,6 @@ import 'package:prestador_de_servico/app/repositories/payment/payment_repository
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
 import 'package:prestador_de_servico/app/repositories/service/service_category/service_category_repository.dart';
-import 'package:prestador_de_servico/app/repositories/service/services_by_category/services_by_category_repository.dart';
 import 'package:prestador_de_servico/app/repositories/service_day/service_day_repository.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
@@ -16,7 +15,6 @@ import 'package:prestador_de_servico/app/services/payments/payment_service.dart'
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
-import 'package:prestador_de_servico/app/services/service/services_by_category_service.dart';
 import 'package:prestador_de_servico/app/services/service_day/service_day_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_payment_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_category_service.dart';
@@ -70,11 +68,6 @@ final providers = [
       offlineRepository: ServiceRepository.createOffline(),
       onlineRepository: ServiceRepository.createOnline(),
       imageRepository: ImageRepository.create(),
-    ),
-  ),
-  Provider<ServicesByCategoryService>(
-    create: (context) => ServicesByCategoryService(
-      offlineRepository: ServicesByCategoryRepository.createOffline(),
     ),
   ),
   Provider<OfflineImageService>(create: (context) => OfflineImageService.create()),

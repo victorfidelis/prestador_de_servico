@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/animated_collections_helpers/animated_list_helper.dart';
 import 'package:prestador_de_servico/app/shared/widgets/animated_horizontal_list.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
@@ -9,7 +8,7 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_card.dart';
 
 class ServiceCategoryCard extends StatefulWidget {
-  final ServicesByCategory servicesByCategory;
+  final ServiceCategory serviceCategory;
   final Function({required ServiceCategory serviceCategory, required int index}) onRemoveCategory;
   final Function({required Service service}) onRemoveService;
   final Function({required ServiceCategory serviceCategory}) editServiceCategory;
@@ -21,7 +20,7 @@ class ServiceCategoryCard extends StatefulWidget {
 
   const ServiceCategoryCard({
     super.key,
-    required this.servicesByCategory,
+    required this.serviceCategory,
     required this.onRemoveCategory,
     required this.onRemoveService,
     required this.editServiceCategory,
@@ -37,7 +36,7 @@ class ServiceCategoryCard extends StatefulWidget {
 }
 
 class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerProviderStateMixin {
-  late ServicesByCategory servicesByCategory;
+  late ServiceCategory serviceCategory;
   late final AnimationController controller = AnimationController(
     duration: const Duration(milliseconds: 500),
     vsync: this,
@@ -51,7 +50,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   @override
   void initState() {
-    servicesByCategory = widget.servicesByCategory;
+    serviceCategory = widget.serviceCategory;
     super.initState();
   }
 
@@ -64,7 +63,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   @override
   Widget build(BuildContext context) {
-    final hasService = servicesByCategory.services.isNotEmpty;
+    final hasService = serviceCategory.services.isNotEmpty;
 
     return SizeTransition(
       sizeFactor: widget.animation,
@@ -84,7 +83,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                         return Opacity(
                           opacity: controller.value,
                           child: Text(
-                            servicesByCategory.serviceCategory.name,
+                            serviceCategory.name,
                             style: const TextStyle(fontSize: 18),
                           ),
                         );
@@ -95,8 +94,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       ? const SizedBox()
                       : IconButton(
                           onPressed: () {
-                            widget.onRemoveCategory(
-                                serviceCategory: servicesByCategory.serviceCategory, index: widget.index);
+                            widget.onRemoveCategory(serviceCategory: serviceCategory, index: widget.index);
                           },
                           icon: Icon(
                             Icons.delete,
@@ -129,8 +127,8 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                     ),
                   ),
             AnimatedHorizontalList<Service>(
-              key: ValueKey(servicesByCategory.serviceCategory.id),
-              initialItems: servicesByCategory.services,
+              key: ValueKey(serviceCategory.id),
+              initialItems: serviceCategory.services,
               scrollController: _scrollController,
               itemBuilder: (context, service, index, animation) {
                 return ServiceCard(
@@ -140,7 +138,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                       widget.onSelectedService(service);
                     } else {
                       _onEditService(
-                        serviceCategory: servicesByCategory.serviceCategory,
+                        serviceCategory: serviceCategory,
                         service: service,
                       );
                     }
@@ -173,7 +171,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
                             child: CustomLink(
                           label: 'Adicionar novo',
                           onTap: () {
-                            _onAddService(serviceCategory: servicesByCategory.serviceCategory);
+                            _onAddService(serviceCategory: serviceCategory);
                           },
                         )),
                         CustomLink(
@@ -195,12 +193,12 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   }
 
   void _onShowAll() {
-    final servicesByCategoryToShowAll = servicesByCategory.copyWith(services: List.from(servicesByCategory.services));
+    final serviceCategoryToShowAll = serviceCategory.copyWith(services: List.from(serviceCategory.services));
 
     Navigator.of(context).pushNamed(
       '/showAllServices',
       arguments: {
-        'servicesByCategory': servicesByCategoryToShowAll,
+        'serviceCategory': serviceCategoryToShowAll,
         'removeServiceOfOtherScreen': _removeServiceOfScreen,
         'addServiceOfOtherScreen': _addServiceOfScreenWithoutScrool,
         'editServiceOfOtherScreen': _editServiceOfScreen
@@ -211,7 +209,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   Future<void> _onEdit() async {
     final result = await Navigator.of(context).pushNamed(
       '/serviceCategoryEdit',
-      arguments: {'serviceCategory': servicesByCategory.serviceCategory},
+      arguments: {'serviceCategory': serviceCategory},
     );
     if (result != null) {
       final serviceCategoryUpdate = result as ServiceCategory;
@@ -235,7 +233,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     final hasService = _serviceListHelper!.length > 0;
 
     if (hasService) await _scrollToEnd();
-    servicesByCategory.services.add(service);
+    serviceCategory.services.add(service);
     _serviceListHelper!.insert(service);
     if (!hasService) {
       setState(() {});
@@ -244,7 +242,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   void _addServiceOfScreenWithoutScrool({required Service service}) async {
     final hasService = _serviceListHelper!.length > 0;
-    servicesByCategory.services.add(service);
+    serviceCategory.services.add(service);
     if (hasService) {
       _serviceListHelper!.insert(service);
     } else {
@@ -272,8 +270,8 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   }
 
   void _editServiceOfScreen({required Service service}) {
-    final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
-    servicesByCategory.services[index] = service;
+    final index = serviceCategory.services.indexWhere((s) => s.id == service.id);
+    serviceCategory.services[index] = service;
 
     _serviceListHelper!.removeAt(index, 0);
     _serviceListHelper!.insertAt(index, service);
@@ -292,14 +290,14 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
   }
 
   void _removeServiceOfScreen({required Service service}) {
-    final index = servicesByCategory.services.indexWhere((s) => s.id == service.id);
+    final index = serviceCategory.services.indexWhere((s) => s.id == service.id);
 
     if (index < 0) {
       return;
     }
 
     widget.removeFocusOfWidgets();
-    servicesByCategory.services.removeAt(index);
+    serviceCategory.services.removeAt(index);
     _serviceListHelper!.removeAt(index);
     if (_serviceListHelper!.length == 0) {
       setState(() {});
@@ -308,7 +306,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   Future<void> _changeCategory(ServiceCategory serviceCategory) async {
     await controller.animateTo(0, curve: Curves.easeIn);
-    servicesByCategory = servicesByCategory.copyWith(serviceCategory: serviceCategory);
+    serviceCategory = serviceCategory.copyWith(id: serviceCategory.id, name: serviceCategory.name);
     await controller.animateTo(1, curve: Curves.easeIn);
   }
 

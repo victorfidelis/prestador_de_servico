@@ -53,4 +53,8 @@ class ServiceCategoryService {
 
     return await offlineRepository.deleteById(id: serviceCategory.id);
   }
+
+  Future<Either<Failure, List<ServiceCategory>>> getAllWithServices() async {
+    return offlineRepository.getAllWithServices();
+  }
 }

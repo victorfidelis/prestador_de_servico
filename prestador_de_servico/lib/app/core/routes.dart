@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
-import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/views/auth/create_user_view.dart';
 import 'package:prestador_de_servico/app/views/auth/password_reset_view.dart';
 import 'package:prestador_de_servico/app/views/client/client_view.dart';
@@ -77,7 +76,7 @@ Route<dynamic>? getRoute(RouteSettings settings) {
     return _buildRoute(
       settings,
       ShowAllServicesView(
-        servicesByCategory: (arguments['servicesByCategory'] as ServicesByCategory),
+        serviceCategory: (arguments['serviceCategory'] as ServiceCategory),
         removeServiceOfOtherScreen: (arguments['removeServiceOfOtherScreen'] as Function({required Service service})),
         addServiceOfOtherScreen: (arguments['addServiceOfOtherScreen'] as Function({required Service service})),
         editServiceOfOtherScreen: (arguments['editServiceOfOtherScreen'] as Function({required Service service})),

@@ -21,4 +21,5 @@ abstract class ServiceCategoryRepository {
   Future<Either<Failure, Unit>> update({required ServiceCategory serviceCategory});
   Future<Either<Failure, Unit>> deleteById({required String id});
   Future<Either<Failure, bool>> existsById({required String id});
+  Future<Either<Failure, List<ServiceCategory>>> getAllWithServices();
 }

@@ -2,11 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
-import 'package:prestador_de_servico/app/services/service/services_by_category_service.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header_with_search.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/service_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
@@ -25,24 +23,22 @@ class ServiceView extends StatefulWidget {
 class _ServiceViewState extends State<ServiceView> {
   late final ServiceViewModel serviceViewModel;
 
-  final CustomNotifications notifications = CustomNotifications();
   final GlobalKey<SliverAnimatedListState> animatedListKey = GlobalKey<SliverAnimatedListState>();
-  late SliverAnimatedListHelper<ServicesByCategory> listServicesByCategories;
+  late SliverAnimatedListHelper<ServiceCategory> listServiceCategories;
   final scrollController = ScrollController();
   final focusNodeSearchText = FocusNode();
 
   @override
   void initState() {
-    listServicesByCategories = SliverAnimatedListHelper<ServicesByCategory>(
+    listServiceCategories = SliverAnimatedListHelper<ServiceCategory>(
       listKey: animatedListKey,
-      removedItemBuilder: _buildRemovedItem,
+      removedItemBuilder: _removedItemBuilder,
       initialItems: [],
     );
 
     serviceViewModel = ServiceViewModel(
       serviceCategoryService: context.read<ServiceCategoryService>(),
       serviceService: context.read<ServiceService>(),
-      servicesByCategoryService: context.read<ServicesByCategoryService>(),
     );
 
     WidgetsBinding.instance.addPostFrameCallback((_) => serviceViewModel.load());
@@ -98,14 +94,14 @@ class _ServiceViewState extends State<ServiceView> {
                   );
                 }
 
-                if (serviceViewModel.servicesByCategories.isEmpty) {
+                if (serviceViewModel.serviceCategories.isEmpty) {
                   return const SliverToBoxAdapter(child: SizedBox());
                 }
 
                 if (serviceViewModel.serviceFiltered) {
-                  listServicesByCategories.removeAndInsertAll(serviceViewModel.servicesByCategoriesFiltered);
+                  listServiceCategories.removeAndInsertAll(serviceViewModel.serviceCategoriesFiltered);
                 } else {
-                  listServicesByCategories.removeAndInsertAll(serviceViewModel.servicesByCategories);
+                  listServiceCategories.removeAndInsertAll(serviceViewModel.serviceCategories);
                 }
 
                 return SliverPadding(
@@ -114,7 +110,7 @@ class _ServiceViewState extends State<ServiceView> {
                   ),
                   sliver: SliverAnimatedList(
                     key: animatedListKey,
-                    initialItemCount: listServicesByCategories.length + 1,
+                    initialItemCount: listServiceCategories.length + 1,
                     itemBuilder: _itemBuilder,
                   ),
                 );
@@ -144,21 +140,21 @@ class _ServiceViewState extends State<ServiceView> {
     int index,
     Animation<double> animation,
   ) {
-    if (listServicesByCategories.length == 0) {
+    if (listServiceCategories.length == 0) {
       return const SizedBox();
     }
-    if (index == listServicesByCategories.length) {
+    if (index == listServiceCategories.length) {
       return const SizedBox(
         key: ValueKey('last item key'),
         height: 220,
       );
     }
-    if (index > listServicesByCategories.length) {
+    if (index > listServiceCategories.length) {
       return const SizedBox();
     }
     return ServiceCategoryCard(
-      key: ValueKey(listServicesByCategories[index].serviceCategory.id),
-      servicesByCategory: listServicesByCategories[index],
+      key: ValueKey(listServiceCategories[index].id),
+      serviceCategory: listServiceCategories[index],
       onRemoveCategory: _onRemoveServiceCategory,
       onRemoveService: _onRemoveService,
       editServiceCategory: serviceViewModel.editServiceCategory,
@@ -170,14 +166,14 @@ class _ServiceViewState extends State<ServiceView> {
     );
   }
 
-  Widget _buildRemovedItem(
-    ServicesByCategory servicesByCategory,
+  Widget _removedItemBuilder(
+    ServiceCategory serviceCategory,
     BuildContext context,
     Animation<double> animation,
   ) {
     return ServiceCategoryCard(
-      key: ValueKey(servicesByCategory.serviceCategory.id),
-      servicesByCategory: servicesByCategory,
+      key: ValueKey(serviceCategory.id),
+      serviceCategory: serviceCategory,
       onRemoveCategory: ({required ServiceCategory serviceCategory, required int index}) {},
       onRemoveService: ({required Service service}) {},
       editServiceCategory: ({required ServiceCategory serviceCategory}) {},
@@ -192,28 +188,21 @@ class _ServiceViewState extends State<ServiceView> {
   Future<void> _onAddServiceCategory() async {
     final result = await Navigator.of(context).pushNamed('/serviceCategoryEdit');
     if (result != null) {
-      _addServiceCategoryInScreen(serviceCategory: result as ServiceCategory);
+      _addServiceCategory(serviceCategory: result as ServiceCategory);
     }
   }
 
-  void _addServiceCategoryInScreen({
-    required ServiceCategory serviceCategory,
-  }) async {
-    final serviceByCategory = ServicesByCategory(serviceCategory: serviceCategory, services: []);
+  Future<void> _addServiceCategory({required ServiceCategory serviceCategory}) async {
     await _scrollToEnd();
-    serviceViewModel.addServiceByCategory(serviceByCategory: serviceByCategory);
-    listServicesByCategories.insert(serviceByCategory);
-  }
-
-  void _onRemoveService({required Service service}) {
-    serviceViewModel.deleteService(service: service);
+    serviceViewModel.addServiceCategory(serviceCategory: serviceCategory);
+    listServiceCategories.insert(serviceCategory);
   }
 
   void _onRemoveServiceCategory({
     required ServiceCategory serviceCategory,
     required int index,
   }) {
-    notifications.showQuestionAlert(
+    CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Excluir categoria de serviço',
       content: 'Tem certeza que deseja excluir a categoria de serviço?',
@@ -226,13 +215,17 @@ class _ServiceViewState extends State<ServiceView> {
   void _removeServiceCategory({required ServiceCategory serviceCategory, required int index}) {
     serviceViewModel.deleteCategory(serviceCategory: serviceCategory);
     _removeFocusOfWidgets();
-    listServicesByCategories.removeAt(index);
+    listServiceCategories.removeAt(index);
+  }
+
+  void _onRemoveService({required Service service}) {
+    serviceViewModel.deleteService(service: service);
   }
 
   void _onSearch(String textValue) {
     serviceViewModel.refreshValuesOfState(
-      servicesByCategories: serviceViewModel.servicesByCategories,
-      servicesByCategoriesFiltered: serviceViewModel.servicesByCategoriesFiltered,
+      serviceCategories: serviceViewModel.serviceCategories,
+      serviceCategoriesFiltered: serviceViewModel.serviceCategoriesFiltered,
     );
     serviceViewModel.filter(textFilter: textValue);
   }

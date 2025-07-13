@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
-import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
-import 'package:prestador_de_servico/app/services/service/services_by_category_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:replace_diacritic/replace_diacritic.dart';
 
 class ServiceViewModel extends ChangeNotifier {
   final ServiceCategoryService serviceCategoryService;
   final ServiceService serviceService;
-  final ServicesByCategoryService servicesByCategoryService;
 
   bool serviceLoading = false;
   bool serviceFiltered = false;
 
-  List<ServicesByCategory> servicesByCategories = [];
-  List<ServicesByCategory> servicesByCategoriesFiltered = [];
+  List<ServiceCategory> serviceCategories = [];
+  List<ServiceCategory> serviceCategoriesFiltered = [];
   final scrollController = ScrollController();
 
   String? serviceErrorMessage;
@@ -25,7 +22,6 @@ class ServiceViewModel extends ChangeNotifier {
   ServiceViewModel({
     required this.serviceCategoryService,
     required this.serviceService,
-    required this.servicesByCategoryService,
   });
 
   @override
@@ -49,11 +45,11 @@ class ServiceViewModel extends ChangeNotifier {
   Future<void> load() async {
     _setServiceLoading(true);
 
-    final getAllEither = await servicesByCategoryService.getAll();
+    final getAllEither = await serviceCategoryService.getAllWithServices();
     if (getAllEither.isLeft) {
       serviceErrorMessage = getAllEither.left!.message;
     } else {
-      servicesByCategories = getAllEither.right!;
+      serviceCategories = getAllEither.right!;
     }
 
     _setServiceLoading(false);
@@ -61,16 +57,16 @@ class ServiceViewModel extends ChangeNotifier {
 
   void filter({required String textFilter}) {
     if (textFilter.trim().isEmpty) {
-      servicesByCategoriesFiltered = [];
+      serviceCategoriesFiltered = [];
       _setServiceFiltered(false);
       return;
     }
 
     final textFilterWithoutDiacricts = replaceDiacritic(textFilter);
 
-    servicesByCategoriesFiltered = servicesByCategories
+    serviceCategoriesFiltered = serviceCategories
         .where(
-          (s) => s.serviceCategory.nameWithoutDiacritics.toLowerCase().contains(
+          (s) => s.nameWithoutDiacritics.toLowerCase().contains(
                 textFilterWithoutDiacricts.toLowerCase(),
               ),
         )
@@ -79,28 +75,28 @@ class ServiceViewModel extends ChangeNotifier {
     _setServiceFiltered(true);
   }
 
-  void addServiceByCategory({required ServicesByCategory serviceByCategory}) async {
-    servicesByCategories.add(serviceByCategory);
+  void addServiceCategory({required ServiceCategory serviceCategory}) async {
+    serviceCategories.add(serviceCategory);
     if (serviceFiltered) {
-      servicesByCategoriesFiltered.add(serviceByCategory);
+      serviceCategoriesFiltered.add(serviceCategory);
     }
   }
 
   void editServiceCategory({required ServiceCategory serviceCategory}) {
-    final index = servicesByCategories.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
-    servicesByCategories[index].serviceCategory = serviceCategory;
+    final index = serviceCategories.indexWhere((s) => s.id == serviceCategory.id);
+    serviceCategories[index] = serviceCategory;
 
     if (serviceFiltered) {
       final indexOfFiltered =
-          servicesByCategoriesFiltered.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
-      servicesByCategoriesFiltered[indexOfFiltered].serviceCategory = serviceCategory;
+          serviceCategoriesFiltered.indexWhere((s) => s.id == serviceCategory.id);
+      serviceCategoriesFiltered[indexOfFiltered] = serviceCategory;
     }
   }
 
   Future<void> deleteCategory({required ServiceCategory serviceCategory}) async {
-    servicesByCategories.removeWhere((s) => s.serviceCategory.id == serviceCategory.id);
+    serviceCategories.removeWhere((s) => s.id == serviceCategory.id);
     if (serviceFiltered) {
-      servicesByCategoriesFiltered.removeWhere((s) => s.serviceCategory.id == serviceCategory.id);
+      serviceCategoriesFiltered.removeWhere((s) => s.id == serviceCategory.id);
     }
 
     final deleteEither = await serviceCategoryService.delete(serviceCategory: serviceCategory);
@@ -112,11 +108,11 @@ class ServiceViewModel extends ChangeNotifier {
 
     _setServiceLoading(true);
 
-    final getAllEither = await servicesByCategoryService.getAll();
+    final getAllEither = await serviceCategoryService.getAllWithServices();
     if (getAllEither.isLeft) {
       serviceErrorMessage = getAllEither.left!.message;
     } else {
-      servicesByCategories = getAllEither.right!;
+      serviceCategories = getAllEither.right!;
     }
 
     _setServiceLoading(false);
@@ -132,22 +128,22 @@ class ServiceViewModel extends ChangeNotifier {
 
     _setServiceLoading(true);
 
-    final getAllEither = await servicesByCategoryService.getAll();
+    final getAllEither = await serviceCategoryService.getAllWithServices();
     if (getAllEither.isLeft) {
       serviceErrorMessage = getAllEither.left!.message;
     } else {
-      servicesByCategories = getAllEither.right!;
+      serviceCategories = getAllEither.right!;
     }
 
     _setServiceLoading(false);
   }
 
   void refreshValuesOfState({
-    required List<ServicesByCategory> servicesByCategories,
-    required List<ServicesByCategory> servicesByCategoriesFiltered,
+    required List<ServiceCategory> serviceCategories,
+    required List<ServiceCategory> serviceCategoriesFiltered,
   }) {
-    this.servicesByCategories = servicesByCategories;
-    this.servicesByCategoriesFiltered = servicesByCategoriesFiltered;
+    this.serviceCategories = serviceCategories;
+    this.serviceCategoriesFiltered = serviceCategoriesFiltered;
     notifyListeners();
   }
 }

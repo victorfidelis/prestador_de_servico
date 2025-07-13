@@ -1,4 +1,4 @@
-import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 
 abstract class ShowAllServicesState {}
 
@@ -12,14 +12,14 @@ class ShowAllServicesError extends ShowAllServicesState {
 }
 
 class ShowAllServicesLoaded extends ShowAllServicesState {
-  final ServicesByCategory servicesByCategory;
+  final ServiceCategory serviceCategory;
   final String message;
 
-  ShowAllServicesLoaded({required this.servicesByCategory, this.message = ''});
+  ShowAllServicesLoaded({required this.serviceCategory, this.message = ''});
 }
 
 class ShowAllServicesFiltered extends ShowAllServicesLoaded {
-  final ServicesByCategory servicesByCategoryFiltered;
+  final ServiceCategory serviceCategoryFiltered;
 
-  ShowAllServicesFiltered({required super.servicesByCategory, required this.servicesByCategoryFiltered, super.message});
+  ShowAllServicesFiltered({required super.serviceCategory, required this.serviceCategoryFiltered, super.message});
 }

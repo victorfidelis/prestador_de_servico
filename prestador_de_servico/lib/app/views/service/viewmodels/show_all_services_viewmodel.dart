@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/models/services_by_category/services_by_category.dart';
+import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/views/service/states/show_all_services_state.dart';
@@ -22,9 +22,9 @@ class ShowAllServicesViewModel extends ChangeNotifier {
 
   ShowAllServicesViewModel({
     required this.serviceService,
-    required ServicesByCategory servicesByCategory,
+    required ServiceCategory serviceCategory,
   }) {    
-    _changeState(ShowAllServicesLoaded(servicesByCategory: servicesByCategory));
+    _changeState(ShowAllServicesLoaded(serviceCategory: serviceCategory));
   }
 
   Future<void> delete({required Service service}) async {
@@ -41,7 +41,7 @@ class ShowAllServicesViewModel extends ChangeNotifier {
 
       _emitState(
         ShowAllServicesLoaded(
-          servicesByCategory: currentState.servicesByCategory,
+          serviceCategory: currentState.serviceCategory,
           message: message,
         ),
       );
@@ -56,7 +56,7 @@ class ShowAllServicesViewModel extends ChangeNotifier {
     }
 
     final stateToBack = ShowAllServicesLoaded(
-      servicesByCategory: (state as ShowAllServicesLoaded).servicesByCategory,
+      serviceCategory: (state as ShowAllServicesLoaded).serviceCategory,
     );
 
     if (textFilter.isEmpty) {
@@ -65,7 +65,7 @@ class ShowAllServicesViewModel extends ChangeNotifier {
     }
 
     final textFilterWithoutDiacricts = replaceDiacritic(textFilter);
-    final List<Service> servicesFiltered = stateToBack.servicesByCategory.services
+    final List<Service> servicesFiltered = stateToBack.serviceCategory.services
         .where(
           (service) => service.nameWithoutDiacritics.toLowerCase().contains(
                 textFilterWithoutDiacricts.toLowerCase(),
@@ -74,17 +74,17 @@ class ShowAllServicesViewModel extends ChangeNotifier {
         .toList();
 
     final nextState = ShowAllServicesFiltered(
-      servicesByCategory: stateToBack.servicesByCategory,
-      servicesByCategoryFiltered:
-          stateToBack.servicesByCategory.copyWith(services: servicesFiltered),
+      serviceCategory: stateToBack.serviceCategory,
+      serviceCategoryFiltered:
+          stateToBack.serviceCategory.copyWith(services: servicesFiltered),
     );
 
     _emitState(nextState);
   }
 
   void refreshValuesOfState({
-    required ServicesByCategory servicesByCategory,
-    required ServicesByCategory servicesByCategoryFiltered,
+    required ServiceCategory serviceCategory,
+    required ServiceCategory serviceCategoryFiltered,
   }) {
     if (state is! ShowAllServicesLoaded) {
       return;
@@ -93,12 +93,12 @@ class ShowAllServicesViewModel extends ChangeNotifier {
     if (state is ShowAllServicesFiltered) {
       _changeState(
         ShowAllServicesFiltered(
-          servicesByCategory: servicesByCategory,
-          servicesByCategoryFiltered: servicesByCategoryFiltered,
+          serviceCategory: serviceCategory,
+          serviceCategoryFiltered: serviceCategoryFiltered,
         ),
       );
     } else {
-      _changeState(ShowAllServicesLoaded(servicesByCategory: servicesByCategory));
+      _changeState(ShowAllServicesLoaded(serviceCategory: serviceCategory));
     }
   }
 }

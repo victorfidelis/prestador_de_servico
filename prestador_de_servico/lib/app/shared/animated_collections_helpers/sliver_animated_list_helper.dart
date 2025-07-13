@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 
 class SliverAnimatedListHelper<E> {
-  SliverAnimatedListHelper({
-    required this.listKey,
-    required this.removedItemBuilder,
-    Iterable<E>? initialItems,
-  }) : _items = List<E>.from(initialItems ?? <E>[]);
-
   final GlobalKey<SliverAnimatedListState> listKey;
   final Function(E item, BuildContext context, Animation<double> animation) removedItemBuilder;
   List<E> _items;
   final durationInsertAnimation = 500;
   final durationRemoveAnimation = 500;
 
+  SliverAnimatedListHelper({
+    required this.listKey,
+    required this.removedItemBuilder,
+    Iterable<E>? initialItems,
+  }) : _items = List<E>.from(initialItems ?? <E>[]);
+
   SliverAnimatedListState get _animatedList => listKey.currentState!;
+
+  int get length => _items.length;
 
   void insert(E item) {
     final index = _items.length;
@@ -49,8 +51,6 @@ class SliverAnimatedListHelper<E> {
     _items = [];
     _items = List.from(items);
   }
-
-  int get length => _items.length;
 
   E operator [](int index) => _items[index];
 

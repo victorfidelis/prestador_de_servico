@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:prestador_de_servico/app/models/service/service_converter.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 
 class ServiceCartegoryConverter {
@@ -53,5 +54,25 @@ class ServiceCartegoryConverter {
       id: map['serviceCategoryId'],
       name: map['serviceCategoryName'],
     );
+  }
+  
+  static List<ServiceCategory> fromListSqfliteWithServices(List<Map<String, dynamic>> servicesMap) {
+    List<ServiceCategory> serviceCategories = [];
+
+    for (var serviceMap in servicesMap) {
+      final category = ServiceCartegoryConverter.fromSqfliteJoins(serviceMap);
+      final service = serviceMap['serviceId'] == null ? null : ServiceConverter.fromSqfliteJoins(map: serviceMap);
+
+      var catIndex = serviceCategories.indexWhere((e) => e == category);
+      if (service == null) {
+        serviceCategories.add(category);
+      } else if (catIndex == -1) {
+        serviceCategories.add(category.copyWith(services: [service]));
+      } else {
+        serviceCategories[catIndex].services.add(service);
+      }
+    }
+
+    return serviceCategories;
   }
 }

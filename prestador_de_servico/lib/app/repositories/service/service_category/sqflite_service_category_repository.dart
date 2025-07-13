@@ -12,6 +12,7 @@ import 'package:sqflite/sqflite.dart';
 class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
   Database? database;
   String serviceCategoriesTable = '';
+  String servicesTable = '';
 
   SqfliteServiceCategoryRepository({this.database});
 
@@ -21,6 +22,7 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
       database ??= await sqfliteConfig.getDatabase();
       if (serviceCategoriesTable.isEmpty) {
         serviceCategoriesTable = sqfliteConfig.serviceCategories;
+        servicesTable = sqfliteConfig.services;
       }
       return Either.right(unit);
     } on DatabaseException catch (e) {
@@ -221,6 +223,38 @@ class SqfliteServiceCategoryRepository implements ServiceCategoryRepository {
     try {
       final map = await database!.rawQuery(selectCommand, params);
       return Either.right(map.isNotEmpty);
+    } on DatabaseException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
+    } on FileSystemException catch (e) {
+      return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: ${e.message})'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<ServiceCategory>>> getAllWithServices() async {
+    final getDbEither = await _initDatabase();
+    if (getDbEither.isLeft) {
+      return Either.left(getDbEither.left);
+    }
+
+    String selectCommand = ""
+        "SELECT "
+        "ser_cat.id serviceCategoryId, "
+        "ser_cat.name serviceCategoryName, "
+        "ser.id serviceId, "
+        "ser.name serviceName, "
+        "ser.price servicePrice, "
+        "ser.hours serviceHours, "
+        "ser.minutes serviceMinutes, "
+        "ser.urlImage serviceUrlImage "
+        "FROM "
+        "$serviceCategoriesTable ser_cat "
+        "LEFT JOIN $servicesTable ser on ser_cat.id = ser.serviceCategoryId";
+
+    try {
+      final servicesMap = await database!.rawQuery(selectCommand);
+      final services = ServiceCartegoryConverter.fromListSqfliteWithServices(servicesMap);
+      return Either.right(services);
     } on DatabaseException catch (e) {
       return Either.left(GetDatabaseFailure('Falha ao capturar dados locais: $e'));
     } on FileSystemException catch (e) {
