@@ -18,6 +18,7 @@ class ServiceViewModel extends ChangeNotifier {
   final scrollController = ScrollController();
 
   String? serviceErrorMessage;
+  ValueNotifier<String?> notificationMessage = ValueNotifier(null);
 
   ServiceViewModel({
     required this.serviceCategoryService,
@@ -40,6 +41,11 @@ class ServiceViewModel extends ChangeNotifier {
   void _setServiceFiltered(bool value) {
     serviceFiltered = value;
     notifyListeners();
+  }
+
+  void _setNotificationMessage(String value) {
+    notificationMessage.value = null; // É necessário para garantir o ValueNotifier vai notificar os ouvintes
+    notificationMessage.value = value;
   }
 
   Future<void> load() async {
@@ -103,8 +109,7 @@ class ServiceViewModel extends ChangeNotifier {
     if (deleteEither.isRight) {
       return;
     }
-
-    final message = deleteEither.left!.message;
+    _setNotificationMessage(deleteEither.left!.message);
 
     _setServiceLoading(true);
 
@@ -123,8 +128,7 @@ class ServiceViewModel extends ChangeNotifier {
     if (deleteEither.isRight) {
       return;
     }
-
-    final message = deleteEither.left!.message;
+    _setNotificationMessage(deleteEither.left!.message);
 
     _setServiceLoading(true);
 
@@ -145,5 +149,5 @@ class ServiceViewModel extends ChangeNotifier {
     this.serviceCategories = serviceCategories;
     this.serviceCategoriesFiltered = serviceCategoriesFiltered;
     notifyListeners();
-  }
+  } 
 }

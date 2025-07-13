@@ -41,6 +41,12 @@ class _ServiceViewState extends State<ServiceView> {
       serviceService: context.read<ServiceService>(),
     );
 
+    serviceViewModel.notificationMessage.addListener(() {
+      if (serviceViewModel.notificationMessage.value != null) {
+        CustomNotifications().showSnackBar(context: context, message: serviceViewModel.notificationMessage.value!);
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) => serviceViewModel.load());
     super.initState();
   }
