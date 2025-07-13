@@ -10,7 +10,6 @@ import 'package:prestador_de_servico/app/models/services_by_category/services_by
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
-import 'package:prestador_de_servico/app/views/service/states/service_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_category_card.dart';
 import 'package:provider/provider.dart';
 import 'package:prestador_de_servico/app/shared/animated_collections_helpers/sliver_animated_list_helper.dart';
@@ -26,7 +25,6 @@ class ServiceView extends StatefulWidget {
 class _ServiceViewState extends State<ServiceView> {
   late final ServiceViewModel serviceViewModel;
 
-  late List<ServicesByCategory> servicesByCategories;
   late List<ServicesByCategory> servicesByCategoriesInScreen;
   final CustomNotifications notifications = CustomNotifications();
   final GlobalKey<SliverAnimatedListState> animatedListKey = GlobalKey<SliverAnimatedListState>();
@@ -68,6 +66,7 @@ class _ServiceViewState extends State<ServiceView> {
     } else {
       title = 'Serviços';
     }
+
     return Scaffold(
       body: SafeArea(
         child: CustomScrollView(
@@ -84,19 +83,15 @@ class _ServiceViewState extends State<ServiceView> {
             ListenableBuilder(
               listenable: serviceViewModel,
               builder: (context, _) {
-                if (serviceViewModel.state is ServiceInitial) {
-                  return const SliverFillRemaining();
-                }
-
-                if (serviceViewModel.state is ServiceError) {
+                if (serviceViewModel.hasServiceError) {
                   return SliverFillRemaining(
                     child: Center(
-                      child: Text((serviceViewModel.state as ServiceError).message),
+                      child: Text(serviceViewModel.serviceErrorMessage!),
                     ),
                   );
                 }
 
-                if (serviceViewModel.state is ServiceLoading) {
+                if (serviceViewModel.serviceLoading) {
                   return const SliverFillRemaining(
                     child: Center(
                       child: CustomLoading(),
@@ -104,14 +99,14 @@ class _ServiceViewState extends State<ServiceView> {
                   );
                 }
 
-                final categories = (serviceViewModel.state as ServiceLoaded).servicesByCategories;
-                servicesByCategories = List.from(categories);
+                if (serviceViewModel.servicesByCategories.isEmpty) {
+                  return const SliverToBoxAdapter(child: SizedBox());
+                }
 
-                if (serviceViewModel.state is ServiceFiltered) {
-                  final categoriesFiltered = (serviceViewModel.state as ServiceFiltered).servicesByCategoriesFiltered;
-                  servicesByCategoriesInScreen = List.from(categoriesFiltered);
+                if (serviceViewModel.serviceFiltered) {
+                  servicesByCategoriesInScreen = List.from(serviceViewModel.servicesByCategoriesFiltered);
                 } else {
-                  servicesByCategoriesInScreen = List.from(servicesByCategories);
+                  servicesByCategoriesInScreen = List.from(serviceViewModel.servicesByCategories);
                 }
 
                 listServicesByCategories.removeAndInsertAll(servicesByCategoriesInScreen);
@@ -153,7 +148,7 @@ class _ServiceViewState extends State<ServiceView> {
     Animation<double> animation,
   ) {
     if (listServicesByCategories.length == 0) {
-      return Container();
+      return const SizedBox();
     }
     if (index == listServicesByCategories.length) {
       return const SizedBox(
@@ -162,7 +157,7 @@ class _ServiceViewState extends State<ServiceView> {
       );
     }
     if (index > listServicesByCategories.length) {
-      return Container();
+      return const SizedBox();
     }
     return ServiceCategoryCard(
       key: ValueKey(listServicesByCategories[index].serviceCategory.id),
@@ -209,14 +204,15 @@ class _ServiceViewState extends State<ServiceView> {
   }) async {
     final serviceByCategory = ServicesByCategory(serviceCategory: serviceCategory, services: []);
     await _scrollToEnd();
-    servicesByCategories.add(serviceByCategory);
+    serviceViewModel.servicesByCategories.add(serviceByCategory);
     servicesByCategoriesInScreen.add(serviceByCategory);
     listServicesByCategories.insert(serviceByCategory);
   }
 
   void _editServiceOfScreen({required ServiceCategory serviceCategory}) {
-    final indexOfCompleteList = servicesByCategories.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
-    servicesByCategories[indexOfCompleteList].serviceCategory = serviceCategory;
+    final indexOfCompleteList =
+        serviceViewModel.servicesByCategories.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
+    serviceViewModel.servicesByCategories[indexOfCompleteList].serviceCategory = serviceCategory;
 
     final indexOfListInScreen =
         servicesByCategoriesInScreen.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
@@ -243,7 +239,7 @@ class _ServiceViewState extends State<ServiceView> {
   }
 
   void _removeServiceCategoryOfScreen({required ServiceCategory serviceCategory}) {
-    servicesByCategories.removeWhere((s) => s.serviceCategory.id == serviceCategory.id);
+    serviceViewModel.servicesByCategories.removeWhere((s) => s.serviceCategory.id == serviceCategory.id);
 
     final index = servicesByCategoriesInScreen.indexWhere((s) => s.serviceCategory.id == serviceCategory.id);
     _removeFocusOfWidgets();
@@ -257,7 +253,7 @@ class _ServiceViewState extends State<ServiceView> {
 
   void _onSearch(String textValue) {
     serviceViewModel.refreshValuesOfState(
-      servicesByCategories: servicesByCategories,
+      servicesByCategories: serviceViewModel.servicesByCategories,
       servicesByCategoriesFiltered: servicesByCategoriesInScreen,
     );
     serviceViewModel.filter(textFilter: textValue);
