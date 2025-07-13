@@ -306,7 +306,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
 
   Future<void> _changeCategory(ServiceCategory serviceCategory) async {
     await controller.animateTo(0, curve: Curves.easeIn);
-    serviceCategory = serviceCategory.copyWith(id: serviceCategory.id, name: serviceCategory.name);
+    this.serviceCategory = this.serviceCategory.copyWith(id: serviceCategory.id, name: serviceCategory.name);
     await controller.animateTo(1, curve: Curves.easeIn);
   }
 
