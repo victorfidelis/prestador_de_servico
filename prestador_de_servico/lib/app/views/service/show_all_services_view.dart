@@ -43,6 +43,13 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
       serviceCategory: widget.serviceCategory,
     );
 
+    showAllServicesViewModel.notificationMessage.addListener(() {
+      if (showAllServicesViewModel.notificationMessage.value != null) {
+        CustomNotifications()
+            .showSnackBar(context: context, message: showAllServicesViewModel.notificationMessage.value!);
+      }
+    });
+
     listServicesShowAll = SliverAnimatedGridHelper<Service>(
       gridKey: animatedGridKey,
       removedItemBuilder: _removedItemBuilder,
