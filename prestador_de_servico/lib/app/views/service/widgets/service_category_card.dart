@@ -199,7 +199,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       '/showAllServices',
       arguments: {
         'serviceCategory': serviceCategoryToShowAll,
-        'removeServiceOfOtherScreen': _removeServiceOfScreen,
+        'removeServiceOfOtherScreen': _removeService,
         'addServiceOfOtherScreen': _addServiceOfScreenWithoutScrool,
         'editServiceOfOtherScreen': _editServiceOfScreen
       },
@@ -284,12 +284,12 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
       content: 'Tem certeza que deseja excluir serviço?',
       confirmCallback: () {
         widget.onRemoveService(service: service);
-        _removeServiceOfScreen(service: service);
+        _removeService(service: service);
       },
     );
   }
 
-  void _removeServiceOfScreen({required Service service}) {
+  void _removeService({required Service service}) {
     final index = serviceCategory.services.indexWhere((s) => s.id == service.id);
 
     if (index < 0) {

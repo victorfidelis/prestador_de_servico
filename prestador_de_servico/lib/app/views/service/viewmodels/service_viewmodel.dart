@@ -15,7 +15,6 @@ class ServiceViewModel extends ChangeNotifier {
 
   List<ServiceCategory> serviceCategories = [];
   List<ServiceCategory> serviceCategoriesFiltered = [];
-  final scrollController = ScrollController();
 
   String? serviceErrorMessage;
   ValueNotifier<String?> notificationMessage = ValueNotifier(null);
@@ -24,12 +23,6 @@ class ServiceViewModel extends ChangeNotifier {
     required this.serviceCategoryService,
     required this.serviceService,
   });
-
-  @override
-  void dispose() {
-    scrollController.dispose();
-    super.dispose();
-  }
 
   bool get hasServiceError => serviceErrorMessage != null;
 
@@ -141,13 +134,4 @@ class ServiceViewModel extends ChangeNotifier {
 
     _setServiceLoading(false);
   }
-
-  void refreshValuesOfState({
-    required List<ServiceCategory> serviceCategories,
-    required List<ServiceCategory> serviceCategoriesFiltered,
-  }) {
-    this.serviceCategories = serviceCategories;
-    this.serviceCategoriesFiltered = serviceCategoriesFiltered;
-    notifyListeners();
-  } 
 }

@@ -229,10 +229,6 @@ class _ServiceViewState extends State<ServiceView> {
   }
 
   void _onSearch(String textValue) {
-    serviceViewModel.refreshValuesOfState(
-      serviceCategories: serviceViewModel.serviceCategories,
-      serviceCategoriesFiltered: serviceViewModel.serviceCategoriesFiltered,
-    );
     serviceViewModel.filter(textFilter: textValue);
   }
 

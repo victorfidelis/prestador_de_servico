@@ -8,7 +8,6 @@ import 'package:prestador_de_servico/app/shared/animated_collections_helpers/sli
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
-import 'package:prestador_de_servico/app/views/service/states/show_all_services_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/service_card.dart';
 import 'package:provider/provider.dart';
 
@@ -32,13 +31,10 @@ class ShowAllServicesView extends StatefulWidget {
 
 class _ShowAllServicesViewState extends State<ShowAllServicesView> {
   late final ShowAllServicesViewModel showAllServicesViewModel;
-  late ServiceCategory serviceCategory;
-  late ServiceCategory serviceCategoryInScreen;
   final GlobalKey<SliverAnimatedGridState> animatedGridKey = GlobalKey<SliverAnimatedGridState>();
   late SliverAnimatedGridHelper<Service> listServicesShowAll;
   final scrollController = ScrollController();
   final focusNodeSearchText = FocusNode();
-  final customNotifications = CustomNotifications();
 
   @override
   void initState() {
@@ -49,7 +45,7 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
 
     listServicesShowAll = SliverAnimatedGridHelper<Service>(
       gridKey: animatedGridKey,
-      removedItemBuilder: _buildRemovedItem,
+      removedItemBuilder: _removedItemBuilder,
       initialItems: [],
     );
     super.initState();
@@ -74,73 +70,51 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
               child: CustomHeaderWithSearch(
                 title: 'Serviços',
                 searchTitle: 'Pesquise por um serviço',
-                onSearch: onFilter,
+                onSearch: _onSearch,
                 focusNode: focusNodeSearchText,
+              ),
+            ),
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 18,
+              ),
+              sliver: SliverToBoxAdapter(
+                child: ListenableBuilder(
+                    listenable: showAllServicesViewModel,
+                    builder: (context, _) {
+                      return Text(
+                        showAllServicesViewModel.serviceCategory.name,
+                        style: const TextStyle(fontSize: 18),
+                      );
+                    }),
               ),
             ),
             ListenableBuilder(
               listenable: showAllServicesViewModel,
               builder: (context, _) {
-                if (showAllServicesViewModel.state is! ShowAllServicesLoaded) {
-                  return const SliverToBoxAdapter();
-                }
-        
-                final serviceCategory =
-                    (showAllServicesViewModel.state as ShowAllServicesLoaded).serviceCategory;
-        
-                return SliverPadding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 10,
-                    horizontal: 18,
-                  ),
-                  sliver: SliverToBoxAdapter(
-                    child: Text(
-                      serviceCategory.name,
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                  ),
-                );
-              },
-            ),
-            ListenableBuilder(
-              listenable: showAllServicesViewModel,
-              builder: (context, _) {
-                if (showAllServicesViewModel.state is ShowAllServicesInitial) {
-                  return const SliverFillRemaining();
-                }
-        
-                if (showAllServicesViewModel.state is ShowAllServicesError) {
+                if (showAllServicesViewModel.hasServiceError) {
                   return SliverFillRemaining(
                     child: Center(
-                      child: Text((showAllServicesViewModel.state as ShowAllServicesError).message),
+                      child: Text(showAllServicesViewModel.serviceErrorMessage!),
                     ),
                   );
                 }
-        
-                if (showAllServicesViewModel.state is ShowAllServicesLoading) {
+
+                if (showAllServicesViewModel.serviceLoading) {
                   return const SliverFillRemaining(
                     child: Center(
                       child: CustomLoading(),
                     ),
                   );
                 }
-        
-                final loadedState = (showAllServicesViewModel.state as ShowAllServicesLoaded);
-                final services = loadedState.serviceCategory.services;
-                serviceCategory = loadedState.serviceCategory.copyWith(services: List.from(services));
-        
-                if (showAllServicesViewModel.state is ShowAllServicesFiltered) {
-                  final filteredState = (showAllServicesViewModel.state as ShowAllServicesFiltered);
-                  final servicesFiltered = filteredState.serviceCategoryFiltered.services;
-                  serviceCategoryInScreen =
-                      filteredState.serviceCategoryFiltered.copyWith(services: List.from(servicesFiltered));
+
+                if (showAllServicesViewModel.serviceFiltered) {
+                  listServicesShowAll.removeAndInsertAll(List.from(showAllServicesViewModel.servicesFiltered));
                 } else {
-                  serviceCategoryInScreen =
-                      serviceCategory.copyWith(services: List.from(serviceCategory.services));
+                  listServicesShowAll.removeAndInsertAll(List.from(showAllServicesViewModel.serviceCategory.services));
                 }
-        
-                listServicesShowAll.removeAndInsertAll(serviceCategoryInScreen.services);
-        
+
                 return SliverPadding(
                   padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
                   sliver: SliverAnimatedGrid(
@@ -173,29 +147,28 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
   Future<void> _onAddService() async {
     _removeFocusOfWidgets();
     final result = await Navigator.of(context)
-        .pushNamed('/serviceEdit', arguments: {'serviceCategory': serviceCategory});
+        .pushNamed('/serviceEdit', arguments: {'serviceCategory': showAllServicesViewModel.serviceCategory});
     if (result != null) {
       final serviceAdd = result as Service;
       widget.addServiceOfOtherScreen(service: serviceAdd);
-      _addServiceOfScreen(service: serviceAdd);
+      _addService(service: serviceAdd);
     }
   }
 
-  Future<void> _addServiceOfScreen({required Service service}) async {
+  Future<void> _addService({required Service service}) async {
     final hasService = listServicesShowAll.length > 0;
     if (hasService) await _scrollToEnd();
-    serviceCategory.services.add(service);
-    serviceCategoryInScreen.services.add(service);
+    showAllServicesViewModel.addService(service: service);
     listServicesShowAll.insert(service);
   }
 
-  Future<void> _onEditService({required Service service}) async {
+  Future<void> _onEditService({required Service service, required int index}) async {
     _removeFocusOfWidgets();
 
     final result = await Navigator.of(context).pushNamed(
       '/serviceEdit',
       arguments: {
-        'serviceCategory': serviceCategory,
+        'serviceCategory': showAllServicesViewModel.serviceCategory,
         'service': service,
       },
     );
@@ -203,45 +176,32 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
     if (result != null) {
       final serviceEdited = result as Service;
       widget.editServiceOfOtherScreen(service: serviceEdited);
-      _editServiceOfScreen(service: serviceEdited);
+      _editService(service: serviceEdited, index: index);
     }
   }
 
-  void _editServiceOfScreen({required Service service}) {
-    final indexOfCompleteList = serviceCategory.services.indexWhere((s) => s.id == service.id);
-    serviceCategory.services[indexOfCompleteList] = service;
-
-    final indexOfListInScreen = serviceCategoryInScreen.services.indexWhere((s) => s.id == service.id);
-    serviceCategoryInScreen.services[indexOfListInScreen] = service;
-
-    listServicesShowAll.removeAt(indexOfListInScreen, 0);
-    listServicesShowAll.insertAt(indexOfListInScreen, service);
+  void _editService({required Service service, required int index}) {
+    showAllServicesViewModel.editService(service: service);
+    listServicesShowAll.removeAt(index, 0);
+    listServicesShowAll.insertAt(index, service);
   }
 
-  void _onRemoveService({required Service service}) {
-    customNotifications.showQuestionAlert(
+  void _onRemoveService({required Service service, required int index}) {
+    CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Excluir serviço',
       content: 'Tem certeza que deseja excluir serviço?',
       confirmCallback: () {
-        removeServiceOfDatabase(service: service);
         widget.removeServiceOfOtherScreen(service: service);
-        _removeServiceOfScreen(service: service);
+        _removeService(service: service, index: index);
       },
     );
   }
 
-  void _removeServiceOfScreen({required Service service}) {
-    serviceCategory.services.removeWhere((s) => s.id == service.id);
-
-    final index = serviceCategoryInScreen.services.indexWhere((s) => s.id == service.id);
+  void _removeService({required Service service, required int index}) {
+    showAllServicesViewModel.delete(service: service);
     _removeFocusOfWidgets();
-    serviceCategoryInScreen.services.removeAt(index);
     listServicesShowAll.removeAt(index);
-  }
-
-  void removeServiceOfDatabase({required Service service}) {
-    context.read<ShowAllServicesViewModel>().delete(service: service);
   }
 
   Widget _itemBuilder(
@@ -270,17 +230,17 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
     return ServiceCard(
       key: ValueKey(listServicesShowAll[index].id),
       onTap: () {
-        _onEditService(service: listServicesShowAll[index]);
+        _onEditService(service: listServicesShowAll[index], index: index);
       },
       onLongPress: () {
-        _onRemoveService(service: listServicesShowAll[index]);
+        _onRemoveService(service: listServicesShowAll[index], index: index);
       },
       service: listServicesShowAll[index],
       animation: animation,
     );
   }
 
-  Widget _buildRemovedItem(
+  Widget _removedItemBuilder(
     Service service,
     BuildContext context,
     Animation<double> animation,
@@ -294,11 +254,7 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
     );
   }
 
-  void onFilter(String textValue) {
-    showAllServicesViewModel.refreshValuesOfState(
-      serviceCategory: serviceCategory,
-      serviceCategoryFiltered: serviceCategoryInScreen,
-    );
+  void _onSearch(String textValue) {
     showAllServicesViewModel.filter(textFilter: textValue);
   }
 
