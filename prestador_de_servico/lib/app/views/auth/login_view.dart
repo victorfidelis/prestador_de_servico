@@ -26,8 +26,14 @@ class _LoginViewState extends State<LoginView> {
   void initState() {
     loginViewModel = LoginViewModel(
       authService: context.read<AuthService>(),
-      onLoginSuccessful: context.read<WrapperViewModel>().logIn,
     );
+    
+    loginViewModel.editSuccessful.addListener(() {
+      if (loginViewModel.editSuccessful.value) {
+        context.read<WrapperViewModel>().logIn(loginViewModel.user!);
+      }
+    });
+
     super.initState();
   }
 

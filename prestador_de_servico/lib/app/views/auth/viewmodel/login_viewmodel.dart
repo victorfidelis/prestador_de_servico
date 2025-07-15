@@ -5,7 +5,6 @@ import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.d
 
 class LoginViewModel extends ChangeNotifier {
   final AuthService _authService;
-  final Function(User user) onLoginSuccessful;
 
   bool isLoginLoading = false;
 
@@ -15,8 +14,11 @@ class LoginViewModel extends ChangeNotifier {
   String? genericErrorMessage;
   String? emailErrorMessage;
   String? passwordErrorMessage;
+  
+  ValueNotifier<bool> editSuccessful = ValueNotifier(false);
+  User? user;
 
-  LoginViewModel({required AuthService authService, required this.onLoginSuccessful}) : _authService = authService;
+  LoginViewModel({required AuthService authService}) : _authService = authService;
 
   @override
   void dispose() {
@@ -50,7 +52,8 @@ class LoginViewModel extends ChangeNotifier {
     if (signInEither.isLeft) {
       genericErrorMessage = signInEither.left!.message;
     } else {
-      onLoginSuccessful(signInEither.right!);
+      user = signInEither.right!;
+      editSuccessful.value = true;
       _clearControllers();
     }
 
