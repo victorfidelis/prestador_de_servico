@@ -6,7 +6,7 @@ import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pend
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/states/pending_schedules_state.dart';
 
 class MockSchedulingRepository extends Mock implements SchedulingRepository {}

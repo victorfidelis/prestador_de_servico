@@ -3,7 +3,7 @@ import 'package:prestador_de_servico/app/models/payment/payment.dart';
 import 'package:prestador_de_servico/app/repositories/payment/firebase_payment_repository.dart';
 import 'package:prestador_de_servico/app/repositories/payment/sqflite_payment_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 
 abstract class PaymentRepository {
 

@@ -5,7 +5,7 @@ import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repo
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/states/scheduling/scheduling_state.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/time_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
@@ -119,7 +119,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              Formatters.defaultFormatDate(scheduling.startDateAndTime),
+                              DataConverter.defaultFormatDate(scheduling.startDateAndTime),
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -134,7 +134,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  Formatters.defaultFormatHoursAndMinutes(
+                                  DataConverter.defaultFormatHoursAndMinutes(
                                     scheduling.startDateAndTime.hour,
                                     scheduling.startDateAndTime.minute,
                                   ),
@@ -147,7 +147,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  Formatters.defaultFormatHoursAndMinutes(
+                                  DataConverter.defaultFormatHoursAndMinutes(
                                     scheduling.endDateAndTime.hour,
                                     scheduling.endDateAndTime.minute,
                                   ),
@@ -251,7 +251,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                             return const SizedBox();
                           }
                           return Text(
-                            Formatters.defaultFormatDate(editDateAndTimeViewModel.schedulingDate.value!),
+                            DataConverter.defaultFormatDate(editDateAndTimeViewModel.schedulingDate.value!),
                             style: TextStyle(
                               fontSize: 24,
                               color: Theme.of(context).colorScheme.primary,
@@ -363,7 +363,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
     final lastDate = firstDate.add(const Duration(days: 90));
     final DateTime selectedDate;
     if (dateController.text.isNotEmpty) {
-      selectedDate = Formatters.dateFromDefaultDateText(dateController.text);
+      selectedDate = DataConverter.dateFromDefaultDateText(dateController.text);
     } else {
       selectedDate = actualDate;
     }
@@ -378,7 +378,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
     if (newDate == null) {
       return;
     }
-    dateController.text = Formatters.defaultFormatDate(newDate);
+    dateController.text = DataConverter.defaultFormatDate(newDate);
     schedulingViewModel.load(dateTime: newDate);
     editDateAndTimeViewModel.setSchedulingDate(newDate);
   }
@@ -392,7 +392,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   }
 
   Future<void> _confirmSave() async {
-    final dateText = Formatters.defaultFormatDate(editDateAndTimeViewModel.schedulingDate.value!);
+    final dateText = DataConverter.defaultFormatDate(editDateAndTimeViewModel.schedulingDate.value!);
     final hourText = editDateAndTimeViewModel.startTime;
     final String dateHourText = '$dateText $hourText';
 

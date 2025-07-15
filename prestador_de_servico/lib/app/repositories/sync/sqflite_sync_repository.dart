@@ -5,7 +5,7 @@ import 'package:prestador_de_servico/app/models/sync/sync_converter.dart';
 import 'package:prestador_de_servico/app/repositories/sync/sync_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 import 'package:sqflite/sqflite.dart';
 
 class SqfliteSyncRepository implements SyncRepository {

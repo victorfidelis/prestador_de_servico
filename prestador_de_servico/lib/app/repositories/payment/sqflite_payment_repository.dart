@@ -7,7 +7,7 @@ import 'package:prestador_de_servico/app/repositories/config/sqflite_config.dart
 import 'package:prestador_de_servico/app/repositories/payment/payment_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 import 'package:sqflite/sqlite_api.dart';
 
 class SqflitePaymentRepository implements PaymentRepository {

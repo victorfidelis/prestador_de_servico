@@ -5,7 +5,7 @@ import 'package:prestador_de_servico/app/views/service/viewmodels/service_catego
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 import 'package:prestador_de_servico/app/views/service/states/service_category_edit_state.dart';
 
 class MockServiceCategoryRepository extends Mock implements ServiceCategoryRepository {}

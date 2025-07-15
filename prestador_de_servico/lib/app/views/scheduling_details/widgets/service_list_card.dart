@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_message_widget.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/edit_button.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/service_item_card.dart';
@@ -133,7 +133,7 @@ class _ServiceListCardState extends State<ServiceListCard> {
           ),
         ),
         Text(
-          Formatters.formatPrice(scheduling.totalPriceCalculated),
+          DataConverter.formatPrice(scheduling.totalPriceCalculated),
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
@@ -157,7 +157,7 @@ class _ServiceListCardState extends State<ServiceListCard> {
           ),
         ),
         Text(
-          Formatters.formatPrice(value),
+          DataConverter.formatPrice(value),
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w500,

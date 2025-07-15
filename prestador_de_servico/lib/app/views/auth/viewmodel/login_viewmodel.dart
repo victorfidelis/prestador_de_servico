@@ -8,7 +8,6 @@ class LoginViewModel extends ChangeNotifier {
   final Function(User user) onLoginSuccessful;
 
   bool isLoginLoading = false;
-  bool isLoginSuccessful = false;
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -51,7 +50,6 @@ class LoginViewModel extends ChangeNotifier {
     if (signInEither.isLeft) {
       genericErrorMessage = signInEither.left!.message;
     } else {
-      isLoginSuccessful = true;
       onLoginSuccessful(signInEither.right!);
       _clearControllers();
     }

@@ -3,7 +3,7 @@ import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_message_widget.dart';
 
 class CustomSchedulingCard extends StatefulWidget {
@@ -33,15 +33,15 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
 
   @override
   Widget build(BuildContext context) {
-    final startHour = Formatters.defaultFormatHoursAndMinutes(
+    final startHour = DataConverter.defaultFormatHoursAndMinutes(
       scheduling.startDateAndTime.hour,
       scheduling.startDateAndTime.minute,
     );
-    final endHour = Formatters.defaultFormatHoursAndMinutes(
+    final endHour = DataConverter.defaultFormatHoursAndMinutes(
       scheduling.endDateAndTime.hour,
       scheduling.endDateAndTime.minute,
     );
-    final formatPriceToPay = Formatters.formatPrice(scheduling.totalPriceCalculated);
+    final formatPriceToPay = DataConverter.formatPrice(scheduling.totalPriceCalculated);
     Color statusColor = ColorsUtils.getColorFromStatus(context, scheduling.serviceStatus);
     final finishedSealIcon = _getFinishedSealIcon();
     final othersValues = _getOtherValues();
@@ -182,7 +182,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
   }
 
   Widget _serviceItemList(Service service) {
-    final formatPrice = Formatters.formatPrice(service.price);
+    final formatPrice = DataConverter.formatPrice(service.price);
 
     return Row(
       mainAxisSize: MainAxisSize.min,
@@ -241,7 +241,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
   Widget _getOtherValues() {
     final prices = scheduling.services.map((s) => s.price).toList();
     final totalServicesPrice = prices.reduce((s1, s2) => s1 + s2);
-    final formatServicesPrice = Formatters.formatPrice(totalServicesPrice);
+    final formatServicesPrice = DataConverter.formatPrice(totalServicesPrice);
     Widget subTotalWidget = Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -256,7 +256,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
 
     Widget totalRateWidget = Container();
     if (scheduling.totalRate > 0) {
-      final formatRate = Formatters.formatPrice(scheduling.totalRate);
+      final formatRate = DataConverter.formatPrice(scheduling.totalRate);
       totalRateWidget = Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -272,7 +272,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
 
     Widget totalDiscountWidget = Container();
     if (scheduling.totalDiscount > 0) {
-      final formatDiscount = Formatters.formatPrice(scheduling.totalDiscount);
+      final formatDiscount = DataConverter.formatPrice(scheduling.totalDiscount);
       totalDiscountWidget = Row(
         mainAxisSize: MainAxisSize.min,
         children: [

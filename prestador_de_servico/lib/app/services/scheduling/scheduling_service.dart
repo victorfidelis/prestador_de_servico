@@ -11,7 +11,7 @@ import 'package:prestador_de_servico/app/repositories/image/image_repository.dar
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 
 class SchedulingService {
   final SchedulingRepository onlineRepository;

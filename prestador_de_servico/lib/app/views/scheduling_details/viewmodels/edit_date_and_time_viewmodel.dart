@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_date_and_time_state.dart';
 
 class EditDateAndTimeViewModel extends ChangeNotifier {
@@ -26,19 +26,19 @@ class EditDateAndTimeViewModel extends ChangeNotifier {
   EditDateAndTimeViewModel({required this.schedulingService});
 
   DateTime? get startDateAndTime {
-    if (schedulingDate.value == null || !Formatters.isTime(startTime)) {
+    if (schedulingDate.value == null || !DataConverter.isTime(startTime)) {
       return null;
     }
-    return Formatters.concatDateAndHours(
+    return DataConverter.concatDateAndHours(
       schedulingDate.value!,
       startTime,
     );
   }
   DateTime? get endDateAndTime {
-    if (schedulingDate.value == null || !Formatters.isTime(endTime.value)) {
+    if (schedulingDate.value == null || !DataConverter.isTime(endTime.value)) {
       return null;
     }
-    return Formatters.concatDateAndHours(
+    return DataConverter.concatDateAndHours(
       schedulingDate.value!,
       endTime.value,
     );
@@ -60,7 +60,7 @@ class EditDateAndTimeViewModel extends ChangeNotifier {
   }
 
   void setEndTime() {
-    endTime.value = Formatters.addMinutes(startTime, serviceTimeInMinutes);
+    endTime.value = DataConverter.addMinutes(startTime, serviceTimeInMinutes);
     endTimeError.value = null;
   }
 
@@ -74,11 +74,11 @@ class EditDateAndTimeViewModel extends ChangeNotifier {
       schedulingDateError.value = 'Adicionar a data';
       isValid = false;
     }
-    if (!Formatters.isTime(startTime)) {
+    if (!DataConverter.isTime(startTime)) {
       startTimeError.value = 'Adicionar hora';
       isValid = false;
     }
-    if (!Formatters.isTime(endTime.value)) {
+    if (!DataConverter.isTime(endTime.value)) {
       endTimeError.value = 'Adicionar hora';
       isValid = false;
     }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/shared/utils/network/network_helpers.dart';
 import 'package:prestador_de_servico/app/shared/widgets/image_card.dart';
 
@@ -64,7 +64,7 @@ class _ServiceCardState extends State<ServiceCard> {
                       children: [
                         Expanded(
                           child: Text(
-                            Formatters.formatHoursAndMinutes(
+                            DataConverter.formatHoursAndMinutes(
                                 widget.service.hours, widget.service.minutes),
                             style: const TextStyle(
                               fontSize: 14,
@@ -73,7 +73,7 @@ class _ServiceCardState extends State<ServiceCard> {
                           ),
                         ),
                         Text(
-                          Formatters.formatPrice(widget.service.price),
+                          DataConverter.formatPrice(widget.service.price),
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,

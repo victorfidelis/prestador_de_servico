@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_card.dart';
 
 class SchedulesByDayCard extends StatefulWidget {
@@ -27,7 +27,7 @@ class _SchedulesByDayCardState extends State<SchedulesByDayCard> {
 
   @override
   Widget build(BuildContext context) {
-    final formatDay = Formatters.defaultFormatDate(schedulesByDay.day);
+    final formatDay = DataConverter.defaultFormatDate(schedulesByDay.day);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,

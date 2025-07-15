@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/edit_button.dart';
 
 class DateAndTimeCard extends StatefulWidget {
@@ -89,7 +89,7 @@ class _DateAndTimeCardState extends State<DateAndTimeCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    Formatters.defaultFormatDate(startDateAndTime),
+                    DataConverter.defaultFormatDate(startDateAndTime),
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w700,
@@ -108,7 +108,7 @@ class _DateAndTimeCardState extends State<DateAndTimeCard> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        Formatters.defaultFormatHoursAndMinutes(
+                        DataConverter.defaultFormatHoursAndMinutes(
                           startDateAndTime.hour,
                           startDateAndTime.minute,
                         ),
@@ -127,7 +127,7 @@ class _DateAndTimeCardState extends State<DateAndTimeCard> {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        Formatters.defaultFormatHoursAndMinutes(
+                        DataConverter.defaultFormatHoursAndMinutes(
                           endDateAndTime.hour,
                           endDateAndTime.minute,
                         ),

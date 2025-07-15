@@ -1,7 +1,7 @@
 import 'package:prestador_de_servico/app/models/user/user.dart';
 import 'package:prestador_de_servico/app/repositories/user/user_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 
 class ClientService {
   final UserRepository userRepository; 

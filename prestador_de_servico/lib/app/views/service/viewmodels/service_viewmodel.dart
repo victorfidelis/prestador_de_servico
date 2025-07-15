@@ -17,7 +17,7 @@ class ServiceViewModel extends ChangeNotifier {
   List<ServiceCategory> serviceCategoriesFiltered = [];
 
   String? serviceErrorMessage;
-  ValueNotifier<String?> notificationMessage = ValueNotifier(null);
+  ValueNotifier<String?> notificationMessage = ValueNotifier(null); 
 
   ServiceViewModel({
     required this.serviceCategoryService,

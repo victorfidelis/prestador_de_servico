@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day_list.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_horizontal_calendar_card.dart';
 
 class CustomHorizontalCalendar extends StatefulWidget {
@@ -32,7 +32,7 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
   void initState() {
     schedulingDayList = SchedulingDayList(value: widget.schedulesPerDay);
     loadSelectedDay();
-    selectedMonth.value = Formatters.getMonthName(selectedDay.month);
+    selectedMonth.value = DataConverter.getMonthName(selectedDay.month);
     selectedYear.value = selectedDay.year.toString();
     scrollController = ScrollController(initialScrollOffset: getPositionScroll(widget.initialDate));
     scrollController.addListener(onScroll);
@@ -115,7 +115,7 @@ class _CustomHorizontalCalendarState extends State<CustomHorizontalCalendar> {
 
   void onScroll() {
     final int index = (scrollController.offset / cardWidth).floor();
-    selectedMonth.value = Formatters.getMonthName(schedulingDayList.value[index].date.month);
+    selectedMonth.value = DataConverter.getMonthName(schedulingDayList.value[index].date.month);
     selectedYear.value = schedulingDayList.value[index].date.year.toString();
   }
 

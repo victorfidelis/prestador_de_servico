@@ -5,7 +5,7 @@ import 'package:prestador_de_servico/app/repositories/config/firebase_initialize
 import 'package:prestador_de_servico/app/repositories/service/service/service_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 
 class FirebaseServiceRepository implements ServiceRepository {
   final _firebaseInitializer = FirebaseInitializer();

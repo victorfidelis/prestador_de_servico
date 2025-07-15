@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 
 class SchedulingDayTitle extends StatelessWidget {
   final DateTime date;
@@ -20,7 +20,7 @@ class SchedulingDayTitle extends StatelessWidget {
           ),
         ),
         Text(
-          Formatters.defaultFormatDate(date),
+          DataConverter.defaultFormatDate(date),
           style: TextStyle(
             fontSize: 24,
             color: Theme.of(context).colorScheme.primary,

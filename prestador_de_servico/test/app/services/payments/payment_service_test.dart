@@ -5,7 +5,7 @@ import 'package:prestador_de_servico/app/repositories/payment/payment_repository
 import 'package:prestador_de_servico/app/services/payments/payment_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 
 class MockPaymentRepository extends Mock implements PaymentRepository {}
 

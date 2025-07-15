@@ -12,7 +12,7 @@ import 'package:prestador_de_servico/app/services/sync/sync_service_category_ser
 import 'package:prestador_de_servico/app/services/sync/sync_service_day_service.dart';
 import 'package:prestador_de_servico/app/services/sync/sync_service_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 import 'package:prestador_de_servico/app/shared/states/sync/sync_state.dart';
 
 class MockSyncRepository extends Mock implements SyncRepository {}

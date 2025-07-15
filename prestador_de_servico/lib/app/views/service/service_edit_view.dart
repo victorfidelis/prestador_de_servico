@@ -1,22 +1,20 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/services/service/service_service.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
+import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/views/service/viewmodels/service_edit_viewmodel.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/hours_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/minutes_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
-import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_image_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/views/service/states/service_edit_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/custom_text_name.dart';
 import 'package:provider/provider.dart';
 
@@ -35,34 +33,22 @@ class ServiceEditView extends StatefulWidget {
 
 class _ServiceEditViewState extends State<ServiceEditView> {
   late final ServiceEditViewModel serviceEditViewModel;
-  final CustomNotifications notifications = CustomNotifications();
-
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController priceController = TextEditingController();
-  final TextEditingController hoursController = TextEditingController();
-  final TextEditingController minutesController = TextEditingController();
-  String? imageUrl;
-  File? imageFile;
-
-  late bool isUpdate;
-
-  late ServiceCategory serviceCategory;
-  Service? service;
 
   @override
   void initState() {
     serviceEditViewModel = ServiceEditViewModel(
       offlineImageService: context.read<OfflineImageService>(),
       serviceService: context.read<ServiceService>(),
+      serviceCategory: widget.serviceCategory,
+      service: widget.service,
+      onEditSuccessful: _onEditSuccessful,
     );
 
-    serviceCategory = widget.serviceCategory;
-    service = widget.service;
-
-    isUpdate = (service != null);
-    if (isUpdate) {
-      _loadFieldsWithService(service: service!);
-    }
+    serviceEditViewModel.notificationMessage.addListener(() {
+      if (serviceEditViewModel.notificationMessage.value != null) {
+        CustomNotifications().showSnackBar(context: context, message: serviceEditViewModel.notificationMessage.value!);
+      }
+    });
 
     super.initState();
   }
@@ -70,10 +56,6 @@ class _ServiceEditViewState extends State<ServiceEditView> {
   @override
   void dispose() {
     serviceEditViewModel.dispose();
-    nameController.dispose();
-    priceController.dispose();
-    hoursController.dispose();
-    minutesController.dispose();
     super.dispose();
   }
 
@@ -87,17 +69,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
             ListenableBuilder(
               listenable: serviceEditViewModel,
               builder: (context, _) {
-                if (serviceEditViewModel.state is ServiceEditSuccess) {
-                  WidgetsBinding.instance.addPostFrameCallback(
-                    (_) {
-                      Service service = (serviceEditViewModel.state as ServiceEditSuccess).service;
-                      Navigator.pop(context, service);
-                    },
-                  );
-                  return const SliverToBoxAdapter();
-                }
-
-                if (serviceEditViewModel.state is ServiceEditLoading) {
+                if (serviceEditViewModel.serviceEditLoading) {
                   return const SliverFillRemaining(
                     child: Center(
                       child: CustomLoading(),
@@ -105,34 +77,9 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                   );
                 }
 
-                if (serviceEditViewModel.state is PickImageError) {
-                  final pickImageErroState = (serviceEditViewModel.state as PickImageError);
-                  WidgetsBinding.instance.addPostFrameCallback(
-                    (_) {
-                      notifications.showSnackBar(context: context, message: pickImageErroState.message);
-                    },
-                  );
-                }
-
-                if (serviceEditViewModel.state is PickImageSuccess) {
-                  final pickImageSuccessState = (serviceEditViewModel.state as PickImageSuccess);
-                  imageFile = pickImageSuccessState.imageFile;
-                }
-
-                String? nameErrorMessage;
-                String? priceErrorMessage;
-                String? hoursAndMinutesErrorMessage;
-                String? genericErrorMessage;
                 Widget genericErrorWidget = const SizedBox(height: 18);
-
-                if (serviceEditViewModel.state is ServiceEditError) {
-                  nameErrorMessage = (serviceEditViewModel.state as ServiceEditError).nameMessage;
-                  priceErrorMessage = (serviceEditViewModel.state as ServiceEditError).priceMessage;
-                  hoursAndMinutesErrorMessage = (serviceEditViewModel.state as ServiceEditError).hoursAndMinutesMessage;
-                  genericErrorMessage = (serviceEditViewModel.state as ServiceEditError).genericMessage;
-                  if (genericErrorMessage != null) {
-                    genericErrorWidget = CustomTextError(message: genericErrorMessage);
-                  }
+                if (serviceEditViewModel.genericErrorMessage != null) {
+                  genericErrorWidget = CustomTextError(message: serviceEditViewModel.genericErrorMessage!);
                 }
 
                 return SliverToBoxAdapter(
@@ -142,7 +89,8 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                       children: [
                         Row(
                           children: [
-                            CustomText(text: (isUpdate ? 'Alterando categoria' : 'Nova categoria')),
+                            CustomText(
+                                text: (serviceEditViewModel.isUpdate ? 'Alterando categoria' : 'Nova categoria')),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -150,18 +98,20 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Column(
                             children: [
-                              isUpdate ? CustomTextName(text: service!.name) : Container(),
-                              isUpdate ? const SizedBox(height: 12) : Container(),
+                              serviceEditViewModel.isUpdate
+                                  ? CustomTextName(text: serviceEditViewModel.service!.name)
+                                  : const SizedBox(),
+                              serviceEditViewModel.isUpdate ? const SizedBox(height: 12) : const SizedBox(),
                               CustomTextField(
                                 label: 'Nome',
-                                controller: nameController,
-                                errorMessage: nameErrorMessage,
+                                controller: serviceEditViewModel.nameController,
+                                errorMessage: serviceEditViewModel.nameErrorMessage,
                               ),
                               const SizedBox(height: 20),
                               CustomTextField(
                                 label: 'Valor',
-                                controller: priceController,
-                                errorMessage: priceErrorMessage,
+                                controller: serviceEditViewModel.priceController,
+                                errorMessage: serviceEditViewModel.priceErrorMessage,
                                 isNumeric: true,
                                 inputFormatters: [MoneyTextInputFormatter()],
                               ),
@@ -171,7 +121,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                                   Expanded(
                                     child: CustomTextField(
                                       label: 'Horas',
-                                      controller: hoursController,
+                                      controller: serviceEditViewModel.hoursController,
                                       isNumeric: true,
                                       inputFormatters: [HoursTextInputFormatter()],
                                     ),
@@ -180,29 +130,29 @@ class _ServiceEditViewState extends State<ServiceEditView> {
                                   Expanded(
                                     child: CustomTextField(
                                       label: 'Minutos',
-                                      controller: minutesController,
+                                      controller: serviceEditViewModel.minutesController,
                                       isNumeric: true,
                                       inputFormatters: [MinutesTextInputFormatter()],
                                     ),
                                   ),
                                 ],
                               ),
-                              hoursAndMinutesErrorMessage == null
-                                  ? Container()
+                              serviceEditViewModel.hoursAndMinutesErrorMessage == null
+                                  ? const SizedBox()
                                   : Column(
                                       mainAxisSize: MainAxisSize.min,
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       children: [
                                         const SizedBox(height: 16),
-                                        CustomTextError(message: hoursAndMinutesErrorMessage),
+                                        CustomTextError(message: serviceEditViewModel.hoursAndMinutesErrorMessage!),
                                       ],
                                     ),
                               const SizedBox(height: 20),
                               CustomImageField(
-                                onTap: _onSelectImage,
+                                onTap: serviceEditViewModel.pickImageFromGallery,
                                 label: 'Imagem',
-                                imageUrl: imageUrl,
-                                imageFile: imageFile,
+                                imageUrl: serviceEditViewModel.imageUrl,
+                                imageFile: serviceEditViewModel.imageFile,
                               ),
                               const SizedBox(height: 150),
                             ],
@@ -222,7 +172,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
       floatingActionButton: ListenableBuilder(
         listenable: serviceEditViewModel,
         builder: (context, _) {
-          if (serviceEditViewModel.state is ServiceEditLoading || serviceEditViewModel.state is ServiceEditSuccess) {
+          if (serviceEditViewModel.serviceEditLoading) {
             return const SizedBox();
           }
 
@@ -233,7 +183,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
             ),
             child: CustomButton(
               label: 'Salvar',
-              onTap: _save,
+              onTap: serviceEditViewModel.saveService,
             ),
           );
         },
@@ -241,73 +191,7 @@ class _ServiceEditViewState extends State<ServiceEditView> {
     );
   }
 
-  void _loadFieldsWithService({required Service service}) {
-    nameController.text = service.name;
-    priceController.text = service.price.toString().replaceAll('.', ',');
-    if (service.hours == 0) {
-      hoursController.text = '';
-    } else {
-      hoursController.text = service.hours.toString();
-    }
-    if (service.minutes == 0) {
-      minutesController.text = '';
-    } else {
-      minutesController.text = service.minutes.toString();
-    }
-    if (service.imageUrl.isNotEmpty) {
-      imageUrl = service.imageUrl;
-    }
-  }
-
-  void _save() {
-    Service serviceEdit = _createServiceObject();
-
-    if (isUpdate) {
-      serviceEditViewModel.validateAndUpdate(service: serviceEdit);
-    } else {
-      serviceEditViewModel.validateAndInsert(service: serviceEdit);
-    }
-  }
-
-  Service _createServiceObject() {
-    final id = service?.id ?? '';
-    final serviceCategoryId = serviceCategory.id;
-    final name = nameController.text.trim();
-
-    var textPrice = priceController.text.trim().replaceAll(',', '.');
-    if (textPrice.endsWith('.')) {
-      textPrice += '0';
-    }
-    if (textPrice.isEmpty) {
-      textPrice = '0';
-    }
-    final price = double.parse(textPrice);
-
-    var textHours = hoursController.text.trim();
-    if (textHours.isEmpty) {
-      textHours = '0';
-    }
-    final hours = int.parse(textHours);
-
-    var textMinutes = minutesController.text.trim();
-    if (textMinutes.isEmpty) {
-      textMinutes = '0';
-    }
-    final minutes = int.parse(textMinutes);
-
-    return Service(
-      id: id,
-      serviceCategoryId: serviceCategoryId,
-      name: name,
-      price: price,
-      hours: hours,
-      minutes: minutes,
-      imageUrl: imageUrl ?? '',
-      imageFile: imageFile,
-    );
-  }
-
-  void _onSelectImage() {
-    serviceEditViewModel.pickImageFromGallery();
+  void _onEditSuccessful(Service service) {
+    Navigator.pop(context, service);
   }
 }

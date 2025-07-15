@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 
 class CustomSchedulingMessageWidget extends StatelessWidget {
   final Scheduling scheduling;
@@ -36,7 +36,7 @@ class CustomSchedulingMessageWidget extends StatelessWidget {
         ),
       );
     } else if (scheduling.isPaid) {
-      final totalPaid = Formatters.formatPrice(scheduling.totalPaid);
+      final totalPaid = DataConverter.formatPrice(scheduling.totalPaid);
       return Text(
         'Serviço pago ($totalPaid)',
         style: TextStyle(
@@ -46,7 +46,7 @@ class CustomSchedulingMessageWidget extends StatelessWidget {
         ),
       );
     } else if (!scheduling.isPaid && scheduling.serviceStatus.isAccept()) {
-      final needToPay = Formatters.formatPrice(scheduling.needToPay);
+      final needToPay = DataConverter.formatPrice(scheduling.needToPay);
       return Text(
         '$needToPay pendente',
         style: TextStyle(

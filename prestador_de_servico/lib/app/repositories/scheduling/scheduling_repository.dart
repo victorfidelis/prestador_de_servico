@@ -3,7 +3,7 @@ import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.da
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/firebase_scheduling_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 
 abstract class SchedulingRepository {
   factory SchedulingRepository.createOnline() {

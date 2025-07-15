@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/address/address.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:replace_diacritic/replace_diacritic.dart';
@@ -26,7 +26,7 @@ class _AddressCardState extends State<AddressCard> {
 
   @override
   Widget build(BuildContext context) {
-    final formatZipCode = Formatters.formatZipCode(address.zipCode);
+    final formatZipCode = DataConverter.formatZipCode(address.zipCode);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -72,7 +72,7 @@ class _AddressCardState extends State<AddressCard> {
 
   Future<void> openUrl() async {
     var textUrl =
-        'https://www.google.com/maps/place/${address.street.trim()},+${address.number.trim()},+${Formatters.formatZipCode(address.zipCode)}';
+        'https://www.google.com/maps/place/${address.street.trim()},+${address.number.trim()},+${DataConverter.formatZipCode(address.zipCode)}';
     textUrl = textUrl.replaceAll(' ', '+');
     textUrl = replaceDiacritic(textUrl);
     final uri = Uri.parse(textUrl);

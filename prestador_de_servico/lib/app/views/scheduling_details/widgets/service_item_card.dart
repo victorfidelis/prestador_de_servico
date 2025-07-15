@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduled_service/scheduled_service.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 
 class ServiceItemCard extends StatelessWidget {
   final ScheduledService service;
@@ -10,7 +10,7 @@ class ServiceItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    final formatPrice = Formatters.formatPrice(service.price);
+    final formatPrice = DataConverter.formatPrice(service.price);
 
       Color backColor;
       if (service.removed) {

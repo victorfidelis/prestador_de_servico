@@ -1,6 +1,6 @@
 import 'package:prestador_de_servico/app/repositories/auth/firebase_auth_repository.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 
 abstract class AuthRepository {
 

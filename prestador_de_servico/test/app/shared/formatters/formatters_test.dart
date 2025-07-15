@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 
 void main() {
   group(
@@ -11,7 +11,7 @@ void main() {
           const double price = 5;
           const textPriceExpect = 'R\$ 5,00';
 
-          final textPrice = Formatters.formatPrice(price);
+          final textPrice = DataConverter.formatPrice(price);
 
           expect(textPrice, equals(textPriceExpect));
         },
@@ -23,7 +23,7 @@ void main() {
           const double price = 5.98;
           const textPriceExpect = 'R\$ 5,98';
 
-          final textPrice = Formatters.formatPrice(price);
+          final textPrice = DataConverter.formatPrice(price);
 
           expect(textPrice, equals(textPriceExpect));
         },
@@ -35,7 +35,7 @@ void main() {
           const double price = 5000.98;
           const textPriceExpect = 'R\$ 5.000,98';
 
-          final textPrice = Formatters.formatPrice(price);
+          final textPrice = DataConverter.formatPrice(price);
 
           expect(textPrice, equals(textPriceExpect));
         },
@@ -47,7 +47,7 @@ void main() {
           const double price = 59875123.99;
           const textPriceExpect = 'R\$ 59.875.123,99';
 
-          final textPrice = Formatters.formatPrice(price);
+          final textPrice = DataConverter.formatPrice(price);
 
           expect(textPrice, equals(textPriceExpect));
         },
@@ -65,7 +65,7 @@ void main() {
           const int minutes = 0;
           const hoursAndMinutesExpect = '';
 
-          final hoursAndMinutes = Formatters.formatHoursAndMinutes(hours, minutes);
+          final hoursAndMinutes = DataConverter.formatHoursAndMinutes(hours, minutes);
 
           expect(hoursAndMinutes, equals(hoursAndMinutesExpect));
         },
@@ -78,7 +78,7 @@ void main() {
           const int minutes = 0;
           const hoursAndMinutesExpect = '1 h';
 
-          final hoursAndMinutes = Formatters.formatHoursAndMinutes(hours, minutes);
+          final hoursAndMinutes = DataConverter.formatHoursAndMinutes(hours, minutes);
 
           expect(hoursAndMinutes, equals(hoursAndMinutesExpect));
         },
@@ -91,7 +91,7 @@ void main() {
           const int minutes = 10;
           const hoursAndMinutesExpect = '1 h e 10 min';
 
-          final hoursAndMinutes = Formatters.formatHoursAndMinutes(hours, minutes);
+          final hoursAndMinutes = DataConverter.formatHoursAndMinutes(hours, minutes);
 
           expect(hoursAndMinutes, equals(hoursAndMinutesExpect));
         },
@@ -104,7 +104,7 @@ void main() {
           const int minutes = 10;
           const hoursAndMinutesExpect = '10 min';
 
-          final hoursAndMinutes = Formatters.formatHoursAndMinutes(hours, minutes);
+          final hoursAndMinutes = DataConverter.formatHoursAndMinutes(hours, minutes);
 
           expect(hoursAndMinutes, equals(hoursAndMinutesExpect));
         },

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
@@ -205,7 +205,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
         ),
         const SizedBox(width: 6),
         Text(
-          Formatters.formatPrice(editViewModel.scheduling.totalPriceCalculated),
+          DataConverter.formatPrice(editViewModel.scheduling.totalPriceCalculated),
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.w500,
@@ -230,7 +230,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
             ),
           ),
           Text(
-            Formatters.formatPrice(editViewModel.scheduling.totalPrice),
+            DataConverter.formatPrice(editViewModel.scheduling.totalPrice),
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,

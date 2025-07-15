@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
-import 'package:prestador_de_servico/app/shared/utils/formatters/formatters.dart';
+import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/money_text_input_formatter.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
@@ -49,9 +49,9 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
     final themeColor = Theme.of(context).colorScheme;
     final customColor = Theme.of(context).extension<CustomColors>()!;
 
-    final totalPrice = Formatters.formatPrice(paymentViewModel.scheduling.totalPriceCalculated);
-    final needToPay = Formatters.formatPrice(paymentViewModel.scheduling.needToPay);
-    final totalPaid = Formatters.formatPrice(paymentViewModel.scheduling.totalPaid);
+    final totalPrice = DataConverter.formatPrice(paymentViewModel.scheduling.totalPriceCalculated);
+    final needToPay = DataConverter.formatPrice(paymentViewModel.scheduling.needToPay);
+    final totalPaid = DataConverter.formatPrice(paymentViewModel.scheduling.totalPaid);
 
     return Scaffold(
       body: SafeArea(
@@ -166,7 +166,7 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
   }
 
   void confirmSave() {
-    final value = Formatters.formatPrice(paymentViewModel.valueToPay);
+    final value = DataConverter.formatPrice(paymentViewModel.valueToPay);
 
     notifications.showQuestionAlert(
       context: context,

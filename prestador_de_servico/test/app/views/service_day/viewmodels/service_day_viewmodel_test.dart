@@ -5,7 +5,7 @@ import 'package:prestador_de_servico/app/views/service_day/viewmodels/service_da
 import 'package:prestador_de_servico/app/models/service_day/service_day.dart';
 import 'package:prestador_de_servico/app/services/service_day/service_day_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either.dart';
-import 'package:prestador_de_servico/app/shared/utils/failure/failure.dart';
+import 'package:prestador_de_servico/app/shared/utils/failure.dart';
 import 'package:prestador_de_servico/app/views/service_day/states/service_day_state.dart';
 
 class MockServiceDayRepository extends Mock implements ServiceDayRepository {}

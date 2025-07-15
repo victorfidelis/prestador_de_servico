@@ -1,6 +1,6 @@
 import 'package:prestador_de_servico/app/shared/utils/extensions/string_extensions.dart';
 
-class Formatters {
+class DataConverter {
   static String formatZipCode(String zipCode) {
     return '${zipCode.substring(0, 5)}-${zipCode.substring(5, 8)}';
   }
@@ -160,18 +160,17 @@ class Formatters {
     minutos %= 60;
     horas %= 24;
 
-    String novaHora =
-        "${horas.toString().padLeft(2, '0')}:${minutos.toString().padLeft(2, '0')}";
+    String novaHora = "${horas.toString().padLeft(2, '0')}:${minutos.toString().padLeft(2, '0')}";
 
     return novaHora;
-  } 
+  }
 
   static DateTime concatDateAndHours(DateTime date, String time) {
     if (!isTime(time)) {
       throw const FormatException('Hora com um formato inválido.');
-    } 
+    }
 
-    final parts = time.split(':'); 
+    final parts = time.split(':');
     final int hours = int.parse(parts[0]);
     final int minutes = int.parse(parts[1]);
 
@@ -179,12 +178,39 @@ class Formatters {
     date = date.add(Duration(minutes: minutes));
 
     return date;
-  } 
+  }
 
   static String formatDateISO8601(DateTime date) {
     final day = date.day.toString().padLeft(2, '0');
     final month = date.month.toString().padLeft(2, '0');
     final year = date.year.toString();
     return '$year-$month-$day';
+  }
+
+  static double textToPrice(String text) {
+    var textPrice = text.trim().replaceAll(',', '.');
+    if (textPrice.endsWith('.')) {
+      textPrice += '0';
+    }
+    if (textPrice.isEmpty) {
+      textPrice = '0';
+    }
+    return double.parse(textPrice);
+  }
+
+  static int textToHour(String text) {
+    var textHours = text.trim();
+    if (textHours.isEmpty) {
+      textHours = '0';
+    }
+    return int.parse(textHours);
+  }
+
+  static int textToMinute(String text) {
+    var textMinutes = text.trim();
+    if (textMinutes.isEmpty) {
+      textMinutes = '0';
+    }
+    return int.parse(textMinutes);
   }
 }
