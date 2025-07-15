@@ -1,6 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/shared/utils/network/network_helpers.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 
 class ImageCard extends StatefulWidget {
@@ -19,19 +18,14 @@ class ImageCard extends StatefulWidget {
 }
 
 class _ImageCardState extends State<ImageCard> {
-  final NetworkHelpers networkHelpers = NetworkHelpers();
-  ValueNotifier<Widget> image = ValueNotifier(
+  final ValueNotifier<Widget> image = ValueNotifier(
     Image.asset('assets/images/sem_imagem.jpg', fit: BoxFit.cover),
   );
 
   @override
-  void initState() {
-    _loadImage();
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    _loadImage();
+
     return GestureDetector(
       onLongPress: widget.onLongPress,
       child: Container(
@@ -61,7 +55,7 @@ class _ImageCardState extends State<ImageCard> {
     );
   }
 
-  Future<void> _loadImage() async {
+  void _loadImage() {
     image.value = CachedNetworkImage(
       imageUrl: widget.imageUrl,
       placeholder: (context, url) => const Center(

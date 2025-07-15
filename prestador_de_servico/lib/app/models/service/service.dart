@@ -17,7 +17,7 @@ class Service {
 
   String get nameWithoutDiacritics => replaceDiacritic(name);
 
-  String get imageName => 'images/services/${id}_01.png';
+  String get imageName => 'images/services/${id}_01_${DateTime.now().millisecondsSinceEpoch}.png';
 
   Service({
     required this.id,

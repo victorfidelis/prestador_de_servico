@@ -201,7 +201,7 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
         'serviceCategory': serviceCategoryToShowAll,
         'removeServiceOfOtherScreen': _removeService,
         'addServiceOfOtherScreen': _addServiceOfScreenWithoutScrool,
-        'editServiceOfOtherScreen': _editServiceOfScreen
+        'editServiceOfOtherScreen': _editService
       },
     );
   }
@@ -265,11 +265,11 @@ class _ServiceCategoryCardState extends State<ServiceCategoryCard> with TickerPr
     );
 
     if (result != null) {
-      _editServiceOfScreen(service: result as Service);
+      _editService(service: result as Service);
     }
   }
 
-  void _editServiceOfScreen({required Service service}) {
+  void _editService({required Service service}) {
     final index = serviceCategory.services.indexWhere((s) => s.id == service.id);
     serviceCategory.services[index] = service;
 
