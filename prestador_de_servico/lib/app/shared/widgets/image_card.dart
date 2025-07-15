@@ -18,13 +18,25 @@ class ImageCard extends StatefulWidget {
 }
 
 class _ImageCardState extends State<ImageCard> {
-  final ValueNotifier<Widget> image = ValueNotifier(
-    Image.asset('assets/images/sem_imagem.jpg', fit: BoxFit.cover),
-  );
-
   @override
   Widget build(BuildContext context) {
-    _loadImage();
+    Widget image;
+
+    if (widget.imageUrl.isEmpty) {
+      image = Image.asset('assets/images/sem_imagem.jpg', fit: BoxFit.cover);
+    } else {
+      image = CachedNetworkImage(
+        imageUrl: widget.imageUrl,
+        placeholder: (context, url) => const Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.0),
+            child: CustomLoading(),
+          ),
+        ),
+        errorWidget: (context, url, error) => Image.asset('assets/images/imagem_indisponivel.jpg', fit: BoxFit.cover),
+        fit: BoxFit.cover,
+      );
+    }
 
     return GestureDetector(
       onLongPress: widget.onLongPress,
@@ -44,28 +56,9 @@ class _ImageCardState extends State<ImageCard> {
         ),
         child: ClipRRect(
           borderRadius: const BorderRadius.all(Radius.circular(12)),
-          child: ListenableBuilder(
-            listenable: image,
-            builder: (context, _) {
-              return image.value;
-            },
-          ),
+          child: image,
         ),
       ),
-    );
-  }
-
-  void _loadImage() {
-    image.value = CachedNetworkImage(
-      imageUrl: widget.imageUrl,
-      placeholder: (context, url) => const Center(
-        child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 30.0),
-          child: CustomLoading(),
-        ),
-      ),
-      errorWidget: (context, url, error) => Image.asset('assets/images/imagem_indisponivel.jpg'),
-      fit: BoxFit.cover,
     );
   }
 }

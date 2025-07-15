@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 
 class CustomImageField extends StatelessWidget {
   final Function() onTap;
@@ -18,12 +20,25 @@ class CustomImageField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Image image;
-    
+    Widget image;
+
     if (imageFile != null) {
       image = Image.file(imageFile!, fit: BoxFit.fitWidth);
     } else if (imageUrl != null && imageUrl!.isNotEmpty) {
-      image = Image.network(imageUrl!, fit: BoxFit.fitWidth);
+      image = CachedNetworkImage(
+        imageUrl: imageUrl!,
+        placeholder: (context, url) => const Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.0),
+            child: Padding(
+              padding: EdgeInsets.all(30.0),
+              child: CustomLoading(),
+            ),
+          ),
+        ),
+        errorWidget: (context, url, error) => Image.asset('assets/images/imagem_indisponivel.jpg', fit: BoxFit.cover),
+        fit: BoxFit.cover,
+      );
     } else {
       image = Image.asset('assets/images/adicionar_imagem.jpg');
     }
