@@ -14,7 +14,6 @@ class ServiceEditViewModel extends ChangeNotifier {
   final OfflineImageService offlineImageService;
   final ServiceCategory serviceCategory;
   Service? service;
-  final Function(Service service) onEditSuccessful;
 
   bool serviceEditLoading = false;
 
@@ -31,14 +30,13 @@ class ServiceEditViewModel extends ChangeNotifier {
   String? priceErrorMessage;
   String? hoursAndMinutesErrorMessage;
   ValueNotifier<String?> notificationMessage = ValueNotifier(null);
+  ValueNotifier<bool> editSuccessful = ValueNotifier(false);
   
-
   ServiceEditViewModel({
     required this.serviceService,
     required this.offlineImageService,
     required this.serviceCategory,
     required this.service,
-    required this.onEditSuccessful,
   }) {
     isUpdate = (service != null);
     _loadFields();
@@ -110,7 +108,9 @@ class ServiceEditViewModel extends ChangeNotifier {
     if (saveEither.isLeft) {
       genericErrorMessage = saveEither.left!.message;
     } else {
-      onEditSuccessful(saveEither.right!);
+      service = saveEither.right!;
+      editSuccessful.value = true;
+      _setNotificationMessage('Serviço salvo com sucesso!');
     }
 
     notifyListeners();

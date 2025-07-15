@@ -41,12 +41,17 @@ class _ServiceEditViewState extends State<ServiceEditView> {
       serviceService: context.read<ServiceService>(),
       serviceCategory: widget.serviceCategory,
       service: widget.service,
-      onEditSuccessful: _onEditSuccessful,
     );
 
     serviceEditViewModel.notificationMessage.addListener(() {
       if (serviceEditViewModel.notificationMessage.value != null) {
         CustomNotifications().showSnackBar(context: context, message: serviceEditViewModel.notificationMessage.value!);
+      }
+    });
+
+    serviceEditViewModel.editSuccessful.addListener(() {
+      if (serviceEditViewModel.editSuccessful.value) {
+        Navigator.pop(context, serviceEditViewModel.service!);
       }
     });
 
@@ -189,9 +194,5 @@ class _ServiceEditViewState extends State<ServiceEditView> {
         },
       ),
     );
-  }
-
-  void _onEditSuccessful(Service service) {
-    Navigator.pop(context, service);
   }
 }
