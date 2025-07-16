@@ -13,6 +13,12 @@ class PaymentViewModel extends ChangeNotifier {
   ValueNotifier<String?> notificationMessage = ValueNotifier(null);
 
   PaymentViewModel({required this.paymentService});
+
+  @override
+  void dispose() {
+    notificationMessage.dispose();
+    super.dispose();
+  }
   
   bool get hasError => errorMessage != null;
 

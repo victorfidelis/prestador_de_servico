@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/service_day/service_day_service.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
+import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/views/service_day/viewmodels/service_day_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/views/service_day/widgets/custom_service_day_card.dart';
@@ -21,6 +22,13 @@ class _ServiceDayViewState extends State<ServiceDayView> {
     serviceDayViewModel = ServiceDayViewModel(
       serviceDayService: context.read<ServiceDayService>(),
     );
+
+    serviceDayViewModel.notificationMessage.addListener(() {
+      if (serviceDayViewModel.notificationMessage.value != null) {
+        CustomNotifications().showSnackBar(context: context, message: serviceDayViewModel.notificationMessage.value!);
+      }
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) => serviceDayViewModel.load());
     super.initState();
   }
