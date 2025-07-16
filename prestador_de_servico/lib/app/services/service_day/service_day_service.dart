@@ -16,9 +16,24 @@ class ServiceDayService {
   });
 
   Future<Either<Failure, List<ServiceDay>>> getAll() async {
-    return await offlineRepository.getAll();
-  }
+    final getAllEither = await offlineRepository.getAll();
+    if (getAllEither.isLeft) {
+      return Either.left(getAllEither.left);
+    }
 
+    final serviceDays = getAllEither.right!;
+    serviceDays.sort((s1, s2) {
+      if (s1.dayOfWeek > s2.dayOfWeek) {
+        return 1;
+      }
+      if (s1.dayOfWeek < s2.dayOfWeek) {
+        return -1;
+      }
+      return 0;
+    });
+
+    return Either.right(serviceDays);
+  }
 
   Future<Either<Failure, ServiceDay>> update({required ServiceDay serviceDay}) async {
     final updateOnlineEither = await onlineRepository.update(serviceDay: serviceDay);

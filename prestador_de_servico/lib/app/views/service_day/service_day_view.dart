@@ -3,7 +3,6 @@ import 'package:prestador_de_servico/app/services/service_day/service_day_servic
 import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
 import 'package:prestador_de_servico/app/views/service_day/viewmodels/service_day_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
-import 'package:prestador_de_servico/app/views/service_day/states/service_day_state.dart';
 import 'package:prestador_de_servico/app/views/service_day/widgets/custom_service_day_card.dart';
 import 'package:provider/provider.dart';
 
@@ -42,51 +41,35 @@ class _ServiceDayViewState extends State<ServiceDayView> {
             ListenableBuilder(
               listenable: serviceDayViewModel,
               builder: (context, _) {
-                if (serviceDayViewModel.state is ServiceDayInitial) {
-                  return const SliverFillRemaining();
-                }
-        
-                if (serviceDayViewModel.state is ServiceDayError) {
+                if (serviceDayViewModel.hasError) {
                   return SliverFillRemaining(
                     child: Center(
-                      child: Text((serviceDayViewModel.state as ServiceDayError).message),
+                      child: Text(serviceDayViewModel.errorMessage!),
                     ),
                   );
                 }
-        
-                if (serviceDayViewModel.state is ServiceDayLoading) {
+
+                if (serviceDayViewModel.serviceDayLoading) {
                   return const SliverFillRemaining(
                     child: Center(
                       child: CustomLoading(),
                     ),
                   );
                 }
-        
-                final serviceDays = (serviceDayViewModel.state as ServiceDayLoaded).serviceDays;
-        
-                serviceDays.sort((s1, s2) {
-                  if (s1.dayOfWeek > s2.dayOfWeek) {
-                    return 1;
-                  }
-                  if (s1.dayOfWeek < s2.dayOfWeek) {
-                    return -1;
-                  }
-                  return 0;
-                });
-        
+
                 return SliverPadding(
                   padding: const EdgeInsets.symmetric(
                     vertical: 6,
                     horizontal: 18,
                   ),
                   sliver: SliverList.builder(
-                    itemCount: serviceDays.length + 1,
+                    itemCount: serviceDayViewModel.serviceDays.length + 1,
                     itemBuilder: (context, index) {
-                      if (index == serviceDays.length) {
+                      if (index == serviceDayViewModel.serviceDays.length) {
                         return const SizedBox(height: 80);
                       }
                       return CustomServiceDayCard(
-                        serviceDay: serviceDays[index],
+                        serviceDay: serviceDayViewModel.serviceDays[index],
                         changeStateOfServiceDay: serviceDayViewModel.update,
                       );
                     },
