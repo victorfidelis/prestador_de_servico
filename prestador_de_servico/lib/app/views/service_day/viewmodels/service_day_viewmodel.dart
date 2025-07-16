@@ -33,6 +33,7 @@ class ServiceDayViewModel extends ChangeNotifier {
   }
 
   Future<void> load() async {
+    _clearErrors();
     _setServiceDayLoading(true);
 
     final getAllEither = await serviceDayService.getAll();
@@ -66,5 +67,9 @@ class ServiceDayViewModel extends ChangeNotifier {
     }
 
     notifyListeners();
+  }
+
+  void _clearErrors() {
+    errorMessage = null;  
   }
 }

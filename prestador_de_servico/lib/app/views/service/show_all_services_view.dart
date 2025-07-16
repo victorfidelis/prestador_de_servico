@@ -100,10 +100,10 @@ class _ShowAllServicesViewState extends State<ShowAllServicesView> {
             ListenableBuilder(
               listenable: showAllServicesViewModel,
               builder: (context, _) {
-                if (showAllServicesViewModel.hasServiceError) {
+                if (showAllServicesViewModel.hasError) {
                   return SliverFillRemaining(
                     child: Center(
-                      child: Text(showAllServicesViewModel.serviceErrorMessage!),
+                      child: Text(showAllServicesViewModel.errorMessage!),
                     ),
                   );
                 }

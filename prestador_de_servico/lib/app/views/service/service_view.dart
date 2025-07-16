@@ -84,10 +84,10 @@ class _ServiceViewState extends State<ServiceView> {
             ListenableBuilder(
               listenable: serviceViewModel,
               builder: (context, _) {
-                if (serviceViewModel.hasServiceError) {
+                if (serviceViewModel.hasError) {
                   return SliverFillRemaining(
                     child: Center(
-                      child: Text(serviceViewModel.serviceErrorMessage!),
+                      child: Text(serviceViewModel.errorMessage!),
                     ),
                   );
                 }

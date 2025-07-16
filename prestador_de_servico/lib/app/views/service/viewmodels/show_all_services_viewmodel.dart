@@ -14,7 +14,7 @@ class ShowAllServicesViewModel extends ChangeNotifier {
   ServiceCategory serviceCategory;
   List<Service> servicesFiltered = [];
 
-  String? serviceErrorMessage;
+  String? errorMessage;
   ValueNotifier<String?> notificationMessage = ValueNotifier(null);
 
   ShowAllServicesViewModel({
@@ -28,7 +28,7 @@ class ShowAllServicesViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  bool get hasServiceError => serviceErrorMessage != null;
+  bool get hasError => errorMessage != null;
 
   void _setServiceFiltered(bool value) {
     serviceFiltered = value;

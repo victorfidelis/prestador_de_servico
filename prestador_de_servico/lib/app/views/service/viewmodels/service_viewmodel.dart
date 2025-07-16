@@ -16,7 +16,7 @@ class ServiceViewModel extends ChangeNotifier {
   List<ServiceCategory> serviceCategories = [];
   List<ServiceCategory> serviceCategoriesFiltered = [];
 
-  String? serviceErrorMessage;
+  String? errorMessage;
   ValueNotifier<String?> notificationMessage = ValueNotifier(null); 
 
   ServiceViewModel({
@@ -30,7 +30,7 @@ class ServiceViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  bool get hasServiceError => serviceErrorMessage != null;
+  bool get hasError => errorMessage != null;
 
   void _setServiceLoading(bool value) {
     serviceLoading = value;
@@ -48,11 +48,12 @@ class ServiceViewModel extends ChangeNotifier {
   }
 
   Future<void> load() async {
+    _clearErrors();
     _setServiceLoading(true);
 
     final getAllEither = await serviceCategoryService.getAllWithServices();
     if (getAllEither.isLeft) {
-      serviceErrorMessage = getAllEither.left!.message;
+      errorMessage = getAllEither.left!.message;
     } else {
       serviceCategories = getAllEither.right!;
     }
@@ -114,7 +115,7 @@ class ServiceViewModel extends ChangeNotifier {
 
     final getAllEither = await serviceCategoryService.getAllWithServices();
     if (getAllEither.isLeft) {
-      serviceErrorMessage = getAllEither.left!.message;
+      errorMessage = getAllEither.left!.message;
     } else {
       serviceCategories = getAllEither.right!;
     }
@@ -133,11 +134,15 @@ class ServiceViewModel extends ChangeNotifier {
 
     final getAllEither = await serviceCategoryService.getAllWithServices();
     if (getAllEither.isLeft) {
-      serviceErrorMessage = getAllEither.left!.message;
+      errorMessage = getAllEither.left!.message;
     } else {
       serviceCategories = getAllEither.right!;
     }
 
     _setServiceLoading(false);
+  } 
+
+  void _clearErrors() {
+    errorMessage = null;
   }
 }
