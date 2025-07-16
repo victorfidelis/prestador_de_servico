@@ -1,66 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/models/scheduling_day/scheduling_day.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/views/scheduling/states/days_state.dart';
+import 'package:prestador_de_servico/app/views/scheduling/viewmodels/type_view.dart';
 
 class DaysViewModel extends ChangeNotifier {
   final SchedulingService schedulingService;
-  bool _dispose = false;
+  final ValueNotifier<DateTime> selectedDay = ValueNotifier(DateTime.now());
+  List<SchedulingDay> schedulesPerDay = [];
+  TypeView typeView = TypeView.main;
 
-  DaysState _state = DaysInitial();
-  DaysState get state => _state;
-  void _emitState(DaysState currentState) {
-    _state = currentState;
-    if (!_dispose) notifyListeners();
-  }
+  bool daysLoading = false;
 
-  @override
-  void dispose() {
-    _dispose = true;
-    super.dispose();
-  }
+  String? errorMessage;
 
   DaysViewModel({required this.schedulingService});
 
-  Future<void> load(DateTime selectedDay) async {
-    TypeView typeView = TypeView.main;
-    if (state is DaysLoaded) {
-      typeView = (state as DaysLoaded).typeView;
+  bool get hasError => errorMessage != null;
+
+  void _setDaysLoading(bool value) {
+    daysLoading = value;
+    notifyListeners();
+  }
+
+  Future<void> load() async {
+    _setDaysLoading(true);
+
+    final daysEither = await schedulingService.getDates(selectedDay.value);
+    if (daysEither.isLeft) {
+      errorMessage = daysEither.left!.message;
+    } else {
+      schedulesPerDay = daysEither.right!;
     }
 
-    _emitState(DaysLoading());
-    final daysEither = await schedulingService.getDates(selectedDay);
-    if (daysEither.isLeft) {
-      _emitState(DaysError(daysEither.left!.message));
-    } else {
-      _emitState(DaysLoaded(dates: daysEither.right!, typeView: typeView));
-    }
+    _setDaysLoading(false);
   }
 
   void changeTypeView(TypeView typeView) {
-    if (state is! DaysLoaded) {
+    if (daysLoading) {
       return;
     }
 
-    final newState = (state as DaysLoaded).copyWith(typeView: typeView);
-
-    _emitState(newState);
+    this.typeView = typeView;
+    notifyListeners();
   }
 
   void changeSelectedDay(DateTime date) {
-    if (state is! DaysLoaded) {
+    if (daysLoading || selectedDay.value == date) {
       return;
     }
 
-    final dates = (state as DaysLoaded).dates;
+    selectedDay.value = date;
 
-    final int indexForCurrentDate = dates.indexWhere((d) => d.date == date);
-    final int indexForOldDate = dates.indexWhere((d) => d.isSelected);
+    final int indexForCurrentDate = schedulesPerDay.indexWhere((d) => d.date == date);
+    final int indexForOldDate = schedulesPerDay.indexWhere((d) => d.isSelected);
 
-    dates[indexForCurrentDate] = dates[indexForCurrentDate].copyWith(isSelected: true);
+    schedulesPerDay[indexForCurrentDate] = schedulesPerDay[indexForCurrentDate].copyWith(isSelected: true);
 
     if (indexForCurrentDate != indexForOldDate && indexForOldDate >= 0) {
-      dates[indexForOldDate] = dates[indexForOldDate].copyWith(isSelected: false);
+      schedulesPerDay[indexForOldDate] = schedulesPerDay[indexForOldDate].copyWith(isSelected: false);
     }
+  }
+
+  void changeToToday() {
+    final actualDateTime = DateTime.now();
+    selectedDay.value = DateTime(actualDateTime.year, actualDateTime.month, actualDateTime.day);
   }
 }

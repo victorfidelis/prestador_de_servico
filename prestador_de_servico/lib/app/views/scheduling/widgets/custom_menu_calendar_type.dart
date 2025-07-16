@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:prestador_de_servico/app/views/scheduling/states/days_state.dart';
+import 'package:prestador_de_servico/app/views/scheduling/viewmodels/type_view.dart';
 import 'package:prestador_de_servico/app/views/scheduling/widgets/custom_type_calendar.dart';
 
 class CustomMenuCalendarType extends StatelessWidget {
