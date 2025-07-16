@@ -42,6 +42,17 @@ class ServiceEditViewModel extends ChangeNotifier {
     _loadFields();
   }
 
+  @override
+  void dispose() {
+    nameController.dispose();
+    priceController.dispose();
+    hoursController.dispose();
+    minutesController.dispose();
+    notificationMessage.dispose();
+    editSuccessful.dispose();
+    super.dispose();
+  }
+
   void _setServiceLoading(bool value) {
     serviceEditLoading = value;
     notifyListeners();

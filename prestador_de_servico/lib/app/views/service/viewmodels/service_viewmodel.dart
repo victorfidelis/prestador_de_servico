@@ -24,6 +24,12 @@ class ServiceViewModel extends ChangeNotifier {
     required this.serviceService,
   });
 
+  @override
+  void dispose() {
+    notificationMessage.dispose();
+    super.dispose();
+  }
+
   bool get hasServiceError => serviceErrorMessage != null;
 
   void _setServiceLoading(bool value) {

@@ -22,6 +22,12 @@ class ShowAllServicesViewModel extends ChangeNotifier {
     required this.serviceCategory,
   });
 
+  @override
+  void dispose() {
+    notificationMessage.dispose();
+    super.dispose();
+  }
+
   bool get hasServiceError => serviceErrorMessage != null;
 
   void _setServiceFiltered(bool value) {
