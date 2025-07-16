@@ -2,68 +2,98 @@ import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/service_category/service_cartegory.dart';
 import 'package:prestador_de_servico/app/services/service/service_category_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/views/service/states/service_category_edit_state.dart';
 
 class ServiceCategoryEditViewModel extends ChangeNotifier {
   final ServiceCategoryService serviceCategoryService;
+  ServiceCategory? serviceCategory;
+  late bool isUpdate;
 
-  ServiceCategoryEditState _state = ServiceCategoryEditInitial();
-  ServiceCategoryEditState get state => _state;
-  void _emitState(ServiceCategoryEditState currentState) {
-    _state = currentState;
+  bool categoryLoading = false;
+
+  final TextEditingController nameController = TextEditingController();
+
+  String? nameErrorMessage;
+  String? genericErrorMessage;
+  ValueNotifier<bool> editSuccessful = ValueNotifier(false);
+
+  ServiceCategoryEditViewModel({required this.serviceCategoryService, required this.serviceCategory}) {
+    isUpdate = (serviceCategory != null);
+    _loadFields();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    editSuccessful.dispose();
+    super.dispose();
+  }
+
+  void _setCategoryEditLoading(bool value) {
+    categoryLoading = value;
     notifyListeners();
   }
 
-  ServiceCategoryEditViewModel({required this.serviceCategoryService});
-
-  Future<void> validateAndInsert({required ServiceCategory serviceCategory}) async {
-    if (state is ServiceCategoryEditLoading) {
+  void _loadFields() {
+    if (!isUpdate) {
       return;
     }
 
-    _emitState(ServiceCategoryEditLoading());
-
-    final validEither = _validade(serviceCategory: serviceCategory);
-    if (validEither is ServiceCategoryEditError) {
-      _emitState(validEither);
-      return;
-    }
-
-    final insertEither = await serviceCategoryService.insert(serviceCategory: serviceCategory);
-    if (insertEither.isLeft) {
-      _emitState(ServiceCategoryEditError(genericMessage: insertEither.left!.message));
-      return;
-    }
-
-    _emitState(ServiceCategoryEditSuccess(serviceCategory: insertEither.right!));
+    nameController.text = serviceCategory!.name;
   }
 
-  Future<void> validateAndUpdate({required ServiceCategory serviceCategory}) async {
-    if (state is ServiceCategoryEditLoading) {
+  Future<void> save() async {
+    if (categoryLoading) {
       return;
     }
 
-    _emitState(ServiceCategoryEditLoading());
-
-    final validEither = _validade(serviceCategory: serviceCategory);
-    if (validEither is ServiceCategoryEditError) {
-      _emitState(validEither);
+    _clearErrors();
+    if (!_validade()) {
+      notifyListeners();
       return;
     }
 
-    final updateEither = await serviceCategoryService.update(serviceCategory: serviceCategory);
-    if (updateEither.isLeft) {
-      _emitState(ServiceCategoryEditError(genericMessage: updateEither.left!.message));
-      return;
+    _setCategoryEditLoading(true);
+
+    final serviceCategoryToSave = ServiceCategory(
+      id: serviceCategory?.id ?? '',
+      name: nameController.text,
+    );
+
+    if (isUpdate) {
+      final updateEither = await serviceCategoryService.update(serviceCategory: serviceCategoryToSave);
+      if (updateEither.isLeft) {
+        genericErrorMessage = updateEither.left!.message;
+      } else {
+        serviceCategory = serviceCategoryToSave;
+        editSuccessful.value = true;
+      }
+    } else {
+      final insertEither = await serviceCategoryService.insert(serviceCategory: serviceCategoryToSave);
+      if (insertEither.isLeft) {
+        genericErrorMessage = insertEither.left!.message;
+      } else {
+        serviceCategory = insertEither.right!;
+        editSuccessful.value = true;
+      }
     }
 
-    _emitState(ServiceCategoryEditSuccess(serviceCategory: serviceCategory));
+    _setCategoryEditLoading(false);
   }
 
-  ServiceCategoryEditState _validade({required ServiceCategory serviceCategory}) {
-    if (serviceCategory.name.trim().isEmpty) {
-      return ServiceCategoryEditError(nameMessage: 'Necessário informar o nome');
+  bool _validade() {
+    bool isValid = true;
+
+    nameController.text = nameController.text.trim();
+    if (nameController.text.isEmpty) {
+      nameErrorMessage = 'Necessário informar o nome';
+      isValid = false;
     }
-    return ServiceCategoryEditValidated();
+
+    return isValid;
+  }
+
+  void _clearErrors() {
+    nameErrorMessage = null;
+    genericErrorMessage = null;
   }
 }

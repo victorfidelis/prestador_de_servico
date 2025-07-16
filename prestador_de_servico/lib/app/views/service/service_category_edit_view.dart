@@ -8,7 +8,6 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_error.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
-import 'package:prestador_de_servico/app/views/service/states/service_category_edit_state.dart';
 import 'package:prestador_de_servico/app/views/service/widgets/custom_text_name.dart';
 import 'package:provider/provider.dart';
 
@@ -21,30 +20,27 @@ class ServiceCategoryEditView extends StatefulWidget {
 }
 
 class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
-  late final ServiceCategoryEditViewModel serviceCategoryEditViewModel;
-  final TextEditingController nameController = TextEditingController();
-  late bool isUpdate;
-  ServiceCategory? serviceCategory;
+  late final ServiceCategoryEditViewModel categoryEditViewModel;
 
   @override
   void initState() {
-    serviceCategoryEditViewModel = ServiceCategoryEditViewModel(
+    categoryEditViewModel = ServiceCategoryEditViewModel(
       serviceCategoryService: context.read<ServiceCategoryService>(),
+      serviceCategory: widget.serviceCategory,
     );
 
-    serviceCategory = widget.serviceCategory;
-    isUpdate = (serviceCategory != null);
-    if (isUpdate) {
-      nameController.text = serviceCategory!.name;
-    }
+    categoryEditViewModel.editSuccessful.addListener(() {
+      if (categoryEditViewModel.editSuccessful.value) {
+        Navigator.pop(context, categoryEditViewModel.serviceCategory!);
+      }
+    });
 
     super.initState();
   }
 
   @override
   void dispose() {
-    serviceCategoryEditViewModel.dispose();
-    nameController.dispose();
+    categoryEditViewModel.dispose();
     super.dispose();
   }
 
@@ -56,37 +52,21 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
           slivers: [
             const SliverFloatingHeader(child: CustomHeader(title: 'Serviços')),
             ListenableBuilder(
-              listenable: serviceCategoryEditViewModel,
+              listenable: categoryEditViewModel,
               builder: (context, _) {
-                if (serviceCategoryEditViewModel.state is ServiceCategoryEditSuccess) {
-                  WidgetsBinding.instance.addPostFrameCallback((_) {
-                    ServiceCategory serviceCategory =
-                        (serviceCategoryEditViewModel.state as ServiceCategoryEditSuccess).serviceCategory;
-                    Navigator.pop(context, serviceCategory);
-                  });
-                  return const SliverToBoxAdapter();
-                }
-        
-                if (serviceCategoryEditViewModel.state is ServiceCategoryEditLoading) {
+                if (categoryEditViewModel.categoryLoading) {
                   return const SliverFillRemaining(
                     child: Center(
                       child: CustomLoading(),
                     ),
                   );
                 }
-        
-                String? nameErrorMessage;
-                String? genericErrorMessage;
+
                 Widget genericErrorWidget = const SizedBox(height: 18);
-        
-                if (serviceCategoryEditViewModel.state is ServiceCategoryEditError) {
-                  nameErrorMessage = (serviceCategoryEditViewModel.state as ServiceCategoryEditError).nameMessage;
-                  genericErrorMessage = (serviceCategoryEditViewModel.state as ServiceCategoryEditError).genericMessage;
-                  if (genericErrorMessage != null) {
-                    genericErrorWidget = CustomTextError(message: genericErrorMessage);
-                  }
+                if (categoryEditViewModel.genericErrorMessage != null) {
+                  genericErrorWidget = CustomTextError(message: categoryEditViewModel.genericErrorMessage!);
                 }
-        
+
                 return SliverToBoxAdapter(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
@@ -94,7 +74,9 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
                       children: [
                         Row(
                           children: [
-                            CustomText(text: (isUpdate ? 'Alterando categoria' : 'Nova categoria')),
+                            CustomText(
+                              text: (categoryEditViewModel.isUpdate ? 'Alterando categoria' : 'Nova categoria'),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -102,12 +84,14 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
                           padding: const EdgeInsets.symmetric(horizontal: 10),
                           child: Column(
                             children: [
-                              isUpdate ? CustomTextName(text: serviceCategory!.name) : Container(),
-                              isUpdate ? const SizedBox(height: 12) : Container(),
+                              categoryEditViewModel.isUpdate
+                                  ? CustomTextName(text: categoryEditViewModel.serviceCategory!.name)
+                                  : const SizedBox(),
+                              categoryEditViewModel.isUpdate ? const SizedBox(height: 12) : const SizedBox(),
                               CustomTextField(
                                 label: 'Nome',
-                                controller: nameController,
-                                errorMessage: nameErrorMessage,
+                                controller: categoryEditViewModel.nameController,
+                                errorMessage: categoryEditViewModel.nameErrorMessage,
                               ),
                             ],
                           ),
@@ -124,11 +108,10 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: ListenableBuilder(
-        listenable: serviceCategoryEditViewModel,
+        listenable: categoryEditViewModel,
         builder: (context, _) {
-          if (serviceCategoryEditViewModel.state is ServiceCategoryEditLoading ||
-              serviceCategoryEditViewModel.state is ServiceCategoryEditSuccess) {
-            return Container();
+          if (categoryEditViewModel.categoryLoading || categoryEditViewModel.editSuccessful.value) {
+            return const SizedBox();
           }
 
           return Padding(
@@ -138,24 +121,11 @@ class _ServiceCategoryEditViewState extends State<ServiceCategoryEditView> {
             ),
             child: CustomButton(
               label: 'Salvar',
-              onTap: _save,
+              onTap: categoryEditViewModel.save,
             ),
           );
         },
       ),
     );
-  }
-
-  void _save() {
-    ServiceCategory serviceCategoryEdit = ServiceCategory(
-      id: serviceCategory?.id ?? '',
-      name: nameController.text,
-    );
-
-    if (isUpdate) {
-      serviceCategoryEditViewModel.validateAndUpdate(serviceCategory: serviceCategoryEdit);
-    } else {
-      serviceCategoryEditViewModel.validateAndInsert(serviceCategory: serviceCategoryEdit);
-    }
   }
 }

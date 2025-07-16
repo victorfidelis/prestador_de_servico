@@ -113,7 +113,7 @@ class ServiceEditViewModel extends ChangeNotifier {
       _setNotificationMessage('Serviço salvo com sucesso!');
     }
 
-    notifyListeners();
+    _setServiceLoading(false);
   }
 
   bool _validateService() {
