@@ -63,7 +63,7 @@ class _PendingProviderSchedulesViewState extends State<PendingProviderSchedulesV
                 }
 
                 return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                   sliver: SliverList.builder(
                     itemCount: pendingProviderViewModel.schedulesByDays.length + 1,
                     itemBuilder: (context, index) {

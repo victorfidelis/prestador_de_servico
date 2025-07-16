@@ -3,7 +3,6 @@ import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.
 import 'package:prestador_de_servico/app/shared/widgets/custom_empty_list.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
-import 'package:prestador_de_servico/app/views/pending_schedules/states/pending_schedules_state.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/viewmodels/pending_payment_schedules_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/pending_schedules/widgets/schedules_by_day_card.dart';
 import 'package:provider/provider.dart';
@@ -16,15 +15,15 @@ class PendingPaymentSchedulesView extends StatefulWidget {
 }
 
 class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesView> {
-  late final PendingPaymentSchedulesViewModel pendingPaymentSchedulesViewModel;
+  late final PendingPaymentSchedulesViewModel pendingPaymentViewModel;
 
   @override
   void initState() {
-    pendingPaymentSchedulesViewModel = PendingPaymentSchedulesViewModel(
+    pendingPaymentViewModel = PendingPaymentSchedulesViewModel(
       schedulingService: context.read<SchedulingService>(),
     );
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      pendingPaymentSchedulesViewModel.load();
+      pendingPaymentViewModel.load();
     });
     super.initState();
   }
@@ -37,21 +36,17 @@ class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesVie
           slivers: [
             const SliverFloatingHeader(child: CustomHeader(title: 'Pagamentos Pendentes', height: 100)),
             ListenableBuilder(
-              listenable: pendingPaymentSchedulesViewModel,
+              listenable: pendingPaymentViewModel,
               builder: (context, _) {
-                if (pendingPaymentSchedulesViewModel.state is PendingInitial) {
-                  return const SliverToBoxAdapter();
-                }
-        
-                if (pendingPaymentSchedulesViewModel.state is PendingError) {
+                if (pendingPaymentViewModel.hasError) {
                   return SliverFillRemaining(
                     child: Center(
-                      child: Text((pendingPaymentSchedulesViewModel.state as PendingError).message),
+                      child: Text(pendingPaymentViewModel.errorMessage!),
                     ),
                   );
                 }
-        
-                if (pendingPaymentSchedulesViewModel.state is PendingLoading) {
+
+                if (pendingPaymentViewModel.pendingLoading) {
                   return SliverFillRemaining(
                     child: Container(
                       padding: const EdgeInsets.only(top: 28),
@@ -59,25 +54,22 @@ class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesVie
                     ),
                   );
                 }
-        
-                final schedulesByDays =
-                    (pendingPaymentSchedulesViewModel.state as PendingLoaded).schedulesByDays;
-        
-                if (schedulesByDays.isEmpty) {
+
+                if (pendingPaymentViewModel.schedulesByDays.isEmpty) {
                   return const SliverFillRemaining(child: CustomEmptyList(label: 'Nenhum pagamento pendente'));
                 }
-                
+
                 return SliverPadding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
                   sliver: SliverList.builder(
-                    itemCount: schedulesByDays.length + 1,
+                    itemCount: pendingPaymentViewModel.schedulesByDays.length + 1,
                     itemBuilder: (context, index) {
-                      if (index == schedulesByDays.length) {
+                      if (index == pendingPaymentViewModel.schedulesByDays.length) {
                         return const SizedBox(height: 150);
                       }
-        
+
                       return SchedulesByDayCard(
-                        schedulesByDay: schedulesByDays[index],
+                        schedulesByDay: pendingPaymentViewModel.schedulesByDays[index],
                       );
                     },
                   ),
