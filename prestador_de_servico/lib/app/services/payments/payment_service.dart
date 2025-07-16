@@ -16,9 +16,24 @@ class PaymentService {
   });
 
   Future<Either<Failure, List<Payment>>> getAll() async {
-    return await offlineRepository.getAll();
-  }
+    final paymentEither = await offlineRepository.getAll();
+    if (paymentEither.isLeft) {
+      return Either.left(paymentEither.left);
+    }
+    final payments = paymentEither.right!;
 
+    payments.sort((p1, p2) {
+      if (p1.paymentType.index > p2.paymentType.index) {
+        return 1;
+      }
+      if (p1.paymentType.index < p2.paymentType.index) {
+        return -1;
+      }
+      return 0;
+    });
+
+    return Either.right(payments);
+  }
 
   Future<Either<Failure, Payment>> update({required Payment payment}) async {
     final updateOnlineEither = await onlineRepository.update(payment: payment);

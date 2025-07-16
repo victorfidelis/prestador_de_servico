@@ -2,59 +2,63 @@ import 'package:flutter/foundation.dart';
 import 'package:prestador_de_servico/app/models/payment/payment.dart';
 import 'package:prestador_de_servico/app/services/payments/payment_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/views/payment/states/payment_state.dart';
 
 class PaymentViewModel extends ChangeNotifier {
   final PaymentService paymentService;
+  List<Payment> payments = [];
 
-  PaymentState _state = PaymentInitial();
-  PaymentState get state => _state;
-  void _emitState(PaymentState currentState) {
-    _state = currentState;
+  bool paymentLoading = false;
+
+  String? errorMessage;
+  ValueNotifier<String?> notificationMessage = ValueNotifier(null);
+
+  PaymentViewModel({required this.paymentService});
+  
+  bool get hasError => errorMessage != null;
+
+  void _setPaymentLoading(bool value) {
+    paymentLoading = value;
     notifyListeners();
   }
 
-  void _changeState(PaymentState currentState) {
-    _state = currentState;
+  void _setNotificationMessage(String value) {
+    notificationMessage.value = null; // É necessário para garantir o ValueNotifier vai notificar os ouvintes
+    notificationMessage.value = value;
   }
 
-  PaymentViewModel({required this.paymentService});
-
   Future<void> load() async {
-    _emitState(PaymentLoading());
+    _setPaymentLoading(true);
 
     final getAllEither = await paymentService.getAll();
     if (getAllEither.isLeft) {
-      _emitState(PaymentError(getAllEither.left!.message));
-      return;
+      errorMessage = getAllEither.left!.message;
+    } else {
+      payments = getAllEither.right!;
     }
 
-    _emitState(PaymentLoaded(payments: getAllEither.right!));
+    _setPaymentLoading(false);
   }
 
   Future<void> update({required Payment payment}) async {
-    if (_state is! PaymentLoaded) {
+    if (paymentLoading) {
       return;
     }
 
     final updateEither = await paymentService.update(payment: payment);
     if (updateEither.isRight) {
-      final payments = (_state as PaymentLoaded).payments;
       final paymentIndex = payments.indexWhere((p) => p.id == payment.id);
       payments[paymentIndex] = payment;
-      _changeState(PaymentLoaded(payments: payments));
       return;
     }
 
+    _setNotificationMessage(updateEither.left!.message);
     final getAllEither = await paymentService.getAll();
     if (getAllEither.isLeft) {
-      _emitState(PaymentError(updateEither.left!.message));
-      return;
+      errorMessage = updateEither.left!.message;
+    } else {
+      payments = getAllEither.right!;
     }
 
-    _emitState(PaymentLoaded(
-      payments: getAllEither.right!,
-      message: updateEither.left!.message,
-    ));
+    notifyListeners();
   }
 }
