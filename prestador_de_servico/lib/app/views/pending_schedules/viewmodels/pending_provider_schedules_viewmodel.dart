@@ -1,36 +1,40 @@
 import 'package:flutter/material.dart';
+import 'package:prestador_de_servico/app/models/schedules_by_day/schedules_by_day.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/views/pending_schedules/states/pending_schedules_state.dart';
 
 class PendingProviderSchedulesViewModel extends ChangeNotifier {
   final SchedulingService schedulingService;
+  List<SchedulesByDay> schedulesByDays = [];
 
-  PendingSchedulesState _state = PendingInitial();
-  PendingSchedulesState get state => _state;
-  void _emitState(PendingSchedulesState currentState) {
-    _state = currentState;
-    notifyListeners();
-  }
+  bool pendingLoading = false;
 
-  void _changeState(PendingSchedulesState currentState) {
-    _state = currentState;
-  }
+  String? errorMessage;
 
   PendingProviderSchedulesViewModel({required this.schedulingService});
 
-  Future<void> load() async {
-    _emitState(PendingLoading());
+  bool get hasError => errorMessage != null;
 
-    final pendingProviderSchedulesEither = await schedulingService.getPendingProviderSchedules();
-    if (pendingProviderSchedulesEither.isLeft) {
-      _emitState(PendingError(pendingProviderSchedulesEither.left!.message));
-    } else {
-      _emitState(PendingLoaded(schedulesByDays: pendingProviderSchedulesEither.right!));
-    }
+  void _setPendingLoading(bool value) {
+    pendingLoading = value;
+    notifyListeners();
   }
-  
-  void exit() {
-    _changeState(PendingInitial());
+
+  Future<void> load() async {
+    _clearError();
+    _setPendingLoading(true);
+
+    final pendingProviderEither = await schedulingService.getPendingProviderSchedules();
+    if (pendingProviderEither.isLeft) {
+      errorMessage = pendingProviderEither.left!.message;
+    } else {
+      schedulesByDays = pendingProviderEither.right!;
+    }
+
+    _setPendingLoading(false);
+  } 
+
+  void _clearError() {
+    errorMessage = null;
   }
 }
