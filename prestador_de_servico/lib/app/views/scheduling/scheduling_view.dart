@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
-import 'package:prestador_de_servico/app/shared/widgets/scheduling_list/scheduling_list.dart';
+import 'package:prestador_de_servico/app/shared/widgets/scheduling_list/sliver_scheduling_list.dart';
 import 'package:prestador_de_servico/app/views/scheduling/viewmodels/days_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/views/scheduling/viewmodels/type_view.dart';
@@ -110,7 +110,7 @@ class _SchedulingViewState extends State<SchedulingView> {
             ListenableBuilder(
               listenable: daysViewModel.selectedDay,
               builder: (context, _) {
-                return SchedulingList(
+                return SliverSchedulingList(
                   date: daysViewModel.selectedDay.value,
                   onSchedulingChanged: daysViewModel.load,
                 );

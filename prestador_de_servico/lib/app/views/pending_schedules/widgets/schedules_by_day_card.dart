@@ -5,11 +5,11 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_card.d
 
 class SchedulesByDayCard extends StatefulWidget {
   final SchedulesByDay schedulesByDay;
-  final Function()? refreshOriginPage;
+  final Function()? onSchedulingChanged;
   const SchedulesByDayCard({
     super.key,
     required this.schedulesByDay,
-    this.refreshOriginPage,
+    this.onSchedulingChanged,
   });
 
   @override
@@ -53,9 +53,22 @@ class _SchedulesByDayCardState extends State<SchedulesByDayCard> {
         .map(
           (scheduling) => CustomSchedulingCard(
             scheduling: scheduling,
-            onSchedulingChanged: widget.refreshOriginPage,
+            index: schedulesByDay.schedules.indexWhere((s) => s.id == scheduling.id),
+            onPressed: _editScheduling,
           ),
         )
         .toList();
+  }
+
+  void _editScheduling(int index) async {
+    final bool hasChange = await Navigator.pushNamed(
+      context,
+      '/schedulingDetails',
+      arguments: {'scheduling': schedulesByDay.schedules[index]},
+    ) as bool;
+
+    if (hasChange && widget.onSchedulingChanged != null) {
+      widget.onSchedulingChanged!();
+    }
   }
 }

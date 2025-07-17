@@ -8,18 +8,14 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_messag
 
 class CustomSchedulingCard extends StatefulWidget {
   final Scheduling scheduling;
-  final int? index;
-  final Function()? onSchedulingChanged;
-  final Function(int index)? onEditScheduling;
-  final bool isReadOnly;
+  final int index;
+  final Function(int index)? onPressed;
 
   const CustomSchedulingCard({
     super.key,
     required this.scheduling,
-    this.index,
-    this.onSchedulingChanged,
-    this.onEditScheduling,
-    this.isReadOnly = false,
+    required this.index,
+    this.onPressed,
   });
 
   @override
@@ -52,10 +48,10 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
 
     return GestureDetector(
       onTap: () {
-        if (widget.onEditScheduling == null) {
+        if (widget.onPressed == null) {
           return;
         }
-        widget.onEditScheduling?.call(widget.index ?? 0);
+        widget.onPressed!(widget.index);
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),

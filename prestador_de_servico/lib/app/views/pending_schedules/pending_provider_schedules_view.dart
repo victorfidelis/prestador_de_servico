@@ -57,7 +57,6 @@ class _PendingProviderSchedulesViewState extends State<PendingProviderSchedulesV
                   );
                 }
 
-
                 if (pendingProviderViewModel.schedulesByDays.isEmpty) {
                   return const SliverFillRemaining(child: CustomEmptyList(label: 'Nenhum agendamento pendente'));
                 }
@@ -73,7 +72,7 @@ class _PendingProviderSchedulesViewState extends State<PendingProviderSchedulesV
 
                       return SchedulesByDayCard(
                         schedulesByDay: pendingProviderViewModel.schedulesByDays[index],
-                        refreshOriginPage: () => pendingProviderViewModel.load(),
+                        onSchedulingChanged: () => pendingProviderViewModel.load(),
                       );
                     },
                   ),

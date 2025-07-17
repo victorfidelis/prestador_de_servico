@@ -3,20 +3,17 @@ import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/repositories/image/image_repository.dart';
 import 'package:prestador_de_servico/app/repositories/scheduling/scheduling_repository.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
-import 'package:prestador_de_servico/app/shared/states/scheduling/scheduling_state.dart';
 import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
 import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
 import 'package:prestador_de_servico/app/shared/utils/text_input_fomatters/time_text_input_formatter.dart';
-import 'package:prestador_de_servico/app/shared/viewmodels/scheduling/scheduling_viewmodel.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_button.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_card.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_data.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_filed_underline.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
+import 'package:prestador_de_servico/app/shared/widgets/scheduling_list/sliver_scheduling_list.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/edit_date_and_time_viewmodel.dart';
-import 'package:provider/provider.dart';
 
 class EditDateAndTimeView extends StatefulWidget {
   final Scheduling scheduling;
@@ -28,17 +25,12 @@ class EditDateAndTimeView extends StatefulWidget {
 
 class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   late EditDateAndTimeViewModel editDateAndTimeViewModel;
-  late SchedulingViewModel schedulingViewModel;
 
   final FocusNode dateFocus = FocusNode();
   final FocusNode timeFocus = FocusNode();
 
   @override
   void initState() {
-    schedulingViewModel = SchedulingViewModel(
-      schedulingService: context.read<SchedulingService>(),
-    );
-
     editDateAndTimeViewModel = EditDateAndTimeViewModel(
       schedulingService: SchedulingService(
         onlineRepository: SchedulingRepository.createOnline(),
@@ -68,7 +60,6 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   @override
   void dispose() {
     editDateAndTimeViewModel.dispose();
-    schedulingViewModel.dispose();
     dateFocus.dispose();
     timeFocus.dispose();
     super.dispose();
@@ -276,53 +267,15 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 6)),
               ListenableBuilder(
-                listenable: schedulingViewModel,
+                listenable: editDateAndTimeViewModel.schedulingDate,
                 builder: (context, _) {
-                  if (schedulingViewModel.state is SchedulingInitial) {
-                    return const SliverToBoxAdapter();
+                  if (editDateAndTimeViewModel.schedulingDate.value == null) {
+                    return const SliverToBoxAdapter(child: SizedBox());
                   }
 
-                  if (schedulingViewModel.state is SchedulingLoading) {
-                    return const SliverToBoxAdapter(
-                      child: Center(child: CustomLoading()),
-                    );
-                  }
-
-                  final schedules = (schedulingViewModel.state as SchedulingLoaded).schedules;
-
-                  if (schedules.isEmpty) {
-                    return SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 40),
-                        child: Center(
-                          child: Text(
-                            'Nenhum serviço agendado',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Theme.of(context).colorScheme.shadow,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-
-                  return SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverList.builder(
-                      itemCount: schedules.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == schedules.length) {
-                          return const SizedBox(height: 150);
-                        }
-
-                        return CustomSchedulingCard(
-                          scheduling: schedules[index],
-                          isReadOnly: true,
-                        );
-                      },
-                    ),
+                  return SliverSchedulingList(
+                    date: editDateAndTimeViewModel.schedulingDate.value!,
+                    isReadOnly: true,
                   );
                 },
               ),
@@ -368,7 +321,6 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
       return;
     }
 
-    schedulingViewModel.load(dateTime: newDate);
     editDateAndTimeViewModel.setSchedulingDate(newDate);
   }
 

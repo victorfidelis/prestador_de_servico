@@ -21,7 +21,7 @@ class PendingProviderSchedulesViewModel extends ChangeNotifier {
   }
 
   Future<void> load() async {
-    _clearError();
+    _clearErrors();
     _setPendingLoading(true);
 
     final pendingProviderEither = await schedulingService.getPendingProviderSchedules();
@@ -34,7 +34,7 @@ class PendingProviderSchedulesViewModel extends ChangeNotifier {
     _setPendingLoading(false);
   } 
 
-  void _clearError() {
+  void _clearErrors() {
     errorMessage = null;
   }
 }

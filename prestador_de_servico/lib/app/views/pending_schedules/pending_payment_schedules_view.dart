@@ -22,6 +22,7 @@ class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesVie
     pendingPaymentViewModel = PendingPaymentSchedulesViewModel(
       schedulingService: context.read<SchedulingService>(),
     );
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       pendingPaymentViewModel.load();
     });
@@ -35,6 +36,7 @@ class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesVie
         child: CustomScrollView(
           slivers: [
             const SliverFloatingHeader(child: CustomHeader(title: 'Pagamentos Pendentes', height: 100)),
+            const SliverToBoxAdapter(child: SizedBox(height: 10)),
             ListenableBuilder(
               listenable: pendingPaymentViewModel,
               builder: (context, _) {
@@ -47,10 +49,10 @@ class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesVie
                 }
 
                 if (pendingPaymentViewModel.pendingLoading) {
-                  return SliverFillRemaining(
-                    child: Container(
-                      padding: const EdgeInsets.only(top: 28),
-                      child: const Center(child: CustomLoading()),
+                  return const SliverFillRemaining(
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 28),
+                      child: Center(child: CustomLoading()),
                     ),
                   );
                 }
@@ -70,6 +72,7 @@ class _PendingPaymentSchedulesViewState extends State<PendingPaymentSchedulesVie
 
                       return SchedulesByDayCard(
                         schedulesByDay: pendingPaymentViewModel.schedulesByDays[index],
+                        onSchedulingChanged: () => pendingPaymentViewModel.load(),
                       );
                     },
                   ),

@@ -5,17 +5,17 @@ import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.d
 
 class PendingPaymentSchedulesViewModel extends ChangeNotifier {
   final SchedulingService schedulingService;
-  List<SchedulesByDay> schedulesByDays = []; 
+  List<SchedulesByDay> schedulesByDays = [];
 
   bool pendingLoading = false;
-  
+
   String? errorMessage;
 
   PendingPaymentSchedulesViewModel({required this.schedulingService});
 
-  bool get hasError => errorMessage != null; 
+  bool get hasError => errorMessage != null;
 
-void _setPendingLoading(bool value) {
+  void _setPendingLoading(bool value) {
     pendingLoading = value;
     notifyListeners();
   }
@@ -29,7 +29,7 @@ void _setPendingLoading(bool value) {
       errorMessage = pendingPaymentEither.left!.message;
     } else {
       schedulesByDays = pendingPaymentEither.right!;
-    } 
+    }
 
     _setPendingLoading(false);
   }

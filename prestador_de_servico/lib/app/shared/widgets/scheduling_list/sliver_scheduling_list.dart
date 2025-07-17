@@ -6,18 +6,18 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_card.d
 import 'package:prestador_de_servico/app/shared/widgets/scheduling_list/viewmodel/scheduling_list_viewmodel.dart';
 import 'package:provider/provider.dart';
 
-class SchedulingList extends StatefulWidget {
+class SliverSchedulingList extends StatefulWidget {
   final DateTime date;
   final Function()? onSchedulingChanged;
   final bool isReadOnly;
 
-  const SchedulingList({super.key, required this.date, this.onSchedulingChanged, this.isReadOnly = false});
+  const SliverSchedulingList({super.key, required this.date, this.onSchedulingChanged, this.isReadOnly = false});
 
   @override
-  State<SchedulingList> createState() => _SchedulingListState();
+  State<SliverSchedulingList> createState() => _SliverSchedulingListState();
 }
 
-class _SchedulingListState extends State<SchedulingList> {
+class _SliverSchedulingListState extends State<SliverSchedulingList> {
   late final SchedulingListViewModel schedulingListViewModel;
 
   @override
@@ -74,7 +74,7 @@ class _SchedulingListState extends State<SchedulingList> {
               return CustomSchedulingCard(
                 scheduling: schedulingListViewModel.schedules[index],
                 index: index,
-                onEditScheduling: _onEditScheduling,
+                onPressed: _editScheduling,
               );
             },
           ),
@@ -83,7 +83,7 @@ class _SchedulingListState extends State<SchedulingList> {
     );
   }
 
-  void _onEditScheduling(int index) async {
+  void _editScheduling(int index) async {
     if (widget.isReadOnly) {
       return;
     }
@@ -94,9 +94,11 @@ class _SchedulingListState extends State<SchedulingList> {
       arguments: {'scheduling': schedulingListViewModel.schedules[index]},
     ) as bool;
 
-    if (hasChange && widget.onSchedulingChanged != null) {
+    if (hasChange) {
       schedulingListViewModel.load(dateTime: widget.date);
-      widget.onSchedulingChanged!();
+      if (widget.onSchedulingChanged != null) {
+        widget.onSchedulingChanged!();
+      }
     }
   }
 }
