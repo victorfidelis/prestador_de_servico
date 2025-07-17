@@ -8,13 +8,17 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_messag
 
 class CustomSchedulingCard extends StatefulWidget {
   final Scheduling scheduling;
-  final Function()? refreshOriginPage;
+  final int? index;
+  final Function()? onSchedulingChanged;
+  final Function(int index)? onEditScheduling;
   final bool isReadOnly;
 
   const CustomSchedulingCard({
     super.key,
     required this.scheduling,
-    this.refreshOriginPage,
+    this.index,
+    this.onSchedulingChanged,
+    this.onEditScheduling,
     this.isReadOnly = false,
   });
 
@@ -47,7 +51,12 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
     final othersValues = _getOtherValues();
 
     return GestureDetector(
-      onTap: _onTap,
+      onTap: () {
+        if (widget.onEditScheduling == null) {
+          return;
+        }
+        widget.onEditScheduling?.call(widget.index ?? 0);
+      },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -163,22 +172,6 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
         ),
       ),
     );
-  }
-
-  void _onTap() async {
-    if (widget.isReadOnly) {
-      return;
-    }
-
-    final bool hasChange = await Navigator.pushNamed(
-      context,
-      '/schedulingDetails',
-      arguments: {'scheduling': scheduling},
-    ) as bool;
-
-    if (hasChange && widget.refreshOriginPage != null) {
-      widget.refreshOriginPage!();
-    }
   }
 
   Widget _serviceItemList(Service service) {

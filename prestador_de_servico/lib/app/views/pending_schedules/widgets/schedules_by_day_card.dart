@@ -53,7 +53,7 @@ class _SchedulesByDayCardState extends State<SchedulesByDayCard> {
         .map(
           (scheduling) => CustomSchedulingCard(
             scheduling: scheduling,
-            refreshOriginPage: widget.refreshOriginPage,
+            onSchedulingChanged: widget.refreshOriginPage,
           ),
         )
         .toList();
