@@ -15,7 +15,6 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_scheduling_card.d
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_data.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_filed_underline.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_date_and_time_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/edit_date_and_time_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -30,26 +29,39 @@ class EditDateAndTimeView extends StatefulWidget {
 class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   late EditDateAndTimeViewModel editDateAndTimeViewModel;
   late SchedulingViewModel schedulingViewModel;
-  final CustomNotifications customNotifications = CustomNotifications();
 
-  late Scheduling scheduling;
-  final TextEditingController dateController = TextEditingController();
   final FocusNode dateFocus = FocusNode();
-  final TextEditingController timeController = TextEditingController();
   final FocusNode timeFocus = FocusNode();
 
   @override
   void initState() {
-    scheduling = widget.scheduling;
     schedulingViewModel = SchedulingViewModel(
       schedulingService: context.read<SchedulingService>(),
     );
+
     editDateAndTimeViewModel = EditDateAndTimeViewModel(
       schedulingService: SchedulingService(
-          onlineRepository: SchedulingRepository.createOnline(), imageRepository: ImageRepository.create()),
+        onlineRepository: SchedulingRepository.createOnline(),
+        imageRepository: ImageRepository.create(),
+      ),
+      scheduling: widget.scheduling,
     );
-    editDateAndTimeViewModel.setServiceTime(scheduling.serviceTime);
-    editDateAndTimeViewModel.setSchedulingId(scheduling.id);
+
+    editDateAndTimeViewModel.notificationMessage.addListener(() {
+      if (editDateAndTimeViewModel.notificationMessage.value != null) {
+        CustomNotifications()
+            .showSnackBar(context: context, message: editDateAndTimeViewModel.notificationMessage.value!);
+      }
+    });
+
+    editDateAndTimeViewModel.editSuccessful.addListener(() {
+      if (editDateAndTimeViewModel.editSuccessful.value) {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => Navigator.pop(context, true),
+        );
+      }
+    });
+
     super.initState();
   }
 
@@ -57,8 +69,6 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
   void dispose() {
     editDateAndTimeViewModel.dispose();
     schedulingViewModel.dispose();
-    dateController.dispose();
-    timeController.dispose();
     dateFocus.dispose();
     timeFocus.dispose();
     super.dispose();
@@ -66,7 +76,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
 
   @override
   Widget build(BuildContext context) {
-    Color statusColor = ColorsUtils.getColorFromStatus(context, scheduling.serviceStatus);
+    Color statusColor = ColorsUtils.getColorFromStatus(context, editDateAndTimeViewModel.scheduling.serviceStatus);
 
     return PopScope(
       canPop: false,
@@ -90,7 +100,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        scheduling.user.fullname,
+                        editDateAndTimeViewModel.scheduling.user.fullname,
                         style: TextStyle(
                           color: statusColor,
                           fontSize: 24,
@@ -99,7 +109,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        scheduling.serviceStatus.name,
+                        editDateAndTimeViewModel.scheduling.serviceStatus.name,
                         style: TextStyle(
                           color: statusColor,
                           fontSize: 16,
@@ -119,7 +129,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              DataConverter.defaultFormatDate(scheduling.startDateAndTime),
+                              DataConverter.defaultFormatDate(editDateAndTimeViewModel.scheduling.startDateAndTime),
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w700,
@@ -135,8 +145,8 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                                 const SizedBox(width: 6),
                                 Text(
                                   DataConverter.defaultFormatHoursAndMinutes(
-                                    scheduling.startDateAndTime.hour,
-                                    scheduling.startDateAndTime.minute,
+                                    editDateAndTimeViewModel.scheduling.startDateAndTime.hour,
+                                    editDateAndTimeViewModel.scheduling.startDateAndTime.minute,
                                   ),
                                   style: const TextStyle(fontSize: 18),
                                 ),
@@ -148,8 +158,8 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                                 const SizedBox(width: 6),
                                 Text(
                                   DataConverter.defaultFormatHoursAndMinutes(
-                                    scheduling.endDateAndTime.hour,
-                                    scheduling.endDateAndTime.minute,
+                                    editDateAndTimeViewModel.scheduling.endDateAndTime.hour,
+                                    editDateAndTimeViewModel.scheduling.endDateAndTime.minute,
                                   ),
                                   style: const TextStyle(fontSize: 18),
                                 ),
@@ -166,7 +176,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                         builder: (context, _) {
                           return CustomTextData(
                             label: 'Nova data',
-                            controller: dateController,
+                            controller: editDateAndTimeViewModel.dateController,
                             onTap: _getNewDate,
                             errorMessage: editDateAndTimeViewModel.schedulingDateError.value,
                           );
@@ -193,10 +203,10 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                                   listenable: editDateAndTimeViewModel.startTimeError,
                                   builder: (context, _) {
                                     return CustomTextFieldUnderline(
-                                      controller: timeController,
+                                      controller: editDateAndTimeViewModel.startTimeController,
                                       focusNode: timeFocus,
                                       inputFormatters: [TimeTextInputFormatter()],
-                                      onChanged: (value) => editDateAndTimeViewModel.setStartTime(value),
+                                      onChanged: (value) => editDateAndTimeViewModel.setEndTime(),
                                       errorMessage: editDateAndTimeViewModel.startTimeError.value,
                                       isNumeric: true,
                                     );
@@ -271,15 +281,15 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                   if (schedulingViewModel.state is SchedulingInitial) {
                     return const SliverToBoxAdapter();
                   }
-          
+
                   if (schedulingViewModel.state is SchedulingLoading) {
                     return const SliverToBoxAdapter(
                       child: Center(child: CustomLoading()),
                     );
                   }
-          
+
                   final schedules = (schedulingViewModel.state as SchedulingLoaded).schedules;
-          
+
                   if (schedules.isEmpty) {
                     return SliverToBoxAdapter(
                       child: Padding(
@@ -297,7 +307,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                       ),
                     );
                   }
-          
+
                   return SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     sliver: SliverList.builder(
@@ -306,7 +316,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
                         if (index == schedules.length) {
                           return const SizedBox(height: 150);
                         }
-          
+
                         return CustomSchedulingCard(
                           scheduling: schedules[index],
                           isReadOnly: true,
@@ -325,24 +335,8 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
           child: ListenableBuilder(
             listenable: editDateAndTimeViewModel,
             builder: (context, _) {
-              if (editDateAndTimeViewModel.state is EditDateAndTimeLoading) {
+              if (editDateAndTimeViewModel.editLoading) {
                 return const CustomLoading();
-              }
-
-              if (editDateAndTimeViewModel.state is EditDateAndTimeError) {
-                final messageError = (editDateAndTimeViewModel.state as EditDateAndTimeError).message;
-                WidgetsBinding.instance.addPostFrameCallback(
-                  (_) => customNotifications.showSnackBar(
-                    context: context,
-                    message: messageError,
-                  ),
-                );
-              }
-
-              if (editDateAndTimeViewModel.state is EditDateAndTimeUpdateSuccess) {
-                WidgetsBinding.instance.addPostFrameCallback(
-                  (_) => Navigator.pop(context, true),
-                );
               }
 
               return CustomButton(
@@ -361,12 +355,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
     final actualDate = DateTime.now();
     final firstDate = DateTime(actualDate.year, actualDate.month, actualDate.day);
     final lastDate = firstDate.add(const Duration(days: 90));
-    final DateTime selectedDate;
-    if (dateController.text.isNotEmpty) {
-      selectedDate = DataConverter.dateFromDefaultDateText(dateController.text);
-    } else {
-      selectedDate = actualDate;
-    }
+    final DateTime selectedDate = editDateAndTimeViewModel.schedulingDate.value ?? actualDate;
 
     final newDate = await showDatePicker(
       context: context,
@@ -378,7 +367,7 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
     if (newDate == null) {
       return;
     }
-    dateController.text = DataConverter.defaultFormatDate(newDate);
+
     schedulingViewModel.load(dateTime: newDate);
     editDateAndTimeViewModel.setSchedulingDate(newDate);
   }
@@ -388,15 +377,16 @@ class _EditDateAndTimeViewState extends State<EditDateAndTimeView> {
     if (!editDateAndTimeViewModel.validate()) {
       return;
     }
+
     await _confirmSave();
   }
 
   Future<void> _confirmSave() async {
     final dateText = DataConverter.defaultFormatDate(editDateAndTimeViewModel.schedulingDate.value!);
-    final hourText = editDateAndTimeViewModel.startTime;
+    final hourText = editDateAndTimeViewModel.startTimeController.text;
     final String dateHourText = '$dateText $hourText';
 
-    await customNotifications.showQuestionAlert(
+    await CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Alterar data e hora',
       content: 'Tem certeza que deseja alterar a data e a hora do serviço para "$dateHourText"?',

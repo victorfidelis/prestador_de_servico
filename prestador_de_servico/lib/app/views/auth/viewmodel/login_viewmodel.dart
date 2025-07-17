@@ -15,7 +15,7 @@ class LoginViewModel extends ChangeNotifier {
   String? emailErrorMessage;
   String? passwordErrorMessage;
   
-  ValueNotifier<bool> editSuccessful = ValueNotifier(false);
+  ValueNotifier<bool> loginSuccessful = ValueNotifier(false);
   User? user;
 
   LoginViewModel({required AuthService authService}) : _authService = authService;
@@ -53,7 +53,7 @@ class LoginViewModel extends ChangeNotifier {
       genericErrorMessage = signInEither.left!.message;
     } else {
       user = signInEither.right!;
-      editSuccessful.value = true;
+      loginSuccessful.value = true;
       _clearControllers();
     }
 

@@ -1,40 +1,46 @@
 import 'package:flutter/widgets.dart';
+import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
 import 'package:prestador_de_servico/app/shared/utils/data_converter.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_date_and_time_state.dart';
 
 class EditDateAndTimeViewModel extends ChangeNotifier {
   final SchedulingService schedulingService;
-  int serviceTimeInMinutes = 0;
+  final Scheduling scheduling;
+  
+  bool editLoading = false;
 
-  late String schedulingId;
+  final TextEditingController dateController = TextEditingController();
   ValueNotifier<DateTime?> schedulingDate = ValueNotifier(null);
-  ValueNotifier<String?> schedulingDateError = ValueNotifier(null);
-  String startTime = '';
-  ValueNotifier<String?> startTimeError = ValueNotifier(null);
+  final TextEditingController startTimeController = TextEditingController();
   ValueNotifier<String> endTime = ValueNotifier('');
-  ValueNotifier<String?> endTimeError = ValueNotifier(null);
 
-  EditDateAndTimeState _state = EditDateAndTimeInitial();
-  EditDateAndTimeState get state => _state;
-  void _emitState(EditDateAndTimeState currentState) {
-    _state = currentState;
-    notifyListeners();
+  ValueNotifier<bool> editSuccessful = ValueNotifier(false);
+  ValueNotifier<String?> notificationMessage = ValueNotifier(null); 
+
+  ValueNotifier<String?> schedulingDateError = ValueNotifier(null);
+  ValueNotifier<String?> startTimeError = ValueNotifier(null);
+
+  EditDateAndTimeViewModel({required this.schedulingService, required this.scheduling});
+
+  @override
+  void dispose() {
+    dateController.dispose();
+    startTimeController.dispose();
+    super.dispose();
   }
-
-  EditDateAndTimeViewModel({required this.schedulingService});
-
-  DateTime? get startDateAndTime {
-    if (schedulingDate.value == null || !DataConverter.isTime(startTime)) {
+  
+  DateTime? get _startDateAndTime {
+    if (schedulingDate.value == null || !DataConverter.isTime(startTimeController.text)) {
       return null;
     }
     return DataConverter.concatDateAndHours(
       schedulingDate.value!,
-      startTime,
+      startTimeController.text,
     );
   }
-  DateTime? get endDateAndTime {
+
+  DateTime? get _endDateAndTime {
     if (schedulingDate.value == null || !DataConverter.isTime(endTime.value)) {
       return null;
     }
@@ -44,60 +50,64 @@ class EditDateAndTimeViewModel extends ChangeNotifier {
     );
   }
 
-  void setServiceTime(int serviceTimeInMinutes) {
-    this.serviceTimeInMinutes = serviceTimeInMinutes;
+  void _setEditLoading(bool value) {
+    editLoading = value;
+    notifyListeners();
+  }
+
+  void _setNotificationMessage(String value) {
+    notificationMessage.value = null; // É necessário para garantir o ValueNotifier vai notificar os ouvintes
+    notificationMessage.value = value;
   }
 
   void setSchedulingDate(DateTime schedulingDate) {
-    this.schedulingDate.value = schedulingDate;
     schedulingDateError.value = null;
-  }
-
-  void setStartTime(String startTime) {
-    this.startTime = startTime;
-    startTimeError.value = null;
-    setEndTime();
+    dateController.text = DataConverter.defaultFormatDate(schedulingDate);
+    this.schedulingDate.value = schedulingDate;
   }
 
   void setEndTime() {
-    endTime.value = DataConverter.addMinutes(startTime, serviceTimeInMinutes);
-    endTimeError.value = null;
+    endTime.value = DataConverter.addMinutes(startTimeController.text, scheduling.serviceTime);
   }
 
-  void setSchedulingId(String schedulingId) {
-    this.schedulingId = schedulingId;
+  Future<void> save() async {
+    _setEditLoading(true);
+
+    final editEither = await schedulingService.editDateOfScheduling(
+      schedulingId: scheduling.id,
+      startDateAndTime: _startDateAndTime!,
+      endDateAndTime: _endDateAndTime!,
+    );
+
+    if (editEither.isLeft) {
+      _setNotificationMessage(editEither.left!.message);
+    } else {
+      _setNotificationMessage('Horário atualizado com sucesso');
+      editSuccessful.value = true;
+    }
+
+    _setEditLoading(false);
   }
 
   bool validate() {
+    _clearErrors();
     bool isValid = true;
+
     if (schedulingDate.value == null) {
       schedulingDateError.value = 'Adicionar a data';
       isValid = false;
     }
-    if (!DataConverter.isTime(startTime)) {
+    if (!DataConverter.isTime(startTimeController.text)) {
       startTimeError.value = 'Adicionar hora';
       isValid = false;
     }
-    if (!DataConverter.isTime(endTime.value)) {
-      endTimeError.value = 'Adicionar hora';
-      isValid = false;
-    }
+
+    notifyListeners();
     return isValid;
-  }
+  } 
 
-  Future<void> save() async {
-    _emitState(EditDateAndTimeLoading());
-
-    final editEither = await schedulingService.editDateOfScheduling(
-      schedulingId: schedulingId,
-      startDateAndTime: startDateAndTime!,
-      endDateAndTime: endDateAndTime!,
-    );
-
-    if (editEither.isLeft) {
-      _emitState(EditDateAndTimeError(message: editEither.left!.message));
-    } else {
-      _emitState(EditDateAndTimeUpdateSuccess());
-    }
+  void _clearErrors() {
+    schedulingDateError.value = null;
+    startTimeError.value = null;
   }
 }
