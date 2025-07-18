@@ -26,7 +26,6 @@ class _ImagesCardState extends State<ImagesCard> {
   @override
   Widget build(BuildContext context) {
     return Consumer<SchedulingDetailViewModel>(builder: (context, viewModel, _) {
-
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

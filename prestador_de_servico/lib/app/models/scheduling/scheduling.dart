@@ -38,6 +38,9 @@ class Scheduling {
 
   bool get hasMessage =>
       schedulingUnavailable || conflictScheduing || isPaid || (!isPaid && serviceStatus.isAccept());
+      
+  bool get showImageCard => serviceStatus.isInService() || serviceStatus.isServicePerform();
+  bool get showReviewCard => serviceStatus.isServicePerform();
 
   Scheduling({
     this.id = '',

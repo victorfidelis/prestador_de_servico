@@ -35,49 +35,48 @@ class _ServiceListCardState extends State<ServiceListCard> {
     bool hasDiscount = scheduling.totalDiscount > 0;
     bool hasRate = scheduling.totalRate > 0;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Serviços',
-          style: TextStyle(fontSize: 16),
-        ),
-        Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              const SizedBox(height: 6),
-              servicesCard(),
-              const SizedBox(height: 12),
-              otherValuesCard('Subtotal', scheduling.totalPrice),
-              hasRate ? const SizedBox(height: 8) : const SizedBox(),
-              hasRate ? otherValuesCard('Taxas', scheduling.totalRate) : const SizedBox(),
-              hasDiscount ? const SizedBox(height: 8) : const SizedBox(),
-              hasDiscount
-                  ? otherValuesCard('Descontos', scheduling.totalDiscount)
-                  : const SizedBox(),
-              const SizedBox(height: 8),
-              totalCard(),
-              scheduling.hasMessage || hasEditButtom
-                  ? const SizedBox(height: 8)
-                  : const SizedBox(),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: CustomSchedulingMessageWidget(
-                      scheduling: scheduling,
-                      fontSize: 16,
-                    ),
-                  ),
-                  hasEditButtom ? EditButton(onTap: widget.onEdit!) : const SizedBox(),
-                ],
-              ),
-            ],
+    return Padding(
+      padding: const EdgeInsets.only(left: 20, top: 8, right: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Serviços',
+            style: TextStyle(fontSize: 16),
           ),
-        )
-      ],
+          Padding(
+            padding: const EdgeInsets.only(left: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                const SizedBox(height: 6),
+                servicesCard(),
+                const SizedBox(height: 12),
+                otherValuesCard('Subtotal', scheduling.totalPrice),
+                hasRate ? const SizedBox(height: 8) : const SizedBox(),
+                hasRate ? otherValuesCard('Taxas', scheduling.totalRate) : const SizedBox(),
+                hasDiscount ? const SizedBox(height: 8) : const SizedBox(),
+                hasDiscount ? otherValuesCard('Descontos', scheduling.totalDiscount) : const SizedBox(),
+                const SizedBox(height: 8),
+                totalCard(),
+                scheduling.hasMessage || hasEditButtom ? const SizedBox(height: 8) : const SizedBox(),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: CustomSchedulingMessageWidget(
+                        scheduling: scheduling,
+                        fontSize: 16,
+                      ),
+                    ),
+                    hasEditButtom ? EditButton(onTap: widget.onEdit!) : const SizedBox(),
+                  ],
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
     );
   }
 
@@ -90,9 +89,7 @@ class _ServiceListCardState extends State<ServiceListCard> {
         Column(
           children: [
             ServiceItemCard(service: scheduling.services[i]),
-            isLastService
-                ? const SizedBox()
-                : Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
+            isLastService ? const SizedBox() : Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
           ],
         ),
       );

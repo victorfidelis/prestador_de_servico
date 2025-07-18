@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
-import 'package:prestador_de_servico/app/models/service_status/service_status.dart';
 import 'package:prestador_de_servico/app/models/service_status/service_status_extensions.dart';
 import 'package:prestador_de_servico/app/services/offline_image/offline_image_service.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
-import 'package:prestador_de_servico/app/shared/themes/custom_colors.dart';
-import 'package:prestador_de_servico/app/shared/utils/colors/colors_utils.dart';
+import 'package:prestador_de_servico/app/shared/widgets/custom_divider.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
-import 'package:prestador_de_servico/app/shared/widgets/custom_light_buttom.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/widgets/address_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/date_and_time_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/images_card.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/widgets/review_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/review_sheet.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/widgets/review_stars.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/widgets/scheduling_actions.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/widgets/scheduling_address.dart';
+import 'package:prestador_de_servico/app/views/scheduling_details/widgets/scheduling_details_header.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/service_list_card.dart';
 import 'package:provider/provider.dart';
 
@@ -78,14 +77,6 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                 ListenableBuilder(
                   listenable: schedulingDetailViewModel,
                   builder: (context, _) {
-                    Widget imageCard = const SizedBox();
-                    bool showImageCard = false;
-                    ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
-                    if (serviceStatus.isInService() || serviceStatus.isServicePerform()) {
-                      imageCard = const ImagesCard();
-                      showImageCard = true;
-                    }
-                    
                     if (schedulingDetailViewModel.schedulingLoading) {
                       return const SliverFillRemaining(
                         child: Center(child: CustomLoading()),
@@ -113,9 +104,11 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _buildHeader(),
-                          const SizedBox(height: 8),
-                          _buildDivider(),
+                          SchedulingDetailsHeader(
+                            user: schedulingDetailViewModel.scheduling.user,
+                            serviceStatus: schedulingDetailViewModel.scheduling.serviceStatus,
+                          ),
+                          const CustomDivider(),
                           const SizedBox(height: 8),
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -130,30 +123,38 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                               inConflict: schedulingDetailViewModel.scheduling.conflictScheduing,
                             ),
                           ),
-                          const SizedBox(height: 8),
-                          _buildDivider(),
-                          const SizedBox(height: 8),
-                          _addressWidget(),
-                          const SizedBox(height: 8),
-                          _buildDivider(),
-                          const SizedBox(height: 8),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: ServiceListCard(
-                              key: ValueKey(schedulingDetailViewModel.scheduling.hashCode),
-                              scheduling: schedulingDetailViewModel.scheduling,
-                              onEdit: allowsEdit ? _onEditScheduledServices : null,
-                            ),
+                          const CustomDivider(),
+                          SchedulingAddress(address: schedulingDetailViewModel.scheduling.address),
+                          const CustomDivider(),
+                          ServiceListCard(
+                            key: ValueKey(schedulingDetailViewModel.scheduling.hashCode),
+                            scheduling: schedulingDetailViewModel.scheduling,
+                            onEdit: allowsEdit ? _onEditScheduledServices : null,
                           ),
-                          const SizedBox(height: 8),
-                          _buildDivider(),
-                          const SizedBox(height: 8),
-                          imageCard,
-                          showImageCard ? const SizedBox(height: 8) : const SizedBox(),
-                          showImageCard ? _buildDivider() : const SizedBox(),
-                          const SizedBox(height: 8),
-                          _reviewWidget(),
-                          _actions(),
+                          const CustomDivider(),
+                          schedulingDetailViewModel.scheduling.showImageCard ? const ImagesCard() : const SizedBox(),
+                          schedulingDetailViewModel.scheduling.showImageCard ? const CustomDivider() : const SizedBox(),
+                          schedulingDetailViewModel.scheduling.showReviewCard
+                              ? ReviewCard(
+                                  reviewDetails: schedulingDetailViewModel.scheduling.reviewDetails,
+                                  review: schedulingDetailViewModel.scheduling.review,
+                                  onAddOrEditReview: _onAddOrEditReview,
+                                )
+                              : const SizedBox(),
+                          schedulingDetailViewModel.scheduling.showReviewCard
+                              ? const CustomDivider()
+                              : const SizedBox(),
+                          SchedulingActions(
+                            isPaid: schedulingDetailViewModel.scheduling.isPaid,
+                            serviceStatus: schedulingDetailViewModel.scheduling.serviceStatus,
+                            onConfirmScheduling: _onConfirmScheduling,
+                            onSchedulingInService: _onSchedulingInService,
+                            onPerformScheduling: _onPerformScheduling,
+                            onRequestChangeScheduling: _onRequestChangeScheduling,
+                            onReceivePayment: _onReceivePayment,
+                            onDenyScheduling: _onDenyScheduling,
+                            onCancelScheduling: _onCancelScheduling,
+                          ),
                           const SizedBox(height: 50),
                         ],
                       ),
@@ -170,46 +171,6 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
 
   void _popNavigation() {
     Navigator.pop(context, schedulingDetailViewModel.hasChange);
-  }
-
-  Widget _buildHeader() {
-    Color statusColor = ColorsUtils.getColorFromStatus(
-      context,
-      schedulingDetailViewModel.scheduling.serviceStatus,
-    );
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            schedulingDetailViewModel.scheduling.user.fullname,
-            style: TextStyle(
-              color: statusColor,
-              fontSize: 24,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            schedulingDetailViewModel.scheduling.serviceStatus.name,
-            style: TextStyle(
-              color: statusColor,
-              fontSize: 16,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDivider() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Divider(color: Theme.of(context).colorScheme.shadow),
-    );
   }
 
   void _onEditDateAndTime() async {
@@ -311,61 +272,6 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
     );
   }
 
-  Widget _reviewWidget() {
-    ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
-    if (!serviceStatus.isServicePerform()) {
-      return const SizedBox();
-    }
-
-    bool hasReviewDetail = false;
-    if (schedulingDetailViewModel.scheduling.reviewDetails != null &&
-        schedulingDetailViewModel.scheduling.reviewDetails!.trim().isNotEmpty) {
-      hasReviewDetail = true;
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Avaliação do cliente',
-            style: TextStyle(fontSize: 16),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ReviewStars(
-                review: schedulingDetailViewModel.scheduling.review ?? 0,
-                onMark: (review) => _onAddOrEditReview(review),
-                allowSetState: false,
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          hasReviewDetail
-              ? Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 18),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          schedulingDetailViewModel.scheduling.reviewDetails ?? '',
-                        ),
-                      ),
-                    ],
-                  ),
-                )
-              : const SizedBox(),
-          hasReviewDetail ? const SizedBox(height: 8) : const SizedBox(),
-          _buildDivider(),
-          const SizedBox(height: 8),
-        ],
-      ),
-    );
-  }
-
   void _questionOfReview() {
     CustomNotifications().showQuestionAlert(
       context: context,
@@ -392,91 +298,5 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   void _onSaveReview(int review, String reviewDetails) {
     Navigator.pop(context);
     schedulingDetailViewModel.reviewScheduling(review: review, reviewDetails: reviewDetails);
-  }
-
-  Widget _addressWidget() {
-    if (schedulingDetailViewModel.scheduling.address == null) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        child: Text('Local não informado'),
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: AddressCard(address: schedulingDetailViewModel.scheduling.address!),
-    );
-  }
-
-  Widget _actions() {
-    bool isPaid = schedulingDetailViewModel.scheduling.isPaid;
-    ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
-
-    List<Widget> buttons = [];
-
-    if (serviceStatus.isPendingProvider()) {
-      buttons.add(CustomLightButtom(
-        label: 'Confirmar',
-        labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
-        onTap: _onConfirmScheduling,
-      ));
-    }
-
-    if (serviceStatus.isConfirm()) {
-      buttons.add(CustomLightButtom(
-        label: 'Colocar em atendimento',
-        labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
-        onTap: _onSchedulingInService,
-      ));
-    }
-
-    if (serviceStatus.isInService()) {
-      buttons.add(CustomLightButtom(
-        label: 'Marcar como realizado',
-        labelColor: Theme.of(context).extension<CustomColors>()!.confirm!,
-        onTap: _onPerformScheduling,
-      ));
-    }
-
-    if (serviceStatus.isPendingProvider()) {
-      buttons.add(CustomLightButtom(
-        label: 'Solicitar alterações',
-        labelColor: Theme.of(context).extension<CustomColors>()!.pending!,
-        onTap: _onRequestChangeScheduling,
-      ));
-    }
-
-    if (!isPaid && serviceStatus.isAccept()) {
-      buttons.add(CustomLightButtom(
-        label: 'Receber pagamentos',
-        labelColor: Theme.of(context).extension<CustomColors>()!.money!,
-        onTap: _onReceivePayment,
-      ));
-    }
-
-    if (serviceStatus.isPendingProvider()) {
-      buttons.add(CustomLightButtom(
-        label: 'Recusar',
-        labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,
-        onTap: _onDenyScheduling,
-      ));
-    }
-
-    if (serviceStatus.allowCancel()) {
-      buttons.add(
-        CustomLightButtom(
-          label: 'Cancelar',
-          labelColor: Theme.of(context).extension<CustomColors>()!.cancel!,
-          onTap: _onCancelScheduling,
-        ),
-      );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        spacing: 8,
-        children: buttons,
-      ),
-    );
   }
 }
