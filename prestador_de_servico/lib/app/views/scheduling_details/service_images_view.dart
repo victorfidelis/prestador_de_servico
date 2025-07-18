@@ -4,7 +4,6 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/image_card.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/states/scheduling_detail_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -16,8 +15,6 @@ class ServiceImagesView extends StatefulWidget {
 }
 
 class _ServiceImagesViewState extends State<ServiceImagesView> {
-  final notifications = CustomNotifications();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,24 +27,8 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
                 padding: const EdgeInsets.symmetric(horizontal: 8.0),
                 child: Consumer<SchedulingDetailViewModel>(
                   builder: (context, viewModel, _) {
-                    if (viewModel.state is ServiceImagesLoading) {
+                    if (viewModel.imagesLoading) {
                       return const Center(child: CustomLoading());
-                    }
-
-                    if (viewModel.state is ServiceImagesError) {
-                      final errorState = viewModel.state as ServiceImagesError;
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        notifications.showSnackBar(context: context, message: errorState.message);
-                      });
-                    }
-
-                    if (viewModel.state is ServiceImagesLoaded) {
-                      final state = (viewModel.state as ServiceImagesLoaded);
-                      if (state.message != null) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          notifications.showSnackBar(context: context, message: state.message!);
-                        });
-                      }
                     }
 
                     if (viewModel.scheduling.images.isEmpty) {
@@ -86,7 +67,7 @@ class _ServiceImagesViewState extends State<ServiceImagesView> {
   }
 
   void _onRemoveImage(String imageUrl) {
-    notifications.showQuestionAlert(
+    CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Excluir imagem',
       content: 'Tem certeza que deseja excluir a imagem?',

@@ -10,7 +10,6 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_light_buttom.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/states/scheduling_detail_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/address_card.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/date_and_time_card.dart';
@@ -31,7 +30,6 @@ class SchedulingDetailsView extends StatefulWidget {
 
 class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   late final SchedulingDetailViewModel schedulingDetailViewModel;
-  final notifications = CustomNotifications();
 
   @override
   void initState() {
@@ -40,6 +38,13 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
       schedulingService: context.read<SchedulingService>(),
       offlineImageService: context.read<OfflineImageService>(),
     );
+
+    schedulingDetailViewModel.notificationMessage.addListener(() {
+      if (schedulingDetailViewModel.notificationMessage.value != null) {
+        CustomNotifications()
+            .showSnackBar(context: context, message: schedulingDetailViewModel.notificationMessage.value!);
+      }
+    });
 
     schedulingDetailViewModel.refreshScheduling();
 
@@ -54,14 +59,6 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
 
   @override
   Widget build(BuildContext context) {
-    Widget imageCard = const SizedBox();
-    bool showImageCard = false;
-    ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
-    if (serviceStatus.isInService() || serviceStatus.isServicePerform()) {
-      imageCard = const ImagesCard();
-      showImageCard = true;
-    }
-
     return ChangeNotifierProvider.value(
       value: schedulingDetailViewModel,
       child: PopScope(
@@ -81,17 +78,25 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
                 ListenableBuilder(
                   listenable: schedulingDetailViewModel,
                   builder: (context, _) {
-                    if (schedulingDetailViewModel.state is SchedulingDetailLoading) {
+                    Widget imageCard = const SizedBox();
+                    bool showImageCard = false;
+                    ServiceStatus serviceStatus = schedulingDetailViewModel.scheduling.serviceStatus;
+                    if (serviceStatus.isInService() || serviceStatus.isServicePerform()) {
+                      imageCard = const ImagesCard();
+                      showImageCard = true;
+                    }
+                    
+                    if (schedulingDetailViewModel.schedulingLoading) {
                       return const SliverFillRemaining(
                         child: Center(child: CustomLoading()),
                       );
                     }
 
-                    if (schedulingDetailViewModel.state is SchedulingDetailError) {
-                      var error = schedulingDetailViewModel.state as SchedulingDetailError;
+                    if (schedulingDetailViewModel.hasSchedulingError) {
+                      ;
                       return SliverFillRemaining(
                         child: Center(
-                          child: Text(error.message),
+                          child: Text(schedulingDetailViewModel.schedulingErrorMessage!),
                         ),
                       );
                     }
@@ -241,7 +246,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   }
 
   void _onConfirmScheduling() async {
-    await notifications.showQuestionAlert(
+    await CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Confirmar agendamento',
       content: 'Tem certeza que deseja CONFIRMAR agendamento?',
@@ -252,7 +257,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   }
 
   void _onDenyScheduling() async {
-    await notifications.showQuestionAlert(
+    await CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Recusar agendamento',
       content: 'Tem certeza que deseja RECUSAR agendamento?',
@@ -263,7 +268,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   }
 
   void _onRequestChangeScheduling() async {
-    await notifications.showQuestionAlert(
+    await CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Solicitar alterações',
       content: 'Tem certeza que deseja solicitar alterações ao cliente?',
@@ -274,7 +279,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   }
 
   void _onCancelScheduling() async {
-    await notifications.showQuestionAlert(
+    await CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Cancelar agendamento',
       content: 'Tem certeza que deseja CANCELAR o agendamento?',
@@ -285,7 +290,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   }
 
   void _onSchedulingInService() async {
-    await notifications.showQuestionAlert(
+    await CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Agendamento em atendimento',
       content: 'Tem certeza que deseja colocar o agendamento "Em atendimento"?',
@@ -296,7 +301,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   }
 
   void _onPerformScheduling() async {
-    await notifications.showQuestionAlert(
+    await CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Agendamento realizado',
       content: 'Tem certeza que deseja colocar o agendamento como "Realizado"?',
@@ -362,7 +367,7 @@ class _SchedulingDetailsViewState extends State<SchedulingDetailsView> {
   }
 
   void _questionOfReview() {
-    notifications.showQuestionAlert(
+    CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Avalie o cliente',
       content: 'Deseja realizar a avaliação da sessão do cliente?',

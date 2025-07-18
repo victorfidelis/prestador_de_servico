@@ -4,15 +4,19 @@ import 'package:prestador_de_servico/app/services/offline_image/offline_image_se
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/animated_collections_helpers/animated_list_helper.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/states/scheduling_detail_state.dart';
 
 class SchedulingDetailViewModel extends ChangeNotifier {
   Scheduling scheduling;
   SchedulingService schedulingService;
   final OfflineImageService offlineImageService;
   bool hasChange = false;
-  bool _dispose = false;
   AnimatedListHelper<String>? imageListHelper;
+
+  bool schedulingLoading = false;
+  bool imagesLoading = false;
+  ValueNotifier<String?> notificationMessage = ValueNotifier(null);
+
+  String? schedulingErrorMessage;
 
   SchedulingDetailViewModel({
     required this.scheduling,
@@ -20,165 +24,166 @@ class SchedulingDetailViewModel extends ChangeNotifier {
     required this.offlineImageService,
   });
 
-  @override
-  void dispose() {
-    _dispose = true;
-    super.dispose();
+  bool get hasSchedulingError => schedulingErrorMessage != null;
+
+  void _setSchedulingLoading(bool value) {
+    schedulingLoading = value;
+    notifyListeners();
   }
 
-  SchedulingDetailState _state = SchedulingDetailInitial();
-  SchedulingDetailState get state => _state;
-  void _emitState(SchedulingDetailState currentState) {
-    _state = currentState;
-    if (!_dispose) notifyListeners();
-  }
-  
-  void _changeState(SchedulingDetailState currentState) {
-    _state = currentState;
+  void _setImagesLoading(bool value) {
+    imagesLoading = value;
+    notifyListeners();
   }
 
-  void initServiceImageState() {
-    _changeState(ServiceImagesLoaded());
+  void _setNotificationMessage(String value) {
+    notificationMessage.value = null; // Reset to ensure listeners are notified
+    notificationMessage.value = value;
   }
 
-  void returnToSchedulingDetail() {
-    _emitState(SchedulingDetailLoaded());
+  void setImageListHelper(AnimatedListHelper<String> value) {
+    imageListHelper = value;
   }
 
   Future<void> onChangeScheduling() async {
     hasChange = true;
     await refreshScheduling();
-  } 
+  }
 
   Future<void> refreshScheduling() async {
-    _emitState(SchedulingDetailLoading());
+    _clearErrors();
+    _setSchedulingLoading(true);
 
-    final getEither =
-        await schedulingService.getScheduling(schedulingId: scheduling.id);
+    final getEither = await schedulingService.getScheduling(schedulingId: scheduling.id);
 
     if (getEither.isLeft) {
-      _emitState(SchedulingDetailError(message: getEither.left!.message));
+      schedulingErrorMessage = getEither.left!.message;
     } else {
       scheduling = getEither.right!;
-      _emitState(SchedulingDetailLoaded());
+      ;
     }
+
+    _setSchedulingLoading(false);
   }
 
   Future<void> confirmScheduling() async {
-    _emitState(SchedulingDetailLoading());
-    final either = await schedulingService.confirmScheduling(schedulingId: scheduling.id);
+    _setSchedulingLoading(true);
 
+    final either = await schedulingService.confirmScheduling(schedulingId: scheduling.id);
     if (either.isLeft) {
-      _emitState(SchedulingDetailError(message: either.left!.message));
+      schedulingErrorMessage = either.left!.message;
     } else {
       hasChange = true;
       await refreshScheduling();
     }
+
+    _setSchedulingLoading(false);
   }
 
   Future<void> denyScheduling() async {
-    _emitState(SchedulingDetailLoading());
-    final either = await schedulingService.denyScheduling(schedulingId: scheduling.id);
+    _setSchedulingLoading(true);
 
+    final either = await schedulingService.denyScheduling(schedulingId: scheduling.id);
     if (either.isLeft) {
-      _emitState(SchedulingDetailError(message: either.left!.message));
+      schedulingErrorMessage = either.left!.message;
     } else {
       hasChange = true;
       await refreshScheduling();
     }
+
+    _setSchedulingLoading(false);
   }
 
   Future<void> requestChangeScheduling() async {
-    _emitState(SchedulingDetailLoading());
-    final either = await schedulingService.requestChangeScheduling(schedulingId: scheduling.id);
+    _setSchedulingLoading(true);
 
+    final either = await schedulingService.requestChangeScheduling(schedulingId: scheduling.id);
     if (either.isLeft) {
-      _emitState(SchedulingDetailError(message: either.left!.message));
+      schedulingErrorMessage = either.left!.message;
     } else {
       hasChange = true;
       await refreshScheduling();
     }
+
+    _setSchedulingLoading(false);
   }
 
   Future<void> cancelScheduling() async {
-    _emitState(SchedulingDetailLoading());
-    final either = await schedulingService.cancelScheduling(schedulingId: scheduling.id);
+    _setSchedulingLoading(true);
 
+    final either = await schedulingService.cancelScheduling(schedulingId: scheduling.id);
     if (either.isLeft) {
-      _emitState(SchedulingDetailError(message: either.left!.message));
+      schedulingErrorMessage = either.left!.message;
     } else {
       hasChange = true;
       await refreshScheduling();
     }
+
+    _setSchedulingLoading(false);
   }
 
   Future<void> schedulingInService() async {
-    _emitState(SchedulingDetailLoading());
-    final either = await schedulingService.schedulingInService(schedulingId: scheduling.id);
+    _setSchedulingLoading(true);
 
+    final either = await schedulingService.schedulingInService(schedulingId: scheduling.id);
     if (either.isLeft) {
-      _emitState(SchedulingDetailError(message: either.left!.message));
+      schedulingErrorMessage = either.left!.message;
     } else {
       hasChange = true;
       await refreshScheduling();
     }
+
+    _setSchedulingLoading(false);
   }
 
   Future<void> performScheduling() async {
-    _emitState(SchedulingDetailLoading());
-    final either = await schedulingService.performScheduling(schedulingId: scheduling.id);
+    _setSchedulingLoading(true);
 
+    final either = await schedulingService.performScheduling(schedulingId: scheduling.id);
     if (either.isLeft) {
-      _emitState(SchedulingDetailError(message: either.left!.message));
+      schedulingErrorMessage = either.left!.message;
     } else {
       hasChange = true;
       await refreshScheduling();
     }
+
+    _setSchedulingLoading(false);
   }
 
   Future<void> reviewScheduling({
     required int review,
     required String reviewDetails,
   }) async {
-    _emitState(SchedulingDetailLoading());
+    _setSchedulingLoading(true);
+
     final either = await schedulingService.addOrEditReview(
       schedulingId: scheduling.id,
       review: review,
       reviewDetails: reviewDetails,
     );
-
     if (either.isLeft) {
-      _emitState(SchedulingDetailError(message: either.left!.message));
+      schedulingErrorMessage = either.left!.message;
     } else {
       await refreshScheduling();
     }
-  } 
 
-  void setImageListHelper(AnimatedListHelper<String> value) {
-    imageListHelper = value;
-  }
-
-  void setToImageView() {
-    _changeState(ServiceImagesLoaded());
-  }
-
-  void setToSchedulingDetailView() {
-    _emitState(SchedulingDetailLoaded());
+    _setSchedulingLoading(false);
   }
 
   Future<void> addImageFromGallery() async {
     final eitherPickImage = await offlineImageService.pickImageFromGallery();
     if (eitherPickImage.isLeft) {
-      _emitState(ServiceImagesError(message: eitherPickImage.left!.message));
+      _setNotificationMessage(eitherPickImage.left!.message);
       return;
-    } 
-    
-    _emitState(ServiceImagesLoading());
+    }
+
+    _setImagesLoading(true);
 
     final imageFile = eitherPickImage.right!;
     final addImageEither = await schedulingService.addImage(schedulingId: scheduling.id, imageFile: imageFile);
     if (addImageEither.isLeft) {
-      _emitState(ServiceImagesError(message: addImageEither.left!.message));
+      _setNotificationMessage(addImageEither.left!.message);
+      _setImagesLoading(false);
       return;
     }
 
@@ -186,7 +191,7 @@ class SchedulingDetailViewModel extends ChangeNotifier {
     scheduling.images.add(imageUrl);
     imageListHelper!.insert(imageUrl);
 
-    _emitState(ServiceImagesLoaded());
+    _setImagesLoading(false);
   }
 
   Future<void> removeImage(String imageUrl) async {
@@ -196,7 +201,8 @@ class SchedulingDetailViewModel extends ChangeNotifier {
 
     final removeImageEither = await schedulingService.removeImage(schedulingId: scheduling.id, imageUrl: imageUrl);
     if (removeImageEither.isLeft) {
-      _emitState(ServiceImagesError(message: removeImageEither.left!.message));
+      _setNotificationMessage(removeImageEither.left!.message);
+      notifyListeners();
     }
   }
 
@@ -205,11 +211,18 @@ class SchedulingDetailViewModel extends ChangeNotifier {
     imageListHelper!.removeAt(index);
     scheduling.images.remove(imageUrl);
 
-    _emitState(ServiceImagesLoaded(message: 'Imagem removida.'));
+    _setNotificationMessage('Imagem removida.');
 
     final removeImageEither = await schedulingService.removeImage(schedulingId: scheduling.id, imageUrl: imageUrl);
     if (removeImageEither.isLeft) {
-      _emitState(ServiceImagesError(message: removeImageEither.left!.message));
-    }
+      _setNotificationMessage(removeImageEither.left!.message);
+    } 
+
+    notifyListeners();
+  }
+
+  void _clearErrors() {
+    schedulingErrorMessage = null;
+    notifyListeners();
   }
 }

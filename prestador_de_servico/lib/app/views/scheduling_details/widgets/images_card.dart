@@ -3,7 +3,6 @@ import 'package:prestador_de_servico/app/shared/widgets/animated_horizontal_list
 import 'package:prestador_de_servico/app/shared/widgets/custom_link.dart';
 import 'package:prestador_de_servico/app/shared/widgets/image_card.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/states/scheduling_detail_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/scheduling_detail_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -27,14 +26,6 @@ class _ImagesCardState extends State<ImagesCard> {
   @override
   Widget build(BuildContext context) {
     return Consumer<SchedulingDetailViewModel>(builder: (context, viewModel, _) {
-      if (viewModel.state is SchedulingDetailLoaded) {
-        final state = (viewModel.state as SchedulingDetailLoaded);
-        if (state.message != null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            notifications.showSnackBar(context: context, message: state.message!);
-          });
-        }
-      }
 
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -104,11 +95,8 @@ class _ImagesCardState extends State<ImagesCard> {
   }
 
   void _onOpenAllImages() async {
-    final viewModel = context.read<SchedulingDetailViewModel>();
-    viewModel.setToImageView();
     await Navigator.pushNamed(context, '/serviceImages',
         arguments: {'provider': context.read<SchedulingDetailViewModel>()});
-    viewModel.setToSchedulingDetailView();
   }
 
   void _onRemoveImage(String imageUrl) {
