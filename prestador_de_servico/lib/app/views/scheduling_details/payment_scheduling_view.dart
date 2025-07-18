@@ -9,7 +9,6 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/states/payment_scheduling_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/payment_scheduling_viewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -24,23 +23,34 @@ class PaymentSchedulingView extends StatefulWidget {
 class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
   late final PaymentSchedulingViewModel paymentViewModel;
 
-  final notifications = CustomNotifications();
-
-  final valueToPayController = TextEditingController();
-
   @override
   void initState() {
     paymentViewModel = PaymentSchedulingViewModel(
       schedulingService: context.read<SchedulingService>(),
       scheduling: widget.scheduling,
     );
+
+    paymentViewModel.notificationMessage.addListener(() {
+      final message = paymentViewModel.notificationMessage.value;
+      if (message != null) {
+        CustomNotifications().showSnackBar(context: context, message: message);
+      }
+    });
+
+    paymentViewModel.paymentSuccess.addListener(() {
+      if (paymentViewModel.paymentSuccess.value) {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => Navigator.pop(context, true),
+        );
+      }
+    });
+
     super.initState();
   }
 
   @override
   void dispose() {
     paymentViewModel.dispose();
-    valueToPayController.dispose();
     super.dispose();
   }
 
@@ -106,11 +116,11 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
                       builder: (context, _) {
                         return CustomTextField(
                           label: 'Valor à pagar',
-                          controller: valueToPayController,
+                          controller: paymentViewModel.valueToPayController,
                           errorMessage: paymentViewModel.valueToPayError.value,
                           isNumeric: true,
                           inputFormatters: [MoneyTextInputFormatter()],
-                          onChanged: onValueChanged,
+                          onChanged: (_) => paymentViewModel.setValueToPay(),
                         );
                       },
                     ),
@@ -127,29 +137,13 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
         child: ListenableBuilder(
           listenable: paymentViewModel,
           builder: (context, _) {
-            if (paymentViewModel.state is PaymentLoading) {
+            if (paymentViewModel.paymentLoading) {
               return const CustomLoading();
-            }
-
-            if (paymentViewModel.state is PaymentError) {
-              final messageError = (paymentViewModel.state as PaymentError).message;
-              WidgetsBinding.instance.addPostFrameCallback(
-                (_) => notifications.showSnackBar(
-                  context: context,
-                  message: messageError,
-                ),
-              );
-            }
-
-            if (paymentViewModel.state is PaymentSuccess) {
-              WidgetsBinding.instance.addPostFrameCallback(
-                (_) => Navigator.pop(context, true),
-              );
             }
 
             return CustomButton(
               label: 'Efetuar pagamento',
-              onTap: onSave,
+              onTap: _onSave,
             );
           },
         ),
@@ -157,30 +151,22 @@ class _PaymentSchedulingViewState extends State<PaymentSchedulingView> {
     );
   }
 
-  void onSave() async {
+  void _onSave() async {
     if (!paymentViewModel.validate()) {
       return;
     }
 
-    confirmSave();
+    _confirmSave();
   }
 
-  void confirmSave() {
+  void _confirmSave() {
     final value = DataConverter.formatPrice(paymentViewModel.valueToPay);
 
-    notifications.showQuestionAlert(
+    CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Pagamento',
       content: 'Tem certeza que deseja efetivar o recebimento do pagamento no valor de $value?',
       confirmCallback: paymentViewModel.receivePayment,
     );
-  }
-
-  void onValueChanged(String value) {
-    var valueToPay = value.trim().replaceAll(',', '.');
-    if (valueToPay.isEmpty) {
-      valueToPay = '0';
-    }
-    paymentViewModel.setValueToPay(double.parse(valueToPay));
   }
 }
