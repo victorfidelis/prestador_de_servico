@@ -228,9 +228,7 @@ class _CustomSchedulingCardState extends State<CustomSchedulingCard> {
   }
 
   Widget _getOtherValues() {
-    final prices = scheduling.services.map((s) => s.price).toList();
-    final totalServicesPrice = prices.reduce((s1, s2) => s1 + s2);
-    final formatServicesPrice = DataConverter.formatPrice(totalServicesPrice);
+    final formatServicesPrice = DataConverter.formatPrice(scheduling.totalPrice);
     Widget subTotalWidget = Row(
       mainAxisSize: MainAxisSize.min,
       children: [

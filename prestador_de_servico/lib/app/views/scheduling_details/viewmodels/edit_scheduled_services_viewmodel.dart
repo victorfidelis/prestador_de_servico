@@ -128,13 +128,16 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
   }
 
   bool validateSave() {
+    _clearErrors();
+    bool isValid = true;
+
     if (scheduling.totalPriceCalculated < 0) {
       discountError = 'Informe um valor válido';
-      notifyListeners();
-      return false;
+      isValid = false;
     }
 
-    return true;
+    notifyListeners();
+    return isValid;
   }
 
   Future<void> save() async {
@@ -164,5 +167,9 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
     }
 
     _setEditLoading(false);
+  }
+
+  void _clearErrors() {
+    discountError = null;
   }
 }

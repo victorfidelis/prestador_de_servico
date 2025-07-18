@@ -30,11 +30,10 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
 
   @override
   void initState() {
-    final scheduling = widget.scheduling;
     editViewModel = EditScheduledServicesViewmodel(
       schedulingService: context.read<SchedulingService>(),
-      scheduling: scheduling.copyWith(
-        services: List.from(scheduling.services),
+      scheduling: widget.scheduling.copyWith(
+        services: List.from(widget.scheduling.services),
       ),
     );
 
