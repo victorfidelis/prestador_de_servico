@@ -9,7 +9,6 @@ import 'package:prestador_de_servico/app/shared/widgets/custom_header.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_loading.dart';
 import 'package:prestador_de_servico/app/shared/widgets/custom_text_field.dart';
 import 'package:prestador_de_servico/app/shared/widgets/notifications/custom_notifications.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_services_and_prices_state.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/viewmodels/edit_scheduled_services_viewmodel.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/add_service_buttom.dart';
 import 'package:prestador_de_servico/app/views/scheduling_details/widgets/edit_service_item_card.dart';
@@ -26,13 +25,8 @@ class EditScheduledServicesView extends StatefulWidget {
 class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
   late final EditScheduledServicesViewmodel editViewModel;
 
-  final TextEditingController rateController = TextEditingController();
   final FocusNode rateFocus = FocusNode();
-
-  final TextEditingController discountController = TextEditingController();
   final FocusNode discountFocus = FocusNode();
-
-  final CustomNotifications notifications = CustomNotifications();
 
   @override
   void initState() {
@@ -43,21 +37,29 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
         services: List.from(scheduling.services),
       ),
     );
-    if (scheduling.totalRate > 0) {
-      rateController.text = scheduling.totalRate.toString();
-    }
-    if (scheduling.totalDiscount > 0) {
-      discountController.text = scheduling.totalDiscount.toString();
-    }
+
+    editViewModel.notificationMessage.addListener(() {
+      final message = editViewModel.notificationMessage.value;
+      if (message != null) {
+        CustomNotifications().showSnackBar(context: context, message: message);
+      }
+    });
+
+    editViewModel.editSuccessful.addListener(() {
+      if (editViewModel.editSuccessful.value) {
+        WidgetsBinding.instance.addPostFrameCallback(
+          (_) => Navigator.pop(context, true),
+        );
+      }
+    });
+
     super.initState();
   }
 
   @override
   void dispose() {
     editViewModel.dispose();
-    rateController.dispose();
     rateFocus.dispose();
-    discountController.dispose();
     discountFocus.dispose();
     super.dispose();
   }
@@ -88,20 +90,20 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
                         children: [
                           CustomTextField(
                             label: 'Taxa',
-                            controller: rateController,
+                            controller: editViewModel.rateController,
                             focusNode: rateFocus,
                             isNumeric: true,
                             inputFormatters: [MoneyTextInputFormatter()],
-                            onChanged: (_) => _onChangeRate(),
+                            onChanged: (_) => editViewModel.changeRate(),
                           ),
                           const SizedBox(height: 12),
                           CustomTextField(
                             label: 'Desconto',
-                            controller: discountController,
+                            controller: editViewModel.discountController,
                             focusNode: discountFocus,
                             isNumeric: true,
                             inputFormatters: [MoneyTextInputFormatter()],
-                            onChanged: (_) => _onChangeDicount(),
+                            onChanged: (_) => editViewModel.changeDicount(),
                             errorMessage: editViewModel.discountError,
                           ),
                           const SizedBox(height: 20),
@@ -114,7 +116,30 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
                           const SizedBox(height: 12),
                           _servicesCard(),
                           const SizedBox(height: 12),
-                          _totalProductsCard(),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 14),
+                            child: Row(
+                              children: [
+                                const Expanded(
+                                  child: Text(
+                                    'Total de produtos',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  DataConverter.formatPrice(editViewModel.scheduling.totalPrice),
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w500,
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
                           const SizedBox(height: 12),
                           Row(
                             children: [
@@ -125,7 +150,26 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
                           const SizedBox(height: 12),
                           Divider(height: 1, color: Theme.of(context).colorScheme.shadow),
                           const SizedBox(height: 12),
-                          _totalCard(),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Total: ',
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                DataConverter.formatPrice(editViewModel.scheduling.totalPriceCalculated),
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              )
+                            ],
+                          ),
                         ],
                       ),
                     ),
@@ -141,24 +185,8 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
           child: ListenableBuilder(
             listenable: editViewModel,
             builder: (context, _) {
-              if (editViewModel.state is EditServicesAndPricesLoading) {
+              if (editViewModel.editLoading) {
                 return const CustomLoading();
-              }
-
-              if (editViewModel.state is EditServicesAndPricesError) {
-                final messageError = (editViewModel.state as EditServicesAndPricesError).message;
-                WidgetsBinding.instance.addPostFrameCallback(
-                  (_) => notifications.showSnackBar(
-                    context: context,
-                    message: messageError,
-                  ),
-                );
-              }
-
-              if (editViewModel.state is EditServicesAndPricesUpdateSuccess) {
-                WidgetsBinding.instance.addPostFrameCallback(
-                  (_) => Navigator.pop(context, true),
-                );
               }
 
               return CustomButton(
@@ -178,10 +206,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     for (int i = 0; i < services.length; i++) {
       servicesWidgets.add(
         EditServiceItemCard(
-            key: ValueKey(services[i].hashCode),
-            service: services[i],
-            index: i,
-            onLongPress: _onLongPressService),
+            key: ValueKey(services[i].hashCode), service: services[i], index: i, onLongPress: _onLongPressService),
       );
       if (i < services.length - 1) {
         servicesWidgets.add(const SizedBox(height: 10));
@@ -189,56 +214,6 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     }
     return Column(
       children: servicesWidgets,
-    );
-  }
-
-  Widget _totalCard() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          'Total: ',
-          style: TextStyle(
-            fontSize: 22,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(width: 6),
-        Text(
-          DataConverter.formatPrice(editViewModel.scheduling.totalPriceCalculated),
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w500,
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _totalProductsCard() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14),
-      child: Row(
-        children: [
-          const Expanded(
-            child: Text(
-              'Total de produtos',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-          Text(
-            DataConverter.formatPrice(editViewModel.scheduling.totalPrice),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              fontStyle: FontStyle.italic,
-            ),
-          )
-        ],
-      ),
     );
   }
 
@@ -253,29 +228,9 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     }
   }
 
-  void _onRemoveService(int index) {
-    if (editViewModel.quantityOfActiveServices() == 1) {
-      notifications.showSuccessAlert(
-        context: context,
-        title: 'Exclusão não permitida',
-        content: 'Não é permitido excluir todos os serviços do agendamento.',
-      );
-    } else {
-      final service = editViewModel.scheduling.services[index];
-      notifications.showQuestionAlert(
-        context: context,
-        title: 'Remover serviço',
-        content: 'Tem certeza que deseja remover o serviço "${service.name}"?',
-        confirmCallback: () {
-          editViewModel.removeService(index: index);
-        },
-      );
-    }
-  }
-
   void _onReturnService(int index) {
     final service = editViewModel.scheduling.services[index];
-    notifications.showQuestionAlert(
+    CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Readicionar serviço',
       content: 'Tem certeza que deseja retornar o serviço "${service.name}"?',
@@ -285,19 +240,23 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
     );
   }
 
-  void _onChangeRate() {
-    if (rateController.text.isEmpty) {
-      editViewModel.changeRate(0);
+  void _onRemoveService(int index) {
+    if (editViewModel.quantityOfActiveServices == 1) {
+      CustomNotifications().showSuccessAlert(
+        context: context,
+        title: 'Exclusão não permitida',
+        content: 'Não é permitido excluir todos os serviços do agendamento.',
+      );
     } else {
-      editViewModel.changeRate(double.parse(rateController.text.replaceAll(',', '.')));
-    }
-  }
-
-  void _onChangeDicount() {
-    if (discountController.text.isEmpty) {
-      editViewModel.changeDicount(0);
-    } else {
-      editViewModel.changeDicount(double.parse(discountController.text.replaceAll(',', '.')));
+      final service = editViewModel.scheduling.services[index];
+      CustomNotifications().showQuestionAlert(
+        context: context,
+        title: 'Remover serviço',
+        content: 'Tem certeza que deseja remover o serviço "${service.name}"?',
+        confirmCallback: () {
+          editViewModel.removeService(index: index);
+        },
+      );
     }
   }
 
@@ -326,7 +285,7 @@ class _EditScheduledServicesViewState extends State<EditScheduledServicesView> {
   }
 
   Future<void> _confirmSave() async {
-    await notifications.showQuestionAlert(
+    await CustomNotifications().showQuestionAlert(
       context: context,
       title: 'Alterar serviços e preços',
       content: 'Tem certeza que deseja salvar as alterações efetuadas?',

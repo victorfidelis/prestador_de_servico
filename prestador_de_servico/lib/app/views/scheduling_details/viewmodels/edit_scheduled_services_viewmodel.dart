@@ -4,26 +4,56 @@ import 'package:prestador_de_servico/app/models/service/service.dart';
 import 'package:prestador_de_servico/app/models/scheduling/scheduling.dart';
 import 'package:prestador_de_servico/app/services/scheduling/scheduling_service.dart';
 import 'package:prestador_de_servico/app/shared/utils/either/either_extensions.dart';
-import 'package:prestador_de_servico/app/views/scheduling_details/states/edit_services_and_prices_state.dart';
 
 class EditScheduledServicesViewmodel extends ChangeNotifier {
   final SchedulingService schedulingService;
   Scheduling scheduling;
   late List<ScheduledService> scheduledServicesOriginal;
-  String? discountError;
 
-  EditServicesAndPricesState _state = EditServicesAndPricesInitial();
-  EditServicesAndPricesState get state => _state;
-  void _emitState(EditServicesAndPricesState currentState) {
-    _state = currentState;
-    notifyListeners();
-  }
+  bool editLoading = false;
+
+  final TextEditingController rateController = TextEditingController();
+  final TextEditingController discountController = TextEditingController();
+
+  ValueNotifier<bool> editSuccessful = ValueNotifier(false);
+  ValueNotifier<String?> notificationMessage = ValueNotifier(null);
+
+  String? discountError;
 
   EditScheduledServicesViewmodel({
     required this.schedulingService,
     required this.scheduling,
   }) {
     scheduledServicesOriginal = List.from(scheduling.services);
+    _loadFields();
+  }
+
+  @override
+  void dispose() {
+    rateController.dispose();
+    discountController.dispose();
+    super.dispose();
+  }
+
+  int get quantityOfActiveServices => scheduling.services.where((s) => !s.removed).length;
+
+  void _setEditLoading(bool value) {
+    editLoading = value;
+    notifyListeners();
+  }
+
+  void _setNotificationMessage(String value) {
+    notificationMessage.value = null; // Necessário para garantir que o ValueNotifier notifique os ouvintes
+    notificationMessage.value = value;
+  }
+
+  void _loadFields() {
+    if (scheduling.totalRate > 0) {
+      rateController.text = scheduling.totalRate.toString();
+    }
+    if (scheduling.totalDiscount > 0) {
+      discountController.text = scheduling.totalDiscount.toString();
+    }
   }
 
   void removeService({required int index}) {
@@ -49,12 +79,31 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
     scheduling = scheduling.copyWith(
       totalPrice: scheduling.totalPrice + service.price,
     );
+
+    notifyListeners();
+  }
+
+  void changeRate() {
+    double rate = 0;
+    if (rateController.text.isNotEmpty) {
+      rate = double.parse(rateController.text.replaceAll(',', '.'));
+    }
+    scheduling = scheduling.copyWith(totalRate: rate);
+    notifyListeners();
+  }
+
+  void changeDicount() {
+    double discount = 0;
+    if (discountController.text.isNotEmpty) {
+      discount = double.parse(discountController.text.replaceAll(',', '.'));
+    }
+    scheduling = scheduling.copyWith(totalDiscount: discount);
     notifyListeners();
   }
 
   void addService({required Service service}) {
     ScheduledService scheduledService = ScheduledService(
-      scheduledServiceId: getNextScheduledServiceId(),
+      scheduledServiceId: _getNextScheduledServiceId(),
       id: service.id,
       serviceCategoryId: service.serviceCategoryId,
       name: service.name,
@@ -70,21 +119,12 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
     scheduling = scheduling.copyWith(
       totalPrice: scheduling.totalPrice + service.price,
     );
+
     notifyListeners();
   }
 
-  void changeRate(double rate) {
-    scheduling = scheduling.copyWith(totalRate: rate);
-    notifyListeners();
-  }
-
-  void changeDicount(double discount) {
-    scheduling = scheduling.copyWith(totalDiscount: discount);
-    notifyListeners();
-  }
-
-  int quantityOfActiveServices() {
-    return scheduling.services.where((s) => !s.removed).length;
+  int _getNextScheduledServiceId() {
+    return 1 + scheduling.services.map((s) => s.scheduledServiceId).reduce((id1, id2) => id1 > id2 ? id1 : id2);
   }
 
   bool validateSave() {
@@ -97,15 +137,8 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
     return true;
   }
 
-  int getNextScheduledServiceId() {
-    return 1 +
-        scheduling.services
-            .map((s) => s.scheduledServiceId)
-            .reduce((id1, id2) => id1 > id2 ? id1 : id2);
-  }
-
   Future<void> save() async {
-    _emitState(EditServicesAndPricesLoading());
+    _setEditLoading(true);
 
     scheduling = scheduling.copyWith(
       endDateAndTime: schedulingService.calculateEndDate(
@@ -124,9 +157,12 @@ class EditScheduledServicesViewmodel extends ChangeNotifier {
     );
 
     if (editEither.isLeft) {
-      _emitState(EditServicesAndPricesError(message: editEither.left!.message));
+      _setNotificationMessage(editEither.left!.message);
     } else {
-      _emitState(EditServicesAndPricesUpdateSuccess());
+      _setNotificationMessage('Serviços e preços alterados com sucesso!');
+      editSuccessful.value = true;
     }
+
+    _setEditLoading(false);
   }
 }
